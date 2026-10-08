@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoknex — Connect Every Campus in the World</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="hoknex-navbar">
+        <div class="nav-brand">
+            <span class="logo-badge"><img src="hoknexlogo.png.jpeg"></span> <strong>Hoknex</strong>
+        </div>
+        <nav class="nav-links">
+            <a href="#vision">Vision</a>
+            <a onclick="openFeaturesModal()">Features</a>
+            <a href="#community">Community</a>
+        </nav>
+        <a href="#auth-box" class="btn-join">Join Network</a>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hoknex-hero">
+        <div class="hero-left">
+            <span class="pill-badge">✨ Connect All College & School Campuses Globally</span>
+            <h1>Where students and creators <span>shape the world.</span></h1>
+            <p class="hero-subtitle">Hoknex is the ultimate global student network. Bringing together colleges, schools, and campus communities from every corner of the planet into one powerful platform.</p>
+            
+            <!-- Cartoon Animal Mascot Widget -->
+            <div class="mascot-container">
+                <div class="mascot-avatar">🦊</div>
+                <div class="mascot-text">
+                    <p>Hoksy says hello!</p>
+                    <span>Your friendly campus mascot guiding global students</span>
+                </div>
+            </div>
+
+            <div class="live-stats">
+                <div class="stat-box">
+                    <h3 id="statPeople">0</h3>
+                    <p>Global Students</p>
+                </div>
+                <div class="stat-box">
+                    <h3 id="statPosts">0</h3>
+                    <p>Campus Posts</p>
+                </div>
+                <div class="stat-box">
+                    <h3 id="statClubs">0</h3>
+                    <p>Active Clubs</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-right" id="auth-box">
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="switchTab('signin')">Sign In</button>
+                <button class="tab-btn" onclick="switchTab('signup')">Create Account</button>
+            </div>
+
+            <!-- Sign In Form -->
+            <form id="signinForm" class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Username or Email</label>
+                    <input type="text" id="loginIdentifier" placeholder="e.g. alex_student" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary">Sign In 🚀</button>
+                <p id="loginError" class="error-msg"></p>
+            </form>
+
+            <!-- Create Account Form -->
+<form id="signupForm" class="auth-form" style="display:none;" onsubmit="handleCreateAccountSubmit(event)">
+    <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="regName" placeholder="Alex Morgan" required>
+    </div>
+    <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="regUsername" placeholder="alex_morgan" required>
+    </div>
+    <div class="form-group">
+        <label>Campus Email</label>
+        <input type="email" id="regEmail" placeholder="alex@university.edu" required>
+    </div>
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="••••••••" required>
+    </div>
+    
+    <!-- OTP Input (Hidden by default) -->
+    <div class="form-group" id="otpGroup" style="display:none;">
+        <label style="color: var(--accent-purple); font-weight: bold;">Enter 6-Digit OTP from Email</label>
+        <input type="text" id="otpInput" placeholder="123456" maxlength="6">
+    </div>
+
+    <button type="submit" id="createAccountBtn" class="btn-create" style="width:100%; margin-top:10px;">Create Account</button>
+</form>
+        </div>
+    </section>
+
+    <!-- Scrollable Showcase Vision -->
+    <section class="hoknex-showcase" id="vision">
+        <div class="showcase-header">
+            <h2>Imagine a network where <span>you belong:</span></h2>
+            <p>Students from schools and universities worldwide are connecting on Hoknex. Here is what you can do:</p>
+        </div>
+
+        <div class="showcase-grid">
+            <div class="showcase-card">
+                <span class="card-tag">🚀 Global Projects</span>
+                <h3>Launch & Collaborate</h3>
+                <p>Build open-source projects, share your code or pitch, and find teammates across international school borders.</p>
+            </div>
+            <div class="showcase-card">
+                <span class="card-tag">🔥 Campus Clubs</span>
+                <h3>Start Communities</h3>
+                <p>Create or join student clubs ranging from robotics and AI coding to arts, science, and debate societies.</p>
+            </div>
+            <div class="showcase-card">
+                <span class="card-tag">📅 Worldwide Events</span>
+                <h3>Hackathons & Meets</h3>
+                <p>Participate in virtual and in-person campus events, workshops, and global student hackathons.</p>
+            </div>
+            <div class="showcase-card">
+                <span class="card-tag">⚡ Live Feed</span>
+                <h3>Real-Time Vibe</h3>
+                <p>Share daily thoughts, ask questions, find lost items, and engage instantly with your campus network.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Database Preview Section -->
+    <section class="live-preview-section" id="community">
+        <div class="preview-container">
+            <h3>🔥 Live Active Projects on Hoknex</h3>
+            <div id="realProjectsList" class="real-items-grid">
+                <div class="real-item-card">
+                    <h4>Loading live projects...</h4>
+                    <p>Fetching real data from your MongoDB database.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+ <!-- Founder's Note Section -->
+    <section class="hoknex-founder-section">
+        <div class="founder-card-box">
+            <div class="founder-image-wrapper">
+                <!-- Make sure your image file is named founder.png in your public folder -->
+                <img src="founder.png" alt="Aditya Kumar - Founder of Hoknex">
+            </div>
+            <div class="founder-content">
+                <span class="founder-tag">Visionary Statement ⚡</span>
+                <h3>Building a borderless <span>student ecosystem</span> for the world.</h3>
+                <p class="founder-quote">
+                    "When we started Hoknex, the goal was simple: break down the walls between college campuses and give every student, creator, and innovator a unified space to launch ideas, find true collaborators, and build real-world projects together."
+                </p>
+                <div class="founder-signature">
+                    Aditya Kumar
+                    <span>Founder & Lead Architect, Hoknex</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Multi-Column Footer Inspired by Video -->
+    <footer class="hoknex-footer-multi">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="nav-brand">
+                    <span class="logo-badge">H</span> <strong>Hoknex</strong>
+                </div>
+                <p>Run by students, for students. Hoknex connects every school and college campus in the world into a single student network.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="#vision">Global Vision</a></li>
+                    <li><a onclick="openFeaturesModal()">Features</a></li>
+                    <li><a href="#auth-box">Sign In / Register</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="#community">Active Projects</a></li>
+                    <li><a href="#community">Student Clubs</a></li>
+                    <li><a href="#community">Campus Feed</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal & Support</h4>
+                <ul>
+                    <li><a onclick="openPrivacyModal()">Privacy Policy</a></li>
+                    <li><a onclick="openTermsModal()">Terms of Service</a></li>
+                    <li><a onclick="openSupportModal()">Platform Support</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Hoknex Platform. All rights reserved. Built for global campus connectivity.</p>
+            <p>System Status: <span style="color:#22c55e;">● Live & Connected</span></p>
+        </div>
+    </footer>
+
+    <!-- Modals for Features, Privacy, Terms, and Support -->
+    <div id="featuresModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('featuresModal')">X</button>
+            <h2>🚀 Hoknex Platform Features</h2>
+            <p>Explore what makes Hoknex the ultimate global campus network:</p>
+            <ul>
+                <li><strong>Live Campus Feed:</strong> Drop thoughts, like, repost, and reply with attributed author names.</li>
+                <li><strong>Project Launchpad:</strong> Pitch what you're building and recruit international student collaborators.</li>
+                <li><strong>Club Management:</strong> Create and discover student communities across departments.</li>
+                <li><strong>Profile Customization:</strong> Upload your display picture and banner directly to your student profile.</li>
+                <li><strong>Lost & Found:</strong> Coordinate with peers across campus to recover missing items.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="privacyModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('privacyModal')">X</button>
+            <h2>🔒 Hoknex Privacy Policy</h2>
+            <p>Last updated: 2026</p>
+            <p>At Hoknex, we prioritize the privacy and security of students across global campuses. Here is how we handle your data:</p>
+            <p><strong>1. Information Collection:</strong> We collect basic profile details (Name, Username, Department, and School Email) necessary to authenticate your student account and connect you with peers.</p>
+            <p><strong>2. Media Storage:</strong> Uploaded profile pictures and banner images are stored securely on our servers solely for personalizing your campus profile.</p>
+            <p><strong>3. Data Protection:</strong> We never sell student data to third parties. All passwords are encrypted securely using industry-standard hashing.</p>
+        </div>
+    </div>
+
+    <div id="termsModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('termsModal')">X</button>
+            <h2>📜 Hoknex Terms of Service</h2>
+            <p>Welcome to Hoknex! By registering and using our platform, you agree to the following guidelines:</p>
+            <p><strong>1. Student Community Standards:</strong> Hoknex is a collaborative platform for schools and colleges worldwide. Respect your fellow peers across all interactions, posts, and comments.</p>
+            <p><strong>2. Authentic Accounts:</strong> Users must register with valid student credentials or campus identifiers. Impersonation or malicious activity is strictly prohibited.</p>
+            <p><strong>3. Platform Availability:</strong> We strive to keep Hoknex online 24/7, connected globally to support student innovation, hackathons, and campus networking.</p>
+        </div>
+    </div>
+
+    <div id="supportModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('supportModal')">X</button>
+            <h2>🛠️ Hoknex Platform Support</h2>
+            <p>Need assistance or have queries? Reach out to our official team directly:</p>
+            <p>📧 <strong>Official Email:</strong> <a href="mailto:support@hoknex.edu" style="color: #3b82f6; text-decoration: none;">support@hoknex.edu</a></p>
+            <p>📞 <strong>Phone Support:</strong> +1 (800) 555-HOKNEX (Mon-Fri, 9 AM - 6 PM)</p>
+            
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+
+            <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 0.75rem;">Send a query directly to the Hoknex team</h3>
+            <form onsubmit="handleSupportSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="form-group">
+                    <label>Describe your problem or feedback</label>
+                    <textarea id="supportDesc" rows="3" placeholder="Tell us what's going wrong or what feature you need..." required style="background:#0f172a; border:1px solid var(--border-color); padding:10px; border-radius:8px; color:#fff; outline:none; resize:vertical;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Attach screenshot (Optional)</label>
+                    <input type="file" id="supportScreenshot" accept="image/*" style="color:#fff; font-size:0.85rem;">
+                </div>
+                <button type="submit" class="btn-primary">Submit to Hoknex Team 🚀</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script to Fetch Real Data & Handle Modals & Auth -->
+    <script>
+        function switchTab(tab) {
+            const loginForm = document.getElementById('signinForm');
+            const signupForm = document.getElementById('signupForm');
+            const btns = document.querySelectorAll('.tab-btn');
+
+            btns.forEach(b => b.classList.remove('active'));
+
+            if(tab === 'signin') {
+                loginForm.style.display = 'flex';
+                signupForm.style.display = 'none';
+                event.target.classList.add('active');
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'flex';
+                event.target.classList.add('active');
+            }
+        }
+
+        // Modal Controllers
+        function openFeaturesModal() { document.getElementById('featuresModal').style.display = 'flex'; }
+        function openPrivacyModal() { document.getElementById('privacyModal').style.display = 'flex'; }
+        function openTermsModal() { document.getElementById('termsModal').style.display = 'flex'; }
+        function openSupportModal() { document.getElementById('supportModal').style.display = 'flex'; }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+        async function handleSupportSubmit(e) {
+    e.preventDefault();
+    const description = document.getElementById('supportDesc').value;
+    const screenshotInput = document.getElementById('supportScreenshot');
+    
+    // Grab the username from local storage, or default to 'Student' if not logged in
+    const username = localStorage.getItem('hoknex_user') || 'Student';
+
+    try {
+        const res = await fetch('/api/support', {
+            method: 'POST',
+            // ADDED HEADERS FOR JSON
+            headers: {
+                'Content-Type': 'application/json' 
+            },
+            // SENDING AS JSON (Note: screenshot is excluded as backend expects text only)
+            body: JSON.stringify({
+                username: username,
+                query: description 
+            })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            alert('Your query has been successfully sent to the Hoknex support team!');
+            closeModal('supportModal');
+            document.getElementById('supportDesc').value = '';
+            if (screenshotInput) screenshotInput.value = ''; // Reset file input
+        } else {
+            alert('Failed: ' + (data.error || 'Please try again.'));
+        }
+    } catch (err) {
+        console.error('Support fetch error:', err);
+        alert('Network error while submitting support ticket.');
+    }
+}
+
+        // Fetch Real Database Stats
+        async function fetchLiveStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                document.getElementById('statPeople').innerText = data.people || 1;
+                document.getElementById('statPosts').innerText = data.posts || 0;
+                document.getElementById('statClubs').innerText = data.clubs || 0;
+            } catch(e) { console.error('Stats error:', e); }
+        }
+        fetchLiveStats();
+
+        // Fetch Real Database Projects
+        async function fetchRealProjects() {
+            try {
+                const res = await fetch('/api/projects');
+                const projects = await res.json();
+                const container = document.getElementById('realProjectsList');
+                if(projects.length > 0) {
+                    container.innerHTML = projects.map(p => `
+                        <div class="real-item-card">
+                            <h4>🚀 ${p.title}</h4>
+                            <p>${p.pitch}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `<div class="real-item-card"><h4>No projects yet</h4><p>Be the first to launch a project on Hoknex!</p></div>`;
+                }
+            } catch(e) { console.error('Projects error:', e); }
+        }
+        fetchRealProjects();
+
+        // Handle Login API
+        async function handleLogin(e) {
+            e.preventDefault();
+            const identifier = document.getElementById('loginIdentifier').value;
+            const password = document.getElementById('loginPassword').value;
+            const err = document.getElementById('loginError');
+            err.innerText = '';
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ identifier, password })
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    localStorage.setItem('hoknex_user', data.username || identifier);
+                    window.location.href = 'feed.html';
+                } else {
+                    err.innerText = data.error || 'Login failed';
+                }
+            } catch(err) {
+                err.innerText = 'Connection error.';
+            }
+        }
+
+        // Handle Register API
+        async function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const err = document.getElementById('regError');
+            err.innerText = '';
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, username, email, password })
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    localStorage.setItem('hoknex_user', username);
+                    window.location.href = 'feed.html';
+                } else {
+                    err.innerText = data.error || 'Registration failed';
+                }
+            } catch(err) {
+                err.innerText = 'Connection error.';
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+      window.$crisp = [];
+      window.CRISP_WEBSITE_ID = "YOUR_WEBSITE_ID_HERE";
+      (function () {
+        var d = document;
+        var s = d.createElement("script");
+        s.src = "https://client.crisp.chat/l.js";
+        s.async = 1;
+        d.getElementsByTagName("head")[0].appendChild(s);
+      })();
+    </script>
+
+    <script>
+      let pendingVerificationEmail = null;
+
+      async function handleCreateAccountSubmit(event) {
+          event.preventDefault(); // Stop page refresh
+
+          const btn = document.getElementById('createAccountBtn');
+
+          // PHASE 1: SEND OTP
+          if (!pendingVerificationEmail) {
+              const fullName = document.getElementById('regName').value;
+              const username = document.getElementById('regUsername').value;
+              const email = document.getElementById('regEmail').value;
+              const password = document.getElementById('regPassword').value;
+
+              btn.innerText = "Sending Code...";
+
+              try {
+                  const res = await fetch('/api/send-otp', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ fullName, username, email, password })
+                  });
+
+                  const data = await res.json();
+
+                  if (data.success) {
+                      pendingVerificationEmail = email;
+                      alert('A 6-digit code has been sent to your email!');
+
+                      // Hide standard inputs, show OTP input
+                      document.getElementById('regName').parentElement.style.display = 'none';
+                      document.getElementById('regUsername').parentElement.style.display = 'none';
+                      document.getElementById('regPassword').parentElement.style.display = 'none';
+
+                      document.getElementById('otpGroup').style.display = 'block';
+                      btn.innerText = "Verify OTP & Create Account";
+                  } else {
+                      alert(data.error);
+                      btn.innerText = "Create Account";
+                  }
+              } catch (e) {
+                  alert("Error connecting to server.");
+                  btn.innerText = "Create Account";
+              }
+          }
+          // PHASE 2: VERIFY OTP
+          else {
+              const otp = document.getElementById('otpInput').value;
+              if (!otp) return alert('Please enter the OTP!');
+
+              btn.innerText = "Verifying...";
+
+              try {
+                  const res = await fetch('/api/verify-otp', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email: pendingVerificationEmail, otp })
+                  });
+
+                  const data = await res.json();
+
+                  if (data.success) {
+                      // Save session and redirect
+                      localStorage.setItem('hoknex_user', document.getElementById('regUsername').value);
+                      alert('Welcome to Hoknex! Account created successfully.');
+                      window.location.href = 'feed.html';
+                  } else {
+                      alert(data.error);
+                      btn.innerText = "Verify OTP & Create Account";
+                  }
+              } catch (e) {
+                  alert("Error verifying code.");
+                  btn.innerText = "Verify OTP & Create Account";
+              }
+          }
+      }
+    </script>
+
+</body>
+
+</html>
