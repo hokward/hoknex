@@ -1431,6 +1431,10 @@ app.post('/api/support/:id/reply', async (req, res) => {
     }
 });
 
+app.get("/", (req, res) => {
+  res.send("Hoknex Backend is Running 🚀");
+});
+
 // Remove or wrap your app.listen like this:
 const PORT = process.env.PORT || 5000;
 
