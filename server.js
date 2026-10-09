@@ -17,6 +17,7 @@ const Support = require('./models/Support');
 const Message = require('./models/Message');
 
 const app = express();
+app.use(express.static("public"));
 
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -1431,8 +1432,10 @@ app.post('/api/support/:id/reply', async (req, res) => {
     }
 });
 
+const path = require("path");
+
 app.get("/", (req, res) => {
-  res.send("Hoknex Backend is Running 🚀");
+    res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Remove or wrap your app.listen like this:
