@@ -7,10 +7,9 @@
     }
   ],
   "rewrites": [
-    { "source": "/style.css", "destination": "/public/style.css" },
-    { "source": "/script.js", "destination": "/public/script.js" },
-    { "source": "/founder.png", "destination": "/public/founder.png" },
-    { "source": "/hoknexlogo.png.jpeg", "destination": "/public/hoknexlogo.png.jpeg" },
-    { "source": "/(.*)", "destination": "/server.js" }
+    {
+      "source": "/(.*)",
+      "destination": "/server.js"
+    }
   ]
 }

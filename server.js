@@ -17,7 +17,8 @@ const Support = require('./models/Support');
 const Message = require('./models/Message');
 
 const app = express();
-app.use(express.static("public"));
+
+app.use(express.static(__dirname + '/public'));
 
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
