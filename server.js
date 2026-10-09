@@ -1348,7 +1348,13 @@ app.post('/api/send-otp', async (req, res) => {
         from: process.env.EMAIL_USER,
         to: email,
         subject: 'Hoknex Account Verification',
-        text: `Your verification code is: ${otp}. It will expire soon.`
+        text: `Thank you for choosing Hoknex—your all-in-one campus connection hub!
+To complete your sign-up or verification, please use the following One-Time Password (OTP):${otp}. This code is valid for the next 5 minutes and can only be used once.
+Didn't request this code?
+If you didn't try to log in or sign up for Hoknex, please ignore this email or secure your account.
+Welcome to the campus network!
+Best regards,
+The Hoknex Team.`
     };
 
     try {
