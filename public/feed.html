@@ -2932,7 +2932,7 @@ async function verifyTicketCode(scannedData) {
 
         console.log("Scan successful, verifying ticket:", ticketId);
 
-        const response = await fetch('http://localhost:5000/api/events/verify-ticket', {
+        const response = await fetch(/api/events/verify-ticket', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ticketId })
@@ -2960,7 +2960,7 @@ function closeScanner() {
 }
 
 function downloadAttendance(eventId) {
-    window.location.href = `http://localhost:5000/api/events/${eventId}/export-attendance`;
+    window.location.href = /api/events/${eventId}/export-attendance`;
 }
 
 // Automatically trigger project loading whenever the Projects tab is clicked or viewed
