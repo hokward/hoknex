@@ -637,7 +637,7 @@ mainView.innerHTML = `
             <div class="post-card" style="margin-bottom: 20px;">
                 <h4>🚀 ${p.title}</h4>
                 <p>${p.description || p.pitch || ''}</p>
-                ${p.image ? `<img src="/uploads/${p.image}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-top: 10px;">` : ''}
+               ${p.image ? `<img src="${p.image}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-top: 10px;">` : ''}
             </div>
         `).join('');
     } catch (err) {
@@ -1451,7 +1451,7 @@ async function loadAndRenderProjects() {
                 
                 ${p.techStack ? `<div style="margin-bottom: 15px; font-size: 0.85rem; font-weight: 700; color: var(--accent-blue);">🛠️ Tech: ${p.techStack}</div>` : ''}
                 
-                ${p.image || p.img ? `<img src="${(p.image || p.img).startsWith('/uploads') ? (p.image || p.img) : '/uploads/' + (p.image || p.img)}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border);" onerror="this.style.display='none'">` : ''}
+               ${p.image || p.img ? `<img src="${p.image || p.img}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border);" onerror="this.style.display='none'">` : ''}
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 15px; flex-wrap: wrap; gap: 10px;">
                     <span style="font-size: 0.85rem; font-weight: 700; color: var(--ink-light);">👥 Target: ${p.audience || 'Open to All'}</span>
@@ -4716,7 +4716,7 @@ async function loadAndRenderProjects() {
                 
                 ${p.techStack ? `<div style="margin-bottom: 15px; font-size: 0.85rem; font-weight: 700; color: var(--accent-blue);">🛠️ Tech: ${p.techStack}</div>` : ''}
                 
-                ${p.image ? `<img src="${p.image.startsWith('/uploads') ? p.image : '/uploads/' + p.image}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border);" onerror="this.style.display='none'">` : ''}
+               ${p.image ? `<img src="${p.image}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border);" onerror="this.style.display='none'">` : ''}
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 15px; flex-wrap: wrap; gap: 10px;">
                     <span style="font-size: 0.85rem; font-weight: 700; color: var(--ink-light);">👥 Target: ${p.audience || 'Open to All'}</span>
