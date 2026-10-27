@@ -17,6 +17,7 @@ const Support = require('./models/Support');
 const Message = require('./models/Message');
 
 const app = express();
+app.set('trust proxy', 1);
 
 app.use(express.static(__dirname + '/public'));
 
