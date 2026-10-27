@@ -2932,7 +2932,7 @@ async function verifyTicketCode(scannedData) {
 
         console.log("Scan successful, verifying ticket:", ticketId);
 
-        const response = await fetch(/api/events/verify-ticket', {
+        const response = await fetch('/api/events/verify-ticket', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ticketId })
