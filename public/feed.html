@@ -3382,12 +3382,16 @@ function togglePollCreator() {
 }
 
 function renderPollCard(post) {
-    let allClientPolls = {};
-    try {
-        allClientPolls = JSON.parse(localStorage.getItem('hoknex_client_polls')) || {};
-    } catch(e) {}
+    // 1. Check server database poll first, then fallback to client local storage
+    let poll = post.poll;
+    if (!poll) {
+        let allClientPolls = {};
+        try {
+            allClientPolls = JSON.parse(localStorage.getItem('hoknex_client_polls')) || {};
+        } catch(e) {}
+        poll = allClientPolls[post._id] || allClientPolls[post.content];
+    }
 
-    let poll = post.poll || allClientPolls[post._id];
     if (typeof poll === 'string') {
         try { poll = JSON.parse(poll); } catch(e) {}
     }
