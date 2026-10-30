@@ -432,37 +432,31 @@ app.get('/api/posts', async (req, res) => {
 });
 
 app.post('/api/posts', upload.single('image'), async (req, res) => {
-  try {
-    const { content, username, poll } = req.body;
-    
-    // This is the fixed line: it now grabs the full Cloudinary URL directly
-    let imageUrl = req.file ? req.file.path : '';
-    
-    let user = username ? await User.findOne({ username: username.trim() }) : null;
-    
-    let parsedPoll = null;
-    if (poll) {
-      try {
-        parsedPoll = typeof poll === 'string' ? JSON.parse(poll) : poll;
-      } catch (e) {
-        console.error('Error parsing poll:', e);
-      }
+    try {
+        let pollData = null;
+        if (req.body.poll) {
+            try {
+                pollData = typeof req.body.poll === 'string' ? JSON.parse(req.body.poll) : req.body.poll;
+            } catch(e) {}
+        }
+
+        let user = req.body.username ? await User.findOne({ username: req.body.username.trim() }) : null;
+
+        const newPost = new Post({
+            content: req.body.content || '',
+            username: req.body.username || 'Student',
+            image: req.file ? req.file.path : null,
+            poll: pollData, // <-- SAVE POLL TO DATABASE
+            author: user ? user._id : null
+        });
+
+        await newPost.save();
+        const populated = await Post.findById(newPost._id).populate('author', 'name username dpUrl');
+        res.status(201).json(populated || newPost);
+    } catch (err) {
+        console.error('Post creation error:', err);
+        res.status(500).json({ error: err.message });
     }
-
-    const newPost = new Post({ 
-      content: content || '', 
-      imageUrl, 
-      poll: parsedPoll, 
-      author: user ? user._id : null 
-    });
-
-    await newPost.save();
-    const populated = await Post.findById(newPost._id).populate('author', 'name username dpUrl');
-    res.status(201).json(populated);
-  } catch (err) {
-    console.error('Post creation error:', err);
-    res.status(500).json({ error: err.message });
-  }
 });
 app.delete('/api/posts/:id', async (req, res) => {
   try {
