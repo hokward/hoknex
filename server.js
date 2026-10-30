@@ -74,13 +74,26 @@ const storage = new CloudinaryStorage({
 // 3. Initialize Multer
 const upload = multer({ storage: storage });
 
-mongoose.connect(process.env.MONGO_URI, {
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-  maxPoolSize: 10
-})
-  .then(() => console.log('MongoDB Connected Successfully to Hoknex DB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+let isConnected = false;
+
+const connectDB = async () => {
+  if (isConnected) return;
+  try {
+    const db = await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000
+    });
+    isConnected = db.connections[0].readyState === 1;
+    console.log('MongoDB Connected Successfully to Hoknex DB');
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+  }
+};
+
+// Force Vercel to connect to the database before running any routes
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
 app.post('/api/register', async (req, res) => {
   try {
