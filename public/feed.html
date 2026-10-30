@@ -3370,8 +3370,16 @@ function togglePollCreator() {
 }
 
 function renderPollCard(post) {
-    let poll = post.poll;
-    if (!poll || !poll.question) return '';
+    let allClientPolls = {};
+    try {
+        allClientPolls = JSON.parse(localStorage.getItem('hoknex_client_polls')) || {};
+    } catch(e) {}
+
+    let poll = post.poll || allClientPolls[post._id];
+    if (typeof poll === 'string') {
+        try { poll = JSON.parse(poll); } catch(e) {}
+    }
+    if (!poll || !poll.question || !Array.isArray(poll.options)) return '';
     
     const totalVotes = poll.options.reduce((sum, opt) => sum + (opt.votes || 0), 0);
     const currentUser = localStorage.getItem('hoknex_user');
@@ -3395,7 +3403,7 @@ function renderPollCard(post) {
                             <div style="position:absolute; top:0; left:0; height:100%; width:${percent}%; background:rgba(59, 130, 246, 0.15); z-index:1;"></div>
                             <div style="position:relative; display:flex; justify-content:space-between; align-items:center; z-index:2; font-weight:700; font-size:0.88rem;">
                                 <span>${opt.text}</span>
-                                <span style="color:var(--ink-light); font-size:0.8rem;">${percent}\% (${votes})</span>
+                                <span style="color:var(--ink-light); font-size:0.8rem;">${percent}% (${votes})</span>
                             </div>
                         </div>
                     `;
