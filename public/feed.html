@@ -664,54 +664,51 @@ mainView.innerHTML = `
                     </div>
                 `;
                 loadDiscordClubs();
-            } else if (view === 'events') {
-                viewTitle.innerText = 'Campus Events & Ticketing 📅';
+        } else if (view === 'events') {
+        viewTitle.innerText = 'Campus Events & Ticketing 📅';
+        
+        const currentUser = (localStorage.getItem('hoknex_user') || 'Guest').toLowerCase().trim();
+        const isApproved = ['admin', 'aditya', 'bittu_lal'].includes(currentUser) || document.body.classList.contains('is-organizer');
+
+        // Only show the Host Event button at the top for approved organizers
+        let organizerButtonsHtml = '';
+        if (isApproved) {
+            organizerButtonsHtml = `
+                <button id="hostEventBtn" class="btn-create" style="background-color: #10b981; border-color: #10b981;" onclick="document.getElementById('createEventModal').style.display='flex'">📅 Host Event</button>
+            `;
+        } else {
+            organizerButtonsHtml = `
+                <button id="applyOrganizerBtn" class="btn-create" style="background: var(--accent-purple); border-color: var(--accent-purple);" onclick="applyToHost()">🚀 Become an Organizer</button>
+            `;
+        }
+
+        // Render HTML without the global verify button
+        mainView.innerHTML = `
+            <!-- Top Action Bar -->
+            <div class="post-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: #fff; border: none; margin-bottom: 1.5rem;">
+                <div>
+                    <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 4px;">Campus Events & Ticket Portal 🎟️</h2>
+                    <p style="font-size: 0.88rem; font-weight: 600; opacity: 0.9;">Discover hackathons, seminars, and fests with QR ticketing.</p>
+                </div>
                 
-                // 1. INSTANT CHECK: Is this user an approved organizer right now?
-                const currentUser = (localStorage.getItem('hoknex_user') || 'Guest').toLowerCase().trim();
-                const isApproved = ['admin', 'aditya', 'bittu_lal'].includes(currentUser) || document.body.classList.contains('is-organizer');
+                <div style="display: flex; gap: 10px;">
+                    ${organizerButtonsHtml}
+                </div>
+            </div>
 
-                // 2. DYNAMIC BUTTONS: Show Host/Verify if approved, otherwise show Apply button
-                let organizerButtonsHtml = '';
-                if (isApproved) {
-                    organizerButtonsHtml = `
-                        <button id="hostEventBtn" class="btn-create" style="background-color: #10b981; border-color: #10b981;" onclick="document.getElementById('createEventModal').style.display='flex'">📅 Host Event</button>
-                        <button id="verifyEntryBtn" class="btn-create" style="background-color: #f59e0b; border-color: #f59e0b;" onclick="startScanner()">🔍 Verify Entry</button>
-                    `;
-                } else {
-                    organizerButtonsHtml = `
-                        <button id="applyOrganizerBtn" class="btn-create" style="background: var(--accent-purple); border-color: var(--accent-purple);" onclick="applyToHost()">🚀 Become an Organizer</button>
-                    `;
-                }
+            <!-- 3-Tab Navigator -->
+            <div style="display: flex; gap: 8px; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 4px;">
+                <button class="profile-tab-btn active" id="tabEvExplore" onclick="switchEventsTab('explore')">🌐 Explore All</button>
+                <button class="profile-tab-btn" id="tabEvInternal" onclick="switchEventsTab('internal')">🏛️ Campus Only</button>
+                <button class="profile-tab-btn" id="tabEvMyTickets" onclick="switchEventsTab('my_tickets')">🎟️ My Tickets & RSVPs</button>
+            </div>
 
-                // 3. RENDER HTML
-                mainView.innerHTML = `
-                    <!-- Top Action Bar -->
-                    <div class="post-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: #fff; border: none; margin-bottom: 1.5rem;">
-                        <div>
-                            <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 4px;">Campus Events & Ticket Portal 🎟️</h2>
-                            <p style="font-size: 0.88rem; font-weight: 600; opacity: 0.9;">Discover hackathons, seminars, and fests with QR ticketing.</p>
-                        </div>
-                        
-                        <!-- These buttons will now ALWAYS show up correctly! -->
-                        <div style="display: flex; gap: 10px;">
-                            ${organizerButtonsHtml}
-                        </div>
-                    </div>
-
-                    <!-- 3-Tab Navigator -->
-                    <div style="display: flex; gap: 8px; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 4px;">
-                        <button class="profile-tab-btn active" id="tabEvExplore" onclick="switchEventsTab('explore')">🌐 Explore All</button>
-                        <button class="profile-tab-btn" id="tabEvInternal" onclick="switchEventsTab('internal')">🏛️ Campus Only</button>
-                        <button class="profile-tab-btn" id="tabEvMyTickets" onclick="switchEventsTab('my_tickets')">🎟️ My Tickets & RSVPs</button>
-                    </div>
-
-                    <!-- Event Cards Container -->
-                    <div id="eventsList" class="posts-stream">
-                        <p style="text-align: center; color: var(--ink-light); padding: 2rem;">Loading upcoming events...</p>
-                    </div>
-                `;
-                loadEvents();
+            <!-- Event Cards Container -->
+            <div id="eventsList" class="posts-stream">
+                <p style="text-align: center; color: var(--ink-light); padding: 2rem;">Loading upcoming events...</p>
+            </div>
+        `;
+        loadEvents();
 } else if (view === 'notices') {
     viewTitle.innerText = 'Campus Hub & Notices 📢';
     mainView.innerHTML = `
@@ -1476,7 +1473,7 @@ async function loadAndRenderProjects() {
     loadAndRenderProjects(); // <-- Fixed here
 }
 
-       async function loadEvents(tab = 'explore') {
+      async function loadEvents(tab = 'explore') {
     const container = document.getElementById('eventsList');
     if(!container) return;
     container.innerHTML = `<p style="text-align:center; font-weight:600; padding:2rem; color:var(--ink-light);">Loading events...</p>`;
@@ -1505,13 +1502,21 @@ async function loadAndRenderProjects() {
         }
 
         container.innerHTML = evs.map(e => {
-            const deleteBtnHTML = (e.author === currentUser) 
+            const isOwner = (e.author === currentUser);
+
+            const deleteBtnHTML = isOwner 
                 ? `<button onclick="deleteEvent('${e._id}')" style="background:none; border:none; color:var(--accent-coral); cursor:pointer; font-size:1.2rem;" title="Delete Event">🗑️</button>` 
                 : ``;
 
-            const shareBtnHTML = (e.visibility === 'invite' && e.author === currentUser)
+            const shareBtnHTML = (e.visibility === 'invite' && isOwner)
                 ? `<button onclick="copyInviteLink('${e._id}')" style="background:var(--canvas); border:1px solid var(--accent-blue); color:var(--accent-blue); padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700; font-size:0.85rem; margin-right:10px;" title="Copy Secret Invite Link">🔗 Share Invite Link</button>`
                 : ``;
+
+            // SECURITY: Only render attendance and scanning options if the logged-in user owns this event
+            const ownerActionsHTML = isOwner ? `
+                <button class="btn-create" onclick="downloadAttendance('${e._id}')" style="background: #10b981; padding:10px 15px; font-size:0.9rem;">📊 Download Attendance</button>
+                <button class="btn-create" onclick="startEventScanner('${e._id}')" style="background: var(--accent-purple); padding:10px 15px; font-size:0.9rem;">📷 Scan QR</button>
+            ` : ``;
 
             return `
             <div class="post-card" style="display:flex; justify-content:space-between; align-items:center; gap:15px; flex-wrap:wrap;">
@@ -1531,9 +1536,7 @@ async function loadAndRenderProjects() {
                     <button class="btn-create" style="padding:10px 20px; font-size:0.9rem;" onclick="handleRSVP('${e._id}', '${e.title.replace(/'/g, "\\'")}', '${e.location.replace(/'/g, "\\'")}', '${e.ticketType || 'free'}', ${e.price || 0}, '${e.visibility || 'public'}')">
                         ${e.ticketType === 'paid' ? 'Buy Ticket 💳' : 'RSVP Now ✅'}
                     </button>
-                    <div class="organizer-only-section" style="display:none;">
-                        <button class="btn-create" onclick="downloadAttendance('${e._id}')" style="background: #10b981; padding:10px 15px; font-size:0.9rem;">📊 Download Attendance</button>
-                    </div>
+                    ${ownerActionsHTML}
                 </div>
             </div>
             `;
