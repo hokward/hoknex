@@ -1502,7 +1502,30 @@ app.post('/api/support/:id/reply', async (req, res) => {
     }
 });
 
+// --- VOTE ON A POST POLL API ---
+app.post('/api/posts/:id/vote', async (req, res) => {
+    try {
+        const { optionIndex, username } = req.body;
+        const post = await Post.findById(req.params.id);
+        
+        if (!post || !post.poll || !post.poll.options[optionIndex]) {
+            return res.status(404).json({ error: 'Poll or option not found' });
+        }
 
+        // Increment the vote count for the chosen option
+        post.poll.options[optionIndex].votes = (post.poll.options[optionIndex].votes || 0) + 1;
+        
+        // Mark the poll object as modified so Mongoose saves it correctly
+        post.markModified('poll');
+        await post.save();
+
+        const populated = await Post.findById(post._id).populate('author', 'name username dpUrl');
+        res.json(populated || post);
+    } catch (err) {
+        console.error('Voting error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
