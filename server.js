@@ -1508,29 +1508,28 @@ app.post('/api/posts/:id/vote', async (req, res) => {
         const { optionIndex, username } = req.body;
         const post = await Post.findById(req.params.id);
         
-        if (!post || !post.poll || !post.poll.options[optionIndex]) {
-            return res.status(404).json({ error: 'Poll or option not found' });
+        if (!post || !post.poll) {
+            return res.status(404).json({ error: 'Post or poll not found' });
         }
 
-        // Increment the vote count for the chosen option
+        // Ensure options array exists
+        if (!post.poll.options || !post.poll.options[optionIndex]) {
+            return res.status(400).json({ error: 'Invalid poll option' });
+        }
+
+        // Increment the vote count safely
         post.poll.options[optionIndex].votes = (post.poll.options[optionIndex].votes || 0) + 1;
         
-        // Mark the poll object as modified so Mongoose saves it correctly
+        // Mark poll modified for Mongoose persistence
         post.markModified('poll');
         await post.save();
 
-        const populated = await Post.findById(post._id).populate('author', 'name username dpUrl');
-        res.json(populated || post);
+        res.json(post);
     } catch (err) {
         console.error('Voting error:', err);
         res.status(500).json({ error: err.message });
     }
 });
-
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
 // Remove or wrap your app.listen like this:
 const PORT = process.env.PORT || 5000;
 
