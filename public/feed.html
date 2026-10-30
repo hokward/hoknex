@@ -1588,6 +1588,10 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
             loadEvents();
         }
 
+        function viewUserProfile(username) {
+            loadUserProfile(username);
+        }
+
         async function loadUserProfile(username) {
             try {
                 if (!username || username === 'undefined') username = localStorage.getItem('hoknex_user');
@@ -1649,14 +1653,19 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
                     `;
                     const dpElem = document.getElementById('profileDp');
                     const bannerElem = document.getElementById('profileBanner');
-                    if(user.dpUrl) { dpElem.style.backgroundImage = `url('${user.dpUrl}')`; dpElem.innerText = ''; }
-                    else { dpElem.innerText = user.name ? user.name.charAt(0).toUpperCase() : 'H'; }
-                    if(user.bannerUrl) bannerElem.style.backgroundImage = `url('${user.bannerUrl}')`;
+                    if (user.dpUrl && user.dpUrl.startsWith('http')) { 
+                        dpElem.style.backgroundImage = `url('${user.dpUrl}')`; 
+                        dpElem.innerText = ''; 
+                    } else { 
+                        dpElem.innerText = user.name ? user.name.charAt(0).toUpperCase() : 'H'; 
+                    }
+                    if (user.bannerUrl && user.bannerUrl.startsWith('http')) {
+                        bannerElem.style.backgroundImage = `url('${user.bannerUrl}')`;
+                    }
                     loadUserActivityFeed(user.username, 'posts');
                 }
             } catch(e) { console.error(e); }
         }
-
         async function openFollowModal(type, userId) {
             try {
                 const res = await fetch('/api/users');
