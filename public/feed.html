@@ -3433,17 +3433,6 @@ function renderPollCard(post) {
 async function votePoll(postId, optionIndex) {
     const currentUser = localStorage.getItem('hoknex_user') || 'Student';
     
-    // Prevent double voting locally per user/post
-    let pollsState = {};
-    try {
-        pollsState = JSON.parse(localStorage.getItem(`hoknex_poll_votes_${postId}`)) || {};
-    } catch(e) {}
-
-    if (pollsState[currentUser] !== undefined) {
-        alert('You have already voted on this poll!');
-        return;
-    }
-
     try {
         const res = await fetch(`/api/posts/${postId}/vote`, {
             method: 'POST',
@@ -3451,17 +3440,27 @@ async function votePoll(postId, optionIndex) {
             body: JSON.stringify({ optionIndex, username: currentUser })
         });
 
-        if (!res.ok) throw new Error('Failed to record vote');
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || 'Failed to record vote');
+        }
 
-        // Save local voted state so they can't vote again
+        const updatedPost = await res.json();
+        
+        // Save local voted state
+        let pollsState = {};
+        try {
+            pollsState = JSON.parse(localStorage.getItem(`hoknex_poll_votes_${postId}`)) || {};
+        } catch(e) {}
         pollsState[currentUser] = optionIndex;
         localStorage.setItem(`hoknex_poll_votes_${postId}`, JSON.stringify(pollsState));
 
         alert('Vote recorded successfully! 🗳️');
         if (typeof loadPosts === 'function') loadPosts();
+        else location.reload(); // Instantly refresh feed to show updated vote counts
     } catch (err) {
         console.error('Vote error:', err);
-        alert('Error recording vote. Please try again.');
+        alert('Error recording vote: ' + err.message);
     }
 }
 // Alias to catch whatever name your modal button uses
