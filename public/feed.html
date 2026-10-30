@@ -1939,10 +1939,13 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
     }
 }
 
-     async function handlePostSubmit(e) {
+    async function handlePostSubmit(e) {
     e.preventDefault();
     let content = document.getElementById('postContent').value.trim();
-    const imageFile = document.getElementById('postImageFile').files[0];
+    
+    // Safer file input lookup fallback
+    const fileInput = document.getElementById('postImageFile') || document.querySelector('input[type="file"]');
+    const imageFile = fileInput && fileInput.files ? fileInput.files[0] : null;
     const username = localStorage.getItem('hoknex_user');
     
     let pollData = null;
@@ -1966,12 +1969,15 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
         content = `📊 Poll: ${pollData.question}`;
     }
 
-    if (!content && !imageFile) return alert('Please write something or create a poll!');
+    if (!content && !imageFile && !pollData) return alert('Please write something, attach an image, or create a poll!');
 
     const formData = new FormData();
     formData.append('content', content);
-    formData.append('username', username);
+    formData.append('username', username || 'Student');
     if (imageFile) formData.append('image', imageFile);
+    
+    // FIX: This line was missing, so polls weren't being sent to the server!
+    if (pollData) formData.append('poll', JSON.stringify(pollData));
 
     const res = await fetch('/api/posts', { method: 'POST', body: formData });
     if (res.ok) { 
@@ -1983,24 +1989,26 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
                 allPolls = JSON.parse(localStorage.getItem('hoknex_client_polls')) || {};
             } catch(e) {}
             
-            // Save using post ID, server ID, and content text to ensure it always matches
-            if (newPost._id) allPolls[newPost._id] = pollData;
-            if (newPost.id) allPolls[newPost.id] = pollData;
+            const postObj = newPost.post || newPost;
+            if (postObj._id) allPolls[postObj._id] = pollData;
+            if (postObj.id) allPolls[postObj.id] = pollData;
             allPolls[content] = pollData;
             
             localStorage.setItem('hoknex_client_polls', JSON.stringify(allPolls));
         }
 
         document.getElementById('postContent').value = ''; 
+        if (fileInput) fileInput.value = '';
         const pollWrapper = document.getElementById('pollCreatorWrapper');
         if (pollWrapper) pollWrapper.innerHTML = '';
+        
+        alert('🚀 Published successfully for everyone!');
         loadPosts(); 
-        fetchStats(); 
+        if (typeof fetchStats === 'function') fetchStats(); 
     } else {
         alert('Failed to publish post.');
     }
 }
-
 async function loadPosts() {
     const res = await fetch('/api/posts');
     const posts = await res.json();
@@ -4147,55 +4155,78 @@ window.castUniversalVote = function(postId, optionIndex) {
 // ==========================================
 // 4. MAIN POST PUBLISH FUNCTION (Includes the attached poll)
 // ==========================================
-window.publishPostWithPoll = function() {
+window.publishPostWithPoll = async function(e) {
+    if (e && e.preventDefault) e.preventDefault();
     const contentInput = document.getElementById('postContent');
+    const fileInput = document.getElementById('postImageFile') || document.getElementById('postFileInput') || document.querySelector('input[type="file"]');
     
-    // Foolproof lookup: checks for 'postFileInput' ID, or grabs the first file input on the page
-    const fileInput = document.getElementById('postFileInput') || document.querySelector('input[type="file"]');
-    
-    const content = contentInput ? contentInput.value.trim() : '';
+    let content = contentInput ? contentInput.value.trim() : '';
     const imageFile = fileInput && fileInput.files ? fileInput.files[0] : null;
     const username = localStorage.getItem('hoknex_user') || 'Student';
 
-    if (!content && !imageFile && !tempActivePoll) {
-        alert('Please write something, attach an image, or add a poll!');
+    let pollData = typeof tempActivePoll !== 'undefined' ? tempActivePoll : null;
+    const qInput = document.getElementById('pollQuestion');
+    if (qInput && qInput.value.trim()) {
+        let options = [];
+        const val1 = document.getElementById('pollOpt1')?.value.trim();
+        const val2 = document.getElementById('pollOpt2')?.value.trim();
+        const val3 = document.getElementById('pollOpt3')?.value.trim();
+
+        if (val1) options.push({ text: val1, votes: 0 });
+        if (val2) options.push({ text: val2, votes: 0 });
+        if (val3) options.push({ text: val3, votes: 0 });
+
+        if (options.length >= 2) {
+            pollData = { question: qInput.value.trim(), options };
+        }
+    }
+
+    if (!content && pollData) {
+        content = `📊 Poll: ${pollData.question}`;
+    }
+
+    if (!content && !imageFile && !pollData) {
+        alert('Please write something, attach an image, or add a poll with at least 2 options!');
         return;
     }
 
     const formData = new FormData();
     formData.append('content', content);
     formData.append('username', username);
-    
-    if (imageFile) {
-        formData.append('image', imageFile); // Attaches the actual image file
-    }
-    
-    if (tempActivePoll) {
-        formData.append('poll', JSON.stringify(tempActivePoll));
-    }
+    if (imageFile) formData.append('image', imageFile);
+    if (pollData) formData.append('poll', JSON.stringify(pollData));
 
-    fetch('/api/posts', {
-        method: 'POST',
-        body: formData // Sends multipart form data safely to your backend
-    })
-    .then(res => {
+    try {
+        const res = await fetch('/api/posts', { method: 'POST', body: formData });
         if (!res.ok) throw new Error('Failed to publish post');
-        return res.json();
-    })
-    .then(data => {
+        const newPost = await res.json();
+
+        if (pollData) {
+            let allPolls = {};
+            try {
+                allPolls = JSON.parse(localStorage.getItem('hoknex_client_polls')) || {};
+            } catch(err) {}
+            const postObj = newPost.post || newPost;
+            if (postObj && postObj._id) allPolls[postObj._id] = pollData;
+            if (postObj && postObj.id) allPolls[postObj.id] = pollData;
+            allPolls[content] = pollData;
+            localStorage.setItem('hoknex_client_polls', JSON.stringify(allPolls));
+        }
+
         if (contentInput) contentInput.value = '';
         if (fileInput) fileInput.value = '';
-        tempActivePoll = null;
-        alert('🚀 Post published successfully for everyone!');
+        if (typeof tempActivePoll !== 'undefined') tempActivePoll = null;
+        const pollWrapper = document.getElementById('pollCreatorWrapper');
+        if (pollWrapper) pollWrapper.innerHTML = '';
+
+        alert('🚀 Published successfully for everyone!');
         if (typeof loadPosts === 'function') loadPosts();
-        else location.reload();
-    })
-    .catch(err => {
+        if (typeof fetchStats === 'function') fetchStats();
+    } catch (err) {
         console.error('Publish error:', err);
         alert('Error publishing post. Check your server connection.');
-    });
+    }
 };
-
 
 // --- GLOBAL CAMPUS HUB ENGINE ---
 
@@ -4757,47 +4788,7 @@ function toggleReplies(postId) {
     }
 }
 
-// Drop-in Post Publishing Function (Handles Text, Image, & Polls)
-window.publishPostWithPoll = function() {
-    const contentInput = document.getElementById('postContent');
-    const fileInput = document.getElementById('postFileInput') || document.querySelector('input[type="file"]');
-    
-    const content = contentInput ? contentInput.value.trim() : '';
-    const imageFile = fileInput && fileInput.files ? fileInput.files[0] : null;
-    const username = localStorage.getItem('hoknex_user') || 'Student';
 
-    if (!content && !imageFile && !window.tempActivePoll) {
-        alert('Please write something, attach an image, or add a poll!');
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('content', content);
-    formData.append('username', username);
-    if (imageFile) formData.append('image', imageFile);
-    if (window.tempActivePoll) formData.append('poll', JSON.stringify(window.tempActivePoll));
-
-    fetch('/api/posts', {
-        method: 'POST',
-        body: formData
-    })
-    .then(res => {
-        if (!res.ok) throw new Error('Publish failed');
-        return res.json();
-    })
-    .then(data => {
-        if (contentInput) contentInput.value = '';
-        if (fileInput) fileInput.value = '';
-        window.tempActivePoll = null;
-        alert('🚀 Published successfully for everyone!');
-        if (typeof loadPosts === 'function') loadPosts();
-        else location.reload();
-    })
-    .catch(err => {
-        console.error('Publish error:', err);
-        alert('Failed to publish post. Check your server.');
-    });
-};
 
 window.openEditProfile = function() {
     const editBox = document.getElementById('editProfileBox');
