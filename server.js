@@ -74,7 +74,11 @@ const storage = new CloudinaryStorage({
 // 3. Initialize Multer
 const upload = multer({ storage: storage });
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+  maxPoolSize: 10
+})
   .then(() => console.log('MongoDB Connected Successfully to Hoknex DB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
