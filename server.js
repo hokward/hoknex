@@ -543,7 +543,14 @@ app.post('/api/posts/:id/reply', async (req, res) => {
     const post = await Post.findById(req.params.id);
     let user = username ? await User.findOne({ username }) : null;
     if (!post.replies) post.replies = [];
-    post.replies.push({ text, authorName: user ? user.name : (username || 'User') });
+    
+    // This is the fix: we are now explicitly saving the username into the database
+    post.replies.push({ 
+        text, 
+        username: username || 'User',
+        authorName: user ? user.name : (username || 'User') 
+    });
+    
     await post.save();
     const updated = await Post.findById(req.params.id).populate('author', 'name username dpUrl');
     res.json(updated);
@@ -551,7 +558,6 @@ app.post('/api/posts/:id/reply', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 app.get('/api/user-posts/:username', async (req, res) => {
   try {
     const targetUser = await User.findOne({ username: decodeURIComponent(req.params.username) });
