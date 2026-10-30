@@ -3430,10 +3430,10 @@ function renderPollCard(post) {
     `;
 }
 
-function votePoll(postId, optionIndex) {
-    const currentUser = localStorage.getItem('hoknex_user');
-    if (!currentUser) return alert('Please sign in to vote!');
-
+async function votePoll(postId, optionIndex) {
+    const currentUser = localStorage.getItem('hoknex_user') || 'Student';
+    
+    // Prevent double voting locally per user/post
     let pollsState = {};
     try {
         pollsState = JSON.parse(localStorage.getItem(`hoknex_poll_votes_${postId}`)) || {};
@@ -3444,21 +3444,26 @@ function votePoll(postId, optionIndex) {
         return;
     }
 
-    pollsState[currentUser] = optionIndex;
-    localStorage.setItem(`hoknex_poll_votes_${postId}`, JSON.stringify(pollsState));
-
     try {
-        let allPolls = JSON.parse(localStorage.getItem('hoknex_client_polls')) || {};
-        if (allPolls[postId] && allPolls[postId].options[optionIndex]) {
-            allPolls[postId].options[optionIndex].votes = (allPolls[postId].options[optionIndex].votes || 0) + 1;
-            localStorage.setItem('hoknex_client_polls', JSON.stringify(allPolls));
-        }
-    } catch(e) {}
+        const res = await fetch(`/api/posts/${postId}/vote`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ optionIndex, username: currentUser })
+        });
 
-    loadPosts();
-    alert('Vote recorded successfully! 🗳️');
+        if (!res.ok) throw new Error('Failed to record vote');
+
+        // Save local voted state so they can't vote again
+        pollsState[currentUser] = optionIndex;
+        localStorage.setItem(`hoknex_poll_votes_${postId}`, JSON.stringify(pollsState));
+
+        alert('Vote recorded successfully! 🗳️');
+        if (typeof loadPosts === 'function') loadPosts();
+    } catch (err) {
+        console.error('Vote error:', err);
+        alert('Error recording vote. Please try again.');
+    }
 }
-
 // Alias to catch whatever name your modal button uses
 function submitNewProject() {
     submitProject();
