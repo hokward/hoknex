@@ -417,7 +417,10 @@ app.get('/api/posts', async (req, res) => {
 app.post('/api/posts', upload.single('image'), async (req, res) => {
   try {
     const { content, username, poll } = req.body;
-    let imageUrl = req.file ? `/uploads/${req.file.filename}` : '';
+    
+    // This is the fixed line: it now grabs the full Cloudinary URL directly
+    let imageUrl = req.file ? req.file.path : '';
+    
     let user = username ? await User.findOne({ username: username.trim() }) : null;
     
     let parsedPoll = null;
@@ -444,7 +447,6 @@ app.post('/api/posts', upload.single('image'), async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 app.delete('/api/posts/:id', async (req, res) => {
   try {
     await Post.findByIdAndDelete(req.params.id);
