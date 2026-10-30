@@ -1845,7 +1845,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
                 <div id="replies-container-${postId}" style="display: none; margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px; flex-direction: column; gap: 6px;">
                     ${commentsList.map(c => `
                         <div style="background: var(--canvas); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; border: 1px solid var(--border);">
-                            <strong style="color: var(--accent-blue);">@${c.username || 'Student'}:</strong> 
+                           <strong style="color: var(--accent-blue);">@${c.author?.username || c.user?.username || c.username || 'Student'}:</strong> 
                             <span style="font-weight: 600; color: var(--ink);">${c.text || c}</span>
                         </div>
                     `).join('')}
