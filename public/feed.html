@@ -671,10 +671,11 @@ mainView.innerHTML = `
         const isApproved = ['admin', 'aditya', 'bittu_lal'].includes(currentUser) || document.body.classList.contains('is-organizer');
 
         // Only show the Host Event button at the top for approved organizers
-        let organizerButtonsHtml = '';
+       let organizerButtonsHtml = '';
         if (isApproved) {
             organizerButtonsHtml = `
                 <button id="hostEventBtn" class="btn-create" style="background-color: #10b981; border-color: #10b981;" onclick="document.getElementById('createEventModal').style.display='flex'">📅 Host Event</button>
+                <button id="verifyEntryBtn" class="btn-create" style="background-color: #f59e0b; border-color: #f59e0b;" onclick="startScanner()">🔍 Verify Entry</button>
             `;
         } else {
             organizerButtonsHtml = `
@@ -1513,9 +1514,9 @@ async function loadAndRenderProjects() {
                 : ``;
 
             // SECURITY: Only render attendance and scanning options if the logged-in user owns this event
+           // SECURITY: Only render Download Attendance if the logged-in user owns this event
             const ownerActionsHTML = isOwner ? `
                 <button class="btn-create" onclick="downloadAttendance('${e._id}')" style="background: #10b981; padding:10px 15px; font-size:0.9rem;">📊 Download Attendance</button>
-                <button class="btn-create" onclick="startEventScanner('${e._id}')" style="background: var(--accent-purple); padding:10px 15px; font-size:0.9rem;">📷 Scan QR</button>
             ` : ``;
 
             return `
