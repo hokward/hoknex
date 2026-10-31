@@ -1920,28 +1920,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
             return uid;
         }
 
-        async function loadPosts() {
-    const res = await fetch('/api/posts');
-    const posts = await res.json();
-    
-    // Attach stored local polls to posts using their MongoDB _id
-    let allPolls = {};
-    try {
-        allPolls = JSON.parse(localStorage.getItem('hoknex_client_polls')) || {};
-    } catch(e) {}
-
-    posts.forEach(p => {
-        if (allPolls[p._id]) {
-            p.poll = allPolls[p._id];
-        }
-    });
-
-    allCachedPosts = posts;
-    const postsList = document.getElementById('postsList');
-    if (postsList) {
-        postsList.innerHTML = posts.length === 0 ? `<div class="post-card"><p style="font-weight:600;">No posts yet.</p></div>` : posts.map(post => renderPostCard(post)).join('');
-    }
-}
+      
 
     async function handlePostSubmit(e) {
     e.preventDefault();
@@ -2023,11 +2002,8 @@ async function loadPosts() {
     } catch(e) {}
 
     posts.forEach(p => {
-        // Match poll by database ID or by content text
-        if (allPolls[p._id]) {
-            p.poll = allPolls[p._id];
-        } else if (p.content && allPolls[p.content]) {
-            p.poll = allPolls[p.content];
+        if (!p.poll && (allPolls[p._id] || allPolls[p.content])) {
+            p.poll = allPolls[p._id] || allPolls[p.content];
         }
     });
 
