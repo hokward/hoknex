@@ -431,6 +431,35 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
+// --- VOTE ON A POST POLL API ---
+app.post('/api/posts/:id/vote', async (req, res) => {
+    try {
+        const { optionIndex, username } = req.body;
+        const post = await Post.findById(req.params.id);
+        
+        if (!post || !post.poll) {
+            return res.status(404).json({ error: 'Post or poll not found' });
+        }
+
+        // Ensure options array exists
+        if (!post.poll.options || !post.poll.options[optionIndex]) {
+            return res.status(400).json({ error: 'Invalid poll option' });
+        }
+
+        // Increment the vote count safely
+        post.poll.options[optionIndex].votes = (post.poll.options[optionIndex].votes || 0) + 1;
+        
+        // Mark poll modified for Mongoose persistence
+        post.markModified('poll');
+        await post.save();
+
+        res.json(post);
+    } catch (err) {
+        console.error('Voting error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Dynamically ensure the Post schema supports polls without errors
 try {
     if (typeof Post !== 'undefined' && Post.schema && !Post.schema.paths.poll) {
@@ -1502,34 +1531,7 @@ app.post('/api/support/:id/reply', async (req, res) => {
     }
 });
 
-// --- VOTE ON A POST POLL API ---
-app.post('/api/posts/:id/vote', async (req, res) => {
-    try {
-        const { optionIndex, username } = req.body;
-        const post = await Post.findById(req.params.id);
-        
-        if (!post || !post.poll) {
-            return res.status(404).json({ error: 'Post or poll not found' });
-        }
 
-        // Ensure options array exists
-        if (!post.poll.options || !post.poll.options[optionIndex]) {
-            return res.status(400).json({ error: 'Invalid poll option' });
-        }
-
-        // Increment the vote count safely
-        post.poll.options[optionIndex].votes = (post.poll.options[optionIndex].votes || 0) + 1;
-        
-        // Mark poll modified for Mongoose persistence
-        post.markModified('poll');
-        await post.save();
-
-        res.json(post);
-    } catch (err) {
-        console.error('Voting error:', err);
-        res.status(500).json({ error: err.message });
-    }
-});
 // Remove or wrap your app.listen like this:
 const PORT = process.env.PORT || 5000;
 
