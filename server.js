@@ -24,6 +24,19 @@ app.use(express.static(__dirname + '/public'));
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
+const postSchema = new mongoose.Schema({
+    content: String,
+    username: String,
+    image: String,
+    poll: {
+        question: String,
+        options: [{ text: String, votes: { type: Number, default: 0 } }]
+    },
+    createdAt: { type: Date, default: Date.now }
+});
+
+const Post = mongoose.model('Post', postSchema);
+
 // 1. Secure HTTP headers safely without blocking local assets
 app.use(helmet({
     contentSecurityPolicy: false, // Disables strict CSP that blocks local scripts/tools
