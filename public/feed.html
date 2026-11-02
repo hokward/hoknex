@@ -4823,16 +4823,20 @@ window.openEditProfile = function() {
 
     // Place it right here with your other scripts or at the bottom
 // 1. Intercept any click on the Projects sidebar link explicitly
-// --- HOKNEX TAB PERSISTENCE FIX ---
+// --- FINAL PERSISTENCE & RENDER FIX ---
 window.addEventListener('DOMContentLoaded', () => {
     const activeTab = localStorage.getItem('hoknex_active_tab');
     if (activeTab === 'projects') {
         setTimeout(() => {
             if (typeof renderView === 'function') {
                 renderView('projects');
-            } else if (typeof loadAndRenderProjects === 'function') {
-                loadAndRenderProjects();
             }
+            // Ensure projects actually load into the container after view renders
+            setTimeout(() => {
+                if (typeof loadAndRenderProjects === 'function') {
+                    loadAndRenderProjects();
+                }
+            }, 100);
         }, 100);
     }
 });
