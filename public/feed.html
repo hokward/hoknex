@@ -4763,16 +4763,17 @@ async function loadAndRenderProjects() {
             const isOwner = authorName === currentUser;
             const avgRating = p.ratingsCount ? Number(p.rating).toFixed(1) : 'No ratings';
             
-            // Clean encoding to prevent breaking HTML attributes
             const safeTitle = encodeURIComponent(p.title || 'Untitled Project');
             const safeDesc = encodeURIComponent(p.desc || 'No description provided.');
             const safeTech = encodeURIComponent(p.techStack || 'N/A');
             const safeClass = encodeURIComponent(p.classification || 'Showcase');
             
-            // Handle image URL properly
+            // Robust image URL handler
             let imageUrl = p.img || '';
-            if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('data:')) {
-                imageUrl = window.location.origin + (imageUrl.startsWith('/') ? '' : '/') + imageUrl;
+            if (imageUrl) {
+                if (!imageUrl.startsWith('http') && !imageUrl.startsWith('data:')) {
+                    imageUrl = imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl;
+                }
             }
 
             return `
@@ -4780,8 +4781,8 @@ async function loadAndRenderProjects() {
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span style="background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800;">📌 ${p.classification || 'Showcase'}</span>
                     
-                    <!-- Clean Author Badge UI -->
-                    <span onclick="viewUserProfile('${authorName}')" style="background: var(--canvas); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; color: var(--accent-blue); font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                    <!-- Clickable Username Badge -->
+                    <span onclick="viewUserProfile('${authorName}')" style="background: var(--canvas); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; color: var(--accent-blue); font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;">
                         👤 ${authorName}
                     </span>
                 </div>
@@ -4889,14 +4890,20 @@ async function rateProject(id, rating) {
     }
 }
 
-// Fixed function to correctly pass any clicked user's username
+// Universal Profile Opener for any clicked user
 function viewUserProfile(username) {
     localStorage.setItem('target_profile_user', username);
-    localStorage.setItem('hoknex_active_tab', 'profile');
-    if (typeof renderView === 'function') {
+    localStorage.setItem('hoknex_view_user', username);
+    
+    // Try all known app routing methods to ensure profile opens instantly
+    if (typeof openProfileModal === 'function') {
+        openProfileModal(username);
+    } else if (typeof renderView === 'function') {
         renderView('profile');
+    } else if (typeof loadUserProfile === 'function') {
+        loadUserProfile(username);
     } else {
-        window.location.reload();
+        window.location.href = `feed.html?profile=${encodeURIComponent(username)}`;
     }
 }
 
