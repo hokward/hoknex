@@ -4759,18 +4759,25 @@ async function loadAndRenderProjects() {
         const currentUser = localStorage.getItem('hoknex_user') || 'Student';
 
         container.innerHTML = allProjects.map(p => {
-            const isOwner = (typeof p.author === 'string' ? p.author : p.author?.username) === currentUser;
-            const avgRating = p.ratingsCount ? (p.rating).toFixed(1) : 'No ratings';
+            const authorName = (typeof p.author === 'object' && p.author !== null) ? (p.author.username || 'Student') : (p.author || 'Student');
+            const isOwner = authorName === currentUser;
+            const avgRating = p.ratingsCount ? Number(p.rating).toFixed(1) : 'No ratings';
+            
+            const safeTitle = (p.title || 'Untitled Project').replace(/'/g, "\\'");
+            const safeDesc = (p.desc || 'No description').replace(/'/g, "\\'").replace(/\n/g, ' ');
+            const safeTech = (p.techStack || 'N/A').replace(/'/g, "\\'");
+            const safeClass = (p.classification || 'Showcase').replace(/'/g, "\\'");
+            const safeImg = p.img || '';
 
             return `
             <div class="post-card" id="proj-card-${p._id}" style="margin-bottom: 1.5rem; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span style="background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800;">📌 ${p.classification || 'Showcase'}</span>
-                    <span style="font-size: 0.8rem; color: var(--ink-light);">By ${typeof p.author === 'object' ? p.author.username : p.author}</span>
+                    <span style="font-size: 0.8rem; color: var(--ink-light);">By ${authorName}</span>
                 </div>
 
-                <h3 style="font-size: 1.3rem; font-weight: 800; margin-top: 5px; color: var(--ink);">${p.title}</h3>
-                <p style="color: var(--ink); font-size: 1rem; margin-bottom: 15px; font-weight: 600; line-height: 1.5;">${p.desc}</p>
+                <h3 style="font-size: 1.3rem; font-weight: 800; margin-top: 5px; color: var(--ink);">${p.title || 'Untitled Project'}</h3>
+                <p style="color: var(--ink); font-size: 1rem; margin-bottom: 15px; font-weight: 600; line-height: 1.5;">${p.desc || 'No description provided.'}</p>
                 
                 ${p.techStack ? `<div style="margin-bottom: 15px; font-size: 0.85rem; font-weight: 700; color: var(--accent-blue);">🛠️ Tech: ${p.techStack}</div>` : ''}
                 
@@ -4782,14 +4789,12 @@ async function loadAndRenderProjects() {
                     <div style="display: flex; gap: 8px; align-items: center;">
                         ${p.projectUrl ? `<a href="${p.projectUrl.startsWith('http') ? p.projectUrl : 'https://' + p.projectUrl}" target="_blank" class="btn-create" style="padding: 6px 14px; font-size: 0.8rem; text-decoration: none;">🔗 Visit Link</a>` : ''}
                         
-                        <!-- PDF Download Button for All Users -->
-                        <button onclick="downloadProjectPDF('${p.title}', '${p.desc.replace(/'/g, "\\'")}', '${p.techStack || 'N/A'}', '${p.classification}', '${p.img || ''}')" style="background: var(--accent-coral); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">📥 Download PDF</button>
+                        <button onclick="downloadProjectPDF('${safeTitle}', '${safeDesc}', '${safeTech}', '${safeClass}', '${safeImg}')" style="background: var(--accent-coral); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">📥 Download PDF</button>
 
                         ${isOwner ? `<button onclick="deleteProject('${p._id}')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">🗑️ Delete</button>` : ''}
                     </div>
                 </div>
 
-                <!-- Reactions & Rating Section -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; font-size: 0.85rem;">
                     <div style="display: flex; gap: 10px;">
                         <button onclick="reactProject('${p._id}', 'like')" style="background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer;">👍 ${p.reactions?.like || 0}</button>
@@ -4816,7 +4821,6 @@ async function loadAndRenderProjects() {
         container.innerHTML = `<p style="color: var(--accent-coral); text-align: center; font-weight: 700;">Failed to load projects.</p>`;
     }
 }
-
 // Helper Functions for Interactivity
 async function deleteProject(id) {
     if (!confirm('Are you sure you want to delete this project?')) return;
