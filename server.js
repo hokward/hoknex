@@ -643,31 +643,73 @@ app.get('/api/projects', async (req, res) => {
 
 // Added upload.single('image') to parse FormData and handle file uploads
 app.post('/api/projects', upload.single('image'), async (req, res) => {
-  try {
-    const body = req.body || {};
-    const { title, description, classification, audience, techStack, projectUrl, author } = body;
+    try {
+        const { title, description, classification, audience, techStack, projectUrl, author } = req.body;
+        
+        if (!title || !description) {
+            return res.status(400).json({ error: 'Title and description are required.' });
+        }
 
-    if (!title || !description) {
-      return res.status(400).json({ error: 'Title and description are required.' });
+        const newProj = new Project({
+            title,
+            desc: description,
+            classification: classification || 'Showcase',
+            audience: audience || 'Open to All',
+            techStack: techStack || '',
+            projectUrl: projectUrl || '',
+            img: req.file ? `/uploads/${req.file.filename}` : '',
+            author: author || 'Student'
+        });
+
+        await newProj.save();
+        res.status(201).json(newProj);
+    } catch (err) {
+        console.error('Project creation error:', err);
+        res.status(500).json({ error: err.message });
     }
+});
 
-    const newProj = new Project({
-      title,
-      desc: description, // Maps frontend 'description' to database 'desc'
-      classification: classification || 'Showcase',
-      audience: audience || 'Open to All',
-      techStack: techStack || '',
-      img: req.file ? `/uploads/${req.file.filename}` : '', // Saves uploaded image path
-      projectUrl: projectUrl || '',
-      author: author || 'Student'
-    });
+// Add Delete Route
+app.delete('/api/projects/:id', async (req, res) => {
+    try {
+        await Project.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Project deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
-    await newProj.save();
-    res.status(201).json(newProj);
-  } catch (err) {
-    console.error('Project creation error:', err);
-    res.status(500).json({ error: err.message });
-  }
+// Add Reaction & Rating Route
+app.post('/api/projects/:id/react', async (req, res) => {
+    try {
+        const { type } = req.body; // 'like', 'love', 'rocket'
+        const proj = await Project.findById(req.params.id);
+        if (!proj) return res.status(404).json({ error: 'Project not found' });
+        
+        if (proj.reactions[type] !== undefined) {
+            proj.reactions[type] += 1;
+            await proj.save();
+        }
+        res.json(proj);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/projects/:id/rate', async (req, res) => {
+    try {
+        const { rating } = req.body; // number 1-5
+        const proj = await Project.findById(req.params.id);
+        if (!proj) return res.status(404).json({ error: 'Project not found' });
+        
+        proj.rating = ((proj.rating * proj.ratingsCount) + Number(rating)) / (proj.ratingsCount + 1);
+        proj.ratingsCount += 1;
+        await proj.save();
+        
+        res.json(proj);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 
