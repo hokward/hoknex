@@ -495,34 +495,6 @@ app.post('/api/posts', upload.single('image'), async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
-app.post('/api/posts', upload.single('image'), async (req, res) => {
-    try {
-        let pollData = null;
-        if (req.body.poll) {
-            try {
-                pollData = typeof req.body.poll === 'string' ? JSON.parse(req.body.poll) : req.body.poll;
-            } catch(e) {}
-        }
-
-        let user = req.body.username ? await User.findOne({ username: req.body.username.trim() }) : null;
-
-        const newPost = new Post({
-            content: req.body.content || '',
-            username: req.body.username || 'Student',
-            image: req.file ? req.file.path : null,
-            poll: pollData, // <-- SAVE POLL TO DATABASE
-            author: user ? user._id : null
-        });
-
-        await newPost.save();
-        const populated = await Post.findById(newPost._id).populate('author', 'name username dpUrl');
-        res.status(201).json(populated || newPost);
-    } catch (err) {
-        console.error('Post creation error:', err);
-        res.status(500).json({ error: err.message });
-    }
-});
 app.delete('/api/posts/:id', async (req, res) => {
   try {
     await Post.findByIdAndDelete(req.params.id);
