@@ -435,54 +435,38 @@ app.get('/api/posts', async (req, res) => {
 app.post('/api/posts/:id/vote', async (req, res) => {
     try {
         const { optionIndex } = req.body;
-        console.log("Voting request received for Post ID:", req.params.id, "Option:", optionIndex);
-        
         let post = await Post.findById(req.params.id);
         
         if (!post) {
-            console.log("Post not found in DB!");
             return res.status(404).json({ error: 'Post not found' });
         }
 
-        // If poll object is missing or malformed, initialize it safely
         if (!post.poll || !post.poll.options) {
-            post.poll = {
-                question: post.poll?.question || 'Poll',
-                options: [
-                    { text: 'Option 1', votes: 0 },
-                    { text: 'Option 2', votes: 0 }
-                ]
-            };
+            return res.status(400).json({ error: 'Poll not found' });
         }
 
-        if (!post.poll.options[optionIndex]) {
-            // Automatically expand options if the clicked index is out of bounds
-            while (post.poll.options.length <= optionIndex) {
-                post.poll.options.push({ text: `Option ${post.poll.options.length + 1}`, votes: 0 });
+        // Ensure every option is an object with text and votes
+        post.poll.options = post.poll.options.map(opt => {
+            if (typeof opt === 'string') {
+                return { text: opt, votes: 0 };
             }
+            return { text: opt.text || String(opt), votes: opt.votes || 0 };
+        });
+
+        // Increment the vote count
+        if (post.poll.options[optionIndex]) {
+            post.poll.options[optionIndex].votes = (post.poll.options[optionIndex].votes || 0) + 1;
         }
 
-        // Increment vote count
-        post.poll.options[optionIndex].votes = (post.poll.options[optionIndex].votes || 0) + 1;
-        
         post.markModified('poll');
         await post.save();
 
-        console.log("Vote successfully saved:", post.poll);
         res.json(post);
     } catch (err) {
         console.error('Voting server error:', err);
         res.status(500).json({ error: err.message });
     }
 });
-// Dynamically ensure the Post schema supports polls without errors
-try {
-    if (typeof Post !== 'undefined' && Post.schema && !Post.schema.paths.poll) {
-        Post.schema.add({ poll: Object });
-    }
-} catch (e) {
-    console.error('Schema patch error:', e);
-}
 
 app.post('/api/posts', upload.single('image'), async (req, res) => {
     try {
