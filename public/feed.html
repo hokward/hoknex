@@ -4822,7 +4822,7 @@ window.openEditProfile = function() {
 };
 
     // Place it right here with your other scripts or at the bottom
-// --- INSTANT CLICK-TO-LOAD PROJECTS FIX ---
+// --- FAST CLICK-TO-OPEN PROJECTS ONLY ---
 document.addEventListener('click', (e) => {
     const link = e.target.closest('a, button, li, div');
     if (!link) return;
@@ -4831,15 +4831,20 @@ document.addEventListener('click', (e) => {
     const viewAttr = link.getAttribute('data-view') || '';
     
     if (text.includes('projects') || viewAttr === 'projects') {
-        // Instantly call your built-in view renderer and fetch projects right away
+        localStorage.setItem('hoknex_active_tab', 'projects');
+        
+        // Instantly render the view and load projects on click
         if (typeof renderView === 'function') {
             renderView('projects');
         }
-        setTimeout(() => {
-            if (typeof loadAndRenderProjects === 'function') {
-                loadAndRenderProjects();
-            }
-        }, 50);
+        if (typeof loadAndRenderProjects === 'function') {
+            loadAndRenderProjects();
+        }
+    } else if (text.includes('feed') || viewAttr === 'feed') {
+        localStorage.setItem('hoknex_active_tab', 'feed');
+        if (typeof renderView === 'function') {
+            renderView('feed');
+        }
     }
 });
     
