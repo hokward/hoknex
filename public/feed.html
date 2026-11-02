@@ -4122,7 +4122,15 @@ window.castUniversalVote = async function(postId, optionIndex) {
 
         const updatedPost = await res.json();
         
-        // Directly update local cache with fresh server vote counts
+        // 1. Update the cached global posts list instantly with server data
+        if (typeof allCachedPosts !== 'undefined' && Array.isArray(allCachedPosts)) {
+            const index = allCachedPosts.findIndex(p => p._id === postId || p.id === postId);
+            if (index !== -1 && updatedPost.poll) {
+                allCachedPosts[index].poll = updatedPost.poll;
+            }
+        }
+
+        // 2. Save client poll cache backup
         if (updatedPost && updatedPost.poll) {
             let allPolls = {};
             try {
@@ -4132,6 +4140,7 @@ window.castUniversalVote = async function(postId, optionIndex) {
             localStorage.setItem('hoknex_client_polls', JSON.stringify(allPolls));
         }
 
+        // 3. Mark as voted locally
         let votesState = {};
         try {
             votesState = JSON.parse(localStorage.getItem(`poll_voted_${postId}`)) || {};
@@ -4140,8 +4149,15 @@ window.castUniversalVote = async function(postId, optionIndex) {
         votesState[currentUser] = optionIndex;
         localStorage.setItem(`poll_voted_${postId}`, JSON.stringify(votesState));
 
-        alert('Vote recorded successfully! 🗳️');
-        if (typeof loadPosts === 'function') loadPosts();
+        // 4. Instantly re-render posts without needing a full network reload
+        if (typeof allCachedPosts !== 'undefined' && typeof renderPostCard === 'function') {
+            const postsList = document.getElementById('postsList');
+            if (postsList) {
+                postsList.innerHTML = allCachedPosts.map(post => renderPostCard(post)).join('');
+            }
+        } else if (typeof loadPosts === 'function') {
+            loadPosts();
+        }
     } catch (err) {
         console.error('Vote error:', err);
         alert('Error recording vote.');
