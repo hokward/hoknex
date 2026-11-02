@@ -4822,37 +4822,26 @@ window.openEditProfile = function() {
 };
 
     // Place it right here with your other scripts or at the bottom
-// --- BLOCK THE FEED & FORCE PROJECTS PAGE ONLY ---
+// --- BLITZ FAST SINGLE-PAGE PROJECTS BOOT ---
 (function() {
-    // Force localStorage to always remember projects
+    // Lock storage permanently to projects
     localStorage.setItem('hoknex_active_tab', 'projects');
     
-    // Override history/pushState if your router uses it
-    const originalPushState = history.pushState;
-    history.pushState = function(state, title, url) {
-        return originalPushState.apply(this, arguments);
-    };
-})();
-
-window.addEventListener('DOMContentLoaded', () => {
-    localStorage.setItem('hoknex_active_tab', 'projects');
-    
-    // Instantly hide any default feed containers if they exist
-    const feedEl = document.getElementById('feedContainer') || document.querySelector('.feed-view');
-    if (feedEl) feedEl.style.display = 'none';
-
-    // Force render projects immediately
-    setTimeout(() => {
+    // Intercept the window load to kill any default feed rendering instantly
+    window.addEventListener('DOMContentLoaded', () => {
+        localStorage.setItem('hoknex_active_tab', 'projects');
+        
+        // Force direct render without waiting
         if (typeof renderView === 'function') {
             renderView('projects');
         }
         if (typeof loadAndRenderProjects === 'function') {
             loadAndRenderProjects();
         }
-    }, 10);
-});
+    }, true); // Use capture phase to run before other listeners
+})();
 
-// Prevent clicking other tabs from loading the feed
+// Ensure clicking Projects is instant and smooth
 document.addEventListener('click', (e) => {
     const link = e.target.closest('a, button, li, div');
     if (!link) return;
