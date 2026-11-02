@@ -4069,7 +4069,15 @@ window.openPollCreatorModal = function() {
 // ==========================================
 window.renderUniversalPoll = function(post) {
     let poll = post.poll;
-    if (!poll || !poll.question || !poll.options) return '';
+    if (!poll || !poll.question || !Array.isArray(poll.options)) return '';
+
+    // Normalize options so they always have .text and .votes
+    poll.options = poll.options.map(opt => {
+        if (typeof opt === 'string') {
+            return { text: opt, votes: 0 };
+        }
+        return { text: opt.text || String(opt), votes: opt.votes || 0 };
+    });
 
     const totalVotes = poll.options.reduce((sum, opt) => sum + (opt.votes || 0), 0);
     const currentUser = localStorage.getItem('hoknex_user') || 'Student';
@@ -4092,8 +4100,8 @@ window.renderUniversalPoll = function(post) {
                         <div onclick="${hasVoted ? '' : `castUniversalVote('${post._id || post.id}', ${idx})`}" style="position: relative; background: var(--paper); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; cursor: ${hasVoted ? 'default' : 'pointer'}; overflow: hidden;">
                             <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${percent}%; background: rgba(59, 130, 246, 0.15); z-index: 1;"></div>
                             <div style="position: relative; display: flex; justify-content: space-between; align-items: center; z-index: 2; font-weight: 700; font-size: 0.88rem;">
-                                <span>${opt.text || opt}</span>
-                                <span style="color: var(--ink-light); font-size: 0.8rem;">${percent}\% (${votes})</span>
+                                <span>${opt.text}</span>
+                                <span style="color: var(--ink-light); font-size: 0.8rem;">${percent}% (${votes})</span>
                             </div>
                         </div>
                     `;
@@ -4103,7 +4111,6 @@ window.renderUniversalPoll = function(post) {
         </div>
     `;
 };
-
 
 // ==========================================
 // 3. VOTING INTERACTION HANDLER
