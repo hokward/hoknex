@@ -4,7 +4,7 @@ const projectSchema = new mongoose.Schema({
     title: { type: String, required: true },
     desc: { type: String, required: true },
     classification: { type: String, default: 'Showcase' },
-    audience: { type: String, default: 'Open to All' },
+    audience: { type: String, default: 'Open to All' }, // Fixed (singular)
     techStack: { type: String, default: '' },
     projectUrl: { type: String, default: '' },
     img: { type: String, default: '' },
