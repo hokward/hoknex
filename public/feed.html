@@ -3440,11 +3440,7 @@ async function votePoll(postId, optionIndex) {
     }
 }
 // Alias to catch whatever name your modal button uses
-function submitNewProject() {
-    submitProject();
-}
-
-function submitProject() {
+async function submitProject() {
     const titleEl = document.getElementById('projectName') || document.getElementById('projName') || document.querySelector('input[placeholder*="Project Name"]');
     const descEl = document.getElementById('projectDesc') || document.getElementById('projDesc') || document.querySelector('textarea');
     const classEl = document.getElementById('projectClassification') || document.getElementById('projClass');
@@ -3459,36 +3455,44 @@ function submitProject() {
     const author = localStorage.getItem('hoknex_user') || 'Student';
 
     if (!title || !desc) {
-        alert('Please provide a project name and description!');
+        alert('Please fill out the project name and description!');
         return;
     }
 
-    const newProject = {
-        id: Date.now(),
-        title,
-        desc,
-        classification,
-        audience,
-        projectUrl,
-        author,
-        createdAt: new Date().toISOString()
-    };
+    const projectData = { title, desc, classification, audience, projectUrl, author };
 
-    let localProjects = [];
     try {
-        localProjects = JSON.parse(localStorage.getItem('hoknex_client_projects')) || [];
-    } catch(e) {}
+        // 1. Save to backend database so it stays permanently
+        const res = await fetch('/api/projects', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(projectData)
+        });
 
-    localProjects.unshift(newProject);
-    localStorage.setItem('hoknex_client_projects', JSON.stringify(localProjects));
+        if (!res.ok) throw new Error('Failed to save project to server');
 
-    const modal = document.getElementById('projectModal') || document.querySelector('div[style*="position:fixed"]');
-    if (modal) modal.remove();
+        // 2. Remember that user is on the projects tab
+        localStorage.setItem('hoknex_active_tab', 'projects');
 
-    loadAndRenderProjects();
-    alert('Project launched successfully! 🚀✨');
+        // 3. Close modal if open
+        const modal = document.getElementById('projectModal') || document.querySelector('div[style*="position: fixed"]');
+        if (modal) modal.remove();
+
+        alert('🚀 Project launched successfully! ✨');
+
+        // 4. Reload projects view instead of main feed
+        if (typeof showProjectsTab === 'function') {
+            showProjectsTab();
+        } else if (typeof loadProjects === 'function') {
+            loadProjects();
+        } else {
+            location.reload();
+        }
+    } catch (err) {
+        console.error('Project submission error:', err);
+        alert('Error publishing project. Check connection.');
+    }
 }
-
 // --- MISSING UI FUNCTIONS FIX ---
 
 // 1. Global variable to track active filter (All, Lost, Found)
@@ -4817,6 +4821,14 @@ window.openEditProfile = function() {
     }
 };
 
+    // Place it right here with your other scripts or at the bottom
+    window.addEventListener('DOMContentLoaded', () => {
+        const activeTab = localStorage.getItem('hoknex_active_tab');
+        if (activeTab === 'projects' && typeof showProjectsTab === 'function') {
+            showProjectsTab();
+        }
+    });
+    
 </script>
 
 </body>
