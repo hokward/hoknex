@@ -4764,10 +4764,9 @@ async function loadAndRenderProjects() {
             const avgRating = p.ratingsCount ? Number(p.rating).toFixed(1) : 'No ratings';
             
             const safeTitle = (p.title || 'Untitled Project').replace(/'/g, "\\'");
-            const safeDesc = (p.desc || 'No description').replace(/'/g, "\\'").replace(/\n/g, ' ');
             const safeTech = (p.techStack || 'N/A').replace(/'/g, "\\'");
             const safeClass = (p.classification || 'Showcase').replace(/'/g, "\\'");
-            const safeImg = p.img || '';
+            const imageUrl = p.img ? (p.img.startsWith('http') ? p.img : window.location.origin + p.img) : '';
 
             return `
             <div class="post-card" id="proj-card-${p._id}" style="margin-bottom: 1.5rem; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
@@ -4781,7 +4780,7 @@ async function loadAndRenderProjects() {
                 
                 ${p.techStack ? `<div style="margin-bottom: 15px; font-size: 0.85rem; font-weight: 700; color: var(--accent-blue);">🛠️ Tech: ${p.techStack}</div>` : ''}
                 
-                ${p.img ? `<img src="${p.img}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border);" />` : ''}
+                ${imageUrl ? `<img src="${imageUrl}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8.px; margin-bottom: 15px; border: 1px solid var(--border);" />` : ''}
 
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; flex-wrap: wrap; gap: 10px;">
                     <span style="font-size: 0.85rem; font-weight: 700; color: var(--ink-light);">👥 Target: ${p.audience || 'Open to All'}</span>
@@ -4789,7 +4788,7 @@ async function loadAndRenderProjects() {
                     <div style="display: flex; gap: 8px; align-items: center;">
                         ${p.projectUrl ? `<a href="${p.projectUrl.startsWith('http') ? p.projectUrl : 'https://' + p.projectUrl}" target="_blank" class="btn-create" style="padding: 6px 14px; font-size: 0.8rem; text-decoration: none;">🔗 Visit Link</a>` : ''}
                         
-                        <button onclick="downloadProjectPDF('${safeTitle}', '${safeDesc}', '${safeTech}', '${safeClass}', '${safeImg}')" style="background: var(--accent-coral); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">📥 Download PDF</button>
+                        <button onclick="downloadProjectPDF('${safeTitle}', '${safeTech}', '${safeClass}', '${imageUrl}')" style="background: var(--accent-coral); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">📥 Download PDF</button>
 
                         ${isOwner ? `<button onclick="deleteProject('${p._id}')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">🗑️ Delete</button>` : ''}
                     </div>
@@ -4797,12 +4796,12 @@ async function loadAndRenderProjects() {
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; font-size: 0.85rem;">
                     <div style="display: flex; gap: 10px;">
-                        <button onclick="reactProject('${p._id}', 'like')" style="background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer;">👍 ${p.reactions?.like || 0}</button>
-                        <button onclick="reactProject('${p._id}', 'love')" style="background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer;">❤️ ${p.reactions?.love || 0}</button>
-                        <button onclick="reactProject('${p._id}', 'rocket')" style="background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer;">🚀 ${p.reactions?.rocket || 0}</button>
+                        <button onclick="reactProject('${p._id}', 'like', this)" style="background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer;">👍 ${p.reactions?.like || 0}</button>
+                        <button onclick="reactProject('${p._id}', 'love', this)" style="background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer;">❤️ ${p.reactions?.love || 0}</button>
+                        <button onclick="reactProject('${p._id}', 'rocket', this)" style="background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer;">🚀 ${p.reactions?.rocket || 0}</button>
                     </div>
                     <div>
-                        <span>⭐ Rating: <b>${avgRating}</b> (${p.ratingsCount || 0})</span>
+                        <span class="project-rating-text">⭐ Rating: <b>${avgRating}</b> (${p.ratingsCount || 0})</span>
                         <select onchange="rateProject('${p._id}', this.value)" style="margin-left: 5px; padding: 2px 6px; border-radius: 4px;">
                             <option value="">Rate</option>
                             <option value="5">5 ⭐</option>
@@ -4821,7 +4820,7 @@ async function loadAndRenderProjects() {
         container.innerHTML = `<p style="color: var(--accent-coral); text-align: center; font-weight: 700;">Failed to load projects.</p>`;
     }
 }
-// Helper Functions for Interactivity
+
 async function deleteProject(id) {
     if (!confirm('Are you sure you want to delete this project?')) return;
     try {
@@ -4837,14 +4836,19 @@ async function deleteProject(id) {
     }
 }
 
-async function reactProject(id, type) {
+async function reactProject(id, type, btnElement) {
     try {
         const res = await fetch(`/api/projects/${id}/react`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type })
         });
-        if (res.ok) loadAndRenderProjects();
+        if (res.ok) {
+            const updatedProj = await res.json();
+            if (updatedProj.reactions && updatedProj.reactions[type] !== undefined) {
+                btnElement.innerHTML = `${type === 'like' ? '👍' : type === 'love' ? '❤️' : '🚀'} ${updatedProj.reactions[type]}`;
+            }
+        }
     } catch (e) {
         console.error(e);
     }
@@ -4859,16 +4863,22 @@ async function rateProject(id, rating) {
             body: JSON.stringify({ rating })
         });
         if (res.ok) {
+            const updatedProj = await res.json();
             alert('Thank you for rating!');
-            loadAndRenderProjects();
+            const card = document.getElementById(`proj-card-${id}`);
+            if (card) {
+                const ratingDisplay = card.querySelector('.project-rating-text');
+                if (ratingDisplay) {
+                    ratingDisplay.innerHTML = `⭐ Rating: <b>${Number(updatedProj.rating).toFixed(1)}</b> (${updatedProj.ratingsCount})`;
+                }
+            }
         }
     } catch (e) {
         console.error(e);
     }
 }
 
-// Clean PDF Generator / Downloader for All Users
-function downloadProjectPDF(title, desc, tech, classification, img) {
+function downloadProjectPDF(title, tech, classification, imgUrl) {
     const win = window.open('', '_blank');
     win.document.write(`
         <html>
@@ -4879,15 +4889,14 @@ function downloadProjectPDF(title, desc, tech, classification, img) {
                     h1 { color: #8b5cf6; }
                     .badge { background: #eee; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block; margin-bottom: 15px;}
                     p { font-size: 16px; line-height: 1.6; }
-                    img { max-width: 100%; max-height: 350px; border-radius: 8px; margin-top: 20px; }
+                    img { max-width: 100%; max-height: 350px; border-radius: 8px; margin-top: 20px; object-fit: cover; }
                 </style>
             </head>
             <body>
                 <span class="badge">${classification}</span>
                 <h1>${title}</h1>
                 <p><b>Tech Stack:</b> ${tech}</p>
-                <p><b>Description & Details:</b><br>${desc}</p>
-                ${img ? `<img src="${img}" />` : ''}
+                ${imgUrl ? `<img src="${imgUrl}" />` : ''}
                 <script>
                     window.onload = function() { window.print(); }
                
@@ -4941,6 +4950,9 @@ document.addEventListener('click', (e) => {
         localStorage.setItem('hoknex_active_tab', 'projects');
         if (typeof renderView === 'function') renderView('projects');
         if (typeof loadAndRenderProjects === 'function') loadAndRenderProjects();
+    } else if (text.includes('feed')) {
+        localStorage.setItem('hoknex_active_tab', 'feed');
+        if (typeof renderView === 'function') renderView('feed');
     }
 });
     
