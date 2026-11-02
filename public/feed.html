@@ -2398,34 +2398,28 @@ function closeProjectModal() {
 
 async function submitNewProject() {
     const title = document.getElementById('projNameInput')?.value.trim();
-    const desc = document.getElementById('projDescInput')?.value.trim();
-    const classification = document.getElementById('projClassification')?.value;
-    const audience = document.getElementById('projAudience')?.value;
+    const description = document.getElementById('projDescInput')?.value.trim();
+    const classification = document.getElementById('projClass')?.value || 'Showcase';
+    const audience = document.getElementById('projAudience')?.value || 'Open to All';
     const techStack = document.getElementById('projTechInput')?.value.trim();
     const projectUrl = document.getElementById('projUrlInput')?.value.trim();
-    
-    const fileInput = document.getElementById('projFileInput');
-    const imageFile = fileInput?.files ? fileInput.files[0] : null;
-    
-    const author = localStorage.getItem('hoknex_user') || 'Student';
+    const imageFile = document.getElementById('projFileInput')?.files[0];
+    const currentUser = localStorage.getItem('hoknex_user') || 'Student';
 
-    if (!title || !desc) {
+    if (!title || !description) {
         alert('Please provide a project name and description!');
         return;
     }
 
     const formData = new FormData();
     formData.append('title', title);
-    formData.append('description', desc);
-    formData.append('classification', classification || 'Showcase');
-    formData.append('audience', audience || 'Open to All');
-    formData.append('techStack', techStack || '');
-    formData.append('projectUrl', projectUrl || '');
-    formData.append('author', author);
-    
-    if (imageFile) {
-        formData.append('image', imageFile);
-    }
+    formData.append('description', description);
+    formData.append('classification', classification);
+    formData.append('audience', audience);
+    formData.append('techStack', techStack);
+    formData.append('projectUrl', projectUrl);
+    formData.append('author', currentUser);
+    if (imageFile) formData.append('image', imageFile);
 
     try {
         const res = await fetch('/api/projects', {
@@ -2434,16 +2428,9 @@ async function submitNewProject() {
         });
 
         if (res.ok) {
-            closeProjectModal();
-            // Clear out inputs
-            document.getElementById('projNameInput').value = '';
-            document.getElementById('projDescInput').value = '';
-            document.getElementById('projTechInput').value = '';
-            document.getElementById('projUrlInput').value = '';
-            if (fileInput) fileInput.value = '';
-            
+            closeProjectCreationModal();
             loadAndRenderProjects();
-            alert('Project launched successfully! 🚀✨');
+            alert('Project launched successfully! 🚀');
         } else {
             const errData = await res.json();
             alert('Failed to launch project: ' + (errData.error || 'Server error.'));
@@ -4755,54 +4742,155 @@ async function submitNewProject() {
 }
 
 async function loadAndRenderProjects() {
-    const container = document.getElementById('projectsContainer') || document.getElementById('projectcontainer');
+    const container = document.getElementById('projectsContainer') || document.getElementById('projectContainer');
     if (!container) return;
 
-    container.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--ink-light); font-weight: 700;">Loading projects...</div>`;
+    container.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--ink-light);">Loading projects...</div>`;
 
     try {
         const res = await fetch('/api/projects');
-        if (!res.ok) throw new Error('Failed to fetch projects');
         const allProjects = await res.json();
 
         if (!Array.isArray(allProjects) || allProjects.length === 0) {
-            container.innerHTML = `
-                <div class="post-card" style="padding: 30px; text-align: center;">
-                    <p style="font-weight:700; color: var(--ink-light);">No projects launched yet. Be the first! 🚀</p>
-                </div>
-            `;
+            container.innerHTML = `<div class="post-card" style="padding: 30px; text-align: center;"><p style="font-weight: 700; color: var(--ink-light);">No projects launched yet. Be the first! 🚀</p></div>`;
             return;
         }
 
-        container.innerHTML = allProjects.map(p => `
-            <div class="post-card" style="margin-bottom: 1.5rem; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-subtle);">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
-                    <div>
-                        <span style="background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800;">🚀 ${p.classification || 'Project Showcase'}</span>
-                        <h3 style="font-weight: 800; font-size: 1.3rem; color: var(--ink); margin-top: 8px;">${p.title || 'Untitled Project'}</h3>
-                    </div>
-                    <span style="font-size: 0.85rem; font-weight: 700; color: var(--ink-light); background: var(--canvas); padding: 4px 10px; border-radius: 6px;">By @${p.author || 'Student'}</span>
+        const currentUser = localStorage.getItem('hoknex_user') || 'Student';
+
+        container.innerHTML = allProjects.map(p => {
+            const isOwner = (typeof p.author === 'string' ? p.author : p.author?.username) === currentUser;
+            const avgRating = p.ratingsCount ? (p.rating).toFixed(1) : 'No ratings';
+
+            return `
+            <div class="post-card" id="proj-card-${p._id}" style="margin-bottom: 1.5rem; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800;">📌 ${p.classification || 'Showcase'}</span>
+                    <span style="font-size: 0.8rem; color: var(--ink-light);">By ${typeof p.author === 'object' ? p.author.username : p.author}</span>
                 </div>
-                
-                <p style="color: var(--ink); font-size: 1rem; margin-bottom: 15px; font-weight: 600; line-height: 1.5;">${p.description || p.desc || 'No description provided.'}</p>
+
+                <h3 style="font-size: 1.3rem; font-weight: 800; margin-top: 5px; color: var(--ink);">${p.title}</h3>
+                <p style="color: var(--ink); font-size: 1rem; margin-bottom: 15px; font-weight: 600; line-height: 1.5;">${p.desc}</p>
                 
                 ${p.techStack ? `<div style="margin-bottom: 15px; font-size: 0.85rem; font-weight: 700; color: var(--accent-blue);">🛠️ Tech: ${p.techStack}</div>` : ''}
                 
-               ${p.image ? `<img src="${p.image}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border);" onerror="this.style.display='none'">` : ''}
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 15px; flex-wrap: wrap; gap: 10px;">
+                ${p.img ? `<img src="${p.img}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border);" />` : ''}
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; flex-wrap: wrap; gap: 10px;">
                     <span style="font-size: 0.85rem; font-weight: 700; color: var(--ink-light);">👥 Target: ${p.audience || 'Open to All'}</span>
-                    <div style="display: flex; gap: 10px;">
-                        ${p.projectUrl ? `<a href="${p.projectUrl}" target="_blank" class="btn-create" style="padding: 8px 16px; font-size: 0.85rem; text-decoration: none; background: var(--paper); color: var(--ink); border: 1px solid var(--border);">🔗 View Demo/Repo</a>` : ''}
-                        <button class="btn-create" onclick="openMessageRequestModal('${p.author}', 'Collaboration')" style="padding: 8px 16px; font-size: 0.85rem;">💬 Connect</button>
+                    
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        ${p.projectUrl ? `<a href="${p.projectUrl.startsWith('http') ? p.projectUrl : 'https://' + p.projectUrl}" target="_blank" class="btn-create" style="padding: 6px 14px; font-size: 0.8rem; text-decoration: none;">🔗 Visit Link</a>` : ''}
+                        
+                        <!-- PDF Download Button for All Users -->
+                        <button onclick="downloadProjectPDF('${p.title}', '${p.desc.replace(/'/g, "\\'")}', '${p.techStack || 'N/A'}', '${p.classification}', '${p.img || ''}')" style="background: var(--accent-coral); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">📥 Download PDF</button>
+
+                        ${isOwner ? `<button onclick="deleteProject('${p._id}')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">🗑️ Delete</button>` : ''}
                     </div>
                 </div>
-            </div>
-        `).join('');
+
+                <!-- Reactions & Rating Section -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; font-size: 0.85rem;">
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="reactProject('${p._id}', 'like')" style="background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer;">👍 ${p.reactions?.like || 0}</button>
+                        <button onclick="reactProject('${p._id}', 'love')" style="background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer;">❤️ ${p.reactions?.love || 0}</button>
+                        <button onclick="reactProject('${p._id}', 'rocket')" style="background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; cursor: pointer;">🚀 ${p.reactions?.rocket || 0}</button>
+                    </div>
+                    <div>
+                        <span>⭐ Rating: <b>${avgRating}</b> (${p.ratingsCount || 0})</span>
+                        <select onchange="rateProject('${p._id}', this.value)" style="margin-left: 5px; padding: 2px 6px; border-radius: 4px;">
+                            <option value="">Rate</option>
+                            <option value="5">5 ⭐</option>
+                            <option value="4">4 ⭐</option>
+                            <option value="3">3 ⭐</option>
+                            <option value="2">2 ⭐</option>
+                            <option value="1">1 ⭐</option>
+                        </select>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+
     } catch (err) {
         console.error('Error loading projects:', err);
-        container.innerHTML = `<p style="color:var(--accent-coral); text-align:center; font-weight:700;">Failed to load projects.</p>`;
+        container.innerHTML = `<p style="color: var(--accent-coral); text-align: center; font-weight: 700;">Failed to load projects.</p>`;
     }
+}
+
+// Helper Functions for Interactivity
+async function deleteProject(id) {
+    if (!confirm('Are you sure you want to delete this project?')) return;
+    try {
+        const res = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            document.getElementById(`proj-card-${id}`)?.remove();
+            alert('Project deleted successfully.');
+        } else {
+            alert('Failed to delete project.');
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function reactProject(id, type) {
+    try {
+        const res = await fetch(`/api/projects/${id}/react`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type })
+        });
+        if (res.ok) loadAndRenderProjects();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function rateProject(id, rating) {
+    if (!rating) return;
+    try {
+        const res = await fetch(`/api/projects/${id}/rate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rating })
+        });
+        if (res.ok) {
+            alert('Thank you for rating!');
+            loadAndRenderProjects();
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+// Clean PDF Generator / Downloader for All Users
+function downloadProjectPDF(title, desc, tech, classification, img) {
+    const win = window.open('', '_blank');
+    win.document.write(`
+        <html>
+            <head>
+                <title>${title} - Project Report</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 40px; color: #333; }
+                    h1 { color: #8b5cf6; }
+                    .badge { background: #eee; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block; margin-bottom: 15px;}
+                    p { font-size: 16px; line-height: 1.6; }
+                    img { max-width: 100%; max-height: 350px; border-radius: 8px; margin-top: 20px; }
+                </style>
+            </head>
+            <body>
+                <span class="badge">${classification}</span>
+                <h1>${title}</h1>
+                <p><b>Tech Stack:</b> ${tech}</p>
+                <p><b>Description & Details:</b><br>${desc}</p>
+                ${img ? `<img src="${img}" />` : ''}
+                <script>
+                    window.onload = function() { window.print(); }
+                </script>
+            </body>
+        </html>
+    `);
+    win.document.close();
 }
 
 function toggleReplies(postId) {
