@@ -4763,16 +4763,17 @@ async function loadAndRenderProjects() {
             const isOwner = authorName === currentUser;
             const avgRating = p.ratingsCount ? Number(p.rating).toFixed(1) : 'No ratings';
             
-            const safeTitle = (p.title || 'Untitled Project').replace(/'/g, "\\'");
-            const safeTech = (p.techStack || 'N/A').replace(/'/g, "\\'");
-            const safeClass = (p.classification || 'Showcase').replace(/'/g, "\\'");
-            const imageUrl = p.img ? (p.img.startsWith('http') ? p.img : window.location.origin + p.img) : '';
+            const safeTitle = (p.title || 'Untitled Project').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const safeDesc = (p.desc || 'No description provided.').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '<br>');
+            const safeTech = (p.techStack || 'N/A').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const safeClass = (p.classification || 'Showcase').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const imageUrl = p.img ? (p.img.startsWith('http') ? p.img : p.img) : '';
 
             return `
             <div class="post-card" id="proj-card-${p._id}" style="margin-bottom: 1.5rem; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span style="background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800;">📌 ${p.classification || 'Showcase'}</span>
-                    <span style="font-size: 0.8rem; color: var(--ink-light);">By ${authorName}</span>
+                    <span onclick="viewUserProfile('${authorName}')" style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 700; cursor: pointer; text-decoration: underline;">By ${authorName}</span>
                 </div>
 
                 <h3 style="font-size: 1.3rem; font-weight: 800; margin-top: 5px; color: var(--ink);">${p.title || 'Untitled Project'}</h3>
@@ -4780,7 +4781,7 @@ async function loadAndRenderProjects() {
                 
                 ${p.techStack ? `<div style="margin-bottom: 15px; font-size: 0.85rem; font-weight: 700; color: var(--accent-blue);">🛠️ Tech: ${p.techStack}</div>` : ''}
                 
-                ${imageUrl ? `<img src="${imageUrl}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8.px; margin-bottom: 15px; border: 1px solid var(--border);" />` : ''}
+                ${imageUrl ? `<img src="${imageUrl}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border);" onerror="this.style.display='none'" />` : ''}
 
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; flex-wrap: wrap; gap: 10px;">
                     <span style="font-size: 0.85rem; font-weight: 700; color: var(--ink-light);">👥 Target: ${p.audience || 'Open to All'}</span>
@@ -4788,7 +4789,7 @@ async function loadAndRenderProjects() {
                     <div style="display: flex; gap: 8px; align-items: center;">
                         ${p.projectUrl ? `<a href="${p.projectUrl.startsWith('http') ? p.projectUrl : 'https://' + p.projectUrl}" target="_blank" class="btn-create" style="padding: 6px 14px; font-size: 0.8rem; text-decoration: none;">🔗 Visit Link</a>` : ''}
                         
-                        <button onclick="downloadProjectPDF('${safeTitle}', '${safeTech}', '${safeClass}', '${imageUrl}')" style="background: var(--accent-coral); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">📥 Download PDF</button>
+                        <button onclick="downloadProjectPDF('${safeTitle}', '${safeDesc}', '${safeTech}', '${safeClass}', '${imageUrl}')" style="background: var(--accent-coral); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">📥 Download PDF</button>
 
                         ${isOwner ? `<button onclick="deleteProject('${p._id}')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">🗑️ Delete</button>` : ''}
                     </div>
@@ -4878,7 +4879,18 @@ async function rateProject(id, rating) {
     }
 }
 
-function downloadProjectPDF(title, tech, classification, imgUrl) {
+function viewUserProfile(username) {
+    localStorage.setItem('view_profile_user', username);
+    if (typeof navigateToMyProfile === 'function') {
+        navigateToMyProfile(username);
+    } else if (typeof renderView === 'function') {
+        renderView('profile');
+    } else {
+        window.location.reload();
+    }
+}
+
+function downloadProjectPDF(title, desc, tech, classification, imgUrl) {
     const win = window.open('', '_blank');
     win.document.write(`
         <html>
@@ -4886,7 +4898,7 @@ function downloadProjectPDF(title, tech, classification, imgUrl) {
                 <title>${title} - Project Report</title>
                 <style>
                     body { font-family: Arial, sans-serif; padding: 40px; color: #333; }
-                    h1 { color: #8b5cf6; }
+                    h1 { color: #8b5cf6; margin-bottom: 5px; }
                     .badge { background: #eee; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; display: inline-block; margin-bottom: 15px;}
                     p { font-size: 16px; line-height: 1.6; }
                     img { max-width: 100%; max-height: 350px; border-radius: 8px; margin-top: 20px; object-fit: cover; }
@@ -4896,6 +4908,8 @@ function downloadProjectPDF(title, tech, classification, imgUrl) {
                 <span class="badge">${classification}</span>
                 <h1>${title}</h1>
                 <p><b>Tech Stack:</b> ${tech}</p>
+                <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
+                <p><b>Description & Details:</b><br>${desc}</p>
                 ${imgUrl ? `<img src="${imgUrl}" />` : ''}
                 <script>
                     window.onload = function() { window.print(); }
@@ -4903,7 +4917,6 @@ function downloadProjectPDF(title, tech, classification, imgUrl) {
     `);
     win.document.close();
 }
-
 function toggleReplies(postId) {
     const container = document.getElementById(`replies-container-${postId}`);
     if (container) {
