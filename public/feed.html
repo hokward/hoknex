@@ -4822,8 +4822,7 @@ window.openEditProfile = function() {
 };
 
     // Place it right here with your other scripts or at the bottom
-// 1. Intercept any click on the Projects sidebar link explicitly
-// --- FAST CLICK NAVIGATION ONLY (NO AUTO-OPEN) ---
+// --- INSTANT CLICK-TO-LOAD PROJECTS FIX ---
 document.addEventListener('click', (e) => {
     const link = e.target.closest('a, button, li, div');
     if (!link) return;
@@ -4832,9 +4831,15 @@ document.addEventListener('click', (e) => {
     const viewAttr = link.getAttribute('data-view') || '';
     
     if (text.includes('projects') || viewAttr === 'projects') {
-        localStorage.setItem('hoknex_active_tab', 'projects');
-    } else if (text.includes('feed') || viewAttr === 'feed') {
-        localStorage.setItem('hoknex_active_tab', 'feed');
+        // Instantly call your built-in view renderer and fetch projects right away
+        if (typeof renderView === 'function') {
+            renderView('projects');
+        }
+        setTimeout(() => {
+            if (typeof loadAndRenderProjects === 'function') {
+                loadAndRenderProjects();
+            }
+        }, 50);
     }
 });
     
