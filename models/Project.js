@@ -6,12 +6,17 @@ const projectSchema = new mongoose.Schema({
     classification: { type: String, default: 'Showcase' },
     audience: { type: String, default: 'Open to All' },
     techStack: { type: String, default: '' },
-    img: { type: String, default: '' },
     projectUrl: { type: String, default: '' },
-    // Update author to allow either a User ObjectId or a String name
+    img: { type: String, default: '' },
     author: { type: mongoose.Schema.Types.Mixed, default: 'Student' },
-    verified: { type: Boolean, default: false },
+    rating: { type: Number, default: 0 },
+    ratingsCount: { type: Number, default: 0 },
+    reactions: {
+        like: { type: Number, default: 0 },
+        love: { type: Number, default: 0 },
+        rocket: { type: Number, default: 0 }
+    },
     createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.models.Project || mongoose.model('Project', projectSchema);
+module.exports = mongoose.model('Project', projectSchema);
