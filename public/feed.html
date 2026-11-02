@@ -4822,34 +4822,35 @@ window.openEditProfile = function() {
 };
 
     // Place it right here with your other scripts or at the bottom
-  // Override page load behavior to respect the active tab
-window.addEventListener('load', () => {
-    const activeTab = localStorage.getItem('hoknex_active_tab');
-    
-    if (activeTab === 'projects') {
-        // Hide feed, show projects
-        if (typeof showProjectsTab === 'function') {
-            showProjectsTab();
-        } else if (typeof loadProjects === 'function') {
-            loadProjects();
-        } else {
-            // Fallback: click the project sidebar button automatically
-            const projBtn = Array.from(document.querySelectorAll('a, button, li, div')).find(el => el.innerText && el.innerText.trim().toLowerCase() === 'projects');
-            if (projBtn) projBtn.click();
-        }
-    }
-});
-
-// Make sure clicking any sidebar link updates the saved tab state properly
+  // 1. Intercept tab switches and remember them instantly
 document.addEventListener('click', (e) => {
-    const target = e.target.closest('a, button, li, div');
+    const target = e.target.closest('a, button, div, span, li');
     if (!target || !target.innerText) return;
     
     const text = target.innerText.trim().toLowerCase();
     if (text === 'projects') {
         localStorage.setItem('hoknex_active_tab', 'projects');
-    } else if (text === 'live feed' || text === 'campus feed') {
+    } else if (text === 'live feed' || text === 'campus feed' || text === 'feed') {
         localStorage.setItem('hoknex_active_tab', 'feed');
+    }
+});
+
+// 2. Force the correct tab to open on page load, overriding default resets
+window.addEventListener('DOMContentLoaded', () => {
+    const activeTab = localStorage.getItem('hoknex_active_tab');
+    if (activeTab === 'projects') {
+        // Give the page 100ms to finish initial scripts, then force open Projects
+        setTimeout(() => {
+            const projBtn = Array.from(document.querySelectorAll('a, button, div, span, li'))
+                .find(el => el.innerText && el.innerText.trim().toLowerCase() === 'projects');
+            if (projBtn) {
+                projBtn.click();
+            } else if (typeof showProjectsTab === 'function') {
+                showProjectsTab();
+            } else if (typeof loadProjects === 'function') {
+                loadProjects();
+            }
+        }, 100);
     }
 });
     
