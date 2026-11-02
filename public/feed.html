@@ -4886,9 +4886,7 @@ function downloadProjectPDF(title, desc, tech, classification, img) {
                 ${img ? `<img src="${img}" />` : ''}
                 <script>
                     window.onload = function() { window.print(); }
-                </script>
-            </body>
-        </html>
+               
     `);
     win.document.close();
 }
