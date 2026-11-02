@@ -4828,6 +4828,29 @@ window.openEditProfile = function() {
             showProjectsTab();
         }
     });
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Restore active tab on load
+    const activeTab = localStorage.getItem('hoknex_active_tab');
+    if (activeTab === 'projects') {
+        if (typeof showProjectsTab === 'function') showProjectsTab();
+        else if (typeof loadProjects === 'function') loadProjects();
+    }
+
+    // 2. Intercept sidebar clicks so they never reset improperly
+    document.querySelectorAll('a, button, li, div').forEach(el => {
+        const text = el.innerText ? el.innerText.trim().toLowerCase() : '';
+        if (text === 'projects') {
+            el.addEventListener('click', (e) => {
+                localStorage.setItem('hoknex_active_tab', 'projects');
+            });
+        } else if (text === 'live feed' || text === 'campus feed') {
+            el.addEventListener('click', (e) => {
+                localStorage.setItem('hoknex_active_tab', 'feed');
+            });
+        }
+    });
+});
     
 </script>
 
