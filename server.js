@@ -632,13 +632,31 @@ app.get('/api/user-reposts/:username', async (req, res) => {
 });
 
 // --- UPDATED PROJECTS ENDPOINTS & SCHEMA ---
-app.get('/api/projects', async (req, res) => {
-  try {
-    const projects = await Project.find().sort({ createdAt: -1 });
-    res.json(projects);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+app.post('/api/projects', async (req, res) => {
+    try {
+        const { title, description, classification, audience, techStack, projectUrl, author, img } = req.body;
+        
+        if (!title || !description) {
+            return res.status(400).json({ error: 'Title and description are required.' });
+        }
+
+        const newProj = new Project({
+            title,
+            desc: description,
+            classification: classification || 'Showcase',
+            audience: audience || 'Open to All',
+            techStack: techStack || '',
+            projectUrl: projectUrl || '',
+            img: img || '',
+            author: author || 'Student'
+        });
+
+        await newProj.save();
+        res.status(201).json(newProj);
+    } catch (err) {
+        console.error('Project creation error:', err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Added upload.single('image') to parse FormData and handle file uploads
