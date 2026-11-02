@@ -8,7 +8,8 @@ const projectSchema = new mongoose.Schema({
     techStack: { type: String, default: '' },
     img: { type: String, default: '' },
     projectUrl: { type: String, default: '' },
-    author: { type: String, default: 'Student' },
+    // Update author to allow either a User ObjectId or a String name
+    author: { type: mongoose.Schema.Types.Mixed, default: 'Student' },
     verified: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
 });
