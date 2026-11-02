@@ -38,7 +38,7 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Ensure large payload limit is set at the very top for base64 images and rich project data
+// Ensure large payload limit is set at the very top for base64 images and rich  data
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
@@ -631,16 +631,16 @@ app.get('/api/user-reposts/:username', async (req, res) => {
   }
 });
 
-// --- UPDATED PROJECTS ENDPOINTS & SCHEMA ---
-app.post('/api/projects', async (req, res) => {
+// --- UPDATED S ENDPOINTS & SCHEMA ---
+app.post('/api/s', async (req, res) => {
     try {
-        const { title, description, classification, audience, techStack, projectUrl, author, img } = req.body;
+        const { title, description, classification, audience, techStack, Url, author, img } = req.body;
         
         if (!title || !description) {
             return res.status(400).json({ error: 'Title and description are required.' });
         }
 
-        const newProj = new Project({
+        const newProj = new ({
             title,
             desc: description,
             classification: classification || 'Showcase',
@@ -1269,6 +1269,17 @@ app.post('/api/events/verify-ticket', async (req, res) => {
         });
     } catch (err) {
         console.error("Server error:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- GET ALL PROJECTS ---
+app.get('/api/projects', async (req, res) => {
+    try {
+        const projects = await Project.find().sort({ createdAt: -1 });
+        res.json(projects);
+    } catch (err) {
+        console.error('Error fetching projects:', err);
         res.status(500).json({ error: err.message });
     }
 });
