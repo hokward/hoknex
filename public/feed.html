@@ -4823,40 +4823,32 @@ window.openEditProfile = function() {
 
     // Place it right here with your other scripts or at the bottom
 // 1. Intercept any click on the Projects sidebar link explicitly
-document.addEventListener('click', (e) => {
-    const link = e.target.closest('a, button, li, div');
-    if (!link) return;
-    
-    // Check if it's the projects button by text or attributes
-    const text = link.innerText ? link.innerText.trim().toLowerCase() : '';
-    const onclickAttr = link.getAttribute('onclick') || '';
-    const hrefAttr = link.getAttribute('href') || '';
-    
-    if (text.includes('projects') || onclickAttr.includes('Project') || hrefAttr.includes('project')) {
-        localStorage.setItem('hoknex_active_tab', 'projects');
-    } else if (text.includes('feed') || onclickAttr.includes('Feed') || hrefAttr.includes('feed')) {
-        localStorage.setItem('hoknex_active_tab', 'feed');
+// --- HOKNEX TAB PERSISTENCE FIX ---
+window.addEventListener('DOMContentLoaded', () => {
+    const activeTab = localStorage.getItem('hoknex_active_tab');
+    if (activeTab === 'projects') {
+        setTimeout(() => {
+            if (typeof renderView === 'function') {
+                renderView('projects');
+            } else if (typeof loadAndRenderProjects === 'function') {
+                loadAndRenderProjects();
+            }
+        }, 100);
     }
 });
 
-// 2. On page load, force the view instantly before the feed can load
-(function() {
-    const activeTab = localStorage.getItem('hoknex_active_tab');
-    if (activeTab === 'projects') {
-        // Set a flag so other functions know not to overwrite it
-        window.__forceProjectsTab = true;
-        
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                if (typeof showProjectsTab === 'function') {
-                    showProjectsTab();
-                } else if (typeof loadProjects === 'function') {
-                    loadProjects();
-                }
-            }, 50);
-        });
+// Save tab state when clicking sidebar links
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('a, button, li, div');
+    if (!link) return;
+    const text = link.innerText ? link.innerText.trim().toLowerCase() : '';
+    
+    if (text.includes('projects')) {
+        localStorage.setItem('hoknex_active_tab', 'projects');
+    } else if (text.includes('feed')) {
+        localStorage.setItem('hoknex_active_tab', 'feed');
     }
-})();
+});
     
 </script>
 
