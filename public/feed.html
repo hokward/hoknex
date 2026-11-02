@@ -4822,30 +4822,28 @@ window.openEditProfile = function() {
 };
 
     // Place it right here with your other scripts or at the bottom
-    window.addEventListener('DOMContentLoaded', () => {
-        const activeTab = localStorage.getItem('hoknex_active_tab');
-        if (activeTab === 'projects' && typeof showProjectsTab === 'function') {
-            showProjectsTab();
-        }
-    });
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Restore active tab on load
+   window.addEventListener('DOMContentLoaded', () => {
+    // 1. Instantly check if we were on projects and force load it
     const activeTab = localStorage.getItem('hoknex_active_tab');
     if (activeTab === 'projects') {
-        if (typeof showProjectsTab === 'function') showProjectsTab();
-        else if (typeof loadProjects === 'function') loadProjects();
+        setTimeout(() => {
+            const projBtn = Array.from(document.querySelectorAll('a, button, span, div')).find(el => el.innerText && el.innerText.trim().toLowerCase() === 'projects');
+            if (projBtn) projBtn.click();
+            else if (typeof showProjectsTab === 'function') showProjectsTab();
+            else if (typeof loadProjects === 'function') loadProjects();
+        }, 150);
     }
 
-    // 2. Intercept sidebar clicks so they never reset improperly
-    document.querySelectorAll('a, button, li, div').forEach(el => {
+    // 2. Lock tab state whenever ANY sidebar link is clicked
+    document.querySelectorAll('a, button, div, span').forEach(el => {
         const text = el.innerText ? el.innerText.trim().toLowerCase() : '';
         if (text === 'projects') {
-            el.addEventListener('click', (e) => {
+            el.addEventListener('click', () => {
                 localStorage.setItem('hoknex_active_tab', 'projects');
             });
-        } else if (text === 'live feed' || text === 'campus feed') {
-            el.addEventListener('click', (e) => {
+        }
+        if (text === 'live feed' || text === 'campus feed') {
+            el.addEventListener('click', () => {
                 localStorage.setItem('hoknex_active_tab', 'feed');
             });
         }
