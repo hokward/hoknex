@@ -2411,33 +2411,52 @@ async function submitNewProject() {
         return;
     }
 
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('description', description);
-    formData.append('classification', classification);
-    formData.append('audience', audience);
-    formData.append('techStack', techStack);
-    formData.append('projectUrl', projectUrl);
-    formData.append('author', currentUser);
-    if (imageFile) formData.append('image', imageFile);
+    // Function to send data to the server once image is processed (or if no image)
+    const sendData = async (imgBase64 = '') => {
+        try {
+            const res = await fetch('/api/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title,
+                    description,
+                    classification,
+                    audience,
+                    techStack,
+                    projectUrl,
+                    author: currentUser,
+                    img: imgBase64
+                })
+            });
 
-    try {
-        const res = await fetch('/api/projects', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (res.ok) {
-            closeProjectCreationModal();
-            loadAndRenderProjects();
-            alert('Project launched successfully! 🚀');
-        } else {
-            const errData = await res.json();
-            alert('Failed to launch project: ' + (errData.error || 'Server error.'));
+            if (res.ok) {
+                closeProjectCreationModal();
+                loadAndRenderProjects();
+                alert('Project launched successfully! 🚀');
+            } else {
+                const errData = await res.json();
+                alert('Failed to launch project: ' + (errData.error || 'Server error.'));
+            }
+        } catch (e) {
+            console.error('Project submission error:', e);
+            alert('Network error. Make sure your server is running.');
         }
-    } catch (e) {
-        console.error('Project submission error:', e);
-        alert('Network error. Make sure your server is running.');
+    };
+
+    // Handle image file conversion to Base64 for Vercel compatibility
+    if (imageFile) {
+        const reader = new FileReader();
+        reader.readAsDataURL(imageFile);
+        reader.onload = async function() {
+            const imageUrl = reader.result; // Safe Base64 string
+            await sendData(imageUrl);
+        };
+        reader.onerror = function(error) {
+            console.error('Error reading file:', error);
+            alert('Failed to process image file.');
+        };
+    } else {
+        await sendData('');
     }
 }
 
