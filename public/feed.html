@@ -4763,17 +4763,27 @@ async function loadAndRenderProjects() {
             const isOwner = authorName === currentUser;
             const avgRating = p.ratingsCount ? Number(p.rating).toFixed(1) : 'No ratings';
             
-            const safeTitle = (p.title || 'Untitled Project').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            const safeDesc = (p.desc || 'No description provided.').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '<br>');
-            const safeTech = (p.techStack || 'N/A').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            const safeClass = (p.classification || 'Showcase').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            const imageUrl = p.img ? (p.img.startsWith('http') ? p.img : p.img) : '';
+            // Clean encoding to prevent breaking HTML attributes
+            const safeTitle = encodeURIComponent(p.title || 'Untitled Project');
+            const safeDesc = encodeURIComponent(p.desc || 'No description provided.');
+            const safeTech = encodeURIComponent(p.techStack || 'N/A');
+            const safeClass = encodeURIComponent(p.classification || 'Showcase');
+            
+            // Handle image URL properly
+            let imageUrl = p.img || '';
+            if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('data:')) {
+                imageUrl = window.location.origin + (imageUrl.startsWith('/') ? '' : '/') + imageUrl;
+            }
 
             return `
             <div class="post-card" id="proj-card-${p._id}" style="margin-bottom: 1.5rem; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span style="background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 800;">📌 ${p.classification || 'Showcase'}</span>
-                    <span onclick="viewUserProfile('${authorName}')" style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 700; cursor: pointer; text-decoration: underline;">By ${authorName}</span>
+                    
+                    <!-- Clean Author Badge UI -->
+                    <span onclick="viewUserProfile('${authorName}')" style="background: var(--canvas); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; color: var(--accent-blue); font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                        👤 ${authorName}
+                    </span>
                 </div>
 
                 <h3 style="font-size: 1.3rem; font-weight: 800; margin-top: 5px; color: var(--ink);">${p.title || 'Untitled Project'}</h3>
@@ -4879,18 +4889,23 @@ async function rateProject(id, rating) {
     }
 }
 
+// Fixed function to correctly pass any clicked user's username
 function viewUserProfile(username) {
-    localStorage.setItem('view_profile_user', username);
-    if (typeof navigateToMyProfile === 'function') {
-        navigateToMyProfile(username);
-    } else if (typeof renderView === 'function') {
+    localStorage.setItem('target_profile_user', username);
+    localStorage.setItem('hoknex_active_tab', 'profile');
+    if (typeof renderView === 'function') {
         renderView('profile');
     } else {
         window.location.reload();
     }
 }
 
-function downloadProjectPDF(title, desc, tech, classification, imgUrl) {
+function downloadProjectPDF(encTitle, encDesc, encTech, encClass, imgUrl) {
+    const title = decodeURIComponent(encTitle);
+    const desc = decodeURIComponent(encDesc);
+    const tech = decodeURIComponent(encTech);
+    const classification = decodeURIComponent(encClass);
+
     const win = window.open('', '_blank');
     win.document.write(`
         <html>
@@ -4909,11 +4924,11 @@ function downloadProjectPDF(title, desc, tech, classification, imgUrl) {
                 <h1>${title}</h1>
                 <p><b>Tech Stack:</b> ${tech}</p>
                 <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
-                <p><b>Description & Details:</b><br>${desc}</p>
+                <p><b>Description & Details:</b><br>${desc.replace(/\n/g, '<br>')}</p>
                 ${imgUrl ? `<img src="${imgUrl}" />` : ''}
                 <script>
                     window.onload = function() { window.print(); }
-               
+             
     `);
     win.document.close();
 }
