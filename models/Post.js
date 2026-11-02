@@ -13,6 +13,14 @@ const PostSchema = new mongoose.Schema({
     authorName: String,
     createdAt: { type: Date, default: Date.now }
   }],
+  // ADD THIS POLL SCHEMA FIELD:
+  poll: {
+    question: String,
+    options: [{
+      text: String,
+      votes: { type: Number, default: 0 }
+    }]
+  },
   createdAt: { type: Date, default: Date.now }
 });
 
