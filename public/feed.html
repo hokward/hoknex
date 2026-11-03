@@ -544,26 +544,26 @@ mainView.innerHTML = `
     <div id="postsList" class="posts-stream"></div>
 `;
                 loadPosts();
-            } else if (view === 'messages') {
-                viewTitle.innerText = 'Direct Messages 💬';
-                mainView.innerHTML = `
-                    <div style="display:flex; gap:20px; height: calc(100vh - 130px); width: 100%;">
-                        <div style="width: 300px; min-width: 300px; background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-subtle); height: 100%;">
-                            <h3 style="font-size:0.95rem; font-weight:800; color:var(--ink);">Chats</h3>
-                            <div id="chatConnectionsList" style="display:flex; flex-direction:column; gap:6px; overflow-y:auto; flex:1;">
-                                <p style="font-size:0.85rem; color:var(--ink-light); font-weight:600;">Loading conversations...</p>
-                            </div>
-                        </div>
-                        <div id="chatCanvasArea" style="flex:1; background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-card); height: 100%; overflow: hidden;">
-                            <div style="text-align:center; padding:2rem;">
-                                <span style="font-size:3.5rem;">💬</span>
-                                <h3 style="font-weight:800; margin-top:12px; font-size:1.2rem;">Your Messages</h3>
-                                <p style="font-size:0.9rem; color:var(--ink-light); font-weight:600; margin-top:6px;">Select a conversation from the left sidebar to start chatting.</p>
-                            </div>
-                        </div>
+           } else if (view === 'messages') {
+        viewTitle.innerText = 'Direct Messages 💬';
+        mainView.innerHTML = `
+            <div style="display:flex; gap:20px; height: calc(100vh - 130px); width: 100%;">
+                <div style="width: 300px; min-width: 300px; background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-subtle); height: 100%;">
+                    <h3 style="font-size:0.95rem; font-weight:800; color:var(--ink);">Chats</h3>
+                    <div id="chatConnectionsList" style="display:flex; flex-direction:column; gap:6px; overflow-y:auto; flex:1;">
+                        <p style="font-size:0.85rem; color:var(--ink-light); font-weight:600;">Loading conversations...</p>
                     </div>
-                `;
-                loadChatConnections();
+                </div>
+                <div id="chatCanvasArea" style="flex:1; background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; box-shadow: var(--shadow-card); height: 100%; overflow: hidden; position: relative;">
+                    <div style="text-align:center; padding:4rem 2rem; margin:auto;">
+                        <span style="font-size:3.5rem;">💬</span>
+                        <h3 style="font-weight:800; margin-top:12px; font-size:1.2rem;">Your Messages</h3>
+                        <p style="font-size:0.9rem; color:var(--ink-light); font-weight:600; margin-top:6px;">Select a conversation from the left sidebar to start chatting.</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        loadChatConnections();
             } else if (view === 'mystickets') {
                 viewTitle.innerText = 'My Support Tickets 🎫';
                 mainView.innerHTML = `
@@ -817,7 +817,37 @@ mainView.innerHTML = `
         document.getElementById('supportDesc').value = ''; 
     }
 }
-// Direct Messages & Chat Maximize
+
+      // Direct Messages & Chat Maximize
+
+        // 🌟 PASTE IT RIGHT HERE:
+        window.openFullScreenMessages = function(recipientId, recipientName) {
+            activeRecipientId = recipientId;
+            activeChatUserName = recipientName;
+            
+            const wrapper = document.getElementById('fullChatWrapper');
+            if (wrapper) wrapper.style.display = 'block';
+
+            const nameEl = document.getElementById('activeChatterName');
+            if (nameEl) nameEl.innerText = recipientName || "Chat";
+
+            const savedWallpaper = localStorage.getItem(`hoknex_wallpaper_${recipientId}`) || 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)';
+            const containerWrapper = document.getElementById('fullChatWrapperContainer');
+            if (containerWrapper) containerWrapper.style.background = savedWallpaper;
+
+            if (typeof loadMessages === 'function') loadMessages();
+            if (typeof pollTimer !== 'undefined' && pollTimer) clearInterval(pollTimer);
+            pollTimer = setInterval(() => {
+                if (typeof loadMessages === 'function') loadMessages();
+            }, 3000);
+        };
+
+        async function loadChatConnections() {
+            try {
+                const username = localStorage.getItem('hoknex_user');
+                const res = await fetch(`/api/users/${encodeURIComponent(username)}`);
+                ...  
+        // Direct Messages & Chat Maximize
 async function loadChatConnections() {
     try {
         const username = localStorage.getItem('hoknex_user');
