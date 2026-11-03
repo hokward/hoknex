@@ -842,7 +842,7 @@ async function loadChatConnections() {
         const connections = allUsers.filter(u => connectedIds.includes(u._id.toString()));
         
         container.innerHTML = connections.map(conn => `
-            <div onclick="openFullScreenChat('${conn._id}', '${conn.name}')" style="display:flex; align-items:center; gap:10px; padding:10px; border-radius:8px; cursor:pointer; background:var(--canvas); border:1px solid var(--border); transition: all 0.15s;" onmouseover="this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.background='var(--canvas)'">
+           <div onclick="openFullScreenMessages('${conn._id}', '${conn.name}')" style="display:flex; align-items:center; gap:10px; padding:10px; border-radius:8px; cursor:pointer; background:var(--canvas); border:1px solid var(--border); transition: all 0.15s;" onmouseover="this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.background='var(--canvas)'">
                 <div class="avatar-circle" style="width:36px; height:36px; font-size:0.9rem;">${conn.name ? conn.name.charAt(0).toUpperCase() : 'H'}</div>
                 <div style="overflow:hidden;">
                     <h4 style="font-weight:800; font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${conn.name}</h4>
