@@ -957,45 +957,46 @@ function closeChat() {
 }
 
 async function loadMessages() {
-    const sender = localStorage.getItem('hoknex_user');
+    const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
     const targetUser = activeRecipientId;
+    
     if (!sender || !targetUser) return;
 
     try {
         const res = await fetch(`/api/messages/${sender}/${targetUser}`);
+        if (!res.ok) return;
+        
         const data = await res.json();
         const messages = Array.isArray(data) ? data : [];
-        
-        const canvas = document.getElementById('chatCanvas') || document.getElementById('fullChatMessages');
-        if (!canvas) return;
 
-        canvas.innerHTML = messages.map(m => {
-            const isMe = m.sender === sender;
-            let textContent = m.text || '';
-            let contentHtml = `<span>${textContent}</span>`;
+        // Support both chatCanvas and fullChatMessages containers
+        const container = document.getElementById('chatCanvas') || document.getElementById('fullChatMessages');
+        if (!container) return;
 
-            if (textContent.startsWith('[Media]:')) {
-                const mediaUrl = textContent.replace('[Media]:', '').trim();
-                contentHtml = `<img src="${mediaUrl}" style="max-width:200px; border-radius:10px; display:block;" />`;
-            }
+        if (messages.length === 0) {
+            container.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; font-weight: 600; margin-top: 20px;">No messages yet. Say hello! 👋</p>`;
+            return;
+        }
 
+        container.innerHTML = messages.map(msg => {
+            const msgSender = msg.sender?._id || msg.sender;
+            const isMe = (msgSender === sender || msgSender === localStorage.getItem('hoknex_user') || msgSender === localStorage.getItem('hoknex_uid'));
+            
             return `
-                <div style="display:flex; flex-direction:column; align-items:${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 8px;">
-                    <div class="${isMe ? 'chat-bubble-sent' : 'chat-bubble-received'}">
-                        ${contentHtml}
+                <div style="display: flex; justify-content: ${isMe ? 'flex-end' : 'flex-start'}; width: 100%; margin-bottom: 8px;">
+                    <div style="max-width: 70%; padding: 10px 14px; border-radius: 14px; background: ${isMe ? 'var(--primary, #6366f1)' : 'var(--paper)'}; color: ${isMe ? '#fff' : 'var(--ink)'}; font-size: 0.9rem; font-weight: 600; word-break: break-word; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        ${msg.text || msg.message || ''}
                     </div>
-                    <span style="font-size:0.6rem; color:#888; margin-top:2px; padding:0 4px;">
-                        ${new Date(m.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
                 </div>
             `;
         }).join('');
-        canvas.scrollTop = canvas.scrollHeight;
-    } catch (err) {
-        console.error("Error loading chat:", err);
+
+        // Auto-scroll to bottom
+        container.scrollTop = container.scrollHeight;
+    } catch (e) {
+        console.error('Error loading messages:', e);
     }
 }
-
 function toggleMessengerFullScreen() {
     isMessengerFullScreen = !isMessengerFullScreen;
     const wrapper = document.getElementById('fullChatWrapper');
