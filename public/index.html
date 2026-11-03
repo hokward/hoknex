@@ -75,32 +75,32 @@
             </form>
 
             <!-- Create Account Form -->
-<form id="signupForm" class="auth-form" style="display:none;" onsubmit="handleCreateAccountSubmit(event)">
-    <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="regName" placeholder="Alex Morgan" required>
-    </div>
-    <div class="form-group">
-        <label>Username</label>
-        <input type="text" id="regUsername" placeholder="alex_morgan" required>
-    </div>
-    <div class="form-group">
-        <label>Campus Email</label>
-        <input type="email" id="regEmail" placeholder="alex@university.edu" required>
-    </div>
-    <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="regPassword" placeholder="••••••••" required>
-    </div>
-    
-    <!-- OTP Input (Hidden by default) -->
-    <div class="form-group" id="otpGroup" style="display:none;">
-        <label style="color: var(--accent-purple); font-weight: bold;">Enter 6-Digit OTP from Email</label>
-        <input type="text" id="otpInput" placeholder="123456" maxlength="6">
-    </div>
+            <form id="signupForm" class="auth-form" style="display:none;" onsubmit="handleCreateAccountSubmit(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" placeholder="Alex Morgan" required>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" placeholder="alex_morgan" required>
+                </div>
+                <div class="form-group">
+                    <label>Campus Email</label>
+                    <input type="email" id="regEmail" placeholder="alex@university.edu" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="••••••••" required>
+                </div>
+                
+                <!-- OTP Input (Hidden by default) -->
+                <div class="form-group" id="otpGroup" style="display:none;">
+                    <label style="color: var(--accent-purple); font-weight: bold;">Enter 6-Digit OTP from Email</label>
+                    <input type="text" id="otpInput" placeholder="123456" maxlength="6">
+                </div>
 
-    <button type="submit" id="createAccountBtn" class="btn-create" style="width:100%; margin-top:10px;">Create Account</button>
-</form>
+                <button type="submit" id="createAccountBtn" class="btn-create btn-primary" style="width:100%; margin-top:10px;">Create Account</button>
+            </form>
         </div>
     </section>
 
@@ -148,11 +148,10 @@
         </div>
     </section>
 
- <!-- Founder's Note Section -->
+    <!-- Founder's Note Section -->
     <section class="hoknex-founder-section">
         <div class="founder-card-box">
             <div class="founder-image-wrapper">
-                <!-- Make sure your image file is named founder.png in your public folder -->
                 <img src="founder.png" alt="Aditya Kumar - Founder of Hoknex">
             </div>
             <div class="founder-content">
@@ -169,8 +168,7 @@
         </div>
     </section>
 
-
-    <!-- Multi-Column Footer Inspired by Video -->
+    <!-- Multi-Column Footer -->
     <footer class="hoknex-footer-multi">
         <div class="footer-grid">
             <div class="footer-col">
@@ -210,10 +208,21 @@
         </div>
     </footer>
 
+    <!-- Universal Modern Centered Notification / Popup Modal -->
+    <div id="hoknexPopupModal" class="modal-overlay">
+        <div class="modal-content text-center" style="max-width: 400px; text-align: center;">
+            <button class="close-modal" onclick="closePopupModal()">&times;</button>
+            <div id="popupModalEmoji" style="font-size: 2.8rem; margin-bottom: 0.5rem;">✨</div>
+            <h2 id="popupModalTitle" style="font-size: 1.4rem; margin-bottom: 0.75rem;">Notice</h2>
+            <p id="popupModalText" style="margin-bottom: 1.5rem; font-size: 0.95rem;">Message goes here...</p>
+            <button class="btn-primary" onclick="closePopupModal()" style="width: 100%;">Got it!</button>
+        </div>
+    </div>
+
     <!-- Modals for Features, Privacy, Terms, and Support -->
     <div id="featuresModal" class="modal-overlay">
         <div class="modal-content">
-            <button class="close-modal" onclick="closeModal('featuresModal')">X</button>
+            <button class="close-modal" onclick="closeModal('featuresModal')">&times;</button>
             <h2>🚀 Hoknex Platform Features</h2>
             <p>Explore what makes Hoknex the ultimate global campus network:</p>
             <ul>
@@ -228,7 +237,7 @@
 
     <div id="privacyModal" class="modal-overlay">
         <div class="modal-content">
-            <button class="close-modal" onclick="closeModal('privacyModal')">X</button>
+            <button class="close-modal" onclick="closeModal('privacyModal')">&times;</button>
             <h2>🔒 Hoknex Privacy Policy</h2>
             <p>Last updated: 2026</p>
             <p>At Hoknex, we prioritize the privacy and security of students across global campuses. Here is how we handle your data:</p>
@@ -240,7 +249,7 @@
 
     <div id="termsModal" class="modal-overlay">
         <div class="modal-content">
-            <button class="close-modal" onclick="closeModal('termsModal')">X</button>
+            <button class="close-modal" onclick="closeModal('termsModal')">&times;</button>
             <h2>📜 Hoknex Terms of Service</h2>
             <p>Welcome to Hoknex! By registering and using our platform, you agree to the following guidelines:</p>
             <p><strong>1. Student Community Standards:</strong> Hoknex is a collaborative platform for schools and colleges worldwide. Respect your fellow peers across all interactions, posts, and comments.</p>
@@ -251,19 +260,19 @@
 
     <div id="supportModal" class="modal-overlay">
         <div class="modal-content">
-            <button class="close-modal" onclick="closeModal('supportModal')">X</button>
+            <button class="close-modal" onclick="closeModal('supportModal')">&times;</button>
             <h2>🛠️ Hoknex Platform Support</h2>
             <p>Need assistance or have queries? Reach out to our official team directly:</p>
             <p>📧 <strong>Official Email:</strong> <a href="mailto:hoknex.in@gmail.com" style="color: #3b82f6; text-decoration: none;">support@hoknex.edu</a></p>
             <p>📞 <strong>Send Message:</strong> In Queries Section (Mon-Fri, 9 AM - 6 PM)</p>
             
-            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 1.5rem 0;">
 
             <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 0.75rem;">Send a query directly to the Hoknex team</h3>
             <form onsubmit="handleSupportSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem;">
                 <div class="form-group">
                     <label>Describe your problem or feedback</label>
-                    <textarea id="supportDesc" rows="3" placeholder="Tell us what's going wrong or what feature you need..." required style="background:#0f172a; border:1px solid var(--border-color); padding:10px; border-radius:8px; color:#fff; outline:none; resize:vertical;"></textarea>
+                    <textarea id="supportDesc" rows="3" placeholder="Tell us what's going wrong or what feature you need..." required style="background:rgba(8,12,20,0.75); border:1.5px solid rgba(255,255,255,0.12); padding:12px; border-radius:12px; color:#fff; outline:none; resize:vertical; font-family:'Plus Jakarta Sans',sans-serif;"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Attach screenshot (Optional)</label>
@@ -274,8 +283,20 @@
         </div>
     </div>
 
-    <!-- Script to Fetch Real Data & Handle Modals & Auth -->
+    <!-- Script to Handle Modern Custom Popups, Modals, & Auth Logic -->
     <script>
+        // Custom Modern Popup Handler replacing native alert()
+        function showHoknexPopup(title, message, emoji = '✨') {
+            document.getElementById('popupModalTitle').innerText = title;
+            document.getElementById('popupModalText').innerText = message;
+            document.getElementById('popupModalEmoji').innerText = emoji;
+            document.getElementById('hoknexPopupModal').style.display = 'flex';
+        }
+
+        function closePopupModal() {
+            document.getElementById('hoknexPopupModal').style.display = 'none';
+        }
+
         function switchTab(tab) {
             const loginForm = document.getElementById('signinForm');
             const signupForm = document.getElementById('signupForm');
@@ -302,42 +323,37 @@
         function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
         async function handleSupportSubmit(e) {
-    e.preventDefault();
-    const description = document.getElementById('supportDesc').value;
-    const screenshotInput = document.getElementById('supportScreenshot');
-    
-    // Grab the username from local storage, or default to 'Student' if not logged in
-    const username = localStorage.getItem('hoknex_user') || 'Student';
+            e.preventDefault();
+            const description = document.getElementById('supportDesc').value;
+            const screenshotInput = document.getElementById('supportScreenshot');
+            
+            const username = localStorage.getItem('hoknex_user') || 'Student';
 
-    try {
-        const res = await fetch('/api/support', {
-            method: 'POST',
-            // ADDED HEADERS FOR JSON
-            headers: {
-                'Content-Type': 'application/json' 
-            },
-            // SENDING AS JSON (Note: screenshot is excluded as backend expects text only)
-            body: JSON.stringify({
-                username: username,
-                query: description 
-            })
-        });
+            try {
+                const res = await fetch('/api/support', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: username,
+                        query: description 
+                    })
+                });
 
-        const data = await res.json();
+                const data = await res.json();
 
-        if (res.ok) {
-            alert('Your query has been successfully sent to the Hoknex support team!');
-            closeModal('supportModal');
-            document.getElementById('supportDesc').value = '';
-            if (screenshotInput) screenshotInput.value = ''; // Reset file input
-        } else {
-            alert('Failed: ' + (data.error || 'Please try again.'));
+                if (res.ok) {
+                    showHoknexPopup('Query Sent!', 'Your query has been successfully sent to the Hoknex support team!', '🎉');
+                    closeModal('supportModal');
+                    document.getElementById('supportDesc').value = '';
+                    if (screenshotInput) screenshotInput.value = '';
+                } else {
+                    showHoknexPopup('Submission Failed', data.error || 'Please try again.', '⚠️');
+                }
+            } catch (err) {
+                console.error('Support fetch error:', err);
+                showHoknexPopup('Network Error', 'Network error while submitting support ticket.', '❌');
+            }
         }
-    } catch (err) {
-        console.error('Support fetch error:', err);
-        alert('Network error while submitting support ticket.');
-    }
-}
 
         // Fetch Real Database Stats
         async function fetchLiveStats() {
@@ -397,35 +413,89 @@
             }
         }
 
-        // Handle Register API
-        async function handleRegister(e) {
-            e.preventDefault();
-            const name = document.getElementById('regName').value;
-            const username = document.getElementById('regUsername').value;
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
-            const err = document.getElementById('regError');
-            err.innerText = '';
+        let pendingVerificationEmail = null;
 
-            try {
-                const res = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, username, email, password })
-                });
-                const data = await res.json();
-                if(res.ok) {
-                    localStorage.setItem('hoknex_user', username);
-                    window.location.href = 'feed.html';
-                } else {
-                    err.innerText = data.error || 'Registration failed';
+        async function handleCreateAccountSubmit(event) {
+            event.preventDefault();
+
+            const btn = document.getElementById('createAccountBtn');
+
+            // PHASE 1: SEND OTP
+            if (!pendingVerificationEmail) {
+                const fullName = document.getElementById('regName').value;
+                const username = document.getElementById('regUsername').value;
+                const email = document.getElementById('regEmail').value;
+                const password = document.getElementById('regPassword').value;
+
+                btn.innerText = "Sending Code...";
+
+                try {
+                    const res = await fetch('/api/send-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fullName, username, email, password })
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        pendingVerificationEmail = email;
+                        showHoknexPopup('Verification Code Sent', 'A 6-digit code has been sent to your email!', '✉️');
+
+                        document.getElementById('regName').parentElement.style.display = 'none';
+                        document.getElementById('regUsername').parentElement.style.display = 'none';
+                        document.getElementById('regPassword').parentElement.style.display = 'none';
+                        document.getElementById('regEmail').parentElement.style.display = 'none';
+
+                        document.getElementById('otpGroup').style.display = 'block';
+                        btn.innerText = "Verify OTP & Create Account";
+                    } else {
+                        showHoknexPopup('Error', data.error, '⚠️');
+                        btn.innerText = "Create Account";
+                    }
+                } catch (e) {
+                    showHoknexPopup('Connection Error', 'Error connecting to server.', '❌');
+                    btn.innerText = "Create Account";
                 }
-            } catch(err) {
-                err.innerText = 'Connection error.';
+            }
+            // PHASE 2: VERIFY OTP
+            else {
+                const otp = document.getElementById('otpInput').value;
+                if (!otp) {
+                    showHoknexPopup('Missing Code', 'Please enter the OTP!', '⚠️');
+                    return;
+                }
+
+                btn.innerText = "Verifying...";
+
+                try {
+                    const res = await fetch('/api/verify-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: pendingVerificationEmail, otp })
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        localStorage.setItem('hoknex_user', document.getElementById('regUsername').value);
+                        showHoknexPopup('Welcome!', 'Welcome to Hoknex! Account created successfully.', '🎉');
+                        setTimeout(() => {
+                            window.location.href = 'feed.html';
+                        }, 1200);
+                    } else {
+                        showHoknexPopup('Verification Failed', data.error, '❌');
+                        btn.innerText = "Verify OTP & Create Account";
+                    }
+                } catch (e) {
+                    showHoknexPopup('Error', 'Error verifying code.', '❌');
+                    btn.innerText = "Verify OTP & Create Account";
+                }
             }
         }
     </script>
 
+    <!-- Crisp Chat Integration -->
     <script type="text/javascript">
       window.$crisp = [];
       window.CRISP_WEBSITE_ID = "16854fc2-8ef6-410b-8b74-a5f0b6740368";
@@ -438,85 +508,5 @@
       })();
     </script>
 
-    <script>
-      let pendingVerificationEmail = null;
-
-      async function handleCreateAccountSubmit(event) {
-          event.preventDefault(); // Stop page refresh
-
-          const btn = document.getElementById('createAccountBtn');
-
-          // PHASE 1: SEND OTP
-          if (!pendingVerificationEmail) {
-              const fullName = document.getElementById('regName').value;
-              const username = document.getElementById('regUsername').value;
-              const email = document.getElementById('regEmail').value;
-              const password = document.getElementById('regPassword').value;
-
-              btn.innerText = "Sending Code...";
-
-              try {
-                  const res = await fetch('/api/send-otp', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ fullName, username, email, password })
-                  });
-
-                  const data = await res.json();
-
-                  if (data.success) {
-                      pendingVerificationEmail = email;
-                      alert('A 6-digit code has been sent to your email!');
-
-                      // Hide standard inputs, show OTP input
-                      document.getElementById('regName').parentElement.style.display = 'none';
-                      document.getElementById('regUsername').parentElement.style.display = 'none';
-                      document.getElementById('regPassword').parentElement.style.display = 'none';
-
-                      document.getElementById('otpGroup').style.display = 'block';
-                      btn.innerText = "Verify OTP & Create Account";
-                  } else {
-                      alert(data.error);
-                      btn.innerText = "Create Account";
-                  }
-              } catch (e) {
-                  alert("Error connecting to server.");
-                  btn.innerText = "Create Account";
-              }
-          }
-          // PHASE 2: VERIFY OTP
-          else {
-              const otp = document.getElementById('otpInput').value;
-              if (!otp) return alert('Please enter the OTP!');
-
-              btn.innerText = "Verifying...";
-
-              try {
-                  const res = await fetch('/api/verify-otp', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ email: pendingVerificationEmail, otp })
-                  });
-
-                  const data = await res.json();
-
-                  if (data.success) {
-                      // Save session and redirect
-                      localStorage.setItem('hoknex_user', document.getElementById('regUsername').value);
-                      alert('Welcome to Hoknex! Account created successfully.');
-                      window.location.href = 'feed.html';
-                  } else {
-                      alert(data.error);
-                      btn.innerText = "Verify OTP & Create Account";
-                  }
-              } catch (e) {
-                  alert("Error verifying code.");
-                  btn.innerText = "Verify OTP & Create Account";
-              }
-          }
-      }
-    </script>
-
 </body>
-
 </html>
