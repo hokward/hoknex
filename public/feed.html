@@ -931,30 +931,94 @@ function loadFullScreenMessages(recipientId, recipientName) {
     openFullScreenChat(recipientId || activeRecipientId, recipientName || activeChatUserName);
 }
 
-function openFullScreenChat(recipientId, recipientName) {
+window.openFullScreenChat = function(recipientId, recipientName) {
     activeRecipientId = recipientId;
     activeChatUserName = recipientName;
     
+    // Ensure the chat canvas/wrapper area is visible
     const wrapper = document.getElementById('fullChatWrapper');
     if (wrapper) wrapper.style.display = 'block';
 
-    const nameEl = document.getElementById('activeChatterName');
-    if (nameEl) nameEl.innerText = recipientName || "Chat";
+    const canvasArea = document.getElementById('chatCanvasArea') || document.getElementById('chatCanvas');
+    if (!canvasArea) return;
 
+    // Retrieve saved custom chat wallpaper or default Instagram/Messenger dark gradient
     const savedWallpaper = localStorage.getItem(`hoknex_wallpaper_${recipientId}`) || 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)';
-    const containerWrapper = document.getElementById('fullChatWrapperContainer');
-    if (containerWrapper) containerWrapper.style.background = savedWallpaper;
 
-    loadMessages();
-    if (pollTimer) clearInterval(pollTimer);
-    pollTimer = setInterval(loadMessages, 3000);
-}
+    // Inject the full Instagram/Messenger UI Layout
+    canvasArea.innerHTML = `
+        <div id="fullChatWrapperContainer" style="display: flex; flex-direction: column; height: 100%; width: 100%; background: ${savedWallpaper}; transition: background 0.3s ease;">
+            
+            <!-- 🌟 Active Chat Header -->
+            <div style="padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="avatar-circle" style="width: 40px; height: 40px; font-size: 1rem; font-weight: 800; background: var(--primary, #6366f1); color: #fff;">
+                        ${recipientName ? recipientName.charAt(0).toUpperCase() : 'C'}
+                    </div>
+                    <div>
+                        <h3 style="font-weight: 800; font-size: 1rem; color: #fff; margin: 0;" id="activeChatterName">${recipientName || 'Chat'}</h3>
+                        <span style="font-size: 0.75rem; color: #10b981; font-weight: 600;">● Active now</span>
+                    </div>
+                </div>
 
-function closeChat() {
+                <!-- Action Buttons: Call & Wallpaper & Close -->
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button onclick="startVoiceCall('${recipientId}')" title="Voice Call" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">📞</button>
+                    <button onclick="startVideoCall('${recipientId}')" title="Video Call" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">📹</button>
+                    <button onclick="changeChatWallpaper('${recipientId}')" title="Change Wallpaper" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">🎨</button>
+                    <button onclick="closeChat()" title="Close Chat" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">✕</button>
+                </div>
+            </div>
+
+            <!-- 🌟 Messages History Stream Container -->
+            <div id="fullChatMessages" style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;">
+                <p style="text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem; font-weight: 600; margin-top: 20px;">Loading secure conversation...</p>
+            </div>
+
+            <!-- 🌟 Message Input Bar with Attachments -->
+            <div style="padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); display: flex; gap: 12px; align-items: center;">
+                <input type="file" id="chatMediaInput" style="display: none;" onchange="sendMediaMessage(this)">
+                <button onclick="document.getElementById('chatMediaInput').click()" title="Attach Media" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 1rem;">📎</button>
+                
+                <input type="text" id="fullChatInput" placeholder="Message ${recipientName || ''}..." style="flex: 1; padding: 12px 18px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: #fff; font-weight: 600; outline: none; font-size: 0.95rem;" onkeydown="if(event.key==='Enter') sendFullScreenMessage()">
+                
+                <button onclick="sendFullScreenMessage()" class="btn-create" style="border-radius: 24px; padding: 10px 22px; font-weight: 800; background: var(--primary, #6366f1); border: none; color: #fff; cursor: pointer;">Send 🚀</button>
+            </div>
+        </div>
+    `;
+
+    // Immediately fetch messages and start live polling loop
+    if (typeof loadMessages === 'function') loadMessages();
+    
+    if (typeof pollTimer !== 'undefined' && pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(() => {
+        if (typeof loadMessages === 'function') loadMessages();
+    }, 3000);
+};
+
+// Helper function to customize chat wallpaper dynamically
+window.changeChatWallpaper = function(recipientId) {
+    const gradients = [
+        'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+        'linear-gradient(135deg, #831843 0%, #4c1d95 100%)',
+        'linear-gradient(135deg, #065f46 0%, #1e3a8a 100%)',
+        'linear-gradient(135deg, #78350f 0%, #701a75 100%)',
+        '#000000'
+    ];
+    const current = localStorage.getItem(`hoknex_wallpaper_${recipientId}`) || gradients[0];
+    let nextIdx = (gradients.indexOf(current) + 1) % gradients.length;
+    const newWallpaper = gradients[nextIdx];
+    
+    localStorage.setItem(`hoknex_wallpaper_${recipientId}`, newWallpaper);
+    const container = document.getElementById('fullChatWrapperContainer');
+    if (container) container.style.background = newWallpaper;
+};
+
+window.closeChat = function() {
     const wrapper = document.getElementById('fullChatWrapper');
     if (wrapper) wrapper.style.display = 'none';
-    if (pollTimer) clearInterval(pollTimer);
-}
+    if (typeof pollTimer !== 'undefined' && pollTimer) clearInterval(pollTimer);
+};
 
 async function loadMessages() {
     const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
