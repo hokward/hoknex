@@ -968,38 +968,51 @@ mainView.innerHTML = `
        let activeRecipientId = null;
 let pollTimer = null;
 
+let activeRecipientId = null;
+let pollTimer = null;
+
+// Aliased functions to catch any button or UI calls
+function loadFullScreenMessages(recipientId, recipientName) {
+    openChat(recipientId, recipientName || activeChatUser);
+}
+
 function openChat(recipientId, recipientName) {
-    activeRecipientId = recipientId;
-    document.getElementById('activeChatterName').innerText = recipientName;
-    document.getElementById('fullChatWrapper').style.display = 'block';
+    activeRecipientId = recipientId || activeChatUser;
+    const nameEl = document.getElementById('activeChatterName');
+    if (nameEl) nameEl.innerText = recipientName || "Chat";
+    
+    const wrapper = document.getElementById('fullChatWrapper');
+    if (wrapper) wrapper.style.display = 'block';
 
     loadMessages();
     if (pollTimer) clearInterval(pollTimer);
-    pollTimer = setInterval(loadMessages, 3000); // 3s polling for real-time feel on Vercel
+    pollTimer = setInterval(loadMessages, 3000);
 }
 
 function closeChat() {
-    document.getElementById('fullChatWrapper').style.display = 'none';
+    const wrapper = document.getElementById('fullChatWrapper');
+    if (wrapper) wrapper.style.display = 'none';
     if (pollTimer) clearInterval(pollTimer);
 }
 
 async function loadMessages() {
     const sender = localStorage.getItem('hoknex_user');
-    if (!sender || !activeRecipientId) return;
+    const targetUser = activeRecipientId || activeChatUser;
+    if (!sender || !targetUser) return;
 
     try {
-        const res = await fetch(`/api/messages/${sender}/${activeRecipientId}`);
+        const res = await fetch(`/api/messages/${sender}/${targetUser}`);
         const messages = await res.json();
         
-        const canvas = document.getElementById('chatCanvas');
+        const canvas = document.getElementById('chatCanvas') || document.getElementById('chatBox');
         if (!canvas) return;
 
         canvas.innerHTML = messages.map(m => {
             const isMe = m.sender === sender;
             return `
-                <div style="display:flex; flex-direction:column; align-items:${isMe ? 'flex-end' : 'flex-start'};">
+                <div style="display:flex; flex-direction:column; align-items:${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 8px;">
                     <div class="${isMe ? 'chat-bubble-sent' : 'chat-bubble-received'}">
-                        <span>${m.text}</span>
+                        <span>${m.text || ''}</span>
                     </div>
                     <span style="font-size:0.6rem; color:#888; margin-top:2px; padding:0 4px;">
                         ${new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -1014,25 +1027,35 @@ async function loadMessages() {
 }
 
 async function sendActiveMessage() {
-    const input = document.getElementById('chatMessageInput');
+    const input = document.getElementById('chatMessageInput') || document.getElementById('FullChatInput');
     if (!input) return;
 
     const text = input.value.trim();
     const sender = localStorage.getItem('hoknex_user');
+    const targetUser = activeRecipientId || activeChatUser;
 
-    if (!text || !activeRecipientId) return;
+    if (!text || !targetUser) return;
 
     try {
         await fetch('/api/messages', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sender, recipient: activeRecipientId, text, mediaType: 'text' })
+            body: JSON.stringify({ sender, recipient: targetUser, text, mediaType: 'text' })
         });
         input.value = '';
         loadMessages();
     } catch (err) {
         console.error("Send failed:", err);
     }
+}
+
+// Alias for sendFullScreenMessage to prevent any 500/reference errors
+async function sendFullScreenMessage() {
+    await sendActiveMessage();
+}
+
+function handleChatKeyPress(e) {
+    if (e.key === 'Enter') sendActiveMessage();
 }
 
 function handleChatKeyPress(e) {
