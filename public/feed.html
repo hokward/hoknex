@@ -620,7 +620,7 @@ mainView.innerHTML = `
            <div id="projectsContainer"></div>
         `;
         loadAndRenderProjects();
-     async function loadAndRenderProjects() {
+    async function loadAndRenderProjects() {
     const container = document.getElementById('projectsContainer') || document.getElementById('projectContainer');
     if (!container) return;
 
@@ -634,7 +634,6 @@ mainView.innerHTML = `
         }
 
         container.innerHTML = projs.map(p => {
-            // Check all potential image property names to ensure Cloudinary URL renders
             const imgSource = p.imageUrl || p.image || '';
             const descriptionText = p.desc || p.description || p.pitch || '';
 
