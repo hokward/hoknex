@@ -431,6 +431,48 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
+const Message = require('./models/Message');
+
+// 1. Post a message (Text, Audio, or Image)
+app.post('/api/messages', async (req, res) => {
+    try {
+        const { sender, recipient, text, mediaUrl, mediaType } = req.body;
+        if (!sender || !recipient) {
+            return res.status(400).json({ error: 'Sender and recipient are required.' });
+        }
+
+        const msg = new Message({
+            sender,
+            recipient,
+            text: text || '',
+            mediaUrl: mediaUrl || '',
+            mediaType: mediaType || 'text'
+        });
+        await msg.save();
+        res.status(201).json(msg);
+    } catch (err) {
+        console.error('Message save error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 2. Get conversation between two users
+app.get('/api/messages/:user1/:user2', async (req, res) => {
+    try {
+        const { user1, user2 } = req.params;
+        const messages = await Message.find({
+            $or: [
+                { sender: user1, recipient: user2 },
+                { sender: user2, recipient: user1 }
+            ]
+        }).sort({ createdAt: 1 });
+        res.json(messages);
+    } catch (err) {
+        console.error('Fetch messages error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // --- VOTE ON A POST POLL API ---
 app.post('/api/posts/:id/vote', async (req, res) => {
     try {
