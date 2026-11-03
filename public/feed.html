@@ -1831,9 +1831,9 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
     }
 
     // Render image with path fix and download button
-  // Render campus post image safely
+ // Render campus post image safely using schema's imageUrl field
 let imageHtml = '';
-const rawImg = post.img || post.image || '';
+const rawImg = post.imageUrl || post.img || post.image || '';
 if (rawImg) {
     let imgSource = rawImg;
     if (!rawImg.startsWith('http') && !rawImg.startsWith('data:') && !rawImg.startsWith('/')) {
