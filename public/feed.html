@@ -1000,7 +1000,10 @@ async function loadMessages() {
 
     try {
         const res = await fetch(`/api/messages/${sender}/${targetUser}`);
-        const messages = await res.json();
+        const data = await res.json();
+        
+        // Ensure messages is always an array
+        const messages = Array.isArray(data) ? data : [];
         
         const canvas = document.getElementById('chatCanvas') || document.getElementById('chatBox');
         if (!canvas) return;
@@ -1013,7 +1016,7 @@ async function loadMessages() {
                         <span>${m.text || ''}</span>
                     </div>
                     <span style="font-size:0.6rem; color:#888; margin-top:2px; padding:0 4px;">
-                        ${new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        ${new Date(m.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                 </div>
             `;
