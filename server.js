@@ -412,14 +412,21 @@ app.post('/api/messages', async (req, res) => {
 });
 
 app.get('/api/messages/:user1/:user2', async (req, res) => {
-  try {
-    const u1 = new mongoose.Types.ObjectId(req.params.user1);
-    const u2 = new mongoose.Types.ObjectId(req.params.user2);
-    const messages = await Message.find({ $or: [{ sender: u1, recipient: u2 }, { sender: u2, recipient: u1 }] }).sort({ createdAt: 1 });
-    res.json(messages);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    try {
+        const { user1, user2 } = req.params;
+        const messages = await Message.find({
+            $or: [
+                { sender: user1, recipient: user2 },
+                { sender: user2, recipient: user1 }
+            ]
+        }).sort({ createdAt: 1 });
+
+        // ALWAYS return an array, even if empty
+        res.json(Array.isArray(messages) ? messages : []);
+    } catch (err) {
+        console.error('Fetch messages error:', err);
+        res.status(500).json([]); // Return empty array on error instead of object
+    }
 });
 
 app.get('/api/posts', async (req, res) => {
@@ -451,23 +458,6 @@ app.post('/api/messages', async (req, res) => {
         res.status(201).json(msg);
     } catch (err) {
         console.error('Message save error:', err);
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// 2. Get conversation between two users
-app.get('/api/messages/:user1/:user2', async (req, res) => {
-    try {
-        const { user1, user2 } = req.params;
-        const messages = await Message.find({
-            $or: [
-                { sender: user1, recipient: user2 },
-                { sender: user2, recipient: user1 }
-            ]
-        }).sort({ createdAt: 1 });
-        res.json(messages);
-    } catch (err) {
-        console.error('Fetch messages error:', err);
         res.status(500).json({ error: err.message });
     }
 });
