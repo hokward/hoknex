@@ -620,31 +620,37 @@ mainView.innerHTML = `
            <div id="projectsContainer"></div>
         `;
         loadAndRenderProjects();
-      async function loadAndRenderProjects() {
-    const container = document.getElementById('projectsContainer');
+     async function loadAndRenderProjects() {
+    const container = document.getElementById('projectsContainer') || document.getElementById('projectContainer');
     if (!container) return;
-    
+
     try {
         const res = await fetch('/api/projects');
         const projs = await res.json();
-        
+
         if (!projs || projs.length === 0) {
-            container.innerHTML = `<div class="post-card" style="padding: 20px; text-align: center;"><p style="font-weight:650; color: var(--ink-light);">No projects found yet.</p></div>`;
+            container.innerHTML = `<div class="post-card" style="padding: 28px; text-align: center;"><p style="font-weight: 600; color: var(--ink-light);">No projects yet. Be the first to launch one! 🚀</p></div>`;
             return;
         }
 
-        container.innerHTML = projs.map(p => `
-            <div class="post-card" style="margin-bottom: 20px;">
-                <h4>🚀 ${p.title}</h4>
-                <p>${p.description || p.pitch || ''}</p>
-               ${p.image ? `<img src="${p.image}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-top: 10px;">` : ''}
-            </div>
-        `).join('');
+        container.innerHTML = projs.map(p => {
+            // Check all potential image property names to ensure Cloudinary URL renders
+            const imgSource = p.imageUrl || p.image || '';
+            const descriptionText = p.desc || p.description || p.pitch || '';
+
+            return `
+            <div class="post-card" style="margin-bottom: 20px; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
+                <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--ink); margin-bottom: 8px;">${p.title || 'Untitled Project'}</h4>
+                <p style="font-size: 0.95rem; color: var(--ink); line-height: 1.5; margin-bottom: 12px;">${descriptionText}</p>
+                ${imgSource ? `<img src="${imgSource}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border);" onerror="this.style.display='none'" />` : ''}
+            </div>`;
+        }).join('');
+
     } catch (err) {
-        console.error("Failed to load projects", err);
+        console.error("Failed to load projects:", err);
+        container.innerHTML = `<p style="color: var(--accent-coral); text-align: center; font-weight: 700;">Failed to load projects.</p>`;
     }
 }
-
             } else if (view === 'clubs') {
                 viewTitle.innerText = 'Hoknex Discord Hub 💬';
                 mainView.innerHTML = `
