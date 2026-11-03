@@ -821,14 +821,14 @@ mainView.innerHTML = `
       // Direct Messages & Chat Maximize
 
         // 🌟 PASTE IT RIGHT HERE:
-       window.openFullScreenMessages = function(recipientId, recipientName) {
+
+        window.openFullScreenMessages = function(recipientId, recipientName) {
     activeRecipientId = recipientId;
     activeChatUserName = recipientName;
     
     const canvasArea = document.getElementById('chatCanvasArea');
     if (!canvasArea) return;
 
-    // Render the active chat interface inside the canvas area
     canvasArea.innerHTML = `
         <div style="display: flex; flex-direction: column; height: 100%; width: 100%;">
             <!-- Chat Header -->
@@ -852,15 +852,40 @@ mainView.innerHTML = `
         </div>
     `;
 
-    // Load messages for this conversation
     if (typeof loadMessages === 'function') loadMessages();
     
-    // Set up polling to refresh messages
     if (typeof pollTimer !== 'undefined' && pollTimer) clearInterval(pollTimer);
     pollTimer = setInterval(() => {
         if (typeof loadMessages === 'function') loadMessages();
     }, 3000);
 };
+
+window.sendFullScreenMessage = async function() {
+    const input = document.getElementById('fullChatInput');
+    if (!input || !input.value.trim()) return;
+    
+    const messageText = input.value.trim();
+    input.value = ''; // Clear input immediately
+
+    try {
+        const res = await fetch('/api/messages/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                recipientId: activeRecipientId,
+                message: messageText,
+                senderId: localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user')
+            })
+        });
+        
+        if (res.ok) {
+            if (typeof loadMessages === 'function') loadMessages();
+        }
+    } catch (e) {
+        console.error('Error sending message:', e);
+    }
+};
+        
 async function loadChatConnections() {
     try {
         const username = localStorage.getItem('hoknex_user');
@@ -966,31 +991,6 @@ async function loadMessages() {
     } catch (err) {
         console.error("Error loading chat:", err);
     }
-}
-
-async function sendFullScreenMessage() {
-    const input = document.getElementById('fullChatInput') || document.getElementById('chatMessageInput');
-    if (!input) return;
-
-    const text = input.value.trim();
-    const sender = localStorage.getItem('hoknex_user');
-    if (!text || !activeRecipientId) return;
-
-    try {
-        await fetch('/api/messages', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sender, recipient: activeRecipientId, text, mediaType: 'text' })
-        });
-        input.value = '';
-        loadMessages();
-    } catch (err) {
-        console.error("Send failed:", err);
-    }
-}
-
-function handleChatKeyPress(e) {
-    if (e.key === 'Enter') sendFullScreenMessage();
 }
 
 function toggleMessengerFullScreen() {
