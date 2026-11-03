@@ -668,6 +668,8 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
             return res.status(400).json({ error: 'Title and description are required.' });
         }
 
+        const imageUrl = req.file ? req.file.path : '';
+
         const newProj = new Project({
             title,
             desc: description,
@@ -675,7 +677,7 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
             audience: audience || 'Open to All',
             techStack: techStack || '',
             projectUrl: projectUrl || '',
-            img: req.file ? `/uploads/${req.file.filename}` : '',
+            imageUrl: imageUrl, // Saves Cloudinary secure URL properly
             author: author || 'Student'
         });
 
