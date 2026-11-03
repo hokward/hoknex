@@ -822,13 +822,14 @@ mainView.innerHTML = `
 
         // 🌟 PASTE IT RIGHT HERE:
 
-        window.openFullScreenMessages = function(recipientId, recipientName) {
+      window.openFullScreenMessages = function(recipientId, recipientName) {
     activeRecipientId = recipientId;
     activeChatUserName = recipientName;
     
     const canvasArea = document.getElementById('chatCanvasArea');
     if (!canvasArea) return;
 
+    // Full UI layout with message stream container and input form
     canvasArea.innerHTML = `
         <div style="display: flex; flex-direction: column; height: 100%; width: 100%;">
             <!-- Chat Header -->
@@ -865,21 +866,23 @@ window.sendFullScreenMessage = async function() {
     if (!input || !input.value.trim()) return;
     
     const messageText = input.value.trim();
-    input.value = ''; // Clear input immediately
+    input.value = ''; // Clear input immediately for smooth UX
 
     try {
-        const res = await fetch('/api/messages', { // 🌟 Updated to match your server.js route!
+        const res = await fetch('/api/messages', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 recipientId: activeRecipientId,
-                message: messageText,
+                text: messageText, // Matches backend server.js req.body structure
                 senderId: localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user')
             })
         });
         
         if (res.ok) {
             if (typeof loadMessages === 'function') loadMessages();
+        } else {
+            console.error('Failed to send message. Status:', res.status);
         }
     } catch (e) {
         console.error('Error sending message:', e);
