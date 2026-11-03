@@ -482,7 +482,7 @@ app.post('/api/posts', upload.single('image'), async (req, res) => {
         const newPost = new Post({
             content: req.body.content || '',
             username: req.body.username || 'Student',
-            image: req.file ? req.file.path : null,
+           imageUrl: req.file ? req.file.path : '',
             poll: pollData, // <-- SAVE POLL TO DATABASE
             author: user ? user._id : null
         });
