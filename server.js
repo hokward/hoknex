@@ -662,10 +662,16 @@ app.post('/api/s', async (req, res) => {
 // Added upload.single('image') to parse FormData and handle file uploads
 app.post('/api/projects', upload.single('image'), async (req, res) => {
     try {
-        const { title, description, classification, audience, techStack, projectUrl, author } = req.body;
+        const title = req.body.title;
+        const description = req.body.desc || req.body.description || '';
+        const classification = req.body.classification || 'Showcase';
+        const audience = req.body.audience || 'Open to All';
+        const techStack = req.body.techStack || '';
+        const projectUrl = req.body.projectUrl || '';
+        const author = req.body.author || 'Student';
         
-        if (!title || !description) {
-            return res.status(400).json({ error: 'Title and description are required.' });
+        if (!title) {
+            return res.status(400).json({ error: 'Project title is required.' });
         }
 
         const imageUrl = req.file ? req.file.path : '';
@@ -673,12 +679,12 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
         const newProj = new Project({
             title,
             desc: description,
-            classification: classification || 'Showcase',
-            audience: audience || 'Open to All',
-            techStack: techStack || '',
-            projectUrl: projectUrl || '',
-            imageUrl: imageUrl, // Saves Cloudinary secure URL properly
-            author: author || 'Student'
+            classification,
+            audience,
+            techStack,
+            projectUrl,
+            imageUrl,
+            author
         });
 
         await newProj.save();
