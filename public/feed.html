@@ -817,170 +817,63 @@ mainView.innerHTML = `
         document.getElementById('supportDesc').value = ''; 
     }
 }
-
-        // Direct Messages & Chat Maximize
-        async function loadChatConnections() {
-            try {
-                const username = localStorage.getItem('hoknex_user');
-                const res = await fetch(`/api/users/${encodeURIComponent(username)}`);
-                if (!res.ok) return;
-                const user = await res.json();
-                
-                const followers = (user.followers || []).map(f => f._id ? f._id.toString() : f.toString());
-                const following = (user.following || []).map(f => f._id ? f._id.toString() : f.toString());
-                const connectedIds = [...new Set([...followers, ...following])];
-                
-                const container = document.getElementById('chatConnectionsList');
-                if (!container) return;
-                
-                if (!connectedIds.length) { 
-                    container.innerHTML = `<p style="font-size:0.85rem; color:var(--ink-light); font-weight:600; padding:10px;">No connections yet. Follow peers to chat!</p>`; 
-                    return; 
-                }
-                
-                const userRes = await fetch('/api/users');
-                const allUsers = await userRes.json();
-                const connections = allUsers.filter(u => connectedIds.includes(u._id.toString()));
-                
-                container.innerHTML = connections.map(conn => `
-                    <div onclick="openFullScreenChat('${conn._id}', '${conn.name}')" style="display:flex; align-items:center; gap:10px; padding:10px; border-radius:8px; cursor:pointer; background:var(--canvas); border:1px solid var(--border); transition: all 0.15s;" onmouseover="this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.background='var(--canvas)'">
-                        <div class="avatar-circle" style="width:36px; height:36px; font-size:0.9rem;">${conn.name ? conn.name.charAt(0).toUpperCase() : 'H'}</div>
-                        <div style="overflow:hidden;">
-                            <h4 style="font-weight:800; font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${conn.name}</h4>
-                            <p style="font-size:0.75rem; color:var(--ink-light); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@${conn.username}</p>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (e) { console.error('Error loading chat connections:', e); }
-        }
-
-        async function openFullScreenChat(recipientId, recipientName) {
-            activeChatUser = recipientId;
-            activeChatUserName = recipientName;
-            const savedWallpaper = localStorage.getItem(`hoknex_wallpaper_${recipientId}`) || 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)';
-
-            const chatCanvas = document.getElementById('chatCanvasArea');
-            if (!chatCanvas) return;
-
-            chatCanvas.innerHTML = `
-               <!-- Full Screen Messenger Wrapper -->
-<div id="fullChatWrapper" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; z-index:9999;">
-    <div style="display: flex; flex-direction: column; height: 100vh; background: #000; color: #fff;">
+// Direct Messages & Chat Maximize
+async function loadChatConnections() {
+    try {
+        const username = localStorage.getItem('hoknex_user');
+        const res = await fetch(`/api/users/${encodeURIComponent(username)}`);
+        if (!res.ok) return;
+        const user = await res.json();
         
-        <!-- Chat Header -->
-        <div style="display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; border-bottom:1px solid #262626; background:#000;">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <button onclick="closeChat()" style="background:none; border:none; color:#fff; font-size:1.4rem; cursor:pointer;">←</button>
-                <div>
-                    <h4 id="activeChatterName" style="margin:0; font-size:1rem; font-weight:600; color:#fff;">User Name</h4>
-                    <span style="font-size:0.75rem; color:#22c55e;">Active now</span>
+        const followers = (user.followers || []).map(f => f._id ? f._id.toString() : f.toString());
+        const following = (user.following || []).map(f => f._id ? f._id.toString() : f.toString());
+        const connectedIds = [...new Set([...followers, ...following])];
+        
+        const container = document.getElementById('chatConnectionsList');
+        if (!container) return;
+        
+        if (!connectedIds.length) { 
+            container.innerHTML = `<p style="font-size:0.85rem; color:var(--ink-light); font-weight:600; padding:10px;">No connections yet. Follow peers to chat!</p>`; 
+            return; 
+        }
+        
+        const userRes = await fetch('/api/users');
+        const allUsers = await userRes.json();
+        const connections = allUsers.filter(u => connectedIds.includes(u._id.toString()));
+        
+        container.innerHTML = connections.map(conn => `
+            <div onclick="openFullScreenChat('${conn._id}', '${conn.name}')" style="display:flex; align-items:center; gap:10px; padding:10px; border-radius:8px; cursor:pointer; background:var(--canvas); border:1px solid var(--border); transition: all 0.15s;" onmouseover="this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.background='var(--canvas)'">
+                <div class="avatar-circle" style="width:36px; height:36px; font-size:0.9rem;">${conn.name ? conn.name.charAt(0).toUpperCase() : 'H'}</div>
+                <div style="overflow:hidden;">
+                    <h4 style="font-weight:800; font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${conn.name}</h4>
+                    <p style="font-size:0.75rem; color:var(--ink-light); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@${conn.username}</p>
                 </div>
             </div>
-        </div>
-
-        <!-- Chat Messages Canvas -->
-        <div id="chatCanvas" style="flex:1; overflow-y:auto; padding: 16px; display:flex; flex-direction:column; gap:8px;">
-            <!-- Messages load here -->
-        </div>
-
-        <!-- Chat Input Bar -->
-        <div class="chat-input-bar">
-            <input type="text" id="chatMessageInput" placeholder="Message..." onkeypress="handleChatKeyPress(event)" />
-            <button onclick="sendActiveMessage()" style="background:none; border:none; color:#a855f7; font-size:1.2rem; cursor:pointer;">🚀</button>
-        </div>
-
-    </div>
-</div>
-                    
-                    <div id="fullChatMessages" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding:15px; background: rgba(17, 24, 39, 0.65); backdrop-filter: blur(6px); border:1px solid var(--border); border-radius:10px;"></div>
-                    
-                    <!-- Emoji & Sticker Picker Panel -->
-                    <div id="emojiPickerPanel" style="display:none; position:absolute; bottom:80px; left:16px; width:340px; height:260px; background:var(--paper); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow-card); padding:12px; overflow-y:auto; z-index:50;">
-                        <div style="font-size:0.75rem; font-weight:800; color:var(--ink-light); margin-bottom:6px; text-transform:uppercase;">Smileys & Emotions</div>
-                        <div style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px; font-size:1.2rem; cursor:pointer; text-align:center;">
-                            <span onclick="insertEmoji('😀')">😀</span><span onclick="insertEmoji('😃')">😃</span><span onclick="insertEmoji('😄')">😄</span><span onclick="insertEmoji('😁')">😁</span><span onclick="insertEmoji('😆')">😆</span><span onclick="insertEmoji('😅')">😅</span><span onclick="insertEmoji('🤣')">🤣</span>
-                            <span onclick="insertEmoji('😂')">😂</span><span onclick="insertEmoji('🙂')">🙂</span><span onclick="insertEmoji('😉')">😉</span><span onclick="insertEmoji('😊')">😊</span><span onclick="insertEmoji('😇')">😇</span><span onclick="insertEmoji('🥰')">🥰</span><span onclick="insertEmoji('😍')">😍</span>
-                            <span onclick="insertEmoji('🤩')">🤩</span><span onclick="insertEmoji('😘')">😘</span><span onclick="insertEmoji('😋')">😋</span><span onclick="insertEmoji('😎')">😎</span><span onclick="insertEmoji('🥳')">🥳</span><span onclick="insertEmoji('😏')">😏</span><span onclick="insertEmoji('😌')">😌</span>
-                        </div>
-                        <div style="font-size:0.75rem; font-weight:800; color:var(--ink-light); margin:10px 0 6px 0; text-transform:uppercase;">Stickers 🎨</div>
-                        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; cursor:pointer; text-align:center;">
-                            <div onclick="sendSticker('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80')" style="background:var(--canvas); border:1px solid var(--border); border-radius:8px; padding:6px; font-weight:700; font-size:0.75rem;"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&auto=format&fit=crop&q=80" style="width:100%; height:50px; object-fit:cover; border-radius:4px;">✨ Vibe</div>
-                            <div onclick="sendSticker('https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=200&auto=format&fit=crop&q=80')" style="background:var(--canvas); border:1px solid var(--border); border-radius:8px; padding:6px; font-weight:700; font-size:0.75rem;"><img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=100&auto=format&fit=crop&q=80" style="width:100%; height:50px; object-fit:cover; border-radius:4px;">🎨 Art</div>
-                            <div onclick="sendSticker('https://images.unsplash.com/photo-1534447677768-be436bb09401?w=200&auto=format&fit=crop&q=80')" style="background:var(--canvas); border:1px solid var(--border); border-radius:8px; padding:6px; font-weight:700; font-size:0.75rem;"><img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=100&auto=format&fit=crop&q=80" style="width:100%; height:50px; object-fit:cover; border-radius:4px;">🚀 Hype</div>
-                        </div>
-                    </div>
-
-                    <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
-                        <button class="action-btn" onclick="toggleEmojiPicker()" style="font-size:1.1rem; padding:10px 12px;" title="Emoji & Stickers">😊</button>
-                        <label for="chatMediaFile" style="cursor:pointer; background:var(--paper); color:var(--ink); padding:10px 14px; border-radius:8px; font-weight:700; border:1px solid var(--border); font-size:0.9rem;" title="Upload Media">📷</label>
-                        <input type="file" id="chatMediaFile" accept="image/*" style="display:none;" onchange="sendMediaMessage(this)">
-                        <input type="text" id="fullChatInput" placeholder="Type a message..." style="flex:1; padding:11px 16px; border:1px solid var(--border); border-radius:8px; font-weight:600; outline:none; background:var(--paper); color:var(--ink); font-size:0.95rem;" onkeypress="if(event.key === 'Enter') sendFullScreenMessage()">
-                        <button onclick="sendFullScreenMessage()" class="btn-create" style="padding:11px 20px; font-size:0.9rem;">Send</button>
-                    </div>
-                </div>
-            `;
-            loadFullScreenMessages();
-        }
-
-        function toggleMessengerFullScreen() {
-            isMessengerFullScreen = !isMessengerFullScreen;
-            const wrapper = document.getElementById('fullChatWrapper');
-            const btn = document.getElementById('messengerFullScreenBtn');
-            if (!wrapper) return;
-
-            if (isMessengerFullScreen) {
-                wrapper.style.position = 'fixed'; wrapper.style.top = '0'; wrapper.style.left = '0';
-                wrapper.style.width = '100vw'; wrapper.style.height = '100vh'; wrapper.style.zIndex = '999';
-                wrapper.style.padding = '20px'; btn.innerText = '🗗 Exit Full Screen';
-            } else {
-                wrapper.style.position = 'relative'; wrapper.style.width = '100%'; wrapper.style.height = '100%';
-                wrapper.style.zIndex = '1'; wrapper.style.padding = '1.5rem'; btn.innerText = '⛶ Full Screen';
-            }
-        }
-
-        function changeChatWallpaper(val) {
-            if (!val || !activeChatUser) return;
-            localStorage.setItem(`hoknex_wallpaper_${activeChatUser}`, val);
-            const wrapper = document.getElementById('fullChatWrapper');
-            if (wrapper) wrapper.style.background = val;
-        }
-
-        function toggleEmojiPicker() {
-            const picker = document.getElementById('emojiPickerPanel');
-            if (picker) picker.style.display = picker.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function insertEmoji(symbol) {
-            const input = document.getElementById('fullChatInput');
-            if (input) { input.value += symbol; input.focus(); }
-            toggleEmojiPicker();
-        }
-
-        async function sendSticker(imgUrl) {
-            toggleEmojiPicker();
-            if (!activeChatUser) return;
-            const senderId = await getCurrentUserId();
-            const text = `[Media]: ${imgUrl}`;
-            await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ senderId, recipientId: activeChatUser, text }) });
-            loadFullScreenMessages();
-        }
-
-       let activeRecipientId = null;
-let pollTimer = null;
-
-
-// Aliased functions to catch any button or UI calls
-function loadFullScreenMessages(recipientId, recipientName) {
-    openChat(recipientId, recipientName || activeChatUser);
+        `).join('');
+    } catch (e) { console.error('Error loading chat connections:', e); }
 }
 
-function openChat(recipientId, recipientName) {
-    activeRecipientId = recipientId || activeChatUser;
-    const nameEl = document.getElementById('activeChatterName');
-    if (nameEl) nameEl.innerText = recipientName || "Chat";
+let activeRecipientId = null;
+let activeChatUserName = '';
+let pollTimer = null;
+
+function loadFullScreenMessages(recipientId, recipientName) {
+    openFullScreenChat(recipientId || activeRecipientId, recipientName || activeChatUserName);
+}
+
+function openFullScreenChat(recipientId, recipientName) {
+    activeRecipientId = recipientId;
+    activeChatUserName = recipientName;
     
     const wrapper = document.getElementById('fullChatWrapper');
     if (wrapper) wrapper.style.display = 'block';
+
+    const nameEl = document.getElementById('activeChatterName');
+    if (nameEl) nameEl.innerText = recipientName || "Chat";
+
+    const savedWallpaper = localStorage.getItem(`hoknex_wallpaper_${recipientId}`) || 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)';
+    const containerWrapper = document.getElementById('fullChatWrapperContainer');
+    if (containerWrapper) containerWrapper.style.background = savedWallpaper;
 
     loadMessages();
     if (pollTimer) clearInterval(pollTimer);
@@ -995,25 +888,31 @@ function closeChat() {
 
 async function loadMessages() {
     const sender = localStorage.getItem('hoknex_user');
-    const targetUser = activeRecipientId || activeChatUser;
+    const targetUser = activeRecipientId;
     if (!sender || !targetUser) return;
 
     try {
         const res = await fetch(`/api/messages/${sender}/${targetUser}`);
         const data = await res.json();
-        
-        // Ensure messages is always an array
         const messages = Array.isArray(data) ? data : [];
         
-        const canvas = document.getElementById('chatCanvas') || document.getElementById('chatBox');
+        const canvas = document.getElementById('chatCanvas') || document.getElementById('fullChatMessages');
         if (!canvas) return;
 
         canvas.innerHTML = messages.map(m => {
             const isMe = m.sender === sender;
+            let textContent = m.text || '';
+            let contentHtml = `<span>${textContent}</span>`;
+
+            if (textContent.startsWith('[Media]:')) {
+                const mediaUrl = textContent.replace('[Media]:', '').trim();
+                contentHtml = `<img src="${mediaUrl}" style="max-width:200px; border-radius:10px; display:block;" />`;
+            }
+
             return `
                 <div style="display:flex; flex-direction:column; align-items:${isMe ? 'flex-end' : 'flex-start'}; margin-bottom: 8px;">
                     <div class="${isMe ? 'chat-bubble-sent' : 'chat-bubble-received'}">
-                        <span>${m.text || ''}</span>
+                        ${contentHtml}
                     </div>
                     <span style="font-size:0.6rem; color:#888; margin-top:2px; padding:0 4px;">
                         ${new Date(m.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -1027,21 +926,19 @@ async function loadMessages() {
     }
 }
 
-async function sendActiveMessage() {
-    const input = document.getElementById('chatMessageInput') || document.getElementById('FullChatInput');
+async function sendFullScreenMessage() {
+    const input = document.getElementById('fullChatInput') || document.getElementById('chatMessageInput');
     if (!input) return;
 
     const text = input.value.trim();
     const sender = localStorage.getItem('hoknex_user');
-    const targetUser = activeRecipientId || activeChatUser;
-
-    if (!text || !targetUser) return;
+    if (!text || !activeRecipientId) return;
 
     try {
         await fetch('/api/messages', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sender, recipient: targetUser, text, mediaType: 'text' })
+            body: JSON.stringify({ sender, recipient: activeRecipientId, text, mediaType: 'text' })
         });
         input.value = '';
         loadMessages();
@@ -1050,43 +947,86 @@ async function sendActiveMessage() {
     }
 }
 
-// Alias for sendFullScreenMessage to prevent any 500/reference errors
-async function sendFullScreenMessage() {
-    await sendActiveMessage();
-}
-
 function handleChatKeyPress(e) {
-    if (e.key === 'Enter') sendActiveMessage();
+    if (e.key === 'Enter') sendFullScreenMessage();
 }
 
-function handleChatKeyPress(e) {
-    if (e.key === 'Enter') sendActiveMessage();
+function toggleMessengerFullScreen() {
+    isMessengerFullScreen = !isMessengerFullScreen;
+    const wrapper = document.getElementById('fullChatWrapper');
+    const btn = document.getElementById('messengerFullScreenBtn');
+    if (!wrapper) return;
+
+    if (isMessengerFullScreen) {
+        wrapper.style.position = 'fixed'; wrapper.style.top = '0'; wrapper.style.left = '0';
+        wrapper.style.width = '100vw'; wrapper.style.height = '100vh'; wrapper.style.zIndex = '999';
+        wrapper.style.padding = '20px'; if(btn) btn.innerText = '🗗 Exit Full Screen';
+    } else {
+        wrapper.style.position = 'relative'; wrapper.style.width = '100%'; wrapper.style.height = '100%';
+        wrapper.style.zIndex = '1'; wrapper.style.padding = '1.5rem'; if(btn) btn.innerText = '⛶ Full Screen';
+    }
 }
 
-        async function sendMediaMessage(input) {
-            if (!input.files || !input.files[0] || !activeChatUser) return;
-            const file = input.files[0];
-            const senderId = await getCurrentUserId();
-            const formData = new FormData();
-            formData.append('screenshot', file);
-            formData.append('description', '[Media Image]');
-            formData.append('username', localStorage.getItem('hoknex_user') || 'Student');
-            try {
-                const uploadRes = await fetch('/api/support', { method: 'POST', body: formData });
-                if (uploadRes.ok) {
-                    const ticketsRes = await fetch('/api/support');
-                    const tickets = await ticketsRes.json();
-                    const latestTicket = tickets[0];
-                    if (latestTicket && latestTicket.screenshotUrl) {
-                        const mediaUrl = latestTicket.screenshotUrl;
-                        const text = `[Media]: ${mediaUrl}`;
-                        await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ senderId, recipientId: activeChatUser, text }) });
-                        loadFullScreenMessages();
-                    }
-                }
-            } catch (e) { console.error(e); }
+function changeChatWallpaper(val) {
+    if (!val || !activeRecipientId) return;
+    localStorage.setItem(`hoknex_wallpaper_${activeRecipientId}`, val);
+    const containerWrapper = document.getElementById('fullChatWrapperContainer');
+    if (containerWrapper) containerWrapper.style.background = val;
+}
+
+function toggleEmojiPicker() {
+    const picker = document.getElementById('emojiPickerPanel');
+    if (picker) picker.style.display = picker.style.display === 'block' ? 'none' : 'block';
+}
+
+function insertEmoji(symbol) {
+    const input = document.getElementById('fullChatInput') || document.getElementById('chatMessageInput');
+    if (input) { input.value += symbol; input.focus(); }
+    toggleEmojiPicker();
+}
+
+async function sendSticker(imgUrl) {
+    toggleEmojiPicker();
+    const sender = localStorage.getItem('hoknex_user');
+    if (!sender || !activeRecipientId) return;
+
+    const text = `[Media]: ${imgUrl}`;
+    await fetch('/api/messages', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ sender, recipient: activeRecipientId, text, mediaType: 'sticker' }) 
+    });
+    loadMessages();
+}
+
+async function sendMediaMessage(input) {
+    if (!input.files || !input.files[0] || !activeRecipientId) return;
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('screenshot', file);
+    formData.append('description', '[Media Image]');
+    formData.append('username', localStorage.getItem('hoknex_user') || 'Student');
+
+    try {
+        const uploadRes = await fetch('/api/support', { method: 'POST', body: formData });
+        if (uploadRes.ok) {
+            const ticketsRes = await fetch('/api/support');
+            const tickets = await ticketsRes.json();
+            const latestTicket = tickets[0];
+            if (latestTicket && latestTicket.screenshotUrl) {
+                const mediaUrl = latestTicket.screenshotUrl;
+                const text = `[Media]: ${mediaUrl}`;
+                const sender = localStorage.getItem('hoknex_user');
+                await fetch('/api/messages', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ sender, recipient: activeRecipientId, text, mediaType: 'image' }) 
+                });
+                loadMessages();
+            }
         }
-
+    } catch (e) { console.error('Media upload error:', e); }
+}
         // Clubs & Servers Logic
         async function loadDiscordClubs() {
             try {
