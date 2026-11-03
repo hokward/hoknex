@@ -620,9 +620,13 @@ mainView.innerHTML = `
            <div id="projectsContainer"></div>
         `;
         loadAndRenderProjects();
-    async function loadAndRenderProjects() {
-    const container = document.getElementById('projectsContainer') || document.getElementById('projectContainer');
-    if (!container) return;
+   async function loadAndRenderProjects() {
+    // Check multiple potential container IDs to prevent null errors
+    const container = document.getElementById('projectsContainer') || document.getElementById('projectContainer') || document.getElementById('projects-container');
+    if (!container) {
+        console.error("Project container element not found in HTML!");
+        return;
+    }
 
     try {
         const res = await fetch('/api/projects');
@@ -634,14 +638,15 @@ mainView.innerHTML = `
         }
 
         container.innerHTML = projs.map(p => {
-            const imgSource = p.imageUrl || p.image || '';
+            // Check all possible schema variations for the image URL
+            const imgSource = p.imageUrl || p.image || p.img || '';
             const descriptionText = p.desc || p.description || p.pitch || '';
 
             return `
             <div class="post-card" style="margin-bottom: 20px; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
                 <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--ink); margin-bottom: 8px;">${p.title || 'Untitled Project'}</h4>
                 <p style="font-size: 0.95rem; color: var(--ink); line-height: 1.5; margin-bottom: 12px;">${descriptionText}</p>
-                ${imgSource ? `<img src="${imgSource}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border);" onerror="this.style.display='none'" />` : ''}
+                ${imgSource ? `<img src="${imgSource}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border);" onerror="this.style.display='none'" />` : '<p style="font-size: 0.8rem; color: gray; font-style: italic;">No image attached</p>'}
             </div>`;
         }).join('');
 
