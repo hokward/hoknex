@@ -863,24 +863,34 @@ mainView.innerHTML = `
             if (!chatCanvas) return;
 
             chatCanvas.innerHTML = `
-                <div id="fullChatWrapper" style="display:flex; flex-direction:column; height: 100%; width: 100%; padding: 1.5rem; background: ${savedWallpaper}; background-size: cover; background-position: center; position: relative; transition: all 0.3s ease;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:12px; background: var(--paper); padding: 10px 16px; border-radius: 10px; box-shadow: var(--shadow-subtle);">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <h3 style="font-weight:800; font-size:1.05rem; color:var(--ink);">💬 ${recipientName}</h3>
-                        </div>
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <button onclick="toggleMessengerFullScreen()" id="messengerFullScreenBtn" class="action-btn" style="font-size:0.78rem; font-weight:700;">⛶ Full Screen</button>
-                            <select id="wallpaperSelect" onchange="changeChatWallpaper(this.value)" style="padding:6px 12px; border-radius:6px; border:1px solid var(--border); font-size:0.8rem; font-weight:700; background:var(--canvas); color:var(--ink); outline:none; cursor:pointer;">
-                                <option value="">🖼️ Aesthetic Wallpapers</option>
-                                <option value="linear-gradient(135deg, #0f172a 0%, #1e293b 100%)">Midnight Dark 🌌</option>
-                                <option value="url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80')">Cyberpunk Neon 🌆</option>
-                                <option value="url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=80')">Tropical Beach 🏝️</option>
-                                <option value="url('https://images.unsplash.com/photo-1542224566-6e85f2e6772f?w=1200&auto=format&fit=crop&q=80')">Misty Pine Forest 🌲</option>
-                                <option value="url('https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1200&auto=format&fit=crop&q=80')">Abstract Purple Vibe 🎨</option>
-                                <option value="url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&auto=format&fit=crop&q=80')">Yosemite Sunset 🌇</option>
-                            </select>
-                        </div>
-                    </div>
+               <!-- Full Screen Messenger Wrapper -->
+<div id="fullChatWrapper" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; z-index:9999;">
+    <div style="display: flex; flex-direction: column; height: 100vh; background: #000; color: #fff;">
+        
+        <!-- Chat Header -->
+        <div style="display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; border-bottom:1px solid #262626; background:#000;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <button onclick="closeChat()" style="background:none; border:none; color:#fff; font-size:1.4rem; cursor:pointer;">←</button>
+                <div>
+                    <h4 id="activeChatterName" style="margin:0; font-size:1rem; font-weight:600; color:#fff;">User Name</h4>
+                    <span style="font-size:0.75rem; color:#22c55e;">Active now</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Messages Canvas -->
+        <div id="chatCanvas" style="flex:1; overflow-y:auto; padding: 16px; display:flex; flex-direction:column; gap:8px;">
+            <!-- Messages load here -->
+        </div>
+
+        <!-- Chat Input Bar -->
+        <div class="chat-input-bar">
+            <input type="text" id="chatMessageInput" placeholder="Message..." onkeypress="handleChatKeyPress(event)" />
+            <button onclick="sendActiveMessage()" style="background:none; border:none; color:#a855f7; font-size:1.2rem; cursor:pointer;">🚀</button>
+        </div>
+
+    </div>
+</div>
                     
                     <div id="fullChatMessages" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding:15px; background: rgba(17, 24, 39, 0.65); backdrop-filter: blur(6px); border:1px solid var(--border); border-radius:10px;"></div>
                     
@@ -955,38 +965,79 @@ mainView.innerHTML = `
             loadFullScreenMessages();
         }
 
-        async function loadFullScreenMessages() {
-            if (!activeChatUser) return;
-            const senderId = await getCurrentUserId();
-            const res = await fetch(`/api/messages/${senderId}/${activeChatUser}`);
-            const messages = await res.json();
-            const chatBox = document.getElementById('fullChatMessages');
-            if(!chatBox) return;
-            chatBox.innerHTML = messages.map(m => {
-                const isMe = m.sender === senderId;
-                let cleanText = m.text;
-                let contentHTML = `<span style="font-weight:600;">${cleanText}</span>`;
-                if (cleanText.startsWith('[Media]:')) {
-                    const mediaUrl = cleanText.replace('[Media]:', '').trim();
-                    contentHTML = `<img src="${mediaUrl}" style="max-width:200px; max-height:200px; border-radius:8px; border:1px solid var(--border); display:block;">`;
-                }
-                return `
-                    <div style="align-self:${isMe ? 'flex-end' : 'flex-start'}; background:${isMe ? 'var(--accent-blue)' : 'var(--paper)'}; color: ${isMe ? '#fff' : 'var(--ink)'}; border:1px solid var(--border); padding:10px 16px; border-radius:10px; max-width:65%; font-size:0.95rem; word-break: break-word; box-shadow: var(--shadow-subtle);">
-                        ${contentHTML}
-                    </div>
-                `;
-            }).join('');
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
+       let activeRecipientId = null;
+let pollTimer = null;
 
-        async function sendFullScreenMessage() {
-            const input = document.getElementById('fullChatInput');
-            let text = input.value.trim();
-            if (!text || !activeChatUser) return;
-            const senderId = await getCurrentUserId();
-            const res = await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ senderId, recipientId: activeChatUser, text }) });
-            if (res.ok) { input.value = ''; loadFullScreenMessages(); }
-        }
+function openChat(recipientId, recipientName) {
+    activeRecipientId = recipientId;
+    document.getElementById('activeChatterName').innerText = recipientName;
+    document.getElementById('fullChatWrapper').style.display = 'block';
+
+    loadMessages();
+    if (pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(loadMessages, 3000); // 3s polling for real-time feel on Vercel
+}
+
+function closeChat() {
+    document.getElementById('fullChatWrapper').style.display = 'none';
+    if (pollTimer) clearInterval(pollTimer);
+}
+
+async function loadMessages() {
+    const sender = localStorage.getItem('hoknex_user');
+    if (!sender || !activeRecipientId) return;
+
+    try {
+        const res = await fetch(`/api/messages/${sender}/${activeRecipientId}`);
+        const messages = await res.json();
+        
+        const canvas = document.getElementById('chatCanvas');
+        if (!canvas) return;
+
+        canvas.innerHTML = messages.map(m => {
+            const isMe = m.sender === sender;
+            return `
+                <div style="display:flex; flex-direction:column; align-items:${isMe ? 'flex-end' : 'flex-start'};">
+                    <div class="${isMe ? 'chat-bubble-sent' : 'chat-bubble-received'}">
+                        <span>${m.text}</span>
+                    </div>
+                    <span style="font-size:0.6rem; color:#888; margin-top:2px; padding:0 4px;">
+                        ${new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                </div>
+            `;
+        }).join('');
+        canvas.scrollTop = canvas.scrollHeight;
+    } catch (err) {
+        console.error("Error loading chat:", err);
+    }
+}
+
+async function sendActiveMessage() {
+    const input = document.getElementById('chatMessageInput');
+    if (!input) return;
+
+    const text = input.value.trim();
+    const sender = localStorage.getItem('hoknex_user');
+
+    if (!text || !activeRecipientId) return;
+
+    try {
+        await fetch('/api/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sender, recipient: activeRecipientId, text, mediaType: 'text' })
+        });
+        input.value = '';
+        loadMessages();
+    } catch (err) {
+        console.error("Send failed:", err);
+    }
+}
+
+function handleChatKeyPress(e) {
+    if (e.key === 'Enter') sendActiveMessage();
+}
 
         async function sendMediaMessage(input) {
             if (!input.files || !input.files[0] || !activeChatUser) return;
