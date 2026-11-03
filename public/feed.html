@@ -868,7 +868,7 @@ window.sendFullScreenMessage = async function() {
     input.value = ''; // Clear input immediately
 
     try {
-        const res = await fetch('/api/messages/send', {
+        const res = await fetch('/api/messages', { // 🌟 Updated to match your server.js route!
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
