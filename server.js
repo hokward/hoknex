@@ -431,7 +431,6 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
-const Message = require('./models/Message');
 
 // 1. Post a message (Text, Audio, or Image)
 app.post('/api/messages', async (req, res) => {
