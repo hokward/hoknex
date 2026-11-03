@@ -5059,14 +5059,14 @@ document.addEventListener('click', (e) => {
     const text = link.innerText ? link.innerText.trim().toLowerCase() : '';
     
     if (text.includes('projects')) {
-        localStorage.setItem('hoknex_active_tab', 'projects');
-        if (typeof renderView === 'function') renderView('projects');
-        if (typeof loadAndRenderProjects === 'function') loadAndRenderProjects();
-    } else if (text.includes('feed')) {
-        localStorage.setItem('hoknex_active_tab', 'feed');
-        if (typeof renderView === 'function') renderView('feed');
-    }
-});
+            localStorage.setItem('hoknex_active_tab', 'projects');
+            if (typeof renderView === 'function') renderView('projects');
+            if (typeof loadAndRenderProjects === 'function') loadAndRenderProjects();
+        } else if (text.includes('feed')) {
+            localStorage.setItem('hoknex_active_tab', 'feed');
+            if (typeof renderView === 'function') renderView('feed');
+        }
+    });
     
 </script>
 
