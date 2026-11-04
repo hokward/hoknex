@@ -462,7 +462,7 @@ app.post('/api/messages', async (req, res) => {
     }
 });
 
-// Dedicated File & Media Upload Endpoint for Chat & Posts
+// Dedicated File & Media Upload Endpoint for Chat Attachments & Voice Notes
 app.post('/api/upload', upload.single('image'), async (req, res) => {
     try {
         if (!req.file || !req.file.path) {
