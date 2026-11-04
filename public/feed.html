@@ -5554,38 +5554,7 @@ async function rateProject(id, rating) {
 }
 
 // Universal Profile Opener for any clicked user
-window.viewUserProfile = function(usernameOrId) {
-    if (!usernameOrId) {
-        console.error('Profile identifier is missing.');
-        return;
-    }
-    const cleanUsername = usernameOrId.toString().replace(/^@/, '');
-    
-    // Save target user to localStorage so profile components can read it
-    localStorage.setItem('target_profile_user', cleanUsername);
-    localStorage.setItem('hoknex_view_user', cleanUsername);
-    
-    // Check if your app uses a single-page view router function
-    if (typeof window.renderView === 'function') {
-        window.renderView('profile', cleanUsername);
-    } else if (typeof window.loadUserProfile === 'function') {
-        window.loadUserProfile(cleanUsername);
-    } else {
-        // If your profile section is handled by showing/hiding DOM elements:
-        const profileSection = document.getElementById('profileSection') || document.getElementById('profileView');
-        const feedSection = document.getElementById('feedSection') || document.getElementById('mainContent');
-        
-        if (profileSection && feedSection) {
-            feedSection.style.display = 'none';
-            profileSection.style.display = 'block';
-            if (typeof loadUserProfileData === 'function') loadUserProfileData(cleanUsername);
-        } else {
-            // Ultimate fallback to your My Profile tab if available
-            window.location.hash = `#profile=${encodeURIComponent(cleanUsername)}`;
-            location.reload();
-        }
-    }
-};
+
 
 function downloadProjectPDF(encTitle, encDesc, encTech, encClass, imgUrl) {
     const title = decodeURIComponent(encTitle);
