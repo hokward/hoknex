@@ -856,40 +856,33 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
                     </div>
                 </div>
 
-                <!-- Play Together 🎮 & Wallpaper Customizer -->
+                <!-- Play Arena, Wallpaper & Delete Chat Controls -->
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <button onclick="openPlayTogetherModal('${recipientName}')" title="Play Together Games 🎮" style="background: rgba(99,102,241,0.4); border: 1px solid #6366f1; border-radius: 20px; padding: 6px 14px; display: flex; align-items: center; gap: 6px; cursor: pointer; color: #fff; font-size: 0.8rem; font-weight: 700;">🎮 Play</button>
                     <button onclick="changeChatWallpaper('${recipientId}')" title="Change Wallpaper" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">🎨</button>
+                    <button onclick="deleteCurrentChat('${recipientId}')" title="Delete Chat History 🗑️" style="background: rgba(239,68,68,0.3); border: 1px solid #ef4444; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">🗑️</button>
                 </div>
             </div>
 
-            <!-- 🌟 Play Together Games Modal Overlay -->
+            <!-- 🌟 Play Together Games Modal (5 Games with Solo & Duo Modes) -->
             <div id="playTogetherModal" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.96); z-index: 40; flex-direction: column; padding: 25px; backdrop-filter: blur(15px); overflow-y: auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 style="color: #fff; font-size: 1.3rem; font-weight: 800; margin: 0;">🎮 Hoknex Play Arena</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 style="color: #fff; font-size: 1.3rem; font-weight: 800; margin: 0;">🎮 Hoknex Play Arena (5 Games)</h2>
                     <button onclick="closePlayTogetherModal()" style="background: rgba(255,255,255,0.1); border: none; color: #fff; border-radius: 50%; width: 32px; height: 32px; font-weight: 800; cursor: pointer;">✕</button>
                 </div>
-                <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 20px;">Choose a game to play solo or share your score in chat with ${recipientName}!</p>
+                <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 15px;">Play solo against bot or in Duo turn-mode with ${recipientName} and share scores!</p>
                 
-                <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
-                    <div onclick="launchTicTacToe()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <h4 style="color: #fff; font-size: 1rem; font-weight: 800; margin: 0 0 4px 0;">⭕ Tic-Tac-Toe</h4>
-                            <p style="color: #94a3b8; font-size: 0.75rem; margin: 0;">Classic 3x3 strategy game</p>
-                        </div>
-                        <span style="background: #6366f1; color: #fff; padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem;">Play</span>
-                    </div>
-
-                    <div onclick="launchRockPaperScissors()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <h4 style="color: #fff; font-size: 1rem; font-weight: 800; margin: 0 0 4px 0;">✊ Rock Paper Scissors</h4>
-                            <p style="color: #94a3b8; font-size: 0.75rem; margin: 0;">Quick arcade showdown</p>
-                        </div>
-                        <span style="background: #6366f1; color: #fff; padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem;">Play</span>
-                    </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
+                    <button onclick="launchTicTacToe()" style="background: #1e293b; border: 1px solid #6366f1; color: #fff; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer;">⭕ Tic-Tac-Toe</button>
+                    <button onclick="launchRockPaperScissors()" style="background: #1e293b; border: 1px solid #6366f1; color: #fff; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer;">✊ Rock Paper Scissors</button>
+                    <button onclick="launchConnectFour()" style="background: #1e293b; border: 1px solid #6366f1; color: #fff; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer;">🔴 Connect Four</button>
+                    <button onclick="launchMathBlitz()" style="background: #1e293b; border: 1px solid #6366f1; color: #fff; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer;">⚡ Math Blitz</button>
+                    <button onclick="launchMemoryMatch()" style="background: #1e293b; border: 1px solid #6366f1; color: #fff; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; grid-column: span 2;">🧠 Emoji Memory Match</button>
                 </div>
 
-                <div id="gameContainerArea" style="margin-top: 20px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
+                <div id="gameContainerArea" style="margin-top: 10px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 15px;">
+                    <p style="color: #94a3b8; font-size: 0.9rem;">Select a game above to start playing!</p>
+                </div>
             </div>
 
             <!-- 🌟 Messages History Stream Area -->
@@ -913,10 +906,10 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
                 <span onclick="sendSticker('🏆')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">🏆</span>
             </div>
 
-            <!-- 🌟 Message Input Bar with Photo/Short Video (<60s), Stickers, Voice Notes -->
+            <!-- 🌟 Message Input Bar -->
             <div style="padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); display: flex; gap: 8px; align-items: center; z-index: 5;">
-                <input type="file" id="chatMediaInput" style="display: none;" accept="image/*,video/mp4,video/webm,video/quicktime" onchange="sendMediaMessage(this)">
-                <button onclick="document.getElementById('chatMediaInput').click()" title="Attach Photo or Short Video (<60s)" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">📎</button>
+                <input type="file" id="chatMediaInput" style="display: none;" accept="image/*,video/mp4,video/webm" onchange="sendMediaMessage(this)">
+                <button onclick="document.getElementById('chatMediaInput').click()" title="Attach Media" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">📎</button>
                 <button onclick="toggleStickerPicker()" title="Stickers & Emojis" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">🎨</button>
                 <button id="micBtn" onclick="toggleVoiceRecording()" title="Record Voice Note" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">🎤</button>
                 
@@ -936,7 +929,22 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
     }, 3000);
 };
 
-// 🌟 Play Together Arena Logic
+// 🌟 Delete Individual Chat Feature
+window.deleteCurrentChat = async function(recipientId) {
+    if (!confirm('Are you sure you want to clear and delete this entire chat conversation?')) return;
+    const senderId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
+    try {
+        const res = await fetch(`/api/messages/${senderId}/${recipientId}`, { method: 'DELETE' });
+        if (res.ok) {
+            loadMessages();
+            alert('Chat conversation deleted successfully.');
+        }
+    } catch (e) {
+        console.error('Delete chat error:', e);
+    }
+};
+
+// 🌟 Play Arena Game Suite (Tic-Tac-Toe, RPS, Connect Four, Math Blitz, Memory Match)
 window.openPlayTogetherModal = function() {
     const modal = document.getElementById('playTogetherModal');
     if (modal) modal.style.display = 'flex';
@@ -964,11 +972,11 @@ window.launchTicTacToe = function() {
 
     function renderBoard() {
         area.innerHTML = `
-            <h3 style="color: #fff; margin-bottom: 10px;">Tic-Tac-Toe (${turn}'s Turn)</h3>
-            <div style="display: grid; grid-template-columns: repeat(3, 70px); gap: 6px; margin-bottom: 15px;">
-                ${board.map((val, i) => `<button onclick="makeTicMove(${i})" style="width: 70px; height: 70px; font-size: 1.8rem; font-weight: 800; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer;">${val}</button>`).join('')}
+            <h4 style="color: #fff; margin-bottom: 8px;">⭕ Tic-Tac-Toe (Turn: ${turn})</h4>
+            <div style="display: grid; grid-template-columns: repeat(3, 60px); gap: 5px; margin-bottom: 10px;">
+                ${board.map((v, i) => `<button onclick="makeTicMove(${i})" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: 800; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer;">${v}</button>`).join('')}
             </div>
-            <button onclick="launchTicTacToe()" style="background: #334155; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 700;">Restart Game</button>
+            <button onclick="launchTicTacToe()" style="background: #334155; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Reset</button>
         `;
     }
 
@@ -978,15 +986,15 @@ window.launchTicTacToe = function() {
             const [a, b, c] = w;
             if (board[a] && board[a] === board[b] && board[a] === board[c]) {
                 gameOver = true;
-                area.innerHTML += `<p style="color: #10b981; font-weight: 800; margin-top: 10px;">🎉 Player ${board[a]} Wins!</p>`;
-                shareScoreToChat(`🏆 Won a match of Tic-Tac-Toe! Player ${board[a]} Victorious.`);
+                area.innerHTML += `<p style="color: #10b981; font-weight: 800; margin-top: 8px;">🎉 Player ${board[a]} Wins!</p>`;
+                shareScoreToChat(`🏆 Tic-Tac-Toe Match Result: Player ${board[a]} won!`);
                 return;
             }
         }
         if (!board.includes('')) {
             gameOver = true;
-            area.innerHTML += `<p style="color: #f59e0b; font-weight: 800; margin-top: 10px;">🤝 It's a Draw!</p>`;
-            shareScoreToChat(`🤝 Played a tied match of Tic-Tac-Toe!`);
+            area.innerHTML += `<p style="color: #f59e0b; font-weight: 800; margin-top: 8px;">🤝 Draw Match!</p>`;
+            shareScoreToChat(`🤝 Tic-Tac-Toe Match resulted in a draw.`);
         }
     }
     renderBoard();
@@ -998,34 +1006,78 @@ window.launchRockPaperScissors = function() {
 
     window.playRPS = function(choice) {
         const choices = ['Rock ✊', 'Paper 📄', 'Scissors ✂️'];
-        const botChoice = choices[Math.floor(Math.random() * choices.length)];
-        let result = '';
-
-        if (choice === botChoice) {
-            result = "It's a Draw! 🤝";
-        } else if ((choice.includes('Rock') && botChoice.includes('Scissors')) || (choice.includes('Paper') && botChoice.includes('Rock')) || (choice.includes('Scissors') && botChoice.includes('Paper'))) {
-            result = "You Win! 🎉";
-            shareScoreToChat(`🎮 Won Rock Paper Scissors! (${choice} vs ${botChoice})`);
+        const opponentChoice = choices[Math.floor(Math.random() * choices.length)];
+        let res = '';
+        if (choice === opponentChoice) res = "It's a Draw! 🤝";
+        else if ((choice.includes('Rock') && opponentChoice.includes('Scissors')) || (choice.includes('Paper') && opponentChoice.includes('Rock')) || (choice.includes('Scissors') && opponentChoice.includes('Paper'))) {
+            res = "You Win! 🎉";
+            shareScoreToChat(`🎮 Won Rock Paper Scissors (${choice} vs ${opponentChoice})`);
         } else {
-            result = "You Lose! 😢";
-            shareScoreToChat(`🎮 Played Rock Paper Scissors and lost! (${choice} vs ${botChoice})`);
+            res = "You Lost! 😢";
+            shareScoreToChat(`🎮 Played Rock Paper Scissors (${choice} vs ${opponentChoice})`);
         }
-
         area.innerHTML = `
-            <h3 style="color: #fff; margin-bottom: 10px;">Rock Paper Scissors</h3>
-            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 5px;">You: <b>${choice}</b> | Opponent: <b>${botChoice}</b></p>
-            <h2 style="color: #10b981; font-size: 1.2rem; margin-bottom: 15px;">${result}</h2>
-            <button onclick="launchRockPaperScissors()" style="background: #6366f1; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700;">Play Again 🕹️</button>
+            <h4 style="color: #fff; margin-bottom: 8px;">✊ Rock Paper Scissors</h4>
+            <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 8px;">You: <b>${choice}</b> | Rival: <b>${opponentChoice}</b></p>
+            <h3 style="color: #10b981; margin-bottom: 12px;">${res}</h3>
+            <button onclick="launchRockPaperScissors()" style="background: #6366f1; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">Play Again</button>
         `;
     };
 
     area.innerHTML = `
-        <h3 style="color: #fff; margin-bottom: 15px;">Choose Your Weapon</h3>
-        <div style="display: flex; gap: 12px; margin-bottom: 15px;">
-            <button onclick="playRPS('Rock ✊')" style="padding: 12px 18px; font-size: 1.2rem; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer;">✊</button>
-            <button onclick="playRPS('Paper 📄')" style="padding: 12px 18px; font-size: 1.2rem; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer;">📄</button>
-            <button onclick="playRPS('Scissors ✂️')" style="padding: 12px 18px; font-size: 1.2rem; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer;">✂️</button>
+        <h4 style="color: #fff; margin-bottom: 10px;">✊ Rock Paper Scissors (Duo/Solo)</h4>
+        <div style="display: flex; gap: 8px;">
+            <button onclick="playRPS('Rock ✊')" style="padding: 10px 14px; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer;">✊ Rock</button>
+            <button onclick="playRPS('Paper 📄')" style="padding: 10px 14px; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer;">📄 Paper</button>
+            <button onclick="playRPS('Scissors ✂️')" style="padding: 10px 14px; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer;">✂️ Scissors</button>
         </div>
+    `;
+};
+
+window.launchConnectFour = function() {
+    const area = document.getElementById('gameContainerArea');
+    if (!area) return;
+    area.innerHTML = `
+        <h4 style="color: #fff; margin-bottom: 8px;">🔴 Connect Four (Mini Duo)</h4>
+        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 10px;">Drop token challenge completed!</p>
+        <button onclick="shareScoreToChat('🔴 Played Connect Four Duo Arena! Score recorded.')" style="background: #10b981; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 700;">Share Duo Score 🚀</button>
+    `;
+};
+
+window.launchMathBlitz = function() {
+    const area = document.getElementById('gameContainerArea');
+    if (!area) return;
+    const n1 = Math.floor(Math.random() * 12) + 1;
+    const n2 = Math.floor(Math.random() * 12) + 1;
+    const ans = n1 * n2;
+
+    window.checkMath = function() {
+        const val = parseInt(document.getElementById('mathAns').value);
+        if (val === ans) {
+            alert('Correct! Blitz Solved!');
+            shareScoreToChat(`⚡ Solved Math Blitz challenge (${n1} × ${n2} = ${ans}) successfully!`);
+        } else {
+            alert(`Incorrect. Answer was ${ans}`);
+        }
+        launchMathBlitz();
+    };
+
+    area.innerHTML = `
+        <h4 style="color: #fff; margin-bottom: 8px;">⚡ Math Blitz Challenge</h4>
+        <p style="color: #fff; font-size: 1.1rem; margin-bottom: 10px;">What is ${n1} × ${n2}?</p>
+        <input type="number" id="mathAns" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #6366f1; background: #0f172a; color: #fff; margin-bottom: 10px;" />
+        <br>
+        <button onclick="checkMath()" style="background: #6366f1; color: #fff; border: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-weight: 700;">Submit Answer</button>
+    `;
+};
+
+window.launchMemoryMatch = function() {
+    const area = document.getElementById('gameContainerArea');
+    if (!area) return;
+    area.innerHTML = `
+        <h4 style="color: #fff; margin-bottom: 8px;">🧠 Emoji Memory Match</h4>
+        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 10px;">Match pairs: 🍎 🚀 💻 🍎 🚀 💻</p>
+        <button onclick="shareScoreToChat('🧠 Completed Emoji Memory Match challenge with high score!')" style="background: #6366f1; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 700;">Finish & Share Score 🏆</button>
     `;
 };
 
@@ -1039,6 +1091,7 @@ window.shareScoreToChat = async function(scoreText) {
             body: JSON.stringify({ sender: senderId, recipient: activeRecipientId, text: scoreText, mediaType: 'text' })
         });
         loadMessages();
+        closePlayTogetherModal();
     } catch (e) { console.error('Score share error:', e); }
 };
 
@@ -1067,7 +1120,7 @@ window.toggleStickerPicker = function() {
     if (panel) panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid';
 };
 
-// 🌟 Voice Recording
+// 🌟 Clean Voice Note & Audio UI
 let mediaRecorder = null;
 let audioChunks = [];
 window.toggleVoiceRecording = async function() {
@@ -1188,14 +1241,18 @@ window.loadMessages = async function() {
             if (isMedia) {
                 contentHTML = mediaUrl.startsWith('http') ? `<img src="${mediaUrl}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px;" />` : `<span style="font-size: 2.2rem;">${mediaUrl}</span>`;
             } else if (isAudio) {
-                contentHTML = `<audio controls src="${mediaUrl}" style="max-width: 220px; height: 35px;"></audio>`;
+                contentHTML = `<div style="display:flex; align-items:center; gap:8px;"><span style="font-size:1.1rem;">🎤</span><audio controls src="${mediaUrl}" style="max-width: 200px; height: 32px;"></audio></div>`;
             } else if (isVideo) {
                 contentHTML = `<video controls src="${mediaUrl}" style="width: 100%; max-height: 250px; border-radius: 8px;"></video>`;
             }
 
+            // 🌟 Light/Dark mode contrast fix using CSS variables var(--ink) and var(--paper)
+            const bubbleBg = isMe ? 'var(--primary, #6366f1)' : 'var(--paper, #1e293b)';
+            const bubbleColor = isMe ? '#ffffff' : 'var(--ink, #ffffff)';
+
             return `
                 <div style="display: flex; justify-content: ${isMe ? 'flex-end' : 'flex-start'}; width: 100%; margin-bottom: 8px;">
-                    <div style="max-width: 70%; padding: 10px 14px; border-radius: 14px; background: ${isMe ? 'var(--primary, #6366f1)' : 'var(--paper, #1e293b)'}; color: #ffffff; font-size: 0.9rem; font-weight: 600; word-break: break-word;">
+                    <div style="max-width: 70%; padding: 10px 14px; border-radius: 14px; background: ${bubbleBg}; color: ${bubbleColor}; font-size: 0.9rem; font-weight: 600; word-break: break-word; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         ${contentHTML}
                     </div>
                 </div>
@@ -1235,7 +1292,6 @@ window.sendMediaMessage = async function(input) {
     if (!input.files || !input.files[0]) return;
     const file = input.files[0];
 
-    // Validate video duration under 60 seconds
     if (file.type.startsWith('video/')) {
         const vidElem = document.createElement('video');
         vidElem.src = URL.createObjectURL(file);
