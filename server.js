@@ -462,6 +462,19 @@ app.post('/api/messages', async (req, res) => {
     }
 });
 
+// Dedicated File & Media Upload Endpoint for Chat & Posts
+app.post('/api/upload', upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file || !req.file.path) {
+            return res.status(400).json({ error: 'No file uploaded or upload failed.' });
+        }
+        res.status(200).json({ url: req.file.path });
+    } catch (err) {
+        console.error('Upload route error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // --- VOTE ON A POST POLL API ---
 app.post('/api/posts/:id/vote', async (req, res) => {
     try {
