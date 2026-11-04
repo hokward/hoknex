@@ -856,11 +856,24 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
                     </div>
                 </div>
 
-                <!-- Real Jitsi Call Buttons -->
+                <!-- Native Hoknex Ring/Call Actions -->
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <button onclick="startJitsiCall('${recipientName}', 'voice')" title="Voice Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📞</button>
-                    <button onclick="startJitsiCall('${recipientName}', 'video')" title="Video Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📹</button>
+                    <button onclick="startNativeCall('voice', '${recipientName}')" title="Voice Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📞</button>
+                    <button onclick="startNativeCall('video', '${recipientName}')" title="Video Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📹</button>
                     <button onclick="changeChatWallpaper('${recipientId}')" title="Change Wallpaper" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">🎨</button>
+                </div>
+            </div>
+
+            <!-- 🌟 Native Ringing & Call Screen Overlay -->
+            <div id="nativeCallOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.98); z-index: 30; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px);">
+                <div style="width: 90px; height: 90px; background: #6366f1; color: #fff; font-size: 2.2rem; font-weight: 800; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 0 30px rgba(99,102,241,0.6); animation: pulse 1.5s infinite;">
+                    ${recipientName ? recipientName.charAt(0).toUpperCase() : 'C'}
+                </div>
+                <h2 id="nativeCallTitle" style="color: #fff; font-size: 1.5rem; font-weight: 800; margin-bottom: 5px;">Calling ${recipientName}...</h2>
+                <p id="nativeCallStatus" style="color: #f59e0b; font-size: 0.95rem; font-weight: 600; margin-bottom: 35px;">Ringing user device...</p>
+                
+                <div style="display: flex; gap: 20px;">
+                    <button onclick="endNativeCall()" style="background: #ef4444; color: #fff; border: none; border-radius: 30px; padding: 12px 30px; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(239,68,68,0.4);">Decline / End ❌</button>
                 </div>
             </div>
 
@@ -908,41 +921,20 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
     }, 3000);
 };
 
-// 🌟 Real Jitsi Embedded Calling Integration
-window.startJitsiCall = function(recipientName, type) {
-    const canvasArea = document.getElementById('chatCanvasArea') || document.getElementById('chatCanvas');
-    if (!canvasArea) return;
-
-    const roomName = `HoknexSecureCall_${Math.random().toString(36).substring(2, 9)}`;
-
-    canvasArea.innerHTML = `
-        <div style="display: flex; flex-direction: column; height: 100%; width: 100%; background: #0f172a; position: relative; z-index: 50;">
-            <div style="padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid rgba(255,255,255,0.1);">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 1.2rem;">🔒</span>
-                    <div>
-                        <h3 style="color: #fff; font-size: 0.95rem; font-weight: 800; margin: 0;">Hoknex Secure ${type === 'voice' ? 'Voice' : 'Video'} Call: ${recipientName}</h3>
-                        <span style="font-size: 0.7rem; color: #10b981; font-weight: 600;">Encrypted P2P Stream Active</span>
-                    </div>
-                </div>
-                <button onclick="endJitsiCall()" style="background: #ef4444; color: #fff; border: none; border-radius: 20px; padding: 6px 16px; font-weight: 800; font-size: 0.85rem; cursor: pointer;">Leave Call ❌</button>
-            </div>
-            <div style="flex: 1; width: 100%; background: #000; position: relative;">
-                <iframe src="https://meet.jit.si/${roomName}#userInfo.displayName='${localStorage.getItem('hoknex_user') || 'Student'}'" 
-                    allow="camera; microphone; fullscreen; display-capture; autoplay" 
-                    style="width: 100%; height: 100%; border: none;">
-                </iframe>
-            </div>
-        </div>
-    `;
+window.startNativeCall = function(type, recipientName) {
+    const overlay = document.getElementById('nativeCallOverlay');
+    const title = document.getElementById('nativeCallTitle');
+    const status = document.getElementById('nativeCallStatus');
+    if (overlay) {
+        title.innerText = `${type === 'voice' ? 'Voice Call' : 'Video Call'} to ${recipientName}`;
+        status.innerText = 'Ringing... waiting for answer 🔔';
+        overlay.style.display = 'flex';
+    }
 };
 
-window.endJitsiCall = function() {
-    if (typeof window.openFullScreenChat === 'function' && window.activeRecipientId) {
-        window.openFullScreenChat(window.activeRecipientId, window.activeChatUserName, window.activeRecipientUsername);
-    } else {
-        window.location.reload();
-    }
+window.endNativeCall = function() {
+    const overlay = document.getElementById('nativeCallOverlay');
+    if (overlay) overlay.style.display = 'none';
 };
 
 window.fetchRecipientAvatar = async function(userId) {
@@ -973,7 +965,7 @@ window.toggleStickerPicker = function() {
     if (panel) panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid';
 };
 
-// 🌟 WhatsApp / Instagram Style Voice Recording
+// 🌟 Voice Recording (WhatsApp / Instagram style)
 let mediaRecorder = null;
 let audioChunks = [];
 window.toggleVoiceRecording = async function() {
@@ -1118,7 +1110,6 @@ window.loadMessages = async function() {
 
             let contentHTML = textContent;
             if (isMedia) {
-                // Check if it's an emoji sticker or an image URL
                 if (mediaUrl.startsWith('http')) {
                     contentHTML = `<img src="${mediaUrl}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px;" onerror="this.style.display='none'" />`;
                 } else {
