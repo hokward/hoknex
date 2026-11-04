@@ -5555,6 +5555,27 @@ async function rateProject(id, rating) {
 
 // Universal Profile Opener for any clicked user
 
+// Universal Profile Opener for any clicked user
+window.viewUserProfile = function(usernameOrId) {
+    if (!usernameOrId) {
+        console.error('Profile identifier is missing.');
+        return;
+    }
+    const cleanUsername = usernameOrId.toString().replace(/^@/, '');
+    
+    // Save target user so your profile dashboard reads the correct user stats
+    localStorage.setItem('target_profile_user', cleanUsername);
+    localStorage.setItem('hoknex_view_user', cleanUsername);
+    
+    // Call your app's native profile loader function
+    if (typeof window.loadUserProfile === 'function') {
+        window.loadUserProfile(cleanUsername);
+    } else if (typeof window.renderView === 'function') {
+        window.renderView('profile', cleanUsername);
+    } else {
+        window.location.href = `/feed.html?profile=${encodeURIComponent(cleanUsername)}`;
+    }
+};    
 
 function downloadProjectPDF(encTitle, encDesc, encTech, encClass, imgUrl) {
     const title = decodeURIComponent(encTitle);
