@@ -5559,20 +5559,31 @@ window.viewUserProfile = function(usernameOrId) {
         console.error('Profile identifier is missing.');
         return;
     }
-    // Clean up any leading @ symbols if passed
     const cleanUsername = usernameOrId.toString().replace(/^@/, '');
     
-    // Save target user so your profile dashboard loads their stats correctly
+    // Save target user to localStorage so profile components can read it
     localStorage.setItem('target_profile_user', cleanUsername);
     localStorage.setItem('hoknex_view_user', cleanUsername);
     
-    // Render the profile view inside your feed.html single-page layout
-    if (typeof renderView === 'function') {
-        renderView('profile', cleanUsername);
-    } else if (typeof loadUserProfile === 'function') {
-        loadUserProfile(cleanUsername);
+    // Check if your app uses a single-page view router function
+    if (typeof window.renderView === 'function') {
+        window.renderView('profile', cleanUsername);
+    } else if (typeof window.loadUserProfile === 'function') {
+        window.loadUserProfile(cleanUsername);
     } else {
-        window.location.href = `/feed.html?profile=${encodeURIComponent(cleanUsername)}`;
+        // If your profile section is handled by showing/hiding DOM elements:
+        const profileSection = document.getElementById('profileSection') || document.getElementById('profileView');
+        const feedSection = document.getElementById('feedSection') || document.getElementById('mainContent');
+        
+        if (profileSection && feedSection) {
+            feedSection.style.display = 'none';
+            profileSection.style.display = 'block';
+            if (typeof loadUserProfileData === 'function') loadUserProfileData(cleanUsername);
+        } else {
+            // Ultimate fallback to your My Profile tab if available
+            window.location.hash = `#profile=${encodeURIComponent(cleanUsername)}`;
+            location.reload();
+        }
     }
 };
 
