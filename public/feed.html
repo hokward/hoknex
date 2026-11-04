@@ -856,25 +856,40 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
                     </div>
                 </div>
 
-                <!-- Native Hoknex Ring/Call Actions -->
+                <!-- Play Together 🎮 & Wallpaper Customizer -->
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <button onclick="startNativeCall('voice', '${recipientName}')" title="Voice Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📞</button>
-                    <button onclick="startNativeCall('video', '${recipientName}')" title="Video Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📹</button>
+                    <button onclick="openPlayTogetherModal('${recipientName}')" title="Play Together Games 🎮" style="background: rgba(99,102,241,0.4); border: 1px solid #6366f1; border-radius: 20px; padding: 6px 14px; display: flex; align-items: center; gap: 6px; cursor: pointer; color: #fff; font-size: 0.8rem; font-weight: 700;">🎮 Play</button>
                     <button onclick="changeChatWallpaper('${recipientId}')" title="Change Wallpaper" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">🎨</button>
                 </div>
             </div>
 
-            <!-- 🌟 Native Ringing & Call Screen Overlay -->
-            <div id="nativeCallOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.98); z-index: 30; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px);">
-                <div style="width: 90px; height: 90px; background: #6366f1; color: #fff; font-size: 2.2rem; font-weight: 800; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 0 30px rgba(99,102,241,0.6); animation: pulse 1.5s infinite;">
-                    ${recipientName ? recipientName.charAt(0).toUpperCase() : 'C'}
+            <!-- 🌟 Play Together Games Modal Overlay -->
+            <div id="playTogetherModal" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.96); z-index: 40; flex-direction: column; padding: 25px; backdrop-filter: blur(15px); overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #fff; font-size: 1.3rem; font-weight: 800; margin: 0;">🎮 Hoknex Play Arena</h2>
+                    <button onclick="closePlayTogetherModal()" style="background: rgba(255,255,255,0.1); border: none; color: #fff; border-radius: 50%; width: 32px; height: 32px; font-weight: 800; cursor: pointer;">✕</button>
                 </div>
-                <h2 id="nativeCallTitle" style="color: #fff; font-size: 1.5rem; font-weight: 800; margin-bottom: 5px;">Calling ${recipientName}...</h2>
-                <p id="nativeCallStatus" style="color: #f59e0b; font-size: 0.95rem; font-weight: 600; margin-bottom: 35px;">Ringing user device...</p>
+                <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 20px;">Choose a game to play solo or share your score in chat with ${recipientName}!</p>
                 
-                <div style="display: flex; gap: 20px;">
-                    <button onclick="endNativeCall()" style="background: #ef4444; color: #fff; border: none; border-radius: 30px; padding: 12px 30px; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(239,68,68,0.4);">Decline / End ❌</button>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+                    <div onclick="launchTicTacToe()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <h4 style="color: #fff; font-size: 1rem; font-weight: 800; margin: 0 0 4px 0;">⭕ Tic-Tac-Toe</h4>
+                            <p style="color: #94a3b8; font-size: 0.75rem; margin: 0;">Classic 3x3 strategy game</p>
+                        </div>
+                        <span style="background: #6366f1; color: #fff; padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem;">Play</span>
+                    </div>
+
+                    <div onclick="launchRockPaperScissors()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <h4 style="color: #fff; font-size: 1rem; font-weight: 800; margin: 0 0 4px 0;">✊ Rock Paper Scissors</h4>
+                            <p style="color: #94a3b8; font-size: 0.75rem; margin: 0;">Quick arcade showdown</p>
+                        </div>
+                        <span style="background: #6366f1; color: #fff; padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem;">Play</span>
+                    </div>
                 </div>
+
+                <div id="gameContainerArea" style="margin-top: 20px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;"></div>
             </div>
 
             <!-- 🌟 Messages History Stream Area -->
@@ -882,7 +897,7 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
                 <p style="text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem; font-weight: 600;">Loading conversation...</p>
             </div>
 
-            <!-- 🌟 Expanded Sticker & Emoji Picker Drawer -->
+            <!-- 🌟 Sticker & Emoji Picker Drawer -->
             <div id="stickerPickerPanel" style="display: none; position: absolute; bottom: 70px; left: 20px; right: 20px; background: rgba(15, 23, 42, 0.98); border: 1px solid rgba(255,255,255,0.2); padding: 12px; border-radius: 12px; grid-template-columns: repeat(6, 1fr); gap: 10px; z-index: 10; backdrop-filter: blur(10px); max-height: 150px; overflow-y: auto;">
                 <span onclick="sendSticker('😀')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">😀</span>
                 <span onclick="sendSticker('😂')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">😂</span>
@@ -898,10 +913,10 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
                 <span onclick="sendSticker('🏆')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">🏆</span>
             </div>
 
-            <!-- 🌟 Message Input Bar -->
+            <!-- 🌟 Message Input Bar with Photo/Short Video (<60s), Stickers, Voice Notes -->
             <div style="padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); display: flex; gap: 8px; align-items: center; z-index: 5;">
-                <input type="file" id="chatMediaInput" style="display: none;" accept="image/*" onchange="sendMediaMessage(this)">
-                <button onclick="document.getElementById('chatMediaInput').click()" title="Attach Image" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">📎</button>
+                <input type="file" id="chatMediaInput" style="display: none;" accept="image/*,video/mp4,video/webm,video/quicktime" onchange="sendMediaMessage(this)">
+                <button onclick="document.getElementById('chatMediaInput').click()" title="Attach Photo or Short Video (<60s)" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">📎</button>
                 <button onclick="toggleStickerPicker()" title="Stickers & Emojis" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">🎨</button>
                 <button id="micBtn" onclick="toggleVoiceRecording()" title="Record Voice Note" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">🎤</button>
                 
@@ -921,20 +936,110 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
     }, 3000);
 };
 
-window.startNativeCall = function(type, recipientName) {
-    const overlay = document.getElementById('nativeCallOverlay');
-    const title = document.getElementById('nativeCallTitle');
-    const status = document.getElementById('nativeCallStatus');
-    if (overlay) {
-        title.innerText = `${type === 'voice' ? 'Voice Call' : 'Video Call'} to ${recipientName}`;
-        status.innerText = 'Ringing... waiting for answer 🔔';
-        overlay.style.display = 'flex';
-    }
+// 🌟 Play Together Arena Logic
+window.openPlayTogetherModal = function() {
+    const modal = document.getElementById('playTogetherModal');
+    if (modal) modal.style.display = 'flex';
 };
 
-window.endNativeCall = function() {
-    const overlay = document.getElementById('nativeCallOverlay');
-    if (overlay) overlay.style.display = 'none';
+window.closePlayTogetherModal = function() {
+    const modal = document.getElementById('playTogetherModal');
+    if (modal) modal.style.display = 'none';
+};
+
+window.launchTicTacToe = function() {
+    const area = document.getElementById('gameContainerArea');
+    if (!area) return;
+    let board = ['', '', '', '', '', '', '', '', ''];
+    let turn = 'X';
+    let gameOver = false;
+
+    window.makeTicMove = function(idx) {
+        if (board[idx] !== '' || gameOver) return;
+        board[idx] = turn;
+        renderBoard();
+        checkWinner();
+        turn = turn === 'X' ? 'O' : 'X';
+    };
+
+    function renderBoard() {
+        area.innerHTML = `
+            <h3 style="color: #fff; margin-bottom: 10px;">Tic-Tac-Toe (${turn}'s Turn)</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 70px); gap: 6px; margin-bottom: 15px;">
+                ${board.map((val, i) => `<button onclick="makeTicMove(${i})" style="width: 70px; height: 70px; font-size: 1.8rem; font-weight: 800; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer;">${val}</button>`).join('')}
+            </div>
+            <button onclick="launchTicTacToe()" style="background: #334155; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 700;">Restart Game</button>
+        `;
+    }
+
+    function checkWinner() {
+        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        for (let w of wins) {
+            const [a, b, c] = w;
+            if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                gameOver = true;
+                area.innerHTML += `<p style="color: #10b981; font-weight: 800; margin-top: 10px;">🎉 Player ${board[a]} Wins!</p>`;
+                shareScoreToChat(`🏆 Won a match of Tic-Tac-Toe! Player ${board[a]} Victorious.`);
+                return;
+            }
+        }
+        if (!board.includes('')) {
+            gameOver = true;
+            area.innerHTML += `<p style="color: #f59e0b; font-weight: 800; margin-top: 10px;">🤝 It's a Draw!</p>`;
+            shareScoreToChat(`🤝 Played a tied match of Tic-Tac-Toe!`);
+        }
+    }
+    renderBoard();
+};
+
+window.launchRockPaperScissors = function() {
+    const area = document.getElementById('gameContainerArea');
+    if (!area) return;
+
+    window.playRPS = function(choice) {
+        const choices = ['Rock ✊', 'Paper 📄', 'Scissors ✂️'];
+        const botChoice = choices[Math.floor(Math.random() * choices.length)];
+        let result = '';
+
+        if (choice === botChoice) {
+            result = "It's a Draw! 🤝";
+        } else if ((choice.includes('Rock') && botChoice.includes('Scissors')) || (choice.includes('Paper') && botChoice.includes('Rock')) || (choice.includes('Scissors') && botChoice.includes('Paper'))) {
+            result = "You Win! 🎉";
+            shareScoreToChat(`🎮 Won Rock Paper Scissors! (${choice} vs ${botChoice})`);
+        } else {
+            result = "You Lose! 😢";
+            shareScoreToChat(`🎮 Played Rock Paper Scissors and lost! (${choice} vs ${botChoice})`);
+        }
+
+        area.innerHTML = `
+            <h3 style="color: #fff; margin-bottom: 10px;">Rock Paper Scissors</h3>
+            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 5px;">You: <b>${choice}</b> | Opponent: <b>${botChoice}</b></p>
+            <h2 style="color: #10b981; font-size: 1.2rem; margin-bottom: 15px;">${result}</h2>
+            <button onclick="launchRockPaperScissors()" style="background: #6366f1; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700;">Play Again 🕹️</button>
+        `;
+    };
+
+    area.innerHTML = `
+        <h3 style="color: #fff; margin-bottom: 15px;">Choose Your Weapon</h3>
+        <div style="display: flex; gap: 12px; margin-bottom: 15px;">
+            <button onclick="playRPS('Rock ✊')" style="padding: 12px 18px; font-size: 1.2rem; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer;">✊</button>
+            <button onclick="playRPS('Paper 📄')" style="padding: 12px 18px; font-size: 1.2rem; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer;">📄</button>
+            <button onclick="playRPS('Scissors ✂️')" style="padding: 12px 18px; font-size: 1.2rem; background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer;">✂️</button>
+        </div>
+    `;
+};
+
+window.shareScoreToChat = async function(scoreText) {
+    const senderId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
+    if (!senderId || !activeRecipientId) return;
+    try {
+        await fetch('/api/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sender: senderId, recipient: activeRecipientId, text: scoreText, mediaType: 'text' })
+        });
+        loadMessages();
+    } catch (e) { console.error('Score share error:', e); }
 };
 
 window.fetchRecipientAvatar = async function(userId) {
@@ -950,14 +1055,11 @@ window.fetchRecipientAvatar = async function(userId) {
                 avatarEl.innerHTML = `<img src="${user.dpUrl}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" onerror="this.style.display='none'" />`;
             }
         }
-    } catch (e) {
-        console.error('Error fetching avatar:', e);
-    }
+    } catch (e) { console.error('Avatar error:', e); }
 };
 
 window.viewUserProfile = function(usernameOrId) {
-    const target = usernameOrId || window.activeRecipientUsername;
-    window.location.href = `/profile.html?user=${encodeURIComponent(target)}`;
+    window.location.href = `/profile.html?user=${encodeURIComponent(usernameOrId || window.activeRecipientUsername)}`;
 };
 
 window.toggleStickerPicker = function() {
@@ -965,7 +1067,7 @@ window.toggleStickerPicker = function() {
     if (panel) panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid';
 };
 
-// 🌟 Voice Recording (WhatsApp / Instagram style)
+// 🌟 Voice Recording
 let mediaRecorder = null;
 let audioChunks = [];
 window.toggleVoiceRecording = async function() {
@@ -976,9 +1078,7 @@ window.toggleVoiceRecording = async function() {
             mediaRecorder = new MediaRecorder(stream);
             audioChunks = [];
 
-            mediaRecorder.ondataavailable = event => {
-                audioChunks.push(event.data);
-            };
+            mediaRecorder.ondataavailable = event => { audioChunks.push(event.data); };
 
             mediaRecorder.onstop = async () => {
                 const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
@@ -992,10 +1092,9 @@ window.toggleVoiceRecording = async function() {
                     const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
                     if (uploadRes.ok) {
                         const data = await uploadRes.json();
-                        const audioUrl = data.url;
-                        if (audioUrl) {
+                        if (data && data.url) {
                             const senderId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
-                            const text = `[Audio]: ${audioUrl}`;
+                            const text = `[Audio]: ${data.url}`;
                             await fetch('/api/messages', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -1004,42 +1103,31 @@ window.toggleVoiceRecording = async function() {
                             loadMessages();
                         }
                     }
-                } catch (e) {
-                    console.error('Voice note upload error:', e);
-                }
+                } catch (e) { console.error('Voice upload error:', e); }
             };
 
             mediaRecorder.start();
             micBtn.style.background = '#ef4444';
             micBtn.innerText = '⏹️';
-        } catch (e) {
-            alert('Microphone access denied or not supported.');
-        }
+        } catch (e) { alert('Microphone access denied.'); }
     } else {
         mediaRecorder.stop();
     }
 };
 
 window.changeChatWallpaper = function(recipientId) {
-    const gradients = [
-        'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-        'linear-gradient(135deg, #831843 0%, #4c1d95 100%)',
-        'linear-gradient(135deg, #065f46 0%, #1e3a8a 100%)',
-        '#000000'
-    ];
+    const gradients = ['linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 'linear-gradient(135deg, #831843 0%, #4c1d95 100%)', '#000000'];
     const current = localStorage.getItem(`hoknex_wallpaper_${recipientId}`) || gradients[0];
-    let nextIdx = (gradients.indexOf(current) + 1) % gradients.length;
-    const newWallpaper = gradients[nextIdx];
-    
-    localStorage.setItem(`hoknex_wallpaper_${recipientId}`, newWallpaper);
+    let nextNew = gradients[(gradients.indexOf(current) + 1) % gradients.length];
+    localStorage.setItem(`hoknex_wallpaper_${recipientId}`, nextNew);
     const container = document.getElementById('fullChatWrapperContainer');
-    if (container) container.style.background = newWallpaper;
+    if (container) container.style.background = nextNew;
 };
 
 window.closeChat = function() {
     const wrapper = document.getElementById('fullChatWrapper');
     if (wrapper) wrapper.style.display = 'none';
-    if (typeof pollTimer !== 'undefined' && pollTimer) clearInterval(pollTimer);
+    if (typeof pollTimer !== 'undefined') clearInterval(pollTimer);
 };
 
 window.loadChatConnections = async function() {
@@ -1048,155 +1136,130 @@ window.loadChatConnections = async function() {
         const res = await fetch(`/api/users/${encodeURIComponent(username)}`);
         if (!res.ok) return;
         const user = await res.json();
-        
-        const followers = (user.followers || []).map(f => f._id ? f._id.toString() : f.toString());
-        const following = (user.following || []).map(f => f._id ? f._id.toString() : f.toString());
-        const connectedIds = [...new Set([...followers, ...following])];
+        const connectedIds = [...new Set([...(user.followers || []), ...(user.following || [])].map(f => f._id ? f._id.toString() : f.toString()))];
         
         const container = document.getElementById('chatConnectionsList');
         if (!container) return;
+        if (!connectedIds.length) { container.innerHTML = `<p style="font-size:0.85rem; color:var(--ink-light); font-weight:600; padding:10px;">No connections yet!</p>`; return; }
         
-        if (!connectedIds.length) { 
-            container.innerHTML = `<p style="font-size:0.85rem; color:var(--ink-light); font-weight:600; padding:10px;">No connections yet. Follow peers to chat!</p>`; 
-            return; 
-        }
-        
-        const userRes = await fetch('/api/users');
-        const allUsers = await userRes.json();
-        const connections = allUsers.filter(u => connectedIds.includes(u._id.toString()));
-        
-        container.innerHTML = connections.map(conn => `
-           <div onclick="openFullScreenMessages('${conn._id}', '${conn.name}', '${conn.username}')" style="display:flex; align-items:center; gap:10px; padding:10px; border-radius:8px; cursor:pointer; background:var(--canvas); border:1px solid var(--border); transition: all 0.15s;" onmouseover="this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.background='var(--canvas)'">
+        const allUsers = await (await fetch('/api/users')).json();
+        container.innerHTML = allUsers.filter(u => connectedIds.includes(u._id.toString())).map(conn => `
+           <div onclick="openFullScreenMessages('${conn._id}', '${conn.name}', '${conn.username}')" style="display:flex; align-items:center; gap:10px; padding:10px; border-radius:8px; cursor:pointer; background:var(--canvas); border:1px solid var(--border);">
                 <div class="avatar-circle" style="width:36px; height:36px; font-size:0.9rem; overflow:hidden;">
-                    ${conn.dpUrl ? `<img src="${conn.dpUrl}" style="width:100%; height:100%; object-fit:cover;" />` : (conn.name ? conn.name.charAt(0).toUpperCase() : 'H')}
+                    ${conn.dpUrl ? `<img src="${conn.dpUrl}" style="width:100%; height:100%; object-fit:cover;" />` : conn.name.charAt(0).toUpperCase()}
                 </div>
                 <div style="overflow:hidden;">
-                    <h4 style="font-weight:800; font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color: var(--ink);">${conn.name}</h4>
-                    <p style="font-size:0.75rem; color:var(--ink-light); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">@${conn.username}</p>
+                    <h4 style="font-weight:800; font-size:0.9rem; color:var(--ink);">${conn.name}</h4>
+                    <p style="font-size:0.75rem; color:var(--ink-light);">@${conn.username}</p>
                 </div>
             </div>
         `).join('');
-    } catch (e) { console.error('Error loading chat connections:', e); }
+    } catch (e) { console.error('Connections error:', e); }
 };
 
 window.loadMessages = async function() {
     const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
-    const targetUser = activeRecipientId;
-    
-    if (!sender || !targetUser) return;
+    if (!sender || !activeRecipientId) return;
 
     try {
-        const res = await fetch(`/api/messages/${sender}/${targetUser}`);
+        const res = await fetch(`/api/messages/${sender}/${activeRecipientId}`);
         if (!res.ok) return;
-        
-        const data = await res.json();
-        const messages = Array.isArray(data) ? data : [];
-
+        const messages = await res.json();
         const container = document.getElementById('chatCanvas') || document.getElementById('fullChatMessages');
         if (!container) return;
 
         if (messages.length === 0) {
-            container.innerHTML = `<p style="text-align: center; color: var(--ink-light, #94a3b8); font-size: 0.85rem; font-weight: 600; margin-top: 20px;">No messages yet. Say hello! 👋</p>`;
+            container.innerHTML = `<p style="text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem; font-weight: 600; margin-top: 20px;">No messages yet. Say hello! 👋</p>`;
             return;
         }
 
         container.innerHTML = messages.map(msg => {
-            const msgSender = msg.sender?._id || msg.sender;
-            const isMe = (msgSender === sender || msgSender === localStorage.getItem('hoknex_user') || msgSender === localStorage.getItem('hoknex_uid'));
-            const textContent = msg.text || msg.message || '';
+            const isMe = (msg.sender === sender || msg.sender?._id === sender || msg.sender === localStorage.getItem('hoknex_user'));
+            const textContent = msg.text || '';
             const isMedia = textContent.startsWith('[Media]:');
             const isAudio = textContent.startsWith('[Audio]:');
-            const mediaUrl = isMedia ? textContent.replace('[Media]:', '').trim() : (isAudio ? textContent.replace('[Audio]:', '').trim() : '');
+            const isVideo = textContent.startsWith('[Video]:');
+            
+            const mediaUrl = isMedia ? textContent.replace('[Media]:', '').trim() : 
+                             (isAudio ? textContent.replace('[Audio]:', '').trim() : 
+                             (isVideo ? textContent.replace('[Video]:', '').trim() : ''));
 
             let contentHTML = textContent;
             if (isMedia) {
-                if (mediaUrl.startsWith('http')) {
-                    contentHTML = `<img src="${mediaUrl}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px;" onerror="this.style.display='none'" />`;
-                } else {
-                    contentHTML = `<span style="font-size: 2.2rem;">${mediaUrl}</span>`;
-                }
+                contentHTML = mediaUrl.startsWith('http') ? `<img src="${mediaUrl}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px;" />` : `<span style="font-size: 2.2rem;">${mediaUrl}</span>`;
             } else if (isAudio) {
                 contentHTML = `<audio controls src="${mediaUrl}" style="max-width: 220px; height: 35px;"></audio>`;
+            } else if (isVideo) {
+                contentHTML = `<video controls src="${mediaUrl}" style="width: 100%; max-height: 250px; border-radius: 8px;"></video>`;
             }
 
             return `
                 <div style="display: flex; justify-content: ${isMe ? 'flex-end' : 'flex-start'}; width: 100%; margin-bottom: 8px;">
-                    <div style="max-width: 70%; padding: 10px 14px; border-radius: 14px; background: ${isMe ? 'var(--primary, #6366f1)' : 'var(--paper, #1e293b)'}; color: ${isMe ? '#ffffff' : 'var(--ink, #ffffff)'}; font-size: 0.9rem; font-weight: 600; word-break: break-word; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <div style="max-width: 70%; padding: 10px 14px; border-radius: 14px; background: ${isMe ? 'var(--primary, #6366f1)' : 'var(--paper, #1e293b)'}; color: #ffffff; font-size: 0.9rem; font-weight: 600; word-break: break-word;">
                         ${contentHTML}
                     </div>
                 </div>
             `;
         }).join('');
-    } catch (e) {
-        console.error('Error loading messages:', e);
-    }
+    } catch (e) { console.error('Messages load error:', e); }
 };
 
 window.sendFullScreenMessage = async function() {
     const input = document.getElementById('fullChatInput');
     if (!input || !input.value.trim()) return;
-    
-    const messageText = input.value.trim();
+    const text = input.value.trim();
     input.value = ''; 
-
     try {
-        const senderId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
-        const res = await fetch('/api/messages', {
+        await fetch('/api/messages', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                sender: senderId,
-                recipient: activeRecipientId,
-                text: messageText,
-                mediaType: 'text'
-            })
+            body: JSON.stringify({ sender: localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user'), recipient: activeRecipientId, text, mediaType: 'text' })
         });
-        
-        if (res.ok) {
-            if (typeof loadMessages === 'function') loadMessages();
-        }
-    } catch (e) {
-        console.error('Error sending message:', e);
-    }
+        loadMessages();
+    } catch (e) { console.error('Send error:', e); }
 };
 
 window.sendSticker = async function(symbol) {
     toggleStickerPicker();
-    const senderId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
-    if (!senderId || !activeRecipientId) return;
-
-    const text = `[Media]: ${symbol}`;
     try {
-        await fetch('/api/messages', { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ sender: senderId, recipient: activeRecipientId, text, mediaType: 'sticker' }) 
+        await fetch('/api/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sender: localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user'), recipient: activeRecipientId, text: `[Media]: ${symbol}`, mediaType: 'sticker' })
         });
         loadMessages();
-    } catch (e) {
-        console.error('Sticker send error:', e);
-    }
+    } catch (e) { console.error('Sticker error:', e); }
 };
 
 window.sendMediaMessage = async function(input) {
-    if (!input.files || !input.files[0] || !activeRecipientId) return;
+    if (!input.files || !input.files[0]) return;
     const file = input.files[0];
+
+    // Validate video duration under 60 seconds
+    if (file.type.startsWith('video/')) {
+        const vidElem = document.createElement('video');
+        vidElem.src = URL.createObjectURL(file);
+        await new Promise(r => { vidElem.onloadedmetadata = r; });
+        if (vidElem.duration > 61) {
+            alert('⚠️ Short videos must be under 60 seconds!');
+            input.value = '';
+            return;
+        }
+    }
+
     const formData = new FormData();
     formData.append('image', file);
-
     try {
-        const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
-        if (uploadRes.ok) {
-            const data = await uploadRes.json();
-            if (data && data.url) {
-                const mediaUrl = data.url;
-                const text = `[Media]: ${mediaUrl}`;
-                const senderId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
-                
-                await fetch('/api/messages', { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ sender: senderId, recipient: activeRecipientId, text, mediaType: 'image' }) 
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (res.ok) {
+            const data = await res.json();
+            if (data.url) {
+                const isVid = file.type.startsWith('video/');
+                const text = isVid ? `[Video]: ${data.url}` : `[Media]: ${data.url}`;
+                await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sender: localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user'), recipient: activeRecipientId, text, mediaType: isVid ? 'video' : 'image' })
                 });
                 loadMessages();
             }
