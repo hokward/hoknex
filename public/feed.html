@@ -825,11 +825,14 @@ window.activeChatUserName = window.activeChatUserName || null;
 window.pollTimer = window.pollTimer || null;
 window.isMessengerFullScreen = window.isMessengerFullScreen || false;
 
-if (typeof loadFullScreenMessages !== 'function') {
-    window.loadFullScreenMessages = function(recipientId, recipientName) {
-        openFullScreenChat(recipientId || activeRecipientId, recipientName || activeChatUserName);
-    };
-}
+// 🌟 Restored: Fixes the click handler from the connections sidebar list
+window.openFullScreenMessages = function(recipientId, recipientName) {
+    if (typeof window.openFullScreenChat === 'function') {
+        window.openFullScreenChat(recipientId || activeRecipientId, recipientName || activeChatUserName);
+    } else {
+        console.error('openFullScreenChat is not defined');
+    }
+};
 
 window.openFullScreenChat = function(recipientId, recipientName) {
     activeRecipientId = recipientId;
