@@ -5561,7 +5561,19 @@ window.viewUserProfile = function(usernameOrId) {
     }
     // Clean up any leading @ symbols if passed
     const cleanUsername = usernameOrId.toString().replace(/^@/, '');
-    window.location.href = `/profile.html?user=${encodeURIComponent(cleanUsername)}`;
+    
+    // Save target user so your profile dashboard loads their stats correctly
+    localStorage.setItem('target_profile_user', cleanUsername);
+    localStorage.setItem('hoknex_view_user', cleanUsername);
+    
+    // Render the profile view inside your feed.html single-page layout
+    if (typeof renderView === 'function') {
+        renderView('profile', cleanUsername);
+    } else if (typeof loadUserProfile === 'function') {
+        loadUserProfile(cleanUsername);
+    } else {
+        window.location.href = `/feed.html?profile=${encodeURIComponent(cleanUsername)}`;
+    }
 };
 
 function downloadProjectPDF(encTitle, encDesc, encTech, encClass, imgUrl) {
