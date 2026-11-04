@@ -401,10 +401,10 @@ app.get('/api/notifications/:username', async (req, res) => {
   }
 });
 
-// 1. Unified Post Message Endpoint (Handles Text, Images, Audio, Video, and Stickers)
+// 1. Unified Post Message Endpoint (Handles Text, Images, Audio, Video, Stickers, and Read Status)
 app.post('/api/messages', async (req, res) => {
     try {
-        const { sender, recipient, text, mediaUrl, mediaType } = req.body;
+        const { sender, recipient, text, mediaUrl, mediaType, isRead } = req.body;
         if (!sender || !recipient) {
             return res.status(400).json({ error: 'Sender and recipient are required.' });
         }
@@ -414,7 +414,8 @@ app.post('/api/messages', async (req, res) => {
             recipient,
             text: text || '',
             mediaUrl: mediaUrl || '',
-            mediaType: mediaType || 'text'
+            mediaType: mediaType || 'text',
+            isRead: isRead || false
         });
         await msg.save();
         res.status(201).json(msg);
@@ -435,15 +436,14 @@ app.get('/api/messages/:user1/:user2', async (req, res) => {
             ]
         }).sort({ createdAt: 1 });
 
-        // ALWAYS return an array, even if empty
         res.json(Array.isArray(messages) ? messages : []);
     } catch (err) {
         console.error('Fetch messages error:', err);
-        res.status(500).json([]); // Return empty array on error instead of object
+        res.status(500).json([]);
     }
 });
 
-// 3. Dedicated File & Media Upload Endpoint for Chat Attachments, Voice Notes & Short Videos
+// 3. Dedicated File & Media Upload Endpoint (For Images, Voice Notes, Short Videos, and Report Proofs)
 app.post('/api/upload', upload.single('image'), async (req, res) => {
     try {
         if (!req.file || !req.file.path) {
@@ -466,7 +466,17 @@ app.get('/api/posts', async (req, res) => {
     }
 });
 
-// Delete individual conversation / messages between two users
+// 5. Delete an Individual Message by ID
+app.delete('/api/messages/single/:msgId', async (req, res) => {
+    try {
+        await Message.findByIdAndDelete(req.params.msgId);
+        res.status(200).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 6. Delete Full Conversation Between Two Users
 app.delete('/api/messages/:user1/:user2', async (req, res) => {
     try {
         const { user1, user2 } = req.params;
@@ -483,48 +493,77 @@ app.delete('/api/messages/:user1/:user2', async (req, res) => {
     }
 });
 
-// 1. Delete an individual message by ID
-app.delete('/api/messages/single/:msgId', async (req, res) => {
+// 7. Mark Messages as Read (Double Blue Ticks)
+app.put('/api/messages/read/:sender/:recipient', async (req, res) => {
     try {
-        await Message.findByIdAndDelete(req.params.msgId);
+        await Message.updateMany(
+            { sender: req.params.sender, recipient: req.params.recipient, isRead: false },
+            { $set: { isRead: true } }
+        );
         res.status(200).json({ success: true });
     } catch (err) {
+        console.error('Read receipt error:', err);
         res.status(500).json({ error: err.message });
     }
 });
 
-// 2. Delete full conversation between two users
-app.delete('/api/messages/:user1/:user2', async (req, res) => {
-    try {
-        const { user1, user2 } = req.params;
-        await Message.deleteMany({
-            $or: [
-                { sender: user1, recipient: user2 },
-                { sender: user2, recipient: user1 }
-            ]
-        });
-        res.status(200).json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+// 8. Support Report Schema & Submission Endpoint (Supports Optional Screenshot Proof Upload)
+const SupportReportSchema = new mongoose.Schema({
+    reporter: { type: String, required: true },
+    reportedUser: { type: String, required: true },
+    reason: { type: String, required: true },
+    details: { type: String },
+    attachmentUrl: { type: String },
+    status: { type: String, default: 'Pending' },
+    createdAt: { type: Date, default: Date.now }
 });
+const SupportReport = mongoose.models.SupportReport || mongoose.model('SupportReport', SupportReportSchema);
 
-// 3. Submit Report to Hoknex Support Page
-app.post('/api/reports', async (req, res) => {
+app.post('/api/reports', upload.single('image'), async (req, res) => {
     try {
         const { reporter, reportedUser, reason, details } = req.body;
-        const SupportTicket = mongoose.model('Support', new mongoose.Schema({
-            reporter: String, reportedUser: String, reason: String, details: String, createdAt: { type: Date, default: Date.now }
-        }));
-        const ticket = new SupportTicket({ reporter, reportedUser, reason, details });
-        await ticket.save();
-        res.status(201).json({ success: true, message: 'Report submitted to Hoknex Support.' });
+        const attachmentUrl = req.file ? req.file.path : '';
+        const report = new SupportReport({ reporter, reportedUser, reason, details, attachmentUrl });
+        await report.save();
+        res.status(201).json({ success: true, message: 'Report submitted successfully to Hoknex Support Team.' });
+    } catch (err) {
+        console.error('Report submission error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 9. Persistent User Block / Unblock Management
+const BlockSchema = new mongoose.Schema({
+    blocker: { type: String, required: true },
+    blocked: { type: String, required: true }
+});
+const BlockModel = mongoose.models.Block || mongoose.model('Block', BlockSchema);
+
+app.get('/api/blocks/:user', async (req, res) => {
+    try {
+        const blocks = await BlockModel.find({ blocker: req.params.user });
+        res.json(blocks.map(b => b.blocked));
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// Middleware to update user's lastActive timestamp on requests
+app.post('/api/blocks', async (req, res) => {
+    try {
+        const { blocker, blocked, action } = req.body;
+        if (action === 'block') {
+            await BlockModel.updateOne({ blocker, blocked }, { blocker, blocked }, { upsert: true });
+        } else {
+            await BlockModel.deleteOne({ blocker, blocked });
+        }
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error('Block action error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 10. Middleware to Update User's lastActive Timestamp
 app.use(async (req, res, next) => {
     try {
         const userId = req.headers['x-user-id'] || req.query.userId;
