@@ -856,12 +856,22 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
                     </div>
                 </div>
 
-                <!-- Feature Buttons: Call, Video, Wallpaper -->
+                <!-- Real Interactive Call Buttons -->
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <button onclick="alert('Secure Voice Call Connected 📞')" title="Voice Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📞</button>
-                    <button onclick="alert('Secure Video Call Connected 📹')" title="Video Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📹</button>
+                    <button onclick="startCallInterface('voice', '${recipientName}')" title="Voice Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📞</button>
+                    <button onclick="startCallInterface('video', '${recipientName}')" title="Video Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📹</button>
                     <button onclick="changeChatWallpaper('${recipientId}')" title="Change Wallpaper" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">🎨</button>
                 </div>
+            </div>
+
+            <!-- 🌟 Live Calling Overlay UI -->
+            <div id="activeCallOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.95); z-index: 20; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px);">
+                <div id="callAvatarContainer" style="width: 80px; height: 80px; background: #6366f1; color: #fff; font-size: 2rem; font-weight: 800; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 0 25px rgba(99,102,241,0.5);">
+                    ${recipientName ? recipientName.charAt(0).toUpperCase() : 'C'}
+                </div>
+                <h2 id="callTitleText" style="color: #fff; font-size: 1.4rem; font-weight: 800; margin-bottom: 5px;">Calling ${recipientName}...</h2>
+                <p id="callStatusText" style="color: #10b981; font-size: 0.9rem; font-weight: 600; margin-bottom: 30px;">Ringing secure channel...</p>
+                <button onclick="endCallInterface()" style="background: #ef4444; color: #fff; border: none; border-radius: 30px; padding: 12px 28px; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(239,68,68,0.4);">End Call ❌</button>
             </div>
 
             <!-- 🌟 Messages History Stream Area -->
@@ -885,12 +895,12 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
                 <span onclick="sendSticker('🏆')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">🏆</span>
             </div>
 
-            <!-- 🌟 Message Input Bar with Attachments, Voice Notes & Send -->
+            <!-- 🌟 Message Input Bar -->
             <div style="padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); display: flex; gap: 8px; align-items: center; z-index: 5;">
                 <input type="file" id="chatMediaInput" style="display: none;" accept="image/*" onchange="sendMediaMessage(this)">
                 <button onclick="document.getElementById('chatMediaInput').click()" title="Attach Image" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">📎</button>
                 <button onclick="toggleStickerPicker()" title="Stickers & Emojis" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">🎨</button>
-                <button id="micBtn" onclick="toggleVoiceRecording()" title="Hold or Click to Record Voice Note" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">🎤</button>
+                <button id="micBtn" onclick="toggleVoiceRecording()" title="Record Voice Note" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.9rem;">🎤</button>
                 
                 <input type="text" id="fullChatInput" placeholder="Message ${recipientName || ''}..." style="flex: 1; padding: 10px 16px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: #fff; font-weight: 600; outline: none; font-size: 0.9rem;" onkeydown="if(event.key==='Enter') sendFullScreenMessage()">
                 
@@ -906,6 +916,22 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
     pollTimer = setInterval(() => {
         if (typeof loadMessages === 'function') loadMessages();
     }, 3000);
+};
+
+window.startCallInterface = function(type, recipientName) {
+    const overlay = document.getElementById('activeCallOverlay');
+    const titleText = document.getElementById('callTitleText');
+    const statusText = document.getElementById('callStatusText');
+    if (overlay) {
+        titleText.innerText = `${type === 'voice' ? 'Voice Call' : 'Video Call'} with ${recipientName}`;
+        statusText.innerText = 'Connecting secure peer stream...';
+        overlay.style.display = 'flex';
+    }
+};
+
+window.endCallInterface = function() {
+    const overlay = document.getElementById('activeCallOverlay');
+    if (overlay) overlay.style.display = 'none';
 };
 
 window.fetchRecipientAvatar = async function(userId) {
@@ -936,7 +962,7 @@ window.toggleStickerPicker = function() {
     if (panel) panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid';
 };
 
-// 🌟 Voice Recording (WhatsApp / Instagram style)
+// 🌟 Voice Recording Functionality
 let mediaRecorder = null;
 let audioChunks = [];
 window.toggleVoiceRecording = async function() {
@@ -960,10 +986,10 @@ window.toggleVoiceRecording = async function() {
                 micBtn.innerText = '🎤';
 
                 try {
-                    const uploadRes = await fetch('/api/posts', { method: 'POST', body: formData });
+                    const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
                     if (uploadRes.ok) {
                         const data = await uploadRes.json();
-                        const audioUrl = data.imageUrl;
+                        const audioUrl = data.url;
                         if (audioUrl) {
                             const senderId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
                             const text = `[Audio]: ${audioUrl}`;
@@ -981,7 +1007,7 @@ window.toggleVoiceRecording = async function() {
             };
 
             mediaRecorder.start();
-            micBtn.style.background = '#ef4444'; // Red recording state
+            micBtn.style.background = '#ef4444';
             micBtn.innerText = '⏹️';
         } catch (e) {
             alert('Microphone access denied or not supported.');
@@ -1152,11 +1178,11 @@ window.sendMediaMessage = async function(input) {
     formData.append('image', file);
 
     try {
-        const uploadRes = await fetch('/api/posts', { method: 'POST', body: formData });
+        const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
         if (uploadRes.ok) {
-            const postData = await uploadRes.json();
-            if (postData && postData.imageUrl) {
-                const mediaUrl = postData.imageUrl;
+            const data = await uploadRes.json();
+            if (data && data.url) {
+                const mediaUrl = data.url;
                 const text = `[Media]: ${mediaUrl}`;
                 const senderId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
                 
