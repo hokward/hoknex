@@ -465,6 +465,24 @@ app.get('/api/posts', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// Delete individual conversation / messages between two users
+app.delete('/api/messages/:user1/:user2', async (req, res) => {
+    try {
+        const { user1, user2 } = req.params;
+        await Message.deleteMany({
+            $or: [
+                { sender: user1, recipient: user2 },
+                { sender: user2, recipient: user1 }
+            ]
+        });
+        res.status(200).json({ success: true, message: 'Chat deleted successfully.' });
+    } catch (err) {
+        console.error('Delete chat error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // --- VOTE ON A POST POLL API ---
 app.post('/api/posts/:id/vote', async (req, res) => {
     try {
