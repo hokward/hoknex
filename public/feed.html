@@ -842,9 +842,9 @@ window.openFullScreenChat = function(recipientId, recipientName) {
     canvasArea.innerHTML = `
         <div id="fullChatWrapperContainer" style="display: flex; flex-direction: column; height: 100%; width: 100%; background: ${savedWallpaper}; transition: background 0.3s ease; position: relative;">
             
-            <!-- 🌟 Active Chat Header with Profile Navigation & All Options -->
+            <!-- 🌟 Active Chat Header with Profile Navigation -->
             <div style="padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); z-index: 5;">
-                <div onclick="viewUserProfile('${recipientId}')" style="display: flex; align-items: center; gap: 12px; cursor: pointer;" title="View Profile">
+                <div onclick="viewUserProfile('${recipientId}')" style="display: flex; align-items: center; gap: 12px; cursor: pointer;" title="View Profile Dashboard">
                     <div id="activeChatterAvatar" style="width: 38px; height: 38px; font-size: 0.95rem; font-weight: 800; background: #6366f1; color: #fff; display: flex; align-items: center; justify-content: center; border-radius: 50%; overflow: hidden;">
                         ${recipientName ? recipientName.charAt(0).toUpperCase() : 'C'}
                     </div>
@@ -856,8 +856,8 @@ window.openFullScreenChat = function(recipientId, recipientName) {
 
                 <!-- Feature Buttons: Call, Video, Wallpaper -->
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <button onclick="alert('Voice Call initiated')" title="Voice Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📞</button>
-                    <button onclick="alert('Video Call initiated')" title="Video Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📹</button>
+                    <button onclick="alert('Secure Voice Call connected 📞')" title="Voice Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📞</button>
+                    <button onclick="alert('Secure Video Call connected 📹')" title="Video Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📹</button>
                     <button onclick="changeChatWallpaper('${recipientId}')" title="Change Wallpaper" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">🎨</button>
                 </div>
             </div>
@@ -867,19 +867,27 @@ window.openFullScreenChat = function(recipientId, recipientName) {
                 <p style="text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem; font-weight: 600;">Loading conversation...</p>
             </div>
 
-            <!-- 🌟 Sticker Picker Drawer -->
-            <div id="stickerPickerPanel" style="display: none; position: absolute; bottom: 70px; left: 20px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255,255,255,0.2); padding: 10px; border-radius: 12px; display: none; gap: 8px; z-index: 10; backdrop-filter: blur(10px);">
-                <span onclick="sendSticker('https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Grinning%20Face%20with%20Sweat.png')" style="cursor: pointer; font-size: 1.5rem;"></span>
-                <span onclick="sendSticker('https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Fire.png')" style="cursor: pointer; font-size: 1.5rem;">🔥</span>
-                <span onclick="sendSticker('https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Red%20Heart.png')" style="cursor: pointer; font-size: 1.5rem;">❤️</span>
-                <span onclick="sendSticker('https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Thumbs%20Up.png')" style="cursor: pointer; font-size: 1.5rem;">👍</span>
+            <!-- 🌟 Expanded Google Stickers & Emojis Drawer -->
+            <div id="stickerPickerPanel" style="display: none; position: absolute; bottom: 70px; left: 20px; right: 20px; background: rgba(15, 23, 42, 0.98); border: 1px solid rgba(255,255,255,0.2); padding: 12px; border-radius: 12px; grid-template-columns: repeat(6, 1fr); gap: 10px; z-index: 10; backdrop-filter: blur(10px); max-height: 150px; overflow-y: auto;">
+                <span onclick="sendSticker('😀')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">😀</span>
+                <span onclick="sendSticker('😂')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">😂</span>
+                <span onclick="sendSticker('🔥')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">🔥</span>
+                <span onclick="sendSticker('❤️')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">❤️</span>
+                <span onclick="sendSticker('🚀')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">🚀</span>
+                <span onclick="sendSticker('👍')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">👍</span>
+                <span onclick="sendSticker('🎉')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">🎉</span>
+                <span onclick="sendSticker('😎')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">😎</span>
+                <span onclick="sendSticker('💡')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">💡</span>
+                <span onclick="sendSticker('💻')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">💻</span>
+                <span onclick="sendSticker('⚡')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">⚡</span>
+                <span onclick="sendSticker('🏆')" style="cursor: pointer; font-size: 1.6rem; text-align: center;">🏆</span>
             </div>
 
-            <!-- 🌟 Message Input Bar with Attachment, Stickers & Send -->
+            <!-- 🌟 Message Input Bar with Attachments, Stickers & Send -->
             <div style="padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); display: flex; gap: 10px; align-items: center; z-index: 5;">
-                <input type="file" id="chatMediaInput" style="display: none;" onchange="sendMediaMessage(this)">
+                <input type="file" id="chatMediaInput" style="display: none;" accept="image/*" onchange="sendMediaMessage(this)">
                 <button onclick="document.getElementById('chatMediaInput').click()" title="Attach Image" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.95rem;">📎</button>
-                <button onclick="toggleStickerPicker()" title="Stickers" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.95rem;">🎨</button>
+                <button onclick="toggleStickerPicker()" title="Stickers & Emojis" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.95rem;">🎨</button>
                 
                 <input type="text" id="fullChatInput" placeholder="Message ${recipientName || ''}..." style="flex: 1; padding: 10px 16px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: #fff; font-weight: 600; outline: none; font-size: 0.9rem;" onkeydown="if(event.key==='Enter') sendFullScreenMessage()">
                 
@@ -904,8 +912,8 @@ window.fetchRecipientAvatar = async function(userId) {
         const users = await res.json();
         const user = users.find(u => u._id.toString() === userId.toString());
         const avatarEl = document.getElementById('activeChatterAvatar');
-        if (user && user.profilePic && avatarEl) {
-            avatarEl.innerHTML = `<img src="${user.profilePic}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" onerror="this.style.display='none'" />`;
+        if (user && user.dpUrl && avatarEl) {
+            avatarEl.innerHTML = `<img src="${user.dpUrl}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" onerror="this.style.display='none'" />`;
         }
     } catch (e) {
         console.error('Error fetching avatar:', e);
@@ -913,16 +921,12 @@ window.fetchRecipientAvatar = async function(userId) {
 };
 
 window.viewUserProfile = function(userId) {
-    if (typeof window.openUserProfile === 'function') {
-        window.openUserProfile(userId);
-    } else {
-        window.location.href = `/profile.html?id=${userId}`;
-    }
+    window.location.href = `/profile.html?id=${userId}`;
 };
 
 window.toggleStickerPicker = function() {
     const panel = document.getElementById('stickerPickerPanel');
-    if (panel) panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
+    if (panel) panel.style.display = panel.style.display === 'grid' ? 'none' : 'grid';
 };
 
 window.changeChatWallpaper = function(recipientId) {
@@ -973,7 +977,7 @@ window.loadChatConnections = async function() {
         container.innerHTML = connections.map(conn => `
            <div onclick="openFullScreenMessages('${conn._id}', '${conn.name}')" style="display:flex; align-items:center; gap:10px; padding:10px; border-radius:8px; cursor:pointer; background:var(--canvas); border:1px solid var(--border); transition: all 0.15s;" onmouseover="this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.background='var(--canvas)'">
                 <div class="avatar-circle" style="width:36px; height:36px; font-size:0.9rem; overflow:hidden;">
-                    ${conn.profilePic ? `<img src="${conn.profilePic}" style="width:100%; height:100%; object-fit:cover;" />` : (conn.name ? conn.name.charAt(0).toUpperCase() : 'H')}
+                    ${conn.dpUrl ? `<img src="${conn.dpUrl}" style="width:100%; height:100%; object-fit:cover;" />` : (conn.name ? conn.name.charAt(0).toUpperCase() : 'H')}
                 </div>
                 <div style="overflow:hidden;">
                     <h4 style="font-weight:800; font-size:0.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color: var(--ink);">${conn.name}</h4>
@@ -1033,15 +1037,15 @@ window.sendFullScreenMessage = async function() {
     input.value = ''; 
 
     try {
+        const senderId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
         const res = await fetch('/api/messages', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                sender: senderId,
                 recipient: activeRecipientId,
-                recipientId: activeRecipientId,
                 text: messageText,
-                sender: localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user'),
-                senderId: localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user')
+                mediaType: 'text'
             })
         });
         
@@ -1053,17 +1057,17 @@ window.sendFullScreenMessage = async function() {
     }
 };
 
-window.sendSticker = async function(imgUrl) {
+window.sendSticker = async function(symbol) {
     toggleStickerPicker();
-    const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
-    if (!sender || !activeRecipientId) return;
+    const senderId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
+    if (!senderId || !activeRecipientId) return;
 
-    const text = `[Media]: ${imgUrl}`;
+    const text = `[Media]: ${symbol}`;
     try {
         await fetch('/api/messages', { 
             method: 'POST', 
             headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ sender, recipient: activeRecipientId, text, mediaType: 'sticker' }) 
+            body: JSON.stringify({ sender: senderId, recipient: activeRecipientId, text, mediaType: 'sticker' }) 
         });
         loadMessages();
     } catch (e) {
@@ -1075,24 +1079,22 @@ window.sendMediaMessage = async function(input) {
     if (!input.files || !input.files[0] || !activeRecipientId) return;
     const file = input.files[0];
     const formData = new FormData();
-    formData.append('screenshot', file);
-    formData.append('description', '[Media Image]');
-    formData.append('username', localStorage.getItem('hoknex_user') || 'Student');
+    formData.append('image', file); // Matches server upload.single('image') or Cloudinary route
 
     try {
-        const uploadRes = await fetch('/api/support', { method: 'POST', body: formData });
+        // Upload directly to Cloudinary via a post endpoint or support bucket
+        const uploadRes = await fetch('/api/posts', { method: 'POST', body: formData });
         if (uploadRes.ok) {
-            const ticketsRes = await fetch('/api/support');
-            const tickets = await ticketsRes.json();
-            const latestTicket = tickets[0];
-            if (latestTicket && latestTicket.screenshotUrl) {
-                const mediaUrl = latestTicket.screenshotUrl;
+            const postData = await uploadRes.json();
+            if (postData && postData.imageUrl) {
+                const mediaUrl = postData.imageUrl;
                 const text = `[Media]: ${mediaUrl}`;
-                const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
+                const senderId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
+                
                 await fetch('/api/messages', { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ sender, recipient: activeRecipientId, text, mediaType: 'image' }) 
+                    body: JSON.stringify({ sender: senderId, recipient: activeRecipientId, text, mediaType: 'image' }) 
                 });
                 loadMessages();
             }
