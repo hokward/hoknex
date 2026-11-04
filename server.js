@@ -400,46 +400,7 @@ app.get('/api/notifications/:username', async (req, res) => {
   }
 });
 
-app.post('/api/messages', async (req, res) => {
-  try {
-    const { senderId, recipientId, text } = req.body;
-    const newMessage = new Message({ sender: new mongoose.Types.ObjectId(senderId), recipient: new mongoose.Types.ObjectId(recipientId), text });
-    await newMessage.save();
-    res.status(201).json(newMessage);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.get('/api/messages/:user1/:user2', async (req, res) => {
-    try {
-        const { user1, user2 } = req.params;
-        const messages = await Message.find({
-            $or: [
-                { sender: user1, recipient: user2 },
-                { sender: user2, recipient: user1 }
-            ]
-        }).sort({ createdAt: 1 });
-
-        // ALWAYS return an array, even if empty
-        res.json(Array.isArray(messages) ? messages : []);
-    } catch (err) {
-        console.error('Fetch messages error:', err);
-        res.status(500).json([]); // Return empty array on error instead of object
-    }
-});
-
-app.get('/api/posts', async (req, res) => {
-  try {
-    const posts = await Post.find().populate('author', 'name username dpUrl').sort({ createdAt: -1 });
-    res.json(posts);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-
-// 1. Post a message (Text, Audio, or Image)
+// 1. Unified Post Message Endpoint (Handles Text, Images, Audio, and Stickers)
 app.post('/api/messages', async (req, res) => {
     try {
         const { sender, recipient, text, mediaUrl, mediaType } = req.body;
@@ -462,7 +423,26 @@ app.post('/api/messages', async (req, res) => {
     }
 });
 
-// Dedicated File & Media Upload Endpoint for Chat Attachments & Voice Notes
+// 2. Fetch Messages Between Two Users
+app.get('/api/messages/:user1/:user2', async (req, res) => {
+    try {
+        const { user1, user2 } = req.params;
+        const messages = await Message.find({
+            $or: [
+                { sender: user1, recipient: user2 },
+                { sender: user2, recipient: user1 }
+            ]
+        }).sort({ createdAt: 1 });
+
+        // ALWAYS return an array, even if empty
+        res.json(Array.isArray(messages) ? messages : []);
+    } catch (err) {
+        console.error('Fetch messages error:', err);
+        res.status(500).json([]); // Return empty array on error instead of object
+    }
+});
+
+// 3. Dedicated File & Media Upload Endpoint for Chat Attachments & Voice Notes
 app.post('/api/upload', upload.single('image'), async (req, res) => {
     try {
         if (!req.file || !req.file.path) {
@@ -475,6 +455,15 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     }
 });
 
+// 4. Fetch Community Posts
+app.get('/api/posts', async (req, res) => {
+    try {
+        const posts = await Post.find().populate('author', 'name username dpUrl').sort({ createdAt: -1 });
+        res.json(posts);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 // --- VOTE ON A POST POLL API ---
 app.post('/api/posts/:id/vote', async (req, res) => {
     try {
