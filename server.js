@@ -62,12 +62,13 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// 2. Set up the Cloudinary Storage Engine
+// 2. Set up the Cloudinary Storage Engine (Updated to support audio & voice notes)
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'hoknex_uploads', 
-    allowedFormats: ['jpeg', 'png', 'jpg', 'webp'] 
+    resource_type: 'auto',
+    allowedFormats: ['jpeg', 'png', 'jpg', 'webp', 'webm', 'mp3', 'wav'] 
   }
 });
 
@@ -400,7 +401,7 @@ app.get('/api/notifications/:username', async (req, res) => {
   }
 });
 
-// 1. Unified Post Message Endpoint (Handles Text, Images, Audio, and Stickers)
+// 1. Unified Post Message Endpoint (Handles Text, Images, Audio, Video, and Stickers)
 app.post('/api/messages', async (req, res) => {
     try {
         const { sender, recipient, text, mediaUrl, mediaType } = req.body;
@@ -442,7 +443,7 @@ app.get('/api/messages/:user1/:user2', async (req, res) => {
     }
 });
 
-// 3. Dedicated File & Media Upload Endpoint for Chat Attachments & Voice Notes
+// 3. Dedicated File & Media Upload Endpoint for Chat Attachments, Voice Notes & Short Videos
 app.post('/api/upload', upload.single('image'), async (req, res) => {
     try {
         if (!req.file || !req.file.path) {
