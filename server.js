@@ -483,6 +483,59 @@ app.delete('/api/messages/:user1/:user2', async (req, res) => {
     }
 });
 
+// 1. Delete an individual message by ID
+app.delete('/api/messages/single/:msgId', async (req, res) => {
+    try {
+        await Message.findByIdAndDelete(req.params.msgId);
+        res.status(200).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 2. Delete full conversation between two users
+app.delete('/api/messages/:user1/:user2', async (req, res) => {
+    try {
+        const { user1, user2 } = req.params;
+        await Message.deleteMany({
+            $or: [
+                { sender: user1, recipient: user2 },
+                { sender: user2, recipient: user1 }
+            ]
+        });
+        res.status(200).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 3. Submit Report to Hoknex Support Page
+app.post('/api/reports', async (req, res) => {
+    try {
+        const { reporter, reportedUser, reason, details } = req.body;
+        const SupportTicket = mongoose.model('Support', new mongoose.Schema({
+            reporter: String, reportedUser: String, reason: String, details: String, createdAt: { type: Date, default: Date.now }
+        }));
+        const ticket = new SupportTicket({ reporter, reportedUser, reason, details });
+        await ticket.save();
+        res.status(201).json({ success: true, message: 'Report submitted to Hoknex Support.' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Middleware to update user's lastActive timestamp on requests
+app.use(async (req, res, next) => {
+    try {
+        const userId = req.headers['x-user-id'] || req.query.userId;
+        if (userId) {
+            const User = mongoose.model('User');
+            await User.findByIdAndUpdate(userId, { lastActive: new Date() });
+        }
+    } catch (e) { }
+    next();
+});
+
 // --- VOTE ON A POST POLL API ---
 app.post('/api/posts/:id/vote', async (req, res) => {
     try {
