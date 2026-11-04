@@ -935,52 +935,26 @@ window.openFullScreenChat = function(recipientId, recipientName) {
     activeRecipientId = recipientId;
     activeChatUserName = recipientName;
     
-    // Target your chat canvas area
-    const canvasArea = document.getElementById('chatCanvasArea') || document.getElementById('chatCanvas');
-    if (!canvasArea) return;
+    // 1. Show the main chat wrapper container safely
+    const wrapper = document.getElementById('fullChatWrapper');
+    if (wrapper) wrapper.style.display = 'block';
 
+    // 2. Safely populate header name if element exists
+    const nameEl = document.getElementById('activeChatterName');
+    if (nameEl) nameEl.innerText = recipientName || "Chat";
+
+    // 3. Safely populate avatar initial if element exists
+    const avatarEl = document.getElementById('activeChatterAvatar');
+    if (avatarEl && recipientName) {
+        avatarEl.innerText = recipientName.charAt(0).toUpperCase();
+    }
+
+    // 4. Apply saved custom wallpaper background to the chat container
     const savedWallpaper = localStorage.getItem(`hoknex_wallpaper_${recipientId}`) || 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)';
+    const containerWrapper = document.getElementById('fullChatWrapperContainer') || document.getElementById('chatCanvasArea') || document.getElementById('chatCanvas');
+    if (containerWrapper) containerWrapper.style.background = savedWallpaper;
 
-    // Inject the complete chat UI with header, features, messages container, and input bar
-    canvasArea.innerHTML = `
-        <div id="fullChatWrapperContainer" style="display: flex; flex-direction: column; height: 100%; width: 100%; background: ${savedWallpaper}; transition: background 0.3s ease;">
-            
-            <!-- 🌟 Active Chat Header with Call & Wallpaper Options -->
-            <div style="padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); z-index: 5;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 38px; height: 38px; font-size: 0.95rem; font-weight: 800; background: #6366f1; color: #fff; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
-                        ${recipientName ? recipientName.charAt(0).toUpperCase() : 'C'}
-                    </div>
-                    <div>
-                        <h3 style="font-weight: 800; font-size: 0.95rem; color: #fff; margin: 0;">${recipientName || 'Chat'}</h3>
-                        <span style="font-size: 0.7rem; color: #10b981; font-weight: 600;">● Active now</span>
-                    </div>
-                </div>
-
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <button onclick="alert('Voice Call initiated')" title="Voice Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📞</button>
-                    <button onclick="alert('Video Call initiated')" title="Video Call" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">📹</button>
-                    <button onclick="changeChatWallpaper('${recipientId}')" title="Change Wallpaper" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.85rem;">🎨</button>
-                </div>
-            </div>
-
-            <!-- 🌟 Messages History Stream -->
-            <div id="fullChatMessages" style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;">
-                <p style="text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem; font-weight: 600;">Loading conversation...</p>
-            </div>
-
-            <!-- 🌟 Input Bar with Attachment & Send -->
-            <div style="padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); display: flex; gap: 10px; align-items: center; z-index: 5;">
-                <input type="file" id="chatMediaInput" style="display: none;" onchange="sendMediaMessage(this)">
-                <button onclick="document.getElementById('chatMediaInput').click()" title="Attach Media" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; font-size: 0.95rem;">📎</button>
-                
-                <input type="text" id="fullChatInput" placeholder="Message ${recipientName || ''}..." style="flex: 1; padding: 10px 16px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: #fff; font-weight: 600; outline: none; font-size: 0.9rem;" onkeydown="if(event.key==='Enter') sendFullScreenMessage()">
-                
-                <button onclick="sendFullScreenMessage()" class="btn-create" style="border-radius: 24px; padding: 9px 20px; font-weight: 800; background: #6366f1; border: none; color: #fff; cursor: pointer;">Send 🚀</button>
-            </div>
-        </div>
-    `;
-
+    // 5. Load messages immediately and start the 3-second live polling loop
     if (typeof loadMessages === 'function') loadMessages();
     
     if (typeof pollTimer !== 'undefined' && pollTimer) clearInterval(pollTimer);
@@ -989,21 +963,20 @@ window.openFullScreenChat = function(recipientId, recipientName) {
     }, 3000);
 };
 
-window.changeChatWallpaper = function(recipientId) {
-    const gradients = [
-        'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-        'linear-gradient(135deg, #831843 0%, #4c1d95 100%)',
-        'linear-gradient(135deg, #065f46 0%, #1e3a8a 100%)',
-        '#000000'
-    ];
-    const current = localStorage.getItem(`hoknex_wallpaper_${recipientId}`) || gradients[0];
-    let nextIdx = (gradients.indexOf(current) + 1) % gradients.length;
-    const newWallpaper = gradients[nextIdx];
-    
-    localStorage.setItem(`hoknex_wallpaper_${recipientId}`, newWallpaper);
-    const container = document.getElementById('fullChatWrapperContainer');
-    if (container) container.style.background = newWallpaper;
-};
+// Feature Helper: Wallpaper Switcher
+function changeChatWallpaper(val) {
+    if (!val || !activeRecipientId) return;
+    localStorage.setItem(`hoknex_wallpaper_${activeRecipientId}`, val);
+    const containerWrapper = document.getElementById('fullChatWrapperContainer') || document.getElementById('chatCanvasArea');
+    if (containerWrapper) containerWrapper.style.background = val;
+}
+
+function closeChat() {
+    const wrapper = document.getElementById('fullChatWrapper');
+    if (wrapper) wrapper.style.display = 'none';
+    if (typeof pollTimer !== 'undefined' && pollTimer) clearInterval(pollTimer);
+}
+
 async function loadMessages() {
     const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
     const targetUser = activeRecipientId;
@@ -1022,18 +995,21 @@ async function loadMessages() {
         if (!container) return;
 
         if (messages.length === 0) {
-            container.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; font-weight: 600; margin-top: 20px;">No messages yet. Say hello! 👋</p>`;
+            container.innerHTML = `<p style="text-align: center; color: var(--ink-light, #94a3b8); font-size: 0.85rem; font-weight: 600; margin-top: 20px;">No messages yet. Say hello! 👋</p>`;
             return;
         }
 
         container.innerHTML = messages.map(msg => {
             const msgSender = msg.sender?._id || msg.sender;
             const isMe = (msgSender === sender || msgSender === localStorage.getItem('hoknex_user') || msgSender === localStorage.getItem('hoknex_uid'));
-            
+            const textContent = msg.text || msg.message || '';
+            const isMedia = textContent.startsWith('[Media]:');
+            const mediaUrl = isMedia ? textContent.replace('[Media]:', '').trim() : '';
+
             return `
                 <div style="display: flex; justify-content: ${isMe ? 'flex-end' : 'flex-start'}; width: 100%; margin-bottom: 8px;">
-                    <div style="max-width: 70%; padding: 10px 14px; border-radius: 14px; background: ${isMe ? 'var(--primary, #6366f1)' : 'var(--paper)'}; color: ${isMe ? '#fff' : 'var(--ink)'}; font-size: 0.9rem; font-weight: 600; word-break: break-word; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        ${msg.text || msg.message || ''}
+                    <div style="max-width: 70%; padding: 10px 14px; border-radius: 14px; background: ${isMe ? 'var(--primary, #6366f1)' : 'var(--paper, #1e293b)'}; color: ${isMe ? '#fff' : '#f8fafc'}; font-size: 0.9rem; font-weight: 600; word-break: break-word; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        ${isMedia ? `<img src="${mediaUrl}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px;" onerror="this.style.display='none'" />` : textContent}
                     </div>
                 </div>
             `;
@@ -1045,6 +1021,7 @@ async function loadMessages() {
         console.error('Error loading messages:', e);
     }
 }
+
 function toggleMessengerFullScreen() {
     isMessengerFullScreen = !isMessengerFullScreen;
     const wrapper = document.getElementById('fullChatWrapper');
@@ -1061,13 +1038,6 @@ function toggleMessengerFullScreen() {
     }
 }
 
-function changeChatWallpaper(val) {
-    if (!val || !activeRecipientId) return;
-    localStorage.setItem(`hoknex_wallpaper_${activeRecipientId}`, val);
-    const containerWrapper = document.getElementById('fullChatWrapperContainer');
-    if (containerWrapper) containerWrapper.style.background = val;
-}
-
 function toggleEmojiPicker() {
     const picker = document.getElementById('emojiPickerPanel');
     if (picker) picker.style.display = picker.style.display === 'block' ? 'none' : 'block';
@@ -1081,7 +1051,7 @@ function insertEmoji(symbol) {
 
 async function sendSticker(imgUrl) {
     toggleEmojiPicker();
-    const sender = localStorage.getItem('hoknex_user');
+    const sender = localStorage.getItem('hoknex_user') || localStorage.getItem('hoknex_uid');
     if (!sender || !activeRecipientId) return;
 
     const text = `[Media]: ${imgUrl}`;
@@ -1110,7 +1080,7 @@ async function sendMediaMessage(input) {
             if (latestTicket && latestTicket.screenshotUrl) {
                 const mediaUrl = latestTicket.screenshotUrl;
                 const text = `[Media]: ${mediaUrl}`;
-                const sender = localStorage.getItem('hoknex_user');
+                const sender = localStorage.getItem('hoknex_user') || localStorage.getItem('hoknex_uid');
                 await fetch('/api/messages', { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
