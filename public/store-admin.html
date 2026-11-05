@@ -20,7 +20,7 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 2.5rem 2rem; }
 
-        .admin-container { max-width: 1250px; margin: 0 auto; }
+        .admin-container { max-width: 1300px; margin: 0 auto; }
         .admin-header {
             display: flex; justify-content: space-between; align-items: center; background: var(--bg-card);
             border: 3.5px solid var(--border-color); padding: 1.8rem 2.5rem; border-radius: 20px; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
@@ -54,23 +54,23 @@
         <div class="admin-header">
             <div>
                 <h1 style="font-size: 1.8rem; font-weight: 900;">⚡ Hoknex Professional Owner Command Center</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage catalog multi-images, delivery charges, stock availability, demand voting, custom tracker messages, invoices, and email alerts.</p>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage coming soon drops, multi-angle catalog, delivery fees, stock/sizes, demand voting, tracker messages, and invoices.</p>
             </div>
             <a href="store.html" class="btn-action" style="background:var(--accent-ochre);">View Public Store 🛍️</a>
         </div>
 
-        <!-- 1. Update Announcement -->
+        <!-- 1. Announcement Banner -->
         <div class="admin-section">
-            <h2>📢 Update Store Announcement Banner</h2>
+            <h2>📢 1. Store Announcement Banner</h2>
             <div style="display:flex; gap:1rem; flex-wrap:wrap;">
                 <input type="text" id="announcementInput" placeholder="Enter new banner notice..." style="flex:1; min-width:280px; background:#FAF9F6; border:2.5px solid var(--border-color); padding:12px; border-radius:12px; font-weight:800; outline:none;">
                 <button onclick="updateAnnouncement()" class="btn-action">Publish Notice 🚀</button>
             </div>
         </div>
 
-        <!-- 2. Coming Soon / Drop Preview Uploader -->
+        <!-- 2. Coming Soon / Drop Segment Uploader -->
         <div class="admin-section">
-            <h2>🚀 Upload Upcoming Drops ("Coming Soon" Segment)</h2>
+            <h2>🚀 2. Upcoming Drops ("Coming Soon" Segment)</h2>
             <form onsubmit="handleComingSoonUpload(event)">
                 <div class="form-grid">
                     <div class="form-group">
@@ -78,7 +78,7 @@
                         <input type="text" id="dropTitle" placeholder="e.g. Winter Heavyweight Trench 2026" required>
                     </div>
                     <div class="form-group">
-                        <label>Drop Preview Image / Video File</label>
+                        <label>Drop Media Preview (Image or Short Clip)</label>
                         <input type="file" id="dropFile" accept="image/*,video/*" required style="background:#fff;">
                     </div>
                     <div class="form-group" style="grid-column: span 2;">
@@ -93,7 +93,7 @@
 
         <!-- 3. QR Code Manager -->
         <div class="admin-section">
-            <h2>📷 Founder UPI QR Code Manager</h2>
+            <h2>📷 3. Founder UPI QR Code Manager</h2>
             <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1.5rem;">
                 <input type="file" id="newQrFile" accept="image/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800;">
                 <button onclick="uploadNewQrCode()" class="btn-action">Upload QR Code ➕</button>
@@ -101,9 +101,9 @@
             <div id="qrListContainer" style="display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 4. Launch New Product (Multi-Angle & Delivery Charge) -->
+        <!-- 4. Launch Product (Multi-Angle & Delivery Charge) -->
         <div class="admin-section">
-            <h2>📦 Launch Product (Multi-Angle Images & Delivery Charge)</h2>
+            <h2>📦 4. Launch Product (Multi-Angle Images & Delivery Charge)</h2>
             <form onsubmit="handleNewProduct(event)">
                 <div class="form-grid">
                     <div class="form-group">
@@ -138,22 +138,22 @@
             </form>
         </div>
 
-        <!-- 5. Manage Catalog, Stock, Sizes & Demand Votes -->
+        <!-- 5. Catalog, Stock, Sizes & Demand Votes -->
         <div class="admin-section">
-            <h2>🗂️ Catalog Stock, Sizes & Demand Voting Manager</h2>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1rem;">Mark items in/out of stock, manage available sizes, and view customer "Vote to Come Fast" demands.</p>
+            <h2>🗂️ 5. Catalog Stock, Sizes & Demand Voting Manager</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1rem;">Mark items in/out of stock, update available sizes, and view customer "Vote to Come Fast" demands.</p>
             <div id="productsTableWrap" style="overflow-x:auto;"><p>Loading catalog...</p></div>
         </div>
 
-        <!-- 6. Customer Orders, Tracker, Invoice Export & Custom Message Sender -->
+        <!-- 6. Customer Orders & Custom Tracker Messaging -->
         <div class="admin-section">
-            <h2>🚚 Customer Orders, Invoices & Custom Tracker Messaging</h2>
+            <h2>🚚 6. Customer Orders, Invoices & Custom Tracker Messaging</h2>
             <div id="ordersTableWrap" style="overflow-x:auto;"><p>Loading orders...</p></div>
         </div>
 
-        <!-- 7. Newsletter Leads with Delete & Direct Emailer -->
+        <!-- 7. Newsletter Subscribers & Direct Emailer -->
         <div class="admin-section">
-            <h2>💌 Newsletter Subscribers & Direct Emailer</h2>
+            <h2>💌 7. Newsletter Subscribers & Direct Emailer</h2>
             <div id="leadsTableWrap" style="overflow-x:auto;"><p>Loading leads...</p></div>
         </div>
     </div>
@@ -292,7 +292,7 @@
         function renderProductsTable() {
             document.getElementById('productsTableWrap').innerHTML = `
                 <table>
-                    <thead><tr><th>Preview</th><th>Name</th><th>Stock Status</th><th>Demand Votes</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Preview</th><th>Name</th><th>Stock Status</th><th>Sizes Available</th><th>Demand Votes</th><th>Action</th></tr></thead>
                     <tbody>
                         ${catalog.map((p, idx) => `
                             <tr>
@@ -304,6 +304,7 @@
                                         <option value="false" ${!p.inStock?'selected':''}>Out of Stock ❌</option>
                                     </select>
                                 </td>
+                                <td><input type="text" value="${(p.sizes || ['S','M','L','XL']).join(',')}" onchange="updateSizes(${idx}, this.value)" style="padding:4px; width:100px;"></td>
                                 <td>🔥 ${p.votes || 0} user votes</td>
                                 <td><button onclick="deleteProduct(${idx})" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
                             </tr>
@@ -317,6 +318,12 @@
             catalog[idx].inStock = (val === 'true');
             localStorage.setItem('hoknex_custom_catalog', JSON.stringify(catalog));
             alert('Stock status updated!');
+        }
+
+        function updateSizes(idx, val) {
+            catalog[idx].sizes = val.split(',').map(s => s.trim());
+            localStorage.setItem('hoknex_custom_catalog', JSON.stringify(catalog));
+            alert('Sizes updated!');
         }
 
         function deleteProduct(index) {
@@ -337,10 +344,10 @@
                     <tbody>
                         ${orders.map((o, idx) => `
                             <tr>
-                                <td><b>#${o.orderId}</b></td><td>${o.name}<br><small>${o.phone}</small></td>
+                                <td><b>#${o.orderId}</b></td><td>${o.name}<br><small>${o.phone} | ${o.email||''}</small></td>
                                 <td>₹${o.total}.00 (${o.items.length} items)</td>
                                 <td>
-                                    <select onchange="updateOrderStatus(${idx}, this.value)" style="padding:4px; font-weight:800; border-radius:8px;">
+                                    <select onchange="updateOrderStatus(${idx}, this.value)" style="padding:6px; font-weight:800; border-radius:8px;">
                                         <option value="Order Placed & Awaiting Owner Approval ⏳" ${o.status.includes('Awaiting')?'selected':''}>Awaiting Approval</option>
                                         <option value="Confirmed & Preparing for Campus Delivery 🚚" ${o.status.includes('Confirmed')?'selected':''}>Confirmed & Preparing</option>
                                         <option value="Dispatched 📦" ${o.status.includes('Dispatched')?'selected':''}>Dispatched</option>
