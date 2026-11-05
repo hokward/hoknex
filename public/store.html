@@ -7,15 +7,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #fbf9f6;          /* Clean light cream canvas */
-            --bg-card: #ffffff;          /* Pure white cards */
-            --border-color: #0f172a;     /* Neo-brutalist sharp dark borders */
+            --bg-body: #fbf9f6;          /* Clean cream canvas */
+            --bg-card: #ffffff;          /* Pure white bento boxes */
+            --border-color: #0f172a;     /* Sharp Neo-brutalist dark border */
             --accent-blue: #2563eb;
             --accent-purple: #7c3aed;
             --accent-coral: #f43f5e;
-            --text-main: #0f172a;        /* Deep dark ink */
-            --text-muted: #475569;       /* Slate muted text */
-            --shadow-card: 5px 5px 0px #0f172a;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --shadow-bento: 6px 6px 0px #0f172a;
+            --shadow-sm: 3px 3px 0px #0f172a;
         }
 
         *, *::before, *::after {
@@ -44,7 +45,7 @@
             text-transform: uppercase;
         }
 
-        /* Store Header / Navbar */
+        /* Navbar */
         .store-header {
             display: flex;
             justify-content: space-between;
@@ -89,10 +90,6 @@
             transition: color 0.2s;
         }
 
-        .store-nav a:hover {
-            color: var(--text-main);
-        }
-
         .nav-actions {
             display: flex;
             gap: 1rem;
@@ -107,7 +104,7 @@
             border-radius: 10px;
             font-weight: 900;
             cursor: pointer;
-            box-shadow: 3px 3px 0px var(--border-color);
+            box-shadow: var(--shadow-sm);
             display: flex;
             align-items: center;
             gap: 6px;
@@ -116,7 +113,7 @@
 
         .cart-trigger:hover, .track-trigger:hover {
             transform: translate(-2px, -2px);
-            box-shadow: 5px 5px 0px var(--border-color);
+            box-shadow: var(--shadow-bento);
         }
 
         .track-trigger {
@@ -124,7 +121,7 @@
             color: var(--text-main);
         }
 
-        /* Store Hero Banner */
+        /* Hero & Faceted Search */
         .store-hero {
             padding: 4.5rem 4rem 2rem 4rem;
             max-width: 1400px;
@@ -145,73 +142,74 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .store-hero p {
-            color: var(--text-muted);
-            font-size: 1.12rem;
-            font-weight: 700;
-            max-width: 600px;
+        /* Faceted Search Bar */
+        .faceted-search-bar {
+            max-width: 700px;
             margin: 0 auto 2.5rem auto;
-            line-height: 1.6;
-        }
-
-        /* Filter Tabs */
-        .filter-container {
             display: flex;
-            justify-content: center;
             gap: 1rem;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
+            background: #fff;
+            border: 3.5px solid var(--border-color);
+            padding: 8px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
         }
 
-        .filter-btn {
-            background: var(--bg-card);
-            border: 2.5px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 0.6rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 900;
-            font-size: 0.9rem;
-            cursor: pointer;
-            box-shadow: 3px 3px 0px var(--border-color);
-            transition: all 0.2s;
-        }
-
-        .filter-btn.active, .filter-btn:hover {
-            background: #fde047;
+        .faceted-search-bar input, .faceted-search-bar select {
+            border: none;
+            outline: none;
+            font-size: 0.95rem;
+            font-weight: 800;
+            background: transparent;
+            padding: 8px 12px;
             color: var(--text-main);
-            transform: translateY(-2px);
         }
 
-        /* Product Catalog Grid */
-        .catalog-grid {
+        .faceted-search-bar input {
+            flex: 1;
+        }
+
+        .faceted-search-bar select {
+            border-left: 2px solid #e2e8f0;
+        }
+
+        /* BENTO GRID LAYOUT */
+        .bento-catalog-grid {
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 4rem 6rem 4rem;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2.5rem;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
         }
 
-        .product-item-card {
+        .bento-card {
             background: var(--bg-card);
             border: 3.5px solid var(--border-color);
-            border-radius: 20px;
-            padding: 1.8rem;
+            border-radius: 24px;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
-            box-shadow: var(--shadow-card);
-            transition: transform 0.2s ease;
+            box-shadow: var(--shadow-bento);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .product-item-card:hover {
+        .bento-card:hover {
             transform: translateY(-5px);
+            box-shadow: 8px 8px 0px var(--border-color);
         }
 
-        .product-preview {
+        /* Asymmetric Bento Span Sizes */
+        .bento-card.span-4 { grid-column: span 4; }
+        .bento-card.span-6 { grid-column: span 6; }
+        .bento-card.span-8 { grid-column: span 8; }
+        .bento-card.span-12 { grid-column: span 12; }
+
+        .bento-preview {
             width: 100%;
-            height: 220px;
+            height: 200px;
             background: #f8fafc;
             border: 2.5px solid var(--border-color);
             border-radius: 14px;
@@ -223,7 +221,7 @@
             position: relative;
         }
 
-        .product-badge {
+        .bento-badge {
             position: absolute;
             top: 15px;
             right: 15px;
@@ -238,13 +236,13 @@
             box-shadow: 2px 2px 0px var(--border-color);
         }
 
-        .product-item-card h3 {
-            font-size: 1.25rem;
+        .bento-card h3 {
+            font-size: 1.3rem;
             font-weight: 900;
             margin-bottom: 0.4rem;
         }
 
-        .product-item-card p {
+        .bento-card p {
             color: var(--text-muted);
             font-size: 0.9rem;
             font-weight: 700;
@@ -252,51 +250,39 @@
             margin-bottom: 1rem;
         }
 
-        .color-swatches {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 1rem;
-        }
-
-        .swatch {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            border: 2px solid var(--border-color);
-            cursor: pointer;
-        }
-
-        .card-bottom {
+        .bento-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-top: 1rem;
+            border-top: 2px solid #f1f5f9;
+            padding-top: 1rem;
         }
 
-        .price-tag {
-            font-size: 1.35rem;
+        .bento-price {
+            font-size: 1.4rem;
             font-weight: 900;
             color: var(--accent-blue);
         }
 
-        .btn-buy-now {
+        .btn-bento-action {
             background: #fde047;
             color: var(--text-main);
             border: 2.5px solid var(--border-color);
             padding: 0.6rem 1.2rem;
             border-radius: 10px;
             font-weight: 900;
-            font-size: 0.9rem;
             cursor: pointer;
             box-shadow: 2px 2px 0px var(--border-color);
             transition: all 0.15s;
         }
 
-        .btn-buy-now:hover {
+        .btn-bento-action:hover {
             transform: translate(-2px, -2px);
             box-shadow: 4px 4px 0px var(--border-color);
         }
 
-        /* Modals & Slide-out Drawers */
+        /* Modals */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -315,7 +301,7 @@
             border-radius: 24px;
             padding: 2.5rem;
             width: 100%;
-            max-width: 520px;
+            max-width: 580px;
             box-shadow: 10px 10px 0px var(--border-color);
             position: relative;
             max-height: 90vh;
@@ -363,6 +349,30 @@
             margin-top: 0.5rem;
         }
 
+        /* Progressive Disclosure PDP Tabs */
+        .pdp-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 1rem 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .pdp-tab-btn {
+            background: none;
+            border: none;
+            font-weight: 900;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 4px 8px;
+        }
+
+        .pdp-tab-btn.active {
+            color: var(--accent-blue);
+            border-bottom: 3px solid var(--accent-blue);
+        }
+
         /* Footer */
         .store-footer {
             border-top: 3.5px solid var(--border-color);
@@ -374,11 +384,11 @@
             background: #fff;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 968px) {
+            .bento-card.span-4, .bento-card.span-6, .bento-card.span-8 { grid-column: span 12; }
             .store-header { padding: 1rem 1.5rem; }
             .store-hero { padding: 3rem 1.5rem 2rem 1.5rem; }
-            .store-hero h1 { font-size: 2.2rem; }
-            .catalog-grid { padding: 1.5rem; }
+            .bento-catalog-grid { padding: 1.5rem; }
             .store-nav { display: none; }
         }
     </style>
@@ -389,7 +399,7 @@
         ⚡ Free Global Shipping on all Hoknex Apparel Orders over ₹1,999 | Use Code: <strong>GLOBAL2026</strong>
     </div>
 
-    <!-- Header / Navbar -->
+    <!-- Navbar -->
     <header class="store-header">
         <a href="index.html" class="store-brand">
             <span>⚡ Hoknex Store</span>
@@ -405,31 +415,74 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
+    <!-- Hero & Faceted Search -->
     <section class="store-hero">
-        <span style="background: #fde047; color: var(--text-main); border: 2.5px solid var(--border-color); padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; display: inline-block; margin-bottom: 1.2rem; text-transform: uppercase; box-shadow: 2px 2px 0px var(--border-color);">Official Hoknex Collection</span>
+        <span style="background: #fde047; color: var(--text-main); border: 2.5px solid var(--border-color); padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; display: inline-block; margin-bottom: 1.2rem; text-transform: uppercase; box-shadow: 2px 2px 0px var(--border-color);">Bento Grid E-commerce Experience</span>
         <h1>Engineered for students, <span>worn by creators.</span></h1>
-        <p>Premium oversized hoodies, heavyweight graphic tees, and streetwear essentials designed for global campus innovators.</p>
+        <p>Explore our asymmetric bento catalog. Filter instantly by attributes without page reloads.</p>
         
-        <div class="filter-container">
-            <button class="filter-btn active" onclick="filterCatalog('all', this)">All Merch 🔥</button>
-            <button class="filter-btn" onclick="filterCatalog('Hoodies', this)">Hoodies 🧥</button>
-            <button class="filter-btn" onclick="filterCatalog('T-Shirts', this)">Oversized Tees 👕</button>
-            <button class="filter-btn" onclick="filterCatalog('Accessories', this)">Caps & Gear 🧢</button>
+        <!-- Faceted Search & Filters -->
+        <div class="faceted-search-bar">
+            <input type="text" id="searchInput" placeholder="Search hoodies, tees, caps..." oninput="applyFacetedFilters()">
+            <select id="categoryFilter" onchange="applyFacetedFilters()">
+                <option value="all">All Categories</option>
+                <option value="Hoodies">Hoodies</option>
+                <option value="T-Shirts">T-Shirts</option>
+                <option value="Accessories">Accessories</option>
+            </select>
+            <select id="sortBy" onchange="applyFacetedFilters()">
+                <option value="featured">Sort by: Featured</option>
+                <option value="low-high">Price: Low to High</option>
+                <option value="high-low">Price: High to Low</option>
+            </select>
         </div>
     </section>
 
-    <!-- Catalog Grid -->
-    <main class="catalog-grid" id="catalogGrid">
-        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--text-muted);">
-            <h3>Loading Hoknex catalog...</h3>
+    <!-- Bento Grid Catalog -->
+    <main class="bento-catalog-grid" id="bentoGrid">
+        <div style="grid-column: span 12; text-align: center; padding: 4rem; color: var(--text-muted);">
+            <h3>Loading Bento Grid catalog...</h3>
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="store-footer">
-        <p>&copy; 2026 Hoknex Official Store. All rights reserved. Built for global campus creators.</p>
+        <p>&copy; 2026 Hoknex Official Store. All rights reserved. Built with Bento UX & Persistent Cart Memory.</p>
     </footer>
+
+    <!-- Product Detail Page (PDP) Modal with Progressive Disclosure & Trust Anchors -->
+    <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
+        <div class="modal-panel" style="max-width: 650px;">
+            <button onclick="closeModal('pdpModal')" style="position:absolute; top:15px; right:15px; background:var(--accent-coral); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <div style="display:flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
+                <div id="pdpEmoji" style="font-size: 5rem; background:#f8fafc; border:2.5px solid var(--border-color); padding:1rem; border-radius:16px;">🧥</div>
+                <div style="flex: 1;">
+                    <span id="pdpBadge" style="background:var(--accent-coral); color:#fff; font-size:0.7rem; font-weight:900; padding:2px 8px; border-radius:4px; text-transform:uppercase;">Best Seller</span>
+                    <h2 id="pdpTitle" style="font-size: 1.5rem; font-weight: 900; margin: 0.3rem 0;">Product Title</h2>
+                    <div id="pdpPrice" style="font-size: 1.3rem; font-weight: 900; color: var(--accent-blue); margin-bottom: 0.8rem;">₹0</div>
+                    
+                    <!-- Progressive Disclosure Tabs -->
+                    <div class="pdp-tabs">
+                        <button class="pdp-tab-btn active" onclick="switchPdpTab('specs')">Specifications</button>
+                        <button class="pdp-tab-btn" onclick="switchPdpTab('shipping')">Shipping & Returns</button>
+                        <button class="pdp-tab-btn" onclick="switchPdpTab('reviews')">Verified Reviews ⭐</button>
+                    </div>
+                    <div id="pdpTabContent" style="font-size: 0.88rem; font-weight: 700; color: var(--text-muted); min-height: 70px;">
+                        Loading specs...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trust Anchors -->
+            <div style="background:#f8fafc; border:2px solid var(--border-color); padding:0.8rem; border-radius:12px; display:flex; justify-content:space-around; align-items:center; margin: 1.5rem 0 1rem 0; font-size:0.8rem; font-weight:900;">
+                <span>🛡️ Secure SSL Checkout</span>
+                <span>📦 7-Day Campus Returns</span>
+                <span>⭐ 4.9/5 Student Rating</span>
+            </div>
+
+            <button id="pdpAddBtn" class="btn-primary" style="margin-top:0;">Add to Cart 🛍️</button>
+        </div>
+    </div>
 
     <!-- Cart Modal -->
     <div id="cartModal" class="modal-overlay" onclick="if(event.target === this) closeModal('cartModal')">
@@ -439,7 +492,7 @@
             <div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem;">
                 <p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your bag is empty.</p>
             </div>
-            <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; margin-bottom:1.5rem; border-top:2px solid var(--border-color); pt:1rem; padding-top:1rem;">
+            <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; margin-bottom:1.5rem; border-top:2px solid var(--border-color); padding-top:1rem;">
                 <span>Total Subtotal:</span>
                 <span id="bagTotal" style="color:var(--accent-blue);">₹0</span>
             </div>
@@ -447,12 +500,12 @@
         </div>
     </div>
 
-    <!-- Checkout & Scanner Payment Modal -->
+    <!-- Checkout Funnel Modal (Guest Checkout & Linear Progress) -->
     <div id="checkoutModal" class="modal-overlay" onclick="if(event.target === this) closeModal('checkoutModal')">
         <div class="modal-panel">
             <button onclick="closeModal('checkoutModal')" style="position:absolute; top:15px; right:15px; background:var(--accent-coral); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
-            <h2 style="font-size: 1.6rem; font-weight: 900; margin-bottom: 0.5rem;">Delivery & Scanner Payment 🛡️</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 700; margin-bottom: 1.5rem;">Fill in your delivery details and scan QR code to complete order.</p>
+            <h2 style="font-size: 1.6rem; font-weight: 900; margin-bottom: 0.5rem;">One-Page Checkout Funnel 🚀</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 700; margin-bottom: 1.5rem;">Guest Checkout Active — No forced account creation needed!</p>
             
             <form onsubmit="finalizeOrder(event)" style="display:flex; flex-direction:column; gap:0.5rem;">
                 <div class="form-group">
@@ -469,11 +522,11 @@
                 </div>
 
                 <!-- QR Scanner Payment Box -->
-                <div style="background:#f8fafc; border:2.5px dashed var(--border-color); padding:1.2rem; border-radius:14px; text-align:center; margin: 0.5rem 0 1rem 0;">
+                <div style="background:#fff; border:2.5px dashed var(--border-color); padding:1.2rem; border-radius:14px; text-align:center; margin: 0.5rem 0 1rem 0;">
                     <div style="font-size:2.5rem; margin-bottom:0.3rem;">📷</div>
                     <h4 style="font-size:1rem; font-weight:900; margin-bottom:0.2rem;">Scan QR to Pay via UPI / GPay / PhonePe</h4>
                     <p style="font-size:0.8rem; color:var(--text-muted); font-weight:700; margin-bottom:0.8rem;">Scan code using any UPI app & place order</p>
-                    <div style="background:#fff; width:130px; height:130px; margin:0 auto; border:2px solid var(--border-color); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:3.5rem;">
+                    <div style="background:#f8fafc; width:120px; height:120px; margin:0 auto; border:2px solid var(--border-color); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:3rem;">
                         📱
                     </div>
                     <p style="font-size:0.75rem; font-weight:800; color:var(--accent-blue); margin-top:0.5rem;">UPI ID: hoknex@upi</p>
@@ -501,7 +554,7 @@
                 <button onclick="performTracking()" class="btn-primary" style="width:120px; margin:0; padding:10px;">Track 🔍</button>
             </div>
 
-            <div id="trackResultBox" style="text-align:left; background:#f8fafc; border:2px solid var(--border-color); padding:1rem; border-radius:12px; display:none;">
+            <div id="trackResultBox" style="text-align:left; background:#fff; border:2px solid var(--border-color); padding:1rem; border-radius:12px; display:none;">
                 <h4 id="resId" style="font-size:1rem; font-weight:900; margin-bottom:0.3rem;">Order ID: #</h4>
                 <p id="resStatus" style="font-size:0.85rem; font-weight:800; color:var(--accent-blue); margin-bottom:0.3rem;">Status: Processing</p>
                 <p id="resDetails" style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">Customer & Address details...</p>
@@ -513,47 +566,92 @@
     <div id="toastContainer" style="position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
 
     <script>
-        // Official Hoknex Apparel Inventory (Synced with Admin Dashboard)
+        // Official Bento Grid Inventory with Spans
         let catalog = [
-            { id: '1', name: "Hoknex Core Heavyweight Hoodie", price: 1599, category: "Hoodies", emoji: "🧥", badge: "Best Seller", description: "450GSM luxury French Terry cotton with embroidered Hoknex wordmark.", colors: ["#111", "#2563eb", "#7c3aed"] },
-            { id: '2', name: "Cyberpunk Oversized Graphic Tee", price: 799, category: "T-Shirts", emoji: "👕", badge: "Popular", description: "Acid-washed relaxed fit tee featuring global campus circuit graphics.", colors: ["#111", "#f43f5e", "#94a3b8"] },
-            { id: '3', name: "Global Innovator Minimalist Hoodie", price: 1499, category: "Hoodies", emoji: "🧶", badge: "Limited", description: "Minimalist tonal embroidered pullover crafted for late-night coding.", colors: ["#111", "#3b82f6"] },
-            { id: '4', name: "Borderless Student Heavyweight Tee", price: 749, category: "T-Shirts", emoji: "👔", badge: "Classic", description: "Ultra-durable breathable streetwear tee engineered for daily campus wear.", colors: ["#111", "#fff", "#7c3aed"] },
-            { id: '5', name: "Hoknex Signature Cyber Cap", price: 599, category: "Accessories", emoji: "🧢", badge: "Essential", description: "Unstructured 6-panel low profile cotton twill cap with metal clasp.", colors: ["#111", "#2563eb"] },
-            { id: '6', name: "Holographic Sticker & Lanyard Pack", price: 299, category: "Accessories", emoji: "🎒", badge: "Bundle", description: "Durable campus ID lanyard paired with reflective holographic stickers.", colors: ["#111", "#f43f5e"] }
+            { id: '1', name: "Hoknex Core Heavyweight Hoodie", price: 1599, category: "Hoodies", emoji: "🧥", badge: "Best Seller", span: "span-8", description: "450GSM luxury French Terry cotton with embroidered Hoknex wordmark.", specs: "100% Organic Cotton • Pre-shrunk • Heavyweight 450GSM Fleece", shipping: "Free express delivery on campus orders within 2-3 days. Easy 7-day returns.", reviews: "⭐ 4.9/5 (1,240 reviews) — 'Absolute best quality hoodie for college winters!'" },
+            { id: '2', name: "Cyberpunk Oversized Tee", price: 799, category: "T-Shirts", emoji: "👕", badge: "Popular", span: "span-4", description: "Acid-washed relaxed fit tee featuring global campus circuit graphics.", specs: "240GSM Combed Cotton • Acid Washed • Relaxed Streetwear Fit", shipping: "Standard campus shipping 3-5 days.", reviews: "⭐ 4.8/5 (850 reviews) — 'Super breathable and stylish.'" },
+            { id: '3', name: "Global Innovator Hoodie", price: 1499, category: "Hoodies", emoji: "🧶", badge: "Limited", span: "span-4", description: "Minimalist tonal embroidered pullover crafted for late-night coding.", specs: "Fleece lined • Tonal embroidery • Ribbed cuffs", shipping: "Dispatches within 24 hours.", reviews: "⭐ 5.0/5 (310 reviews) — 'Cleanest hoodie ever.'" },
+            { id: '4', name: "Borderless Heavyweight Tee", price: 749, category: "T-Shirts", emoji: "👔", badge: "Classic", span: "span-8", description: "Ultra-durable breathable streetwear tee engineered for daily campus wear.", specs: "Heavy cotton jersey • Crew neckline • Durable stitch", shipping: "Campus delivery available.", reviews: "⭐ 4.7/5 (920 reviews) — 'Never loses shape after washing.'" },
+            { id: '5', name: "Signature Cyber Cap", price: 599, category: "Accessories", emoji: "🧢", badge: "Essential", span: "span-6", description: "Unstructured 6-panel low profile cotton twill cap with metal clasp.", specs: "100% Cotton Twill • Metal Strap Closure", shipping: "Standard shipping applies.", reviews: "⭐ 4.9/5 (410 reviews) — 'Fits perfectly.'" },
+            { id: '6', name: "Holographic Sticker & Lanyard Pack", price: 299, category: "Accessories", emoji: "🎒", badge: "Bundle", span: "span-6", description: "Durable campus ID lanyard paired with reflective holographic stickers.", specs: "Weatherproof vinyl • Breakaway safety lanyard", shipping: "Instant digital confirmation + physical dispatch.", reviews: "⭐ 5.0/5 (600 reviews) — 'Looks dope on my laptop!'" }
         ];
 
-        let bag = [];
+        // Persistent Cart Memory (Loaded from localStorage)
+        let bag = JSON.parse(localStorage.getItem('hoknex_persistent_cart') || '[]');
 
-        function renderCatalog(items) {
-            const grid = document.getElementById('catalogGrid');
+        function renderBentoGrid(items) {
+            const grid = document.getElementById('bentoGrid');
+            if (items.length === 0) {
+                grid.innerHTML = `<div style="grid-column: span 12; text-align: center; padding: 4rem; color: var(--text-muted);"><h3>No products match your filters.</h3></div>`;
+                return;
+            }
+
             grid.innerHTML = items.map(item => `
-                <div class="product-item-card">
-                    <span class="product-badge">${item.badge}</span>
-                    <div>
-                        <div class="product-preview">${item.emoji}</div>
+                <div class="bento-card ${item.span}">
+                    <span class="bento-badge">${item.badge}</span>
+                    <div onclick="openPdpModal('${item.id}')" style="cursor: pointer;">
+                        <div class="bento-preview">${item.emoji}</div>
                         <h3>${item.name}</h3>
                         <p>${item.description}</p>
-                        <div class="color-swatches">
-                            ${item.colors.map(c => `<div class="swatch" style="background:${c};"></div>`).join('')}
-                        </div>
                     </div>
-                    <div class="card-bottom">
-                        <span class="price-tag">₹${item.price}</span>
-                        <button onclick="addToBag('${item.id}')" class="btn-buy-now">Add to Bag 🛍️</button>
+                    <div class="bento-footer">
+                        <span class="bento-price">₹${item.price}</span>
+                        <div style="display:flex; gap:8px;">
+                            <button onclick="openPdpModal('${item.id}')" class="btn-bento-action" style="background:#fff;">Quick View 👁️</button>
+                            <button onclick="addToBag('${item.id}')" class="btn-bento-action">Add to Bag 🛍️</button>
+                        </div>
                     </div>
                 </div>
             `).join('');
+            updateBagUI();
         }
 
-        function filterCatalog(cat, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            if (cat === 'all') {
-                renderCatalog(catalog);
-            } else {
-                renderCatalog(catalog.filter(i => i.category === cat));
-            }
+        // Faceted Search and Filters
+        function applyFacetedFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+
+            let filtered = catalog.filter(item => {
+                const matchText = item.name.toLowerCase().includes(search) || item.description.toLowerCase().includes(search);
+                const matchCat = category === 'all' || item.category === category;
+                return matchText && matchCat;
+            });
+
+            if (sortBy === 'low-high') filtered.sort((a, b) => a.price - b.price);
+            if (sortBy === 'high-low') filtered.sort((a, b) => b.price - a.price);
+
+            renderBentoGrid(filtered);
+        }
+
+        // Progressive Disclosure on PDPs
+        let currentPdpItem = null;
+        function openPdpModal(id) {
+            currentPdpItem = catalog.find(i => i.id === id);
+            if (!currentPdpItem) return;
+
+            document.getElementById('pdpEmoji').innerText = currentPdpItem.emoji;
+            document.getElementById('pdpBadge').innerText = currentPdpItem.badge;
+            document.getElementById('pdpTitle').innerText = currentPdpItem.name;
+            document.getElementById('pdpPrice').innerText = '₹' + currentPdpItem.price;
+            
+            switchPdpTab('specs');
+            document.getElementById('pdpAddBtn').onclick = () => {
+                addToBag(currentPdpItem.id);
+                closeModal('pdpModal');
+            };
+
+            document.getElementById('pdpModal').style.display = 'flex';
+        }
+
+        function switchPdpTab(tabType) {
+            document.querySelectorAll('.pdp-tab-btn').forEach(b => b.classList.remove('active'));
+            event && event.target && event.target.classList.add('active');
+
+            const content = document.getElementById('pdpTabContent');
+            if (tabType === 'specs') content.innerText = currentPdpItem.specs;
+            if (tabType === 'shipping') content.innerText = currentPdpItem.shipping;
+            if (tabType === 'reviews') content.innerText = currentPdpItem.reviews;
         }
 
         function addToBag(id) {
@@ -564,8 +662,13 @@
             } else {
                 bag.push({ ...product, qty: 1 });
             }
+            savePersistentCart();
             updateBagUI();
             showToast(`Added ${product.name} to your bag!`, '🛍️');
+        }
+
+        function savePersistentCart() {
+            localStorage.setItem('hoknex_persistent_cart', JSON.stringify(bag));
         }
 
         function updateBagUI() {
@@ -585,7 +688,7 @@
             list.innerHTML = bag.map((item, index) => {
                 subtotal += (item.price * item.qty);
                 return `
-                    <div class="cart-item-row">
+                    <div class="cart-item-row" style="background:#fff; border:2px solid var(--border-color); border-radius:10px; padding:10px; margin-bottom:8px;">
                         <div>
                             <div style="font-weight: 900; font-size: 0.9rem;">${item.emoji} ${item.name}</div>
                             <div style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 800; margin-top: 2px;">₹${item.price} × ${item.qty}</div>
@@ -600,20 +703,13 @@
 
         function removeBagItem(index) {
             bag.splice(index, 1);
+            savePersistentCart();
             updateBagUI();
         }
 
-        function openCartModal() {
-            document.getElementById('cartModal').style.display = 'flex';
-        }
-
-        function openTrackModal() {
-            document.getElementById('trackModal').style.display = 'flex';
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
+        function openCartModal() { document.getElementById('cartModal').style.display = 'flex'; }
+        function openTrackModal() { document.getElementById('trackModal').style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function proceedToCheckout() {
             if (bag.length === 0) {
@@ -645,17 +741,16 @@
                 date: new Date().toLocaleDateString()
             };
 
-            // Save order to LocalStorage so Admin Dashboard & Track Order can read it instantly
             let allOrders = JSON.parse(localStorage.getItem('hoknex_store_orders') || '[]');
             allOrders.push(orderData);
             localStorage.setItem('hoknex_store_orders', JSON.stringify(allOrders));
 
-            closeModal('checkoutModal');
             bag = [];
+            savePersistentCart();
+            closeModal('checkoutModal');
             updateBagUI();
 
-            showToast(`Order Placed! ID: ${orderId} 🎉`, '📦');
-            alert(`Order Successfully Placed!\nYour Order ID is: ${orderId}\nYou can use this ID anytime in "Track Order" to check your delivery status.`);
+            alert(`Order Successfully Placed (Guest Checkout)!\nYour Order ID is: ${orderId}\nYou can use this ID anytime in "Track Order".`);
         }
 
         function performTracking() {
@@ -672,7 +767,7 @@
                 document.getElementById('resDetails').innerText = `Recipient: ${found.name} | Deliver to: ${found.address} | Total: ₹${found.total}`;
             } else {
                 document.getElementById('resId').innerText = `Order ID: #${queryId}`;
-                document.getElementById('resStatus0' || 'resStatus').innerText = `Status: Not Found / Invalid ID`;
+                document.getElementById('resStatus').innerText = `Status: Not Found / Invalid ID`;
                 document.getElementById('resDetails').innerText = `Please check your Order ID and try again.`;
             }
         }
@@ -690,7 +785,7 @@
             }, 3500);
         }
 
-        renderCatalog(catalog);
+        renderBentoGrid(catalog);
     </script>
 </body>
 </html>
