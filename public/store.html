@@ -7,15 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #FAFAF9;          /* Dominant: 60% Pure White / Cream */
+            --bg-body: #FAF9F6;          /* 60% Warm Sand / Cream */
             --bg-card: #FFFFFF;          /* Pure white product containers */
-            --text-main: #111827;        /* Primary: 30% Rich Dark Charcoal */
-            --text-muted: #4B5563;       /* Slate muted text */
-            --border-color: #111827;     /* Sharp dark structural borders */
-            --accent-gold: #D4AF37;      /* Accent: 10% Gold / Champagne */
-            --accent-gold-hover: #C5A028;
-            --shadow-luxury: 6px 6px 0px #111827;
-            --shadow-sm: 3px 3px 0px #111827;
+            --text-main: #4C5844;        /* 30% Olive Green Core Elements & Text */
+            --text-muted: #6B7280;       /* Neutral readable gray */
+            --border-color: #4C5844;     /* Olive Green structural borders */
+            --accent-terracotta: #C27D65;/* 10% Accent CTA / Sales */
+            --accent-ochre: #D9822B;     /* Warm Ochre highlights */
+            --shadow-brand: 5px 5px 0px #4C5844;
+            --shadow-sm: 2px 2px 0px #4C5844;
         }
 
         *, *::before, *::after {
@@ -35,14 +35,13 @@
         /* Announcement Bar */
         .announcement-bar {
             background: var(--text-main);
-            color: var(--accent-gold);
+            color: #FAF9F6;
             text-align: center;
             padding: 9px 1rem;
             font-size: 0.82rem;
             font-weight: 850;
             letter-spacing: 0.8px;
             text-transform: uppercase;
-            border-bottom: 2px solid var(--border-color);
         }
 
         /* Navbar */
@@ -51,9 +50,9 @@
             justify-content: space-between;
             align-items: center;
             padding: 1.25rem 4rem;
-            background: rgba(250, 250, 249, 0.9);
+            background: rgba(250, 249, 246, 0.95);
             backdrop-filter: blur(16px);
-            border-bottom: 3.5px solid var(--border-color);
+            border-bottom: 3px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -71,7 +70,7 @@
         }
 
         .store-brand span {
-            color: var(--accent-gold);
+            color: var(--accent-terracotta);
         }
 
         .store-nav {
@@ -99,11 +98,11 @@
         }
 
         .cart-trigger, .track-trigger {
-            background: var(--text-main);
+            background: var(--accent-terracotta);
             color: #fff;
-            border: 3px solid var(--border-color);
+            border: 2.5px solid var(--border-color);
             padding: 0.55rem 1.2rem;
-            border-radius: 12px;
+            border-radius: 10px;
             font-weight: 900;
             font-size: 0.9rem;
             cursor: pointer;
@@ -116,24 +115,24 @@
 
         .cart-trigger:hover, .track-trigger:hover {
             transform: translate(-2px, -2px);
-            box-shadow: var(--shadow-luxury);
+            box-shadow: var(--shadow-brand);
         }
 
         .track-trigger {
-            background: var(--accent-gold);
-            color: var(--text-main);
+            background: var(--accent-ochre);
+            color: #fff;
         }
 
         /* Hero Section */
         .store-hero {
-            padding: 5rem 4rem 2.5rem 4rem;
+            padding: 4.5rem 4rem 2rem 4rem;
             max-width: 1400px;
             margin: 0 auto;
             text-align: center;
         }
 
         .store-hero h1 {
-            font-size: 3.8rem;
+            font-size: 3.6rem;
             font-weight: 900;
             letter-spacing: -1.5px;
             margin-bottom: 1rem;
@@ -141,8 +140,7 @@
         }
 
         .store-hero h1 span {
-            color: var(--accent-gold);
-            text-shadow: 1px 1px 0px var(--border-color);
+            color: var(--accent-terracotta);
         }
 
         .store-hero p {
@@ -177,10 +175,10 @@
         }
 
         .filter-btn.active, .filter-btn:hover {
-            background: var(--accent-gold);
-            color: var(--text-main);
+            background: var(--accent-terracotta);
+            color: #fff;
             transform: translateY(-2px);
-            box-shadow: var(--shadow-luxury);
+            box-shadow: var(--shadow-brand);
         }
 
         /* Catalog Grid */
@@ -195,33 +193,33 @@
 
         .product-item-card {
             background: var(--bg-card);
-            border: 3.5px solid var(--border-color);
-            border-radius: 24px;
+            border: 3px solid var(--border-color);
+            border-radius: 20px;
             padding: 1.8rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
             cursor: pointer;
-            box-shadow: var(--shadow-luxury);
+            box-shadow: var(--shadow-brand);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .product-item-card:hover {
             transform: translateY(-5px);
-            box-shadow: 8px 8px 0px var(--border-color);
+            box-shadow: 7px 7px 0px var(--border-color);
         }
 
         .product-preview {
             width: 100%;
-            height: 240px;
+            height: 220px;
             background: #F3F4F6;
             border: 2.5px solid var(--border-color);
-            border-radius: 16px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4.5rem;
+            font-size: 4rem;
             margin-bottom: 1.5rem;
             position: relative;
             overflow: hidden;
@@ -231,12 +229,12 @@
             position: absolute;
             top: 15px;
             right: 15px;
-            background: var(--accent-gold);
-            color: var(--text-main);
+            background: var(--accent-ochre);
+            color: #fff;
             border: 2px solid var(--border-color);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 0.72rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
             font-weight: 900;
             text-transform: uppercase;
             box-shadow: 2px 2px 0px var(--border-color);
@@ -245,7 +243,7 @@
         .product-item-card h3 {
             font-size: 1.25rem;
             font-weight: 900;
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.4rt;
         }
 
         .product-item-card p {
@@ -271,9 +269,9 @@
         }
 
         .btn-quick-view {
-            background: var(--accent-gold);
-            color: var(--text-main);
-            border: 2.5px solid var(--border-color);
+            background: var(--accent-terracotta);
+            color: #fff;
+            border: 2px solid var(--border-color);
             padding: 0.6rem 1.2rem;
             border-radius: 10px;
             font-weight: 900;
@@ -292,8 +290,8 @@
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(17, 24, 39, 0.75);
-            backdrop-filter: blur(8px);
+            background: rgba(76, 88, 68, 0.6);
+            backdrop-filter: blur(6px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -303,12 +301,12 @@
 
         .modal-panel {
             background: var(--bg-card);
-            border: 4px solid var(--border-color);
-            border-radius: 28px;
-            padding: 3rem;
+            border: 3.5px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
             width: 100%;
-            max-width: 900px;
-            box-shadow: 12px 12px 0px var(--border-color);
+            max-width: 850px;
+            box-shadow: 8px 8px 0px var(--border-color);
             position: relative;
             max-height: 90vh;
             overflow-y: auto;
@@ -323,40 +321,38 @@
 
         .pdp-main-image {
             width: 100%;
-            height: 320px;
+            height: 300px;
             background: #F3F4F6;
             border: 2.5px solid var(--border-color);
-            border-radius: 20px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 7rem;
+            font-size: 6rem;
             box-shadow: var(--shadow-sm);
         }
 
         .pdp-thumbnails {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .thumb-box {
-            width: 75px;
-            height: 75px;
+            width: 70px;
+            height: 70px;
             background: #F3F4F6;
-            border: 2.5px solid var(--border-color);
-            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.2rem;
+            font-size: 2rem;
             cursor: pointer;
             box-shadow: 2px 2px 0px var(--border-color);
-            transition: transform 0.15s;
         }
 
-        .thumb-box:hover, .thumb-box.active {
-            transform: translateY(-2px);
-            border-color: var(--accent-gold);
+        .thumb-box.active {
+            border-color: var(--accent-terracotta);
         }
 
         /* Size Selectors */
@@ -368,52 +364,44 @@
 
         .size-chip {
             background: #F3F4F6;
-            border: 2.5px solid var(--border-color);
+            border: 2px solid var(--border-color);
             color: var(--text-main);
             padding: 8px 16px;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 900;
             font-size: 0.85rem;
             cursor: pointer;
             box-shadow: 2px 2px 0px var(--border-color);
-            transition: all 0.15s;
         }
 
         .size-chip.selected {
-            background: var(--accent-gold);
-            box-shadow: 4px 4px 0px var(--border-color);
-            transform: translate(-2px, -2px);
+            background: var(--accent-terracotta);
+            color: #fff;
         }
 
         .btn-primary {
             width: 100%;
-            background: var(--text-main);
+            background: var(--accent-terracotta);
             color: #fff;
-            border: 3px solid var(--border-color);
-            border-radius: 14px;
-            padding: 1.1rem;
+            border: 2.5px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
             font-size: 1rem;
             font-weight: 900;
             cursor: pointer;
-            box-shadow: var(--shadow-sm);
+            box-shadow: 3px 3px 0px var(--border-color);
             margin-top: 1rem;
-            transition: transform 0.15s;
-        }
-
-        .btn-primary:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: var(--shadow-luxury);
         }
 
         /* Footer */
         .store-footer {
-            border-top: 3.5px solid var(--border-color);
+            border-top: 3px solid var(--border-color);
             padding: 3rem 4rem;
             text-align: center;
             color: var(--text-muted);
             font-size: 0.88rem;
             font-weight: 800;
-            background: var(--bg-card);
+            background: #fff;
         }
 
         @media (max-width: 768px) {
@@ -429,7 +417,7 @@
 <body>
 
     <div class="announcement-bar">
-        ⚡ Free Global Shipping on all Hoknex Apparel Orders over ₹1,999 | Use Code: <strong>GLOBAL2026</strong>
+        ⚡ Free Campus Delivery on all Hoknex Apparel Orders over ₹999 | No Hidden Gateway Fees
     </div>
 
     <!-- Navbar -->
@@ -450,7 +438,7 @@
 
     <!-- Hero Section -->
     <section class="store-hero">
-        <span style="background: var(--accent-gold); color: var(--text-main); border: 2.5px solid var(--border-color); padding: 6px 16px; border-radius: 30px; font-size: 0.8rem; font-weight: 900; display: inline-block; margin-bottom: 1.2rem; text-transform: uppercase; box-shadow: var(--shadow-sm);">Official Luxury Collection</span>
+        <span style="background: var(--accent-ochre); color: #fff; border: 2.5px solid var(--border-color); padding: 6px 16px; border-radius: 30px; font-size: 0.8rem; font-weight: 900; display: inline-block; margin-bottom: 1.2rem; text-transform: uppercase; box-shadow: var(--shadow-sm);">Official Student Apparel</span>
         <h1>Engineered for students, <span>worn by creators.</span></h1>
         <p>Premium oversized hoodies, heavyweight graphic tees, and streetwear essentials designed for global campus innovators.</p>
         
@@ -471,17 +459,16 @@
 
     <!-- Footer -->
     <footer class="store-footer">
-        <p>&copy; 2026 Hoknex Official Store. All rights reserved. Built with Luxury Cream & Gold Branding.</p>
+        <p>&copy; 2026 Hoknex Official Store. All rights reserved. Built with Warm Sand & Terracotta Branding.</p>
     </footer>
 
     <!-- Product Detail Page (PDP) Modal with Multi-Angle Gallery -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
-        <div class="modal-panel" style="max-width: 850px;">
-            <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-coral); color:#fff; border:2.5px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; box-shadow:2px 2px 0px var(--border-color);">&times;</button>
+        <div class="modal-panel" style="max-width: 820px;">
+            <button onclick="closeModal('pdpModal')" style="position:absolute; top:15px; right:15px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
             
-            <div style="display: flex; gap: 3rem; align-items: flex-start; flex-wrap: wrap;">
-                <!-- Multi-Angle Image Gallery Column -->
-                <div style="flex: 1; min-width: 300px;" class="pdp-gallery">
+            <div style="display: flex; gap: 2.5rem; align-items: flex-start; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 280px;" class="pdp-gallery">
                     <div class="pdp-main-image" id="pdpMainEmoji">🧥</div>
                     <div class="pdp-thumbnails">
                         <div class="thumb-box active" onclick="switchAngle(0, this)">🧥</div>
@@ -490,15 +477,13 @@
                     </div>
                 </div>
 
-                <!-- Product Details Column -->
-                <div style="flex: 1; min-width: 300px;">
-                    <span id="pdpBadge" style="background:var(--accent-gold); color:var(--text-main); border:2px solid var(--border-color); padding:3px 10px; border-radius:6px; font-size:0.75rem; font-weight:900; text-transform:uppercase; box-shadow:2px 2px 0px var(--border-color);">Best Seller</span>
-                    <h2 id="pdpTitle" style="font-size: 1.8rem; font-weight: 900; margin: 0.5rem 0;">Product Title</h2>
-                    <div id="pdpPrice" style="font-size: 1.5rem; font-weight: 900; color: var(--accent-gold); margin-bottom: 1rem;">₹0</div>
-                    <p id="pdpDesc" style="color: var(--text-muted); font-size: 0.95rem; font-weight: 700; line-height: 1.5; margin-bottom: 1.5rem;"></p>
+                <div style="flex: 1; min-width: 280px;">
+                    <span id="pdpBadge" style="background:var(--accent-ochre); color:#fff; border:2px solid var(--border-color); padding:3px 10px; border-radius:6px; font-size:0.75rem; font-weight:900; text-transform:uppercase;">Best Seller</span>
+                    <h2 id="pdpTitle" style="font-size: 1.6rem; font-weight: 900; margin: 0.4rem 0;">Product Title</h2>
+                    <div id="pdpPrice" style="font-size: 1.4rem; font-weight: 900; color: var(--accent-terracotta); margin-bottom: 0.8rem;">₹0</div>
+                    <p id="pdpDesc" style="color: var(--text-muted); font-size: 0.9rem; font-weight: 700; line-height: 1.5; margin-bottom: 1.2rem;"></p>
 
-                    <!-- Size Selectors -->
-                    <div style="font-size: 0.8rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.4rem;">Select Size</div>
+                    <div style="font-size: 0.8rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.3rem;">Select Size</div>
                     <div class="size-selector-group" id="sizeSelectorGroup">
                         <div class="size-chip selected" onclick="selectSize('S', this)">S</div>
                         <div class="size-chip" onclick="selectSize('M', this)">M</div>
@@ -515,60 +500,67 @@
     <!-- Cart Modal -->
     <div id="cartModal" class="modal-overlay" onclick="if(event.target === this) closeModal('cartModal')">
         <div class="modal-panel" style="max-width: 480px;">
-            <button onclick="closeModal('cartModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-coral); color:#fff; border:2.5px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; box-shadow:2px 2px 0px var(--border-color);">&times;</button>
-            <h2 style="font-size: 1.6rem; font-weight: 900; margin-bottom: 1rem;">Your Shopping Bag</h2>
+            <button onclick="closeModal('cartModal')" style="position:absolute; top:15px; right:15px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem;">Your Shopping Bag</h2>
             <div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem;">
                 <p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your bag is empty.</p>
             </div>
-            <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; margin-bottom:1.5rem; border-top:2px solid var(--border-color); padding-top:1rem;">
+            <div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:900; margin-bottom:1.5rem; border-top:2px solid var(--border-color); padding-top:1rem;">
                 <span>Total Subtotal:</span>
-                <span id="bagTotal" style="color:var(--accent-gold);">₹0</span>
+                <span id="bagTotal" style="color:var(--accent-terracotta);">₹0</span>
             </div>
-            <button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Secure Checkout 🚀</button>
+            <button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Free Delivery & Order 🚀</button>
         </div>
     </div>
 
-    <!-- Checkout Modal -->
+    <!-- Free Startup Checkout Modal (No Gateway Cost) -->
     <div id="checkoutModal" class="modal-overlay" onclick="if(event.target === this) closeModal('checkoutModal')">
-        <div class="modal-panel" style="max-width: 520px;">
-            <button onclick="closeModal('checkoutModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-coral); color:#fff; border:2.5px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; box-shadow:2px 2px 0px var(--border-color);">&times;</button>
-            <h2 style="font-size: 1.6rem; font-weight: 900; margin-bottom: 0.5rem;">One-Page Secure Checkout</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 700; margin-bottom: 1.5rem;">Guest Checkout Active — Fast campus delivery.</p>
+        <div class="modal-panel" style="max-width: 500px;">
+            <button onclick="closeModal('checkoutModal')" style="position:absolute; top:15px; right:15px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.4rem;">Free Campus Checkout 🛡️</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;">Zero gateway fees. Pay cash on campus delivery or direct founder UPI.</p>
             
-            <form onsubmit="finalizeOrder(event)" style="display:flex; flex-direction:column; gap:1rem;">
+            <form onsubmit="finalizeOrder(event)" style="display:flex; flex-direction:column; gap:0.8rem;">
                 <div>
                     <label style="font-size:0.75rem; font-weight:900; color:var(--text-muted); text-transform:uppercase;">Full Name</label>
-                    <input type="text" id="shipName" placeholder="Alex Morgan" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px 14px; border-radius:10px; font-weight:800; margin-top:4px; outline:none;">
+                    <input type="text" id="shipName" placeholder="Alex Morgan" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;">
                 </div>
                 <div>
                     <label style="font-size:0.75rem; font-weight:900; color:var(--text-muted); text-transform:uppercase;">Phone Number</label>
-                    <input type="tel" id="shipPhone" placeholder="+91 9876543210" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px 14px; border-radius:10px; font-weight:800; margin-top:4px; outline:none;">
+                    <input type="tel" id="shipPhone" placeholder="+91 9876543210" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;">
                 </div>
                 <div>
-                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-muted); text-transform:uppercase;">Delivery Address & Campus Hostel</label>
-                    <textarea id="shipAddress" rows="2" placeholder="Room 404, Block A, University Campus..." required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px 14px; border-radius:10px; font-weight:800; margin-top:4px; outline:none; resize:vertical;"></textarea>
+                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-muted); text-transform:uppercase;">Hostel / Campus Delivery Address</label>
+                    <textarea id="shipAddress" rows="2" placeholder="Room 404, Block A, University Campus..." required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none; resize:vertical;"></textarea>
                 </div>
-                <button type="submit" class="btn-primary" style="margin-top:0.5rem;">Confirm & Complete Order 🎉</button>
+                <div>
+                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-muted); text-transform:uppercase;">Payment Mode</label>
+                    <select id="payMode" style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;">
+                        <option value="COD">Pay on Campus Delivery (Cash / UPI on arrival)</option>
+                        <option value="DirectUPI">Direct Founder UPI (hoknex@upi)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top:0.3rem;">Place Order Now 🎉</button>
             </form>
         </div>
     </div>
 
     <!-- Order Tracking Modal -->
     <div id="trackModal" class="modal-overlay" onclick="if(event.target === this) closeModal('trackModal')">
-        <div class="modal-panel" style="max-width: 460px; text-align: center;">
-            <button onclick="closeModal('trackModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-coral); color:#fff; border:2.5px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; box-shadow:2px 2px 0px var(--border-color);">&times;</button>
-            <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem;">📦 Track Your Hoknex Order</h2>
-            <p style="color: var(--text-muted); font-size: 0.88rem; font-weight: 700; margin-bottom: 1.5rem;">Enter your Order ID to check delivery status.</p>
+        <div class="modal-panel" style="max-width: 440px; text-align: center;">
+            <button onclick="closeModal('trackModal')" style="position:absolute; top:15px; right:15px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <h2 style="font-size: 1.4rem; font-weight: 900; margin-bottom: 0.4rem;">📦 Track Your Order</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;">Enter your Order ID to check delivery status.</p>
             
-            <div style="display:flex; gap:10px; margin-bottom:1.5rem;">
+            <div style="display:flex; gap:8px; margin-bottom:1.2rem;">
                 <input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:#fff; border:2.5px solid var(--border-color); border-radius:10px; padding:10px; font-weight:800; flex:1; outline:none;">
-                <button onclick="performTracking()" class="cart-trigger" style="margin:0; padding:10px 16px;">Track 🔍</button>
+                <button onclick="performTracking()" class="cart-trigger" style="margin:0; padding:10px 14px;">Track 🔍</button>
             </div>
 
-            <div id="trackResultBox" style="text-align:left; background:#fff; border:2.5px solid var(--border-color); padding:1rem; border-radius:12px; display:none;">
-                <h4 id="resId" style="font-size:1rem; font-weight:900; margin-bottom:0.3rem;">Order ID: #</h4>
-                <p id="resStatus" style="font-size:0.85rem; font-weight:900; color:var(--accent-blue); margin-bottom:0.3rem;">Status: Processing</p>
-                <p id="resDetails" style="font-size:0.8rem; color:var(--text-muted); font-weight:800;">Customer & Address details...</p>
+            <div id="trackResultBox" style="text-align:left; background:#fff; border:2px solid var(--border-color); padding:1rem; border-radius:10px; display:none;">
+                <h4 id="resId" style="font-size:0.95rem; font-weight:900; margin-bottom:0.2rem;">Order ID: #</h4>
+                <p id="resStatus" style="font-size:0.82rem; font-weight:900; color:var(--accent-terracotta); margin-bottom:0.2rem;">Status: Processing</p>
+                <p id="resDetails" style="font-size:0.78rem; color:var(--text-muted); font-weight:800;">Customer & Address details...</p>
             </div>
         </div>
     </div>
@@ -577,7 +569,6 @@
     <div id="toastContainer" style="position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
 
     <script>
-        // Official Store Inventory
         let catalog = [
             { id: '1', name: "Hoknex Core Heavyweight Hoodie", price: 1599, category: "Hoodies", emoji: "🧥", badge: "Best Seller", description: "450GSM luxury French Terry cotton with embroidered Hoknex wordmark.", angles: ["🧥", "👕", "🔎"] },
             { id: '2', name: "Cyberpunk Oversized Graphic Tee", price: 799, category: "T-Shirts", emoji: "👕", badge: "Popular", description: "Acid-washed relaxed fit tee featuring global campus circuit graphics.", angles: ["👕", "👔", "🔎"] },
@@ -688,12 +679,12 @@
             list.innerHTML = bag.map((item, index) => {
                 subtotal += (item.price * item.qty);
                 return `
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; border: 2.5px solid var(--border-color); padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; box-shadow: 2px 2px 0px var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; border: 2px solid var(--border-color); padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; box-shadow: 2px 2px 0px var(--border-color);">
                         <div>
-                            <div style="font-weight: 900; font-size: 0.9rem;">${item.emoji} ${item.name} (${item.size})</div>
-                            <div style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 900; margin-top: 2px;">₹${item.price} × ${item.qty}</div>
+                            <div style="font-weight: 900; font-size: 0.85rem;">${item.emoji} ${item.name} (${item.size})</div>
+                            <div style="font-size: 0.78rem; color: var(--accent-terracotta); font-weight: 900; margin-top: 2px;">₹${item.price} × ${item.qty}</div>
                         </div>
-                        <button onclick="removeBagItem(${index})" style="background:var(--accent-coral); color:#fff; border:2px solid var(--border-color); width:26px; height:26px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
+                        <button onclick="removeBagItem(${index})" style="background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:24px; height:24px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
                     </div>
                 `;
             }).join('');
@@ -725,6 +716,7 @@
             const name = document.getElementById('shipName').value;
             const phone = document.getElementById('shipPhone').value;
             const address = document.getElementById('shipAddress').value;
+            const payMode = document.getElementById('payMode').value;
 
             const orderId = 'HOK-' + Math.floor(10000 + Math.random() * 90000);
             
@@ -733,9 +725,10 @@
                 name,
                 phone,
                 address,
+                payMode,
                 items: bag,
                 total: bag.reduce((sum, i) => sum + (i.price * i.qty), 0),
-                status: 'Dispatched & Out for Delivery 🚚',
+                status: 'Confirmed & Preparing for Campus Delivery 🚚',
                 date: new Date().toLocaleDateString()
             };
 
@@ -762,7 +755,7 @@
             if (found) {
                 document.getElementById('resId').innerText = `Order ID: #${found.orderId} (${found.date})`;
                 document.getElementById('resStatus').innerText = `Status: ${found.status}`;
-                document.getElementById('resDetails').innerText = `Recipient: ${found.name} | Deliver to: ${found.address} | Total: ₹${found.total}`;
+                document.getElementById('resDetails').innerText = `Recipient: ${found.name} | Deliver to: ${found.address} | Mode: ${found.payMode} | Total: ₹${found.total}`;
             } else {
                 document.getElementById('resId').innerText = `Order ID: #${queryId}`;
                 document.getElementById('resStatus').innerText = `Status: Not Found / Invalid ID`;
@@ -773,7 +766,7 @@
         function showToast(message, emoji = '✨') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            toast.style.cssText = 'background:#fff; border:2.5px solid var(--border-color); color:var(--text-main); padding:12px 18px; border-radius:12px; box-shadow:3px 3px 0px var(--border-color); display:flex; align-items:center; gap:10px; font-weight:900; font-size:0.9rem;';
+            toast.style.cssText = 'background:#fff; border:2.5px solid var(--border-color); color:var(--text-main); padding:10px 16px; border-radius:10px; box-shadow:3px 3px 0px var(--border-color); display:flex; align-items:center; gap:8px; font-weight:900; font-size:0.85rem;';
             toast.innerHTML = `<span>${emoji}</span> <span>${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => {
