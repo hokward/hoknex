@@ -17,66 +17,48 @@
             --shadow-brand: 4px 4px 0px #4C5844;
         }
 
-        *, *::before, *::after {
-            box-sizing: border-box; margin: 0; padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 2.5rem 2rem; }
 
         .admin-container { max-width: 1200px; margin: 0 auto; }
-        
         .admin-header {
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--bg-card); border: 3.5px solid var(--border-color);
-            padding: 1.8rem 2.5rem; border-radius: 20px; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
+            display: flex; justify-content: space-between; align-items: center; background: var(--bg-card);
+            border: 3.5px solid var(--border-color); padding: 1.8rem 2.5rem; border-radius: 20px; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
         }
-
         .admin-section {
             background: var(--bg-card); border: 3.5px solid var(--border-color);
             border-radius: 20px; padding: 2.5rem; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
         }
-
         h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; }
-
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
         .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
         .form-group label { font-size: 0.8rem; font-weight: 900; text-transform: uppercase; }
         .form-group input, .form-group textarea, .form-group select {
             background: #FAF9F6; border: 2.5px solid var(--border-color); padding: 12px; border-radius: 12px; font-weight: 800; outline: none; width: 100%; color: var(--text-main);
         }
-
         .btn-action {
             background: var(--accent-terracotta); color: #fff; border: 2.5px solid var(--border-color);
             padding: 0.85rem 1.6rem; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color);
             transition: transform 0.15s, box-shadow 0.15s; text-decoration: none; display: inline-block;
         }
         .btn-action:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0px var(--border-color); }
-
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
         th, td { border: 2.5px solid var(--border-color); padding: 12px; text-align: left; font-weight: 800; }
         th { background: #FAF9F6; font-weight: 900; }
-
-        @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .admin-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
-            body { padding: 1rem; }
-        }
     </style>
 </head>
 <body>
 
     <div class="admin-container">
-        <!-- Top Bar -->
         <div class="admin-header">
             <div>
                 <h1 style="font-size: 1.8rem; font-weight: 900;">⚡ Hoknex Owner Dashboard</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Private command center to launch products, manage images, orders, live tracking, and subscriber leads.</p>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage products with multiple angles, delivery fees, QR codes, and orders.</p>
             </div>
             <a href="store.html" class="btn-action" style="background:var(--accent-ochre);">View Public Store 🛍️</a>
         </div>
 
-        <!-- 1. Edit Announcement Banner -->
+        <!-- 1. Update Announcement -->
         <div class="admin-section">
             <h2>📢 Update Store Announcement Banner</h2>
             <div style="display:flex; gap:1rem; flex-wrap:wrap;">
@@ -85,14 +67,25 @@
             </div>
         </div>
 
-        <!-- 2. Launch New Product with Image Upload -->
+        <!-- 2. QR Code Manager -->
         <div class="admin-section">
-            <h2>🚀 Launch New Product & Upload Image</h2>
+            <h2>📷 Founder UPI QR Code Manager</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.2rem;">Upload QR codes. The checkout randomly displays one when customers choose Direct Founder UPI.</p>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1.5rem;">
+                <input type="file" id="newQrFile" accept="image/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800;">
+                <button onclick="uploadNewQrCode()" class="btn-action">Upload QR Code ➕</button>
+            </div>
+            <div id="qrListContainer" style="display:flex; gap:1rem; flex-wrap:wrap;"></div>
+        </div>
+
+        <!-- 3. Launch New Product with Multiple Images & Delivery Fee -->
+        <div class="admin-section">
+            <h2>🚀 Launch New Product (Multi-Angle Photos & Delivery Charge)</h2>
             <form onsubmit="handleNewProduct(event)">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Product Name</label>
-                        <input type="text" id="prodName" placeholder="e.g. Hoknex Cyber Hoodie" required>
+                        <input type="text" id="prodName" placeholder="e.g. Hoknex Heavy Hoodie" required>
                     </div>
                     <div class="form-group">
                         <label>Category</label>
@@ -106,116 +99,140 @@
                         <input type="number" id="prodPrice" placeholder="1499" required>
                     </div>
                     <div class="form-group">
-                        <label>Product Photo / Image File</label>
-                        <input type="file" id="prodImageFile" accept="image/*" required style="background:#fff;">
+                        <label>Delivery Charge for this Product (₹)</label>
+                        <input type="number" id="prodDelivery" placeholder="49" value="0" required>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Upload Multiple Images (Select 2-3 angles at once)</label>
+                        <input type="file" id="prodGalleryFiles" accept="image/*" multiple required style="background:#fff;">
                     </div>
                     <div class="form-group" style="grid-column: span 2;">
                         <label>Description</label>
                         <textarea id="prodDesc" rows="2" placeholder="Heavyweight organic cotton fleece..." required></textarea>
                     </div>
                 </div>
-                <button type="submit" class="btn-action">Upload & Publish Product ✨</button>
+                <button type="submit" class="btn-action">Publish Multi-Angle Product ✨</button>
             </form>
         </div>
 
-        <!-- 3. Existing Products Management (Delete / View) -->
+        <!-- 4. Manage Products -->
         <div class="admin-section">
-            <h2>🗂️ Manage Existing Products (Delete / Edit)</h2>
-            <div id="productsTableWrap" style="overflow-x:auto;">
-                <p>Loading products...</p>
-            </div>
+            <h2>🗂️ Manage Catalog Products</h2>
+            <div id="productsTableWrap" style="overflow-x:auto;"><p>Loading products...</p></div>
         </div>
 
-        <!-- 4. Customer Orders & Tracker Management -->
+        <!-- 5. Customer Orders -->
         <div class="admin-section">
             <h2>📦 Customer Orders & Live Tracker Manager</h2>
-            <div id="ordersTableWrap" style="overflow-x:auto;">
-                <p>Loading orders...</p>
-            </div>
+            <div id="ordersTableWrap" style="overflow-x:auto;"><p>Loading orders...</p></div>
         </div>
 
-        <!-- 5. Newsletter Leads -->
+        <!-- 6. Leads -->
         <div class="admin-section">
             <h2>💌 Newsletter Subscribers</h2>
-            <div id="leadsTableWrap" style="overflow-x:auto;">
-                <p>Loading subscriber leads...</p>
-            </div>
+            <div id="leadsTableWrap" style="overflow-x:auto;"><p>Loading leads...</p></div>
         </div>
     </div>
 
     <script>
-        // Load Announcement
         document.getElementById('announcementInput').value = localStorage.getItem('hoknex_announcement') || '';
-
         function updateAnnouncement() {
-            const val = document.getElementById('announcementInput').value;
-            localStorage.setItem('hoknex_announcement', val);
-            alert('Announcement banner successfully updated across store!');
+            localStorage.setItem('hoknex_announcement', document.getElementById('announcementInput').value);
+            alert('Announcement banner updated successfully!');
         }
 
-        // Default Catalog
-        let defaultCatalog = [
-            { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, emoji: "🧥", badge: "New Drop", description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing." },
-            { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, emoji: "👟", badge: "Best Seller", description: "Hand-stitched premium leather lifestyle sneakers built for campus creators." },
-            { id: '3', name: "Hoknex Pavilion Resort Polo", category: "Apparel", price: 2299, emoji: "👕", badge: "Classic", description: "Breathable sustainable linen polo engineered with tailored collar finish." },
-            { id: '4', name: "Hoknex Creator Heavyweight Hoodie", category: "Apparel", price: 1599, emoji: "🧶", badge: "Popular", description: "450GSM luxury French Terry cotton with embroidered Hoknex wordmark." }
-        ];
+        // QR Manager
+        function renderQrManager() {
+            let qrs = JSON.parse(localStorage.getItem('hoknex_owner_qrs') || '[]');
+            const container = document.getElementById('qrListContainer');
+            if (qrs.length === 0) {
+                container.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No QR codes uploaded yet.</p>`;
+                return;
+            }
+            container.innerHTML = qrs.map((qr, idx) => `
+                <div style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:12px; text-align:center;">
+                    <img src="${qr}" style="width:100px; height:100px; object-fit:cover; border-radius:8px; display:block; margin-bottom:8px;">
+                    <button onclick="deleteQr(${idx})" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button>
+                </div>
+            `).join('');
+        }
 
-        let catalog = JSON.parse(localStorage.getItem('hoknex_custom_catalog') || JSON.stringify(defaultCatalog));
-
-        // Handle New Product Launch with Image Reader
-        function handleNewProduct(e) {
-            e.preventDefault();
-            const name = document.getElementById('prodName').value;
-            const category = document.getElementById('prodCategory').value;
-            const price = Number(document.getElementById('prodPrice').value);
-            const description = document.getElementById('prodDesc').value;
-            const fileInput = document.getElementById('prodImageFile');
-
+        function uploadNewQrCode() {
+            const fileInput = document.getElementById('newQrFile');
             if (fileInput.files && fileInput.files[0]) {
+                let qrs = JSON.parse(localStorage.getItem('hoknex_owner_qrs') || '[]');
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    const imageUrl = event.target.result;
-                    const newProd = {
-                        id: 'prod-' + Date.now(),
-                        name, category, price, description,
-                        image: imageUrl,
-                        badge: 'New Arrival'
-                    };
-                    catalog.push(newProd);
-                    localStorage.setItem('hoknex_custom_catalog', JSON.stringify(catalog));
-                    alert('Product uploaded and successfully published to store!');
-                    location.reload();
+                reader.onload = function(e) {
+                    qrs.push(e.target.result);
+                    localStorage.setItem('hoknex_owner_qrs', JSON.stringify(qrs));
+                    renderQrManager();
+                    alert('QR Code uploaded!');
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             }
         }
 
+        function deleteQr(index) {
+            let qrs = JSON.parse(localStorage.getItem('hoknex_owner_qrs') || '[]');
+            qrs.splice(index, 1);
+            localStorage.setItem('hoknex_owner_qrs', JSON.stringify(qrs));
+            renderQrManager();
+        }
+
+        // Product Catalog with Multi-Images & Delivery Fee
+        let defaultCatalog = [
+            { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49, emoji: "🧥", badge: "New Drop", description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.", galleryImages: ["🧥", "👔", "🔎"] },
+            { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99, emoji: "👟", badge: "Best Seller", description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.", galleryImages: ["👟", "🥾", "🔎"] }
+        ];
+        let catalog = JSON.parse(localStorage.getItem('hoknex_custom_catalog') || JSON.stringify(defaultCatalog));
+
+        function handleNewProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('prodName').value;
+            const category = document.getElementById('prodCategory').value;
+            const price = Number(document.getElementById('prodPrice').value);
+            const deliveryFee = Number(document.getElementById('prodDelivery').value);
+            const description = document.getElementById('prodDesc').value;
+            const fileInput = document.getElementById('prodGalleryFiles');
+
+            if (fileInput.files && fileInput.files.length > 0) {
+                let readersLoaded = 0;
+                let base64Images = [];
+
+                Array.from(fileInput.files).forEach((file, idx) => {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        base64Images[idx] = event.target.result;
+                        readersLoaded++;
+                        if (readersLoaded === fileInput.files.length) {
+                            const newProd = {
+                                id: 'prod-' + Date.now(),
+                                name, category, price, deliveryFee, description,
+                                image: base64Images[0],
+                                galleryImages: base64Images,
+                                badge: 'New Arrival'
+                            };
+                            catalog.push(newProd);
+                            localStorage.setItem('hoknex_custom_catalog', JSON.stringify(catalog));
+                            alert('Multi-angle product published successfully!');
+                            location.reload();
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
         function renderProductsTable() {
-            const wrap = document.getElementById('productsTableWrap');
-            wrap.innerHTML = `
+            document.getElementById('productsTableWrap').innerHTML = `
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Preview</th>
-                            <th>Product Name</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Preview</th><th>Name</th><th>Category</th><th>Price</th><th>Delivery Fee</th><th>Action</th></tr></thead>
                     <tbody>
                         ${catalog.map((p, idx) => `
                             <tr>
-                                <td style="width:60px; text-align:center;">
-                                    ${p.image ? `<img src="${p.image}" style="width:40px; height:40px; object-fit:cover; border-radius:6px;">` : (p.emoji || '📦')}
-                                </td>
-                                <td><b>${p.name}</b></td>
-                                <td>${p.category}</td>
-                                <td>₹${p.price}.00</td>
-                                <td>
-                                    <button onclick="deleteProduct(${idx})" class="btn-action" style="background:#C27D65; padding:6px 12px; font-size:0.75rem;">Delete</button>
-                                </td>
+                                <td style="width:50px; text-align:center;">${p.image ? `<img src="${p.image}" style="width:35px;height:35px;object-fit:cover;border-radius:6px;">` : (p.emoji || '📦')}</td>
+                                <td><b>${p.name}</b></td><td>${p.category}</td><td>₹${p.price}.00</td><td>₹${p.deliveryFee || 0}</td>
+                                <td><button onclick="deleteProduct(${idx})" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -224,42 +241,26 @@
         }
 
         function deleteProduct(index) {
-            if(!confirm('Delete this product from store?')) return;
+            if(!confirm('Delete product?')) return;
             catalog.splice(index, 1);
             localStorage.setItem('hoknex_custom_catalog', JSON.stringify(catalog));
             renderProductsTable();
-            alert('Product removed from store catalog.');
         }
 
-        // Render Orders Table
+        // Orders & Timeline History
         function renderOrdersTable() {
-            const wrap = document.getElementById('ordersTableWrap');
             const orders = JSON.parse(localStorage.getItem('hoknex_store_orders') || '[]');
-
-            if(orders.length === 0) {
-                wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No customer orders placed yet.</p>`;
-                return;
-            }
-
+            const wrap = document.getElementById('ordersTableWrap');
+            if(orders.length === 0) { wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No customer orders yet.</p>`; return; }
             wrap.innerHTML = `
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Summary</th>
-                            <th>Delivery Address</th>
-                            <th>Live Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>ID</th><th>Customer</th><th>Summary (Incl. Delivery)</th><th>Address</th><th>Live Status</th><th>Action</th></tr></thead>
                     <tbody>
                         ${orders.map((o, idx) => `
                             <tr>
-                                <td><b>#${o.orderId}</b><br><small>${o.date}</small></td>
-                                <td>${o.name}<br><small>${o.phone}</small></td>
-                                <td>₹${o.total}.00 (${o.items.length} items)</td>
-                                <td style="font-size:0.8rem; max-width:180px;">${o.address}</td>
+                                <td><b>#${o.orderId}</b></td><td>${o.name}<br><small>${o.phone}</small></td>
+                                <td>₹${o.total}.00 (Sub: ₹${o.subtotal} + Del: ₹${o.deliveryFee})</td>
+                                <td style="font-size:0.8rem;">${o.address}</td>
                                 <td>
                                     <select onchange="updateOrderStatus(${idx}, this.value)" style="padding:6px; font-weight:800; border-radius:8px;">
                                         <option value="Order Placed & Awaiting Owner Approval ⏳" ${o.status.includes('Awaiting')?'selected':''}>Awaiting Approval</option>
@@ -268,9 +269,7 @@
                                         <option value="Delivery Completed Successfully 🎉" ${o.status.includes('Completed')?'selected':''}>Delivery Completed 🎉</option>
                                     </select>
                                 </td>
-                                <td>
-                                    <button onclick="deleteOrder(${idx})" class="btn-action" style="background:#C27D65; padding:6px 12px; font-size:0.75rem;">Delete</button>
-                                </td>
+                                <td><button onclick="deleteOrder(${idx})" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -281,37 +280,30 @@
         function updateOrderStatus(index, newStatus) {
             let orders = JSON.parse(localStorage.getItem('hoknex_store_orders') || '[]');
             orders[index].status = newStatus;
+            if(!orders[index].timeline) orders[index].timeline = [];
+            orders[index].timeline.push({ title: newStatus, time: new Date().toLocaleString() });
             localStorage.setItem('hoknex_store_orders', JSON.stringify(orders));
-            alert('Order status updated! Customer tracking now shows: ' + newStatus);
+            alert('Order status & timeline updated successfully!');
             renderOrdersTable();
         }
 
         function deleteOrder(index) {
-            if(!confirm('Delete this order record?')) return;
+            if(!confirm('Delete order?')) return;
             let orders = JSON.parse(localStorage.getItem('hoknex_store_orders') || '[]');
             orders.splice(index, 1);
             localStorage.setItem('hoknex_store_orders', JSON.stringify(orders));
             renderOrdersTable();
         }
 
-        // Render Leads Table
+        // Leads
         function renderLeadsTable() {
-            const wrap = document.getElementById('leadsTableWrap');
             const leads = JSON.parse(localStorage.getItem('hoknex_newsletter_leads') || '[]');
-            if(leads.length === 0) {
-                wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No newsletter subscribers yet.</p>`;
-                return;
-            }
-            wrap.innerHTML = `
-                <table>
-                    <thead><tr><th>Subscriber Email</th><th>Date Joined</th></tr></thead>
-                    <tbody>
-                        ${leads.map(l => `<tr><td><b>${l.email}</b></td><td>${l.date}</td></tr>`).join('')}
-                    </tbody>
-                </table>
-            `;
+            const wrap = document.getElementById('leadsTableWrap');
+            if(leads.length === 0) { wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No subscribers yet.</p>`; return; }
+            wrap.innerHTML = `<table><thead><tr><th>Email</th><th>Date</th></tr></thead><tbody>${leads.map(l => `<tr><td><b>${l.email}</b></td><td>${l.date}</td></tr>`).join('')}</tbody></table>`;
         }
 
+        renderQrManager();
         renderProductsTable();
         renderOrdersTable();
         renderLeadsTable();
