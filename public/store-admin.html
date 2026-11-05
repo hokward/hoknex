@@ -29,7 +29,7 @@
             background: var(--bg-card); border: 3.5px solid var(--border-color);
             border-radius: 20px; padding: 2.5rem; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
         }
-        h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 1.0rem; color: var(--text-main); border-bottom: 2px solid #F3F4F6; padding-bottom: 8px; }
+        h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color: var(--text-main); border-bottom: 2px solid #F3F4F6; padding-bottom: 8px; }
         
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
         .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
@@ -74,7 +74,7 @@
         <div class="admin-header">
             <div>
                 <h1 style="font-size: 1.8rem; font-weight: 900;">⚡ Hoknex Professional Owner Command Center</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage global magazine articles, visual campaigns, store products, orders, and banners.</p>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage global magazine articles, coming soon drops, multi-angle catalog, delivery fees, stock/sizes, demand voting, tracker messages, and invoices.</p>
             </div>
             <div style="display:flex; gap:10px;">
                 <a href="store.html" class="btn-action" style="background:var(--accent-ochre);">View Store 🛍️</a>
@@ -82,7 +82,7 @@
             </div>
         </div>
 
-        <!-- 1. Store Announcement Banner -->
+        <!-- 1. Announcement Banner -->
         <div class="admin-section">
             <h2>📢 1. Store Announcement Banner</h2>
             <div style="display:flex; gap:1rem; flex-wrap:wrap;">
@@ -111,38 +111,32 @@
             <div id="magazineTableWrap" style="overflow-x:auto; margin-top:2rem;"><p>Loading articles...</p></div>
         </div>
 
-        <!-- 3. Visual Campaign Showcase Manager -->
+        <!-- 3. Coming Soon / Drop Segment Uploader -->
         <div class="admin-section">
-            <h2>🖼️ 3. Visual Campaign & Banner Showcase Manager</h2>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Upload and manage the 6-picture advertisement archive displayed below your store's product catalog.</p>
-            <form onsubmit="handleCampaignUpload(event)">
-                <div class="form-grid">
-                    <div class="form-group"><label>Campaign Title</label><input type="text" id="campTitle" placeholder="e.g. 07 / Sustainable Tech" required></div>
-                    <div class="form-group"><label>Campaign Image File</label><input type="file" id="campFile" accept="image/*" required style="background:#fff;"></div>
-                    <div class="form-group" style="grid-column: span 2;"><label>Caption Description</label><textarea id="campDesc" rows="2" placeholder="Brief tagline or description..." required></textarea></div>
-                </div>
-                <button type="submit" class="btn-action">Add Campaign Tile ✨</button>
-            </form>
-            <div id="campaignListContainer" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;"></div>
-        </div>
-
-        <!-- 4. Upcoming Drops -->
-        <div class="admin-section">
-            <h2>🚀 4. Upcoming Drops ("Coming Soon" Segment)</h2>
+            <h2>🚀 3. Upcoming Drops ("Coming Soon" Segment)</h2>
             <form onsubmit="handleComingSoonUpload(event)">
                 <div class="form-grid">
-                    <div class="form-group"><label>Drop Title</label><input type="text" id="dropTitle" placeholder="e.g. Winter Trench 2026" required></div>
-                    <div class="form-group"><label>Drop Media Preview</label><input type="file" id="dropFile" accept="image/*,video/*" required style="background:#fff;"></div>
-                    <div class="form-group" style="grid-column: span 2;"><label>Description</label><textarea id="dropDesc" rows="2" placeholder="Dropping soon..." required></textarea></div>
+                    <div class="form-group">
+                        <label>Drop Title</label>
+                        <input type="text" id="dropTitle" placeholder="e.g. Winter Heavyweight Trench 2026" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Drop Media Preview (Image or Short Clip)</label>
+                        <input type="file" id="dropFile" accept="image/*,video/*" required style="background:#fff;">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Description / Stay Tuned Details</label>
+                        <textarea id="dropDesc" rows="2" placeholder="Dropping soon for campus innovators..." required></textarea>
+                    </div>
                 </div>
                 <button type="submit" class="btn-action">Publish Coming Soon Drop ✨</button>
             </form>
             <div id="comingSoonListContainer" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 5. QR Code Manager -->
+        <!-- 4. QR Code Manager -->
         <div class="admin-section">
-            <h2>📷 5. Founder UPI QR Code Manager</h2>
+            <h2>📷 4. Founder UPI QR Code Manager</h2>
             <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1.5rem;">
                 <input type="file" id="newQrFile" accept="image/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800;">
                 <button onclick="uploadNewQrCode()" class="btn-action">Upload QR Code ➕</button>
@@ -150,37 +144,59 @@
             <div id="qrListContainer" style="display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 6. Launch Product -->
+        <!-- 5. Launch Product (Multi-Angle & Delivery Charge) -->
         <div class="admin-section">
-            <h2>📦 6. Launch Product (Multi-Angle & Delivery Charge)</h2>
+            <h2>📦 5. Launch Product (Multi-Angle Images & Delivery Charge)</h2>
             <form onsubmit="handleNewProduct(event)">
                 <div class="form-grid">
-                    <div class="form-group"><label>Product Name</label><input type="text" id="prodName" placeholder="e.g. Hoknex Hoodie" required></div>
-                    <div class="form-group"><label>Category</label><select id="prodCategory"><option value="Apparel">Apparel</option><option value="Footwear">Footwear & Gear</option></select></div>
-                    <div class="form-group"><label>Price (₹)</label><input type="number" id="prodPrice" placeholder="1499" required></div>
-                    <div class="form-group"><label>Delivery Charge (₹)</label><input type="number" id="prodDelivery" placeholder="49" value="0" required></div>
-                    <div class="form-group" style="grid-column: span 2;"><label>Multi-Angle Gallery Images</label><input type="file" id="prodGalleryFiles" accept="image/*" multiple required style="background:#fff;"></div>
-                    <div class="form-group" style="grid-column: span 2;"><label>Description</label><textarea id="prodDesc" rows="2" placeholder="Description..." required></textarea></div>
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" id="prodName" placeholder="e.g. Hoknex Heavy Hoodie" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="prodCategory">
+                            <option value="Apparel">Apparel</option>
+                            <option value="Footwear">Footwear & Gear</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Price (₹)</label>
+                        <input type="number" id="prodPrice" placeholder="1499" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Charge for this Product (₹)</label>
+                        <input type="number" id="prodDelivery" placeholder="49" value="0" required>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Upload Multiple Images (Multi-Angle Gallery)</label>
+                        <input type="file" id="prodGalleryFiles" accept="image/*" multiple required style="background:#fff;">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Description</label>
+                        <textarea id="prodDesc" rows="2" placeholder="Heavyweight organic cotton fleece..." required></textarea>
+                    </div>
                 </div>
                 <button type="submit" class="btn-action">Publish Product ✨</button>
             </form>
         </div>
 
-        <!-- 7. Catalog Manager -->
+        <!-- 6. Catalog, Stock, Sizes & Demand Votes -->
         <div class="admin-section">
-            <h2>🗂️ 7. Catalog Stock, Sizes & Demand Voting Manager</h2>
+            <h2>🗂️ 6. Catalog Stock, Sizes & Demand Voting Manager</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.0rem;">Mark items in/out of stock, update available sizes, and view customer "Vote to Come Fast" demands.</p>
             <div id="productsTableWrap" style="overflow-x:auto;"><p>Loading catalog...</p></div>
         </div>
 
-        <!-- 8. Customer Orders -->
+        <!-- 7. Customer Orders & Custom Tracker Messaging -->
         <div class="admin-section">
-            <h2>🚚 8. Customer Orders & Invoices</h2>
+            <h2>🚚 7. Customer Orders, Invoices & Custom Tracker Messaging</h2>
             <div id="ordersTableWrap" style="overflow-x:auto;"><p>Loading orders...</p></div>
         </div>
 
-        <!-- 9. Newsletter Subscribers -->
+        <!-- 8. Newsletter Subscribers & Direct Emailer -->
         <div class="admin-section">
-            <h2>💌 9. Newsletter Subscribers</h2>
+            <h2>💌 8. Newsletter Subscribers & Direct Emailer</h2>
             <div id="leadsTableWrap" style="overflow-x:auto;"><p>Loading leads...</p></div>
         </div>
     </div>
@@ -248,7 +264,7 @@
             const title = document.getElementById('magTitle').value;
             const category = document.getElementById('magCategory').value;
             const type = document.getElementById('magType').value;
-            const icon = document.getElementById('magIcon') ? document.getElementById('magIcon').value : (type === 'video' ? '🎥' : type === 'image' ? '🖼️' : type === 'book' ? '📚' : '📰');
+            const icon = type === 'video' ? '🎥' : type === 'image' ? '🖼️' : type === 'book' ? '📚' : '📰';
             const authorInfo = document.getElementById('magAuthor').value;
             const excerpt = document.getElementById('magExcerpt').value;
             const body = document.getElementById('magBody').value;
@@ -293,59 +309,6 @@
                 await fetch(`${API_URL}/magazine/articles/${id}`, { method: 'DELETE' });
                 renderMagazineTable();
                 showProModal('Deleted', 'Article removed from Zine.');
-            });
-        }
-
-        // --- Visual Campaign Uploader Logic ---
-        async function renderCampaignManager() {
-            try {
-                const res = await fetch(`${API_URL}/store/campaigns`);
-                const camps = await res.json();
-                const container = document.getElementById('campaignListContainer');
-                if(!camps || camps.length === 0) {
-                    container.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No campaign tiles added yet.</p>`;
-                    return;
-                }
-                container.innerHTML = camps.map((c) => `
-                    <div style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:12px; width:180px; text-align:center;">
-                        <img src="${c.image}" style="width:100%; height:100px; object-fit:cover; border-radius:8px; margin-bottom:6px;">
-                        <h5 style="font-weight:900; font-size:0.85rem;">${c.title}</h5>
-                        <button onclick="deleteCampaign('${c._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem; margin-top:6px;">Delete Tile</button>
-                    </div>
-                `).join('');
-            } catch(e) { console.error(e); }
-        }
-
-        async function handleCampaignUpload(e) {
-            e.preventDefault();
-            const title = document.getElementById('campTitle').value;
-            const desc = document.getElementById('campDesc').value;
-            const fileInput = document.getElementById('campFile');
-            if(fileInput.files && fileInput.files[0]) {
-                const formData = new FormData();
-                formData.append('image', fileInput.files[0]);
-                try {
-                    const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
-                    const upData = await upRes.json();
-                    await fetch(`${API_URL}/store/campaigns`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title, desc, image: upData.url })
-                    });
-                    renderCampaignManager();
-                    showProModal('Success', 'Campaign tile added successfully!');
-                    document.getElementById('campTitle').value = '';
-                    document.getElementById('campDesc').value = '';
-                    document.getElementById('campFile').value = '';
-                } catch(err) { showProModal('Error', 'Campaign upload failed'); }
-            }
-        }
-
-        function deleteCampaign(id) {
-            showProModal('Confirm Delete', 'Are you sure you want to delete this campaign tile?', async () => {
-                await fetch(`${API_URL}/store/campaigns/${id}`, { method: 'DELETE' });
-                renderCampaignManager();
-                showProModal('Deleted', 'Campaign tile removed.');
             });
         }
 
@@ -398,6 +361,7 @@
             });
         }
 
+        // QR Manager
         async function renderQrManager() {
             try {
                 const res = await fetch(`${API_URL}/store/qrs`);
@@ -427,19 +391,20 @@
                         body: JSON.stringify({ imageUrl: upData.url })
                     });
                     renderQrManager();
-                    showProModal('Success', 'QR Code uploaded successfully!');
+                    showProModal('Success', 'QR Code uploaded!');
                 } catch(e) { showProModal('Error', 'QR upload failed'); }
             }
         }
 
-        function deleteQr(id) {
-            showProModal('Confirm Delete', 'Are you sure you want to delete this QR code?', async () => {
-                await fetch(`${API_URL}/store/qrs/${id}`, { method: 'DELETE' });
+        function deleteQr(index) {
+            showProModal('Confirm Delete', 'Delete this QR code?', async () => {
+                await fetch(`${API_URL}/store/qrs/${index}`, { method: 'DELETE' });
                 renderQrManager();
-                showProModal('Deleted', 'QR code removed.');
+                showProModal('Deleted', 'QR removed.');
             });
         }
 
+        // Catalog
         async function handleNewProduct(e) {
             e.preventDefault();
             const name = document.getElementById('prodName').value;
@@ -509,13 +474,12 @@
         }
 
         async function toggleStock(id, val) {
-            const inStock = (val === 'true');
             await fetch(`${API_URL}/store/products/${id}/stock`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ inStock, sizes: ['S','M','L','XL'] })
+                body: JSON.stringify({ inStock: (val === 'true'), sizes: ['S','M','L','XL'] })
             });
-            showProModal('Updated', 'Stock status updated successfully!');
+            showProModal('Updated', 'Stock status updated!');
         }
 
         async function updateSizes(id, val) {
@@ -525,17 +489,18 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ inStock: true, sizes })
             });
-            showProModal('Updated', 'Sizes updated successfully!');
+            showProModal('Updated', 'Sizes updated!');
         }
 
         function deleteProduct(id) {
-            showProModal('Confirm Delete', 'Are you sure you want to delete this product?', async () => {
+            showProModal('Confirm Delete', 'Delete product?', async () => {
                 await fetch(`${API_URL}/store/products/${id}`, { method: 'DELETE' });
                 renderProductsTable();
-                showProModal('Deleted', 'Product removed from catalog.');
+                showProModal('Deleted', 'Product removed.');
             });
         }
 
+        // Orders
         async function renderOrdersTable() {
             try {
                 const res = await fetch(`${API_URL}/store/orders`);
@@ -582,7 +547,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })
             });
-            showProModal('Updated', 'Order status & timeline updated!');
+            showProModal('Updated', 'Order status updated!');
             renderOrdersTable();
         }
 
@@ -593,7 +558,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ customMessage: msg })
             });
-            showProModal('Sent', 'Custom message attached to customer order tracker!');
+            showProModal('Sent', 'Custom message attached!');
         }
 
         function exportInvoice(o) {
@@ -620,13 +585,14 @@
         }
 
         function deleteOrder(id) {
-            showProModal('Confirm Delete', 'Are you sure you want to delete this order?', async () => {
+            showProModal('Confirm Delete', 'Delete order?', async () => {
                 await fetch(`${API_URL}/store/orders/${id}`, { method: 'DELETE' });
                 renderOrdersTable();
-                showProModal('Deleted', 'Order record removed.');
+                showProModal('Deleted', 'Order removed.');
             });
         }
 
+        // Leads
         async function renderLeadsTable() {
             try {
                 const res = await fetch(`${API_URL}/store/subscribers`);
@@ -635,12 +601,11 @@
                 if(!leads || leads.length === 0) { wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No subscribers yet.</p>`; return; }
                 wrap.innerHTML = `
                     <table>
-                        <thead><tr><th>Subscriber Email</th><th>Registered Time</th><th>Direct Email Action</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Subscriber Email</th><th>Registered Time</th><th>Action</th></tr></thead>
                         <tbody>
                             ${leads.map((l) => `
                                 <tr>
                                     <td><b>${l.email}</b></td><td>${l.date}</td>
-                                    <td><a href="mailto:${l.email}?subject=Hoknex%20Exclusive%20Drop" class="btn-action" style="padding:4px 10px; font-size:0.75rem; text-decoration:none;">Send Email ✉️</a></td>
                                     <td><button onclick="deleteLead('${l._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
                                 </tr>
                             `).join('')}
@@ -651,7 +616,7 @@
         }
 
         function deleteLead(id) {
-            showProModal('Confirm Delete', 'Are you sure you want to delete this subscriber?', async () => {
+            showProModal('Confirm Delete', 'Delete subscriber?', async () => {
                 await fetch(`${API_URL}/store/subscribers/${id}`, { method: 'DELETE' });
                 renderLeadsTable();
                 showProModal('Deleted', 'Subscriber removed.');
@@ -659,7 +624,6 @@
         }
 
         renderMagazineTable();
-        renderCampaignManager();
         renderComingSoonManager();
         renderQrManager();
         renderProductsTable();
