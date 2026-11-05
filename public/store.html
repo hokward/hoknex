@@ -7,16 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #fbf9f6;          /* Clean cream canvas */
-            --bg-card: #ffffff;          /* Pure white bento boxes */
-            --border-color: #0f172a;     /* Sharp Neo-brutalist dark border */
-            --accent-blue: #2563eb;
-            --accent-purple: #7c3aed;
-            --accent-coral: #f43f5e;
-            --text-main: #0f172a;
-            --text-muted: #475569;
-            --shadow-bento: 6px 6px 0px #0f172a;
-            --shadow-sm: 3px 3px 0px #0f172a;
+            --bg-body: #FAFAF9;          /* Dominant: 60% Pure White / Cream */
+            --bg-card: #FFFFFF;          /* Pure white product containers */
+            --text-main: #111827;        /* Primary: 30% Rich Dark Charcoal */
+            --text-muted: #4B5563;       /* Slate muted text */
+            --border-color: #111827;     /* Sharp dark structural borders */
+            --accent-gold: #D4AF37;      /* Accent: 10% Gold / Champagne */
+            --accent-gold-hover: #C5A028;
+            --shadow-luxury: 6px 6px 0px #111827;
+            --shadow-sm: 3px 3px 0px #111827;
         }
 
         *, *::before, *::after {
@@ -35,14 +34,15 @@
 
         /* Announcement Bar */
         .announcement-bar {
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-            color: #fff;
+            background: var(--text-main);
+            color: var(--accent-gold);
             text-align: center;
-            padding: 8px 1rem;
+            padding: 9px 1rem;
             font-size: 0.82rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
+            font-weight: 850;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
+            border-bottom: 2px solid var(--border-color);
         }
 
         /* Navbar */
@@ -51,7 +51,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 1.25rem 4rem;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(250, 250, 249, 0.9);
             backdrop-filter: blur(16px);
             border-bottom: 3.5px solid var(--border-color);
             position: sticky;
@@ -62,22 +62,21 @@
         .store-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1.4rem;
+            gap: 10px;
+            font-size: 1.45rem;
             font-weight: 900;
             color: var(--text-main);
             text-decoration: none;
+            letter-spacing: -0.5px;
         }
 
         .store-brand span {
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--accent-gold);
         }
 
         .store-nav {
             display: flex;
-            gap: 2rem;
+            gap: 2.5rem;
             align-items: center;
         }
 
@@ -86,8 +85,11 @@
             text-decoration: none;
             font-weight: 800;
             font-size: 0.95rem;
-            cursor: pointer;
             transition: color 0.2s;
+        }
+
+        .store-nav a:hover {
+            color: var(--text-main);
         }
 
         .nav-actions {
@@ -97,280 +99,310 @@
         }
 
         .cart-trigger, .track-trigger {
-            background: var(--accent-blue);
+            background: var(--text-main);
             color: #fff;
             border: 3px solid var(--border-color);
             padding: 0.55rem 1.2rem;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 900;
+            font-size: 0.9rem;
             cursor: pointer;
             box-shadow: var(--shadow-sm);
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: transform 0.15s;
+            transition: transform 0.15s, box-shadow 0.15s;
         }
 
         .cart-trigger:hover, .track-trigger:hover {
             transform: translate(-2px, -2px);
-            box-shadow: var(--shadow-bento);
+            box-shadow: var(--shadow-luxury);
         }
 
         .track-trigger {
-            background: #fde047;
+            background: var(--accent-gold);
             color: var(--text-main);
         }
 
-        /* Hero & Faceted Search */
+        /* Hero Section */
         .store-hero {
-            padding: 4.5rem 4rem 2rem 4rem;
+            padding: 5rem 4rem 2.5rem 4rem;
             max-width: 1400px;
             margin: 0 auto;
             text-align: center;
         }
 
         .store-hero h1 {
-            font-size: 3.5rem;
+            font-size: 3.8rem;
             font-weight: 900;
             letter-spacing: -1.5px;
             margin-bottom: 1rem;
+            line-height: 1.1;
         }
 
         .store-hero h1 span {
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-coral));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--accent-gold);
+            text-shadow: 1px 1px 0px var(--border-color);
         }
 
-        /* Faceted Search Bar */
-        .faceted-search-bar {
-            max-width: 700px;
+        .store-hero p {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            font-weight: 700;
+            max-width: 650px;
             margin: 0 auto 2.5rem auto;
+            line-height: 1.6;
+        }
+
+        /* Filter Tabs */
+        .filter-container {
             display: flex;
+            justify-content: center;
             gap: 1rem;
-            background: #fff;
-            border: 3.5px solid var(--border-color);
-            padding: 8px;
-            border-radius: 16px;
+            margin-bottom: 3.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--bg-card);
+            border: 2.5px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.65rem 1.6rem;
+            border-radius: 30px;
+            font-weight: 900;
+            font-size: 0.9rem;
+            cursor: pointer;
             box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
         }
 
-        .faceted-search-bar input, .faceted-search-bar select {
-            border: none;
-            outline: none;
-            font-size: 0.95rem;
-            font-weight: 800;
-            background: transparent;
-            padding: 8px 12px;
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--accent-gold);
             color: var(--text-main);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-luxury);
         }
 
-        .faceted-search-bar input {
-            flex: 1;
-        }
-
-        .faceted-search-bar select {
-            border-left: 2px solid #e2e8f0;
-        }
-
-        /* BENTO GRID LAYOUT */
-        .bento-catalog-grid {
+        /* Catalog Grid */
+        .catalog-grid {
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 4rem 6rem 4rem;
             display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2.5rem;
         }
 
-        .bento-card {
+        .product-item-card {
             background: var(--bg-card);
             border: 3.5px solid var(--border-color);
             border-radius: 24px;
-            padding: 2rem;
+            padding: 1.8rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
-            box-shadow: var(--shadow-bento);
+            cursor: pointer;
+            box-shadow: var(--shadow-luxury);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .bento-card:hover {
+        .product-item-card:hover {
             transform: translateY(-5px);
             box-shadow: 8px 8px 0px var(--border-color);
         }
 
-        /* Asymmetric Bento Span Sizes */
-        .bento-card.span-4 { grid-column: span 4; }
-        .bento-card.span-6 { grid-column: span 6; }
-        .bento-card.span-8 { grid-column: span 8; }
-        .bento-card.span-12 { grid-column: span 12; }
-
-        .bento-preview {
+        .product-preview {
             width: 100%;
-            height: 200px;
-            background: #f8fafc;
+            height: 240px;
+            background: #F3F4F6;
             border: 2.5px solid var(--border-color);
-            border-radius: 14px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4rem;
-            margin-bottom: 1.2rem;
+            font-size: 4.5rem;
+            margin-bottom: 1.5rem;
             position: relative;
+            overflow: hidden;
         }
 
-        .bento-badge {
+        .product-badge {
             position: absolute;
             top: 15px;
             right: 15px;
-            background: var(--accent-coral);
-            color: #fff;
+            background: var(--accent-gold);
+            color: var(--text-main);
             border: 2px solid var(--border-color);
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.72rem;
             font-weight: 900;
             text-transform: uppercase;
             box-shadow: 2px 2px 0px var(--border-color);
         }
 
-        .bento-card h3 {
-            font-size: 1.3rem;
+        .product-item-card h3 {
+            font-size: 1.25rem;
             font-weight: 900;
             margin-bottom: 0.4rem;
         }
 
-        .bento-card p {
+        .product-item-card p {
             color: var(--text-muted);
             font-size: 0.9rem;
             font-weight: 700;
-            line-height: 1.4;
-            margin-bottom: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
         }
 
-        .bento-footer {
+        .card-bottom {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 1rem;
-            border-top: 2px solid #f1f5f9;
+            border-top: 2px solid #F3F4F6;
             padding-top: 1rem;
         }
 
-        .bento-price {
-            font-size: 1.4rem;
+        .price-tag {
+            font-size: 1.35rem;
             font-weight: 900;
-            color: var(--accent-blue);
+            color: var(--text-main);
         }
 
-        .btn-bento-action {
-            background: #fde047;
+        .btn-quick-view {
+            background: var(--accent-gold);
             color: var(--text-main);
             border: 2.5px solid var(--border-color);
             padding: 0.6rem 1.2rem;
             border-radius: 10px;
             font-weight: 900;
+            font-size: 0.9rem;
             cursor: pointer;
             box-shadow: 2px 2px 0px var(--border-color);
             transition: all 0.15s;
         }
 
-        .btn-bento-action:hover {
+        .btn-quick-view:hover {
             transform: translate(-2px, -2px);
             box-shadow: 4px 4px 0px var(--border-color);
         }
 
-        /* Modals */
+        /* Modal Overlay */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(6px);
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(8px);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            padding: 1rem;
+            padding: 1.5rem;
         }
 
         .modal-panel {
             background: var(--bg-card);
             border: 4px solid var(--border-color);
-            border-radius: 24px;
-            padding: 2.5rem;
+            border-radius: 28px;
+            padding: 3rem;
             width: 100%;
-            max-width: 580px;
-            box-shadow: 10px 10px 0px var(--border-color);
+            max-width: 900px;
+            box-shadow: 12px 12px 0px var(--border-color);
             position: relative;
             max-height: 90vh;
             overflow-y: auto;
         }
 
-        .form-group {
+        /* Multi-Angle Gallery in PDP */
+        .pdp-gallery {
             display: flex;
             flex-direction: column;
-            text-align: left;
-            gap: 0.4rem;
-            margin-bottom: 1rem;
+            gap: 1rem;
         }
 
-        .form-group label {
-            font-size: 0.8rem;
-            font-weight: 900;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .form-group input, .form-group textarea, .form-group select {
+        .pdp-main-image {
             width: 100%;
-            background: #fff;
+            height: 320px;
+            background: #F3F4F6;
+            border: 2.5px solid var(--border-color);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pdp-thumbnails {
+            display: flex;
+            gap: 12px;
+        }
+
+        .thumb-box {
+            width: 75px;
+            height: 75px;
+            background: #F3F4F6;
             border: 2.5px solid var(--border-color);
             border-radius: 12px;
-            padding: 0.85rem 1rem;
-            font-size: 0.95rem;
-            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px var(--border-color);
+            transition: transform 0.15s;
+        }
+
+        .thumb-box:hover, .thumb-box.active {
+            transform: translateY(-2px);
+            border-color: var(--accent-gold);
+        }
+
+        /* Size Selectors */
+        .size-selector-group {
+            display: flex;
+            gap: 8px;
+            margin: 1.2rem 0;
+        }
+
+        .size-chip {
+            background: #F3F4F6;
+            border: 2.5px solid var(--border-color);
             color: var(--text-main);
-            outline: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 900;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px var(--border-color);
+            transition: all 0.15s;
+        }
+
+        .size-chip.selected {
+            background: var(--accent-gold);
+            box-shadow: 4px 4px 0px var(--border-color);
+            transform: translate(-2px, -2px);
         }
 
         .btn-primary {
             width: 100%;
-            background: var(--accent-blue);
+            background: var(--text-main);
             color: #fff;
             border: 3px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1rem;
+            border-radius: 14px;
+            padding: 1.1rem;
             font-size: 1rem;
             font-weight: 900;
             cursor: pointer;
-            box-shadow: 3px 3px 0px var(--border-color);
-            margin-top: 0.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-top: 1rem;
+            transition: transform 0.15s;
         }
 
-        /* Progressive Disclosure PDP Tabs */
-        .pdp-tabs {
-            display: flex;
-            gap: 10px;
-            margin: 1rem 0;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 8px;
-        }
-
-        .pdp-tab-btn {
-            background: none;
-            border: none;
-            font-weight: 900;
-            font-size: 0.9rem;
-            cursor: pointer;
-            color: var(--text-muted);
-            padding: 4px 8px;
-        }
-
-        .pdp-tab-btn.active {
-            color: var(--accent-blue);
-            border-bottom: 3px solid var(--accent-blue);
+        .btn-primary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: var(--shadow-luxury);
         }
 
         /* Footer */
@@ -381,15 +413,16 @@
             color: var(--text-muted);
             font-size: 0.88rem;
             font-weight: 800;
-            background: #fff;
+            background: var(--bg-card);
         }
 
-        @media (max-width: 968px) {
-            .bento-card.span-4, .bento-card.span-6, .bento-card.span-8 { grid-column: span 12; }
+        @media (max-width: 768px) {
             .store-header { padding: 1rem 1.5rem; }
             .store-hero { padding: 3rem 1.5rem 2rem 1.5rem; }
-            .bento-catalog-grid { padding: 1.5rem; }
+            .store-hero h1 { font-size: 2.4rem; }
+            .catalog-grid { padding: 1.5rem; }
             .store-nav { display: none; }
+            .modal-panel { padding: 1.5rem; }
         }
     </style>
 </head>
@@ -402,7 +435,7 @@
     <!-- Navbar -->
     <header class="store-header">
         <a href="index.html" class="store-brand">
-            <span>⚡ Hoknex Store</span>
+            <span style="font-size:1.4rem;">⚡</span> <span>Hoknex Store</span>
         </a>
         <nav class="store-nav">
             <a href="index.html">Home</a>
@@ -415,169 +448,107 @@
         </div>
     </header>
 
-    <!-- Hero & Faceted Search -->
+    <!-- Hero Section -->
     <section class="store-hero">
-        <span style="background: #fde047; color: var(--text-main); border: 2.5px solid var(--border-color); padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; display: inline-block; margin-bottom: 1.2rem; text-transform: uppercase; box-shadow: 2px 2px 0px var(--border-color);">Bento Grid E-commerce Experience</span>
+        <span style="background: var(--accent-gold); color: var(--text-main); border: 2.5px solid var(--border-color); padding: 6px 16px; border-radius: 30px; font-size: 0.8rem; font-weight: 900; display: inline-block; margin-bottom: 1.2rem; text-transform: uppercase; box-shadow: var(--shadow-sm);">Official Luxury Collection</span>
         <h1>Engineered for students, <span>worn by creators.</span></h1>
-        <p>Explore our asymmetric bento catalog. Filter instantly by attributes without page reloads.</p>
+        <p>Premium oversized hoodies, heavyweight graphic tees, and streetwear essentials designed for global campus innovators.</p>
         
-        <!-- Faceted Search & Filters -->
-        <div class="faceted-search-bar">
-            <input type="text" id="searchInput" placeholder="Search hoodies, tees, caps..." oninput="applyFacetedFilters()">
-            <select id="categoryFilter" onchange="applyFacetedFilters()">
-                <option value="all">All Categories</option>
-                <option value="Hoodies">Hoodies</option>
-                <option value="T-Shirts">T-Shirts</option>
-                <option value="Accessories">Accessories</option>
-            </select>
-            <select id="sortBy" onchange="applyFacetedFilters()">
-                <option value="featured">Sort by: Featured</option>
-                <option value="low-high">Price: Low to High</option>
-                <option value="high-low">Price: High to Low</option>
-            </select>
+        <div class="filter-container">
+            <button class="filter-btn active" onclick="filterCatalog('all', this)">All Merch 🔥</button>
+            <button class="filter-btn" onclick="filterCatalog('Hoodies', this)">Hoodies 🧥</button>
+            <button class="filter-btn" onclick="filterCatalog('T-Shirts', this)">Oversized Tees 👕</button>
+            <button class="filter-btn" onclick="filterCatalog('Accessories', this)">Caps & Gear 🧢</button>
         </div>
     </section>
 
-    <!-- Bento Grid Catalog -->
-    <main class="bento-catalog-grid" id="bentoGrid">
-        <div style="grid-column: span 12; text-align: center; padding: 4rem; color: var(--text-muted);">
-            <h3>Loading Bento Grid catalog...</h3>
+    <!-- Catalog Grid -->
+    <main class="catalog-grid" id="catalogGrid">
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--text-muted);">
+            <h3>Loading Hoknex catalog...</h3>
         </div>
     </main>
 
-    <!-- E-Commerce Interface & UX Standards Comparison Section -->
-    <section style="max-width: 1400px; margin: 0 auto 4rem auto; padding: 0 4rem;">
-        <div style="background: #fff; border: 4px solid var(--border-color); border-radius: 24px; padding: 3rem; box-shadow: var(--shadow-bento);">
-            <div style="text-align: center; margin-bottom: 2.5rem;">
-                <span style="background: var(--accent-blue); color: #fff; border: 2px solid var(--border-color); padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; display: inline-block; margin-bottom: 0.8rem; text-transform: uppercase; box-shadow: 2px 2px 0px var(--border-color);">Platform Architecture</span>
-                <h2 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -1px;">E-Commerce Interface & UX Standard</h2>
-                <p style="color: var(--text-muted); font-size: 0.95rem; font-weight: 700; margin-top: 0.5rem;">Mapping out the design focus and practices that turn casual browsers into buyers on Hoknex Store.</p>
-            </div>
-
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem;">
-                    <thead>
-                        <tr style="background: #f8fafc; border-bottom: 3px solid var(--border-color);">
-                            <th style="padding: 1rem; border-right: 2px solid var(--border-color); font-weight: 900; text-transform: uppercase; font-size: 0.8rem; color: var(--text-muted);">Design Focus</th>
-                            <th style="padding: 1rem; border-right: 2px solid var(--border-color); font-weight: 900; text-transform: uppercase; font-size: 0.8rem; color: var(--accent-blue);">Good UI Practice</th>
-                            <th style="padding: 1rem; font-weight: 900; text-transform: uppercase; font-size: 0.8rem; color: var(--accent-purple);">Good UX Practice</th>
-                        </tr>
-                    </thead>
-                    <tbody style="font-weight: 800;">
-                        <tr style="border-bottom: 2px solid #e2e8f0;">
-                            <td style="padding: 1.2rem 1rem; border-right: 2px solid var(--border-color); font-weight: 900;">Product Discovery</td>
-                            <td style="padding: 1.2rem 1rem; border-right: 2px solid var(--border-color); color: var(--text-muted);">High-quality, zoomable product images and clean typography.</td>
-                            <td style="padding: 1.2rem 1rem; color: var(--text-main);">Personalized recommendations and predictive auto-complete search.</td>
-                        </tr>
-                        <tr style="border-bottom: 2px solid #e2e8f0;">
-                            <td style="padding: 1.2rem 1rem; border-right: 2px solid var(--border-color); font-weight: 900;">Cart Experience</td>
-                            <td style="padding: 1.2rem 1rem; border-right: 2px solid var(--border-color); color: var(--text-muted);">A mini-cart sidebar overlay that opens without leaving the current page.</td>
-                            <td style="padding: 1.2rem 1rem; color: var(--text-main);">Clearly showing shipping costs, tax estimations, and discount fields before checkout.</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 1.2rem 1rem; border-right: 2px solid var(--border-color); font-weight: 900;">Mobile Shopping</td>
-                            <td style="padding: 1.2rem 1rem; border-right: 2px solid var(--border-color); color: var(--text-muted);">Large, thumb-friendly tap targets for buttons and filters.</td>
-                            <td style="padding: 1.2rem 1rem; color: var(--text-main);">One-tap payment integration like Apple Pay, Google Pay, or localized quick wallets.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="store-footer">
-        <p>&copy; 2026 Hoknex Official Store. All rights reserved. Built with Bento UX & Persistent Cart Memory.</p>
+        <p>&copy; 2026 Hoknex Official Store. All rights reserved. Built with Luxury Cream & Gold Branding.</p>
     </footer>
 
-    <!-- Product Detail Page (PDP) Modal with Progressive Disclosure & Trust Anchors -->
+    <!-- Product Detail Page (PDP) Modal with Multi-Angle Gallery -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
-        <div class="modal-panel" style="max-width: 650px;">
-            <button onclick="closeModal('pdpModal')" style="position:absolute; top:15px; right:15px; background:var(--accent-coral); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
-            <div style="display:flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
-                <div id="pdpEmoji" style="font-size: 5rem; background:#f8fafc; border:2.5px solid var(--border-color); padding:1rem; border-radius:16px;">🧥</div>
-                <div style="flex: 1;">
-                    <span id="pdpBadge" style="background:var(--accent-coral); color:#fff; font-size:0.7rem; font-weight:900; padding:2px 8px; border-radius:4px; text-transform:uppercase;">Best Seller</span>
-                    <h2 id="pdpTitle" style="font-size: 1.5rem; font-weight: 900; margin: 0.3rem 0;">Product Title</h2>
-                    <div id="pdpPrice" style="font-size: 1.3rem; font-weight: 900; color: var(--accent-blue); margin-bottom: 0.8rem;">₹0</div>
-                    
-                    <!-- Progressive Disclosure Tabs -->
-                    <div class="pdp-tabs">
-                        <button class="pdp-tab-btn active" onclick="switchPdpTab('specs')">Specifications</button>
-                        <button class="pdp-tab-btn" onclick="switchPdpTab('shipping')">Shipping & Returns</button>
-                        <button class="pdp-tab-btn" onclick="switchPdpTab('reviews')">Verified Reviews ⭐</button>
-                    </div>
-                    <div id="pdpTabContent" style="font-size: 0.88rem; font-weight: 700; color: var(--text-muted); min-height: 70px;">
-                        Loading specs...
+        <div class="modal-panel" style="max-width: 850px;">
+            <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-coral); color:#fff; border:2.5px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; box-shadow:2px 2px 0px var(--border-color);">&times;</button>
+            
+            <div style="display: flex; gap: 3rem; align-items: flex-start; flex-wrap: wrap;">
+                <!-- Multi-Angle Image Gallery Column -->
+                <div style="flex: 1; min-width: 300px;" class="pdp-gallery">
+                    <div class="pdp-main-image" id="pdpMainEmoji">🧥</div>
+                    <div class="pdp-thumbnails">
+                        <div class="thumb-box active" onclick="switchAngle(0, this)">🧥</div>
+                        <div class="thumb-box" onclick="switchAngle(1, this)">👕</div>
+                        <div class="thumb-box" onclick="switchAngle(2, this)">🔎</div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Trust Anchors -->
-            <div style="background:#f8fafc; border:2px solid var(--border-color); padding:0.8rem; border-radius:12px; display:flex; justify-content:space-around; align-items:center; margin: 1.5rem 0 1rem 0; font-size:0.8rem; font-weight:900;">
-                <span>🛡️ Secure SSL Checkout</span>
-                <span>📦 7-Day Campus Returns</span>
-                <span>⭐ 4.9/5 Student Rating</span>
-            </div>
+                <!-- Product Details Column -->
+                <div style="flex: 1; min-width: 300px;">
+                    <span id="pdpBadge" style="background:var(--accent-gold); color:var(--text-main); border:2px solid var(--border-color); padding:3px 10px; border-radius:6px; font-size:0.75rem; font-weight:900; text-transform:uppercase; box-shadow:2px 2px 0px var(--border-color);">Best Seller</span>
+                    <h2 id="pdpTitle" style="font-size: 1.8rem; font-weight: 900; margin: 0.5rem 0;">Product Title</h2>
+                    <div id="pdpPrice" style="font-size: 1.5rem; font-weight: 900; color: var(--accent-gold); margin-bottom: 1rem;">₹0</div>
+                    <p id="pdpDesc" style="color: var(--text-muted); font-size: 0.95rem; font-weight: 700; line-height: 1.5; margin-bottom: 1.5rem;"></p>
 
-            <button id="pdpAddBtn" class="btn-primary" style="margin-top:0;">Add to Cart 🛍️</button>
+                    <!-- Size Selectors -->
+                    <div style="font-size: 0.8rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.4rem;">Select Size</div>
+                    <div class="size-selector-group" id="sizeSelectorGroup">
+                        <div class="size-chip selected" onclick="selectSize('S', this)">S</div>
+                        <div class="size-chip" onclick="selectSize('M', this)">M</div>
+                        <div class="size-chip" onclick="selectSize('L', this)">L</div>
+                        <div class="size-chip" onclick="selectSize('XL', this)">XL</div>
+                    </div>
+
+                    <button onclick="addCurrentPdpToBag()" class="btn-primary">Add to Bag 🛍️</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Cart Modal -->
     <div id="cartModal" class="modal-overlay" onclick="if(event.target === this) closeModal('cartModal')">
         <div class="modal-panel" style="max-width: 480px;">
-            <button onclick="closeModal('cartModal')" style="position:absolute; top:15px; right:15px; background:var(--accent-coral); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <button onclick="closeModal('cartModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-coral); color:#fff; border:2.5px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; box-shadow:2px 2px 0px var(--border-color);">&times;</button>
             <h2 style="font-size: 1.6rem; font-weight: 900; margin-bottom: 1rem;">Your Shopping Bag</h2>
             <div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem;">
                 <p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your bag is empty.</p>
             </div>
             <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; margin-bottom:1.5rem; border-top:2px solid var(--border-color); padding-top:1rem;">
                 <span>Total Subtotal:</span>
-                <span id="bagTotal" style="color:var(--accent-blue);">₹0</span>
+                <span id="bagTotal" style="color:var(--accent-gold);">₹0</span>
             </div>
-            <button onclick="proceedToCheckout()" class="btn-primary">Proceed to Delivery & Payment 🚀</button>
+            <button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Secure Checkout 🚀</button>
         </div>
     </div>
 
-    <!-- Checkout Funnel Modal (Guest Checkout & Linear Progress) -->
+    <!-- Checkout Modal -->
     <div id="checkoutModal" class="modal-overlay" onclick="if(event.target === this) closeModal('checkoutModal')">
-        <div class="modal-panel">
-            <button onclick="closeModal('checkoutModal')" style="position:absolute; top:15px; right:15px; background:var(--accent-coral); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
-            <h2 style="font-size: 1.6rem; font-weight: 900; margin-bottom: 0.5rem;">One-Page Checkout Funnel 🚀</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 700; margin-bottom: 1.5rem;">Guest Checkout Active — No forced account creation needed!</p>
+        <div class="modal-panel" style="max-width: 520px;">
+            <button onclick="closeModal('checkoutModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-coral); color:#fff; border:2.5px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; box-shadow:2px 2px 0px var(--border-color);">&times;</button>
+            <h2 style="font-size: 1.6rem; font-weight: 900; margin-bottom: 0.5rem;">One-Page Secure Checkout</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 700; margin-bottom: 1.5rem;">Guest Checkout Active — Fast campus delivery.</p>
             
-            <form onsubmit="finalizeOrder(event)" style="display:flex; flex-direction:column; gap:0.5rem;">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="shipName" placeholder="Alex Morgan" required>
+            <form onsubmit="finalizeOrder(event)" style="display:flex; flex-direction:column; gap:1rem;">
+                <div>
+                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-muted); text-transform:uppercase;">Full Name</label>
+                    <input type="text" id="shipName" placeholder="Alex Morgan" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px 14px; border-radius:10px; font-weight:800; margin-top:4px; outline:none;">
                 </div>
-                <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="tel" id="shipPhone" placeholder="+91 9876543210" required>
+                <div>
+                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-muted); text-transform:uppercase;">Phone Number</label>
+                    <input type="tel" id="shipPhone" placeholder="+91 9876543210" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px 14px; border-radius:10px; font-weight:800; margin-top:4px; outline:none;">
                 </div>
-                <div class="form-group">
-                    <label>Delivery Address & Campus Hostel</label>
-                    <textarea id="shipAddress" rows="2" placeholder="Room 404, Block A, University Campus..." required style="background:#fff; border:2.5px solid var(--border-color); border-radius:12px; padding:10px; font-weight:800; outline:none; resize:vertical;"></textarea>
+                <div>
+                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-muted); text-transform:uppercase;">Delivery Address & Campus Hostel</label>
+                    <textarea id="shipAddress" rows="2" placeholder="Room 404, Block A, University Campus..." required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px 14px; border-radius:10px; font-weight:800; margin-top:4px; outline:none; resize:vertical;"></textarea>
                 </div>
-
-                <!-- QR Scanner Payment Box -->
-                <div style="background:#fff; border:2.5px dashed var(--border-color); padding:1.2rem; border-radius:14px; text-align:center; margin: 0.5rem 0 1rem 0;">
-                    <div style="font-size:2.5rem; margin-bottom:0.3rem;">📷</div>
-                    <h4 style="font-size:1rem; font-weight:900; margin-bottom:0.2rem;">Scan QR to Pay via UPI / GPay / PhonePe</h4>
-                    <p style="font-size:0.8rem; color:var(--text-muted); font-weight:700; margin-bottom:0.8rem;">Scan code using any UPI app & place order</p>
-                    <div style="background:#f8fafc; width:120px; height:120px; margin:0 auto; border:2px solid var(--border-color); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:3rem;">
-                        📱
-                    </div>
-                    <p style="font-size:0.75rem; font-weight:800; color:var(--accent-blue); margin-top:0.5rem;">UPI ID: hoknex@upi</p>
-                </div>
-
-                <div class="form-group">
-                    <label>Transaction / UPI Reference ID</label>
-                    <input type="text" id="shipUpi" placeholder="e.g. UPI/2026/... or 4041..." required>
-                </div>
-
-                <button type="submit" class="btn-primary">Confirm & Place Order 🎉</button>
+                <button type="submit" class="btn-primary" style="margin-top:0.5rem;">Confirm & Complete Order 🎉</button>
             </form>
         </div>
     </div>
@@ -585,19 +556,19 @@
     <!-- Order Tracking Modal -->
     <div id="trackModal" class="modal-overlay" onclick="if(event.target === this) closeModal('trackModal')">
         <div class="modal-panel" style="max-width: 460px; text-align: center;">
-            <button onclick="closeModal('trackModal')" style="position:absolute; top:15px; right:15px; background:var(--accent-coral); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <button onclick="closeModal('trackModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-coral); color:#fff; border:2.5px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer; box-shadow:2px 2px 0px var(--border-color);">&times;</button>
             <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem;">📦 Track Your Hoknex Order</h2>
-            <p style="color: var(--text-muted); font-size: 0.88rem; font-weight: 700; margin-bottom: 1.5rem;">Enter your Order ID to check real-time delivery status.</p>
+            <p style="color: var(--text-muted); font-size: 0.88rem; font-weight: 700; margin-bottom: 1.5rem;">Enter your Order ID to check delivery status.</p>
             
             <div style="display:flex; gap:10px; margin-bottom:1.5rem;">
-                <input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:#fff; border:2.5px solid var(--border-color); border-radius:12px; padding:10px; font-weight:800; flex:1; outline:none;">
-                <button onclick="performTracking()" class="btn-primary" style="width:120px; margin:0; padding:10px;">Track 🔍</button>
+                <input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:#fff; border:2.5px solid var(--border-color); border-radius:10px; padding:10px; font-weight:800; flex:1; outline:none;">
+                <button onclick="performTracking()" class="cart-trigger" style="margin:0; padding:10px 16px;">Track 🔍</button>
             </div>
 
-            <div id="trackResultBox" style="text-align:left; background:#fff; border:2px solid var(--border-color); padding:1rem; border-radius:12px; display:none;">
+            <div id="trackResultBox" style="text-align:left; background:#fff; border:2.5px solid var(--border-color); padding:1rem; border-radius:12px; display:none;">
                 <h4 id="resId" style="font-size:1rem; font-weight:900; margin-bottom:0.3rem;">Order ID: #</h4>
-                <p id="resStatus" style="font-size:0.85rem; font-weight:800; color:var(--accent-blue); margin-bottom:0.3rem;">Status: Processing</p>
-                <p id="resDetails" style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">Customer & Address details...</p>
+                <p id="resStatus" style="font-size:0.85rem; font-weight:900; color:var(--accent-blue); margin-bottom:0.3rem;">Status: Processing</p>
+                <p id="resDetails" style="font-size:0.8rem; color:var(--text-muted); font-weight:800;">Customer & Address details...</p>
             </div>
         </div>
     </div>
@@ -606,108 +577,97 @@
     <div id="toastContainer" style="position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
 
     <script>
-        // Official Bento Grid Inventory with Spans
+        // Official Store Inventory
         let catalog = [
-            { id: '1', name: "Hoknex Core Heavyweight Hoodie", price: 1599, category: "Hoodies", emoji: "🧥", badge: "Best Seller", span: "span-8", description: "450GSM luxury French Terry cotton with embroidered Hoknex wordmark.", specs: "100% Organic Cotton • Pre-shrunk • Heavyweight 450GSM Fleece", shipping: "Free express delivery on campus orders within 2-3 days. Easy 7-day returns.", reviews: "⭐ 4.9/5 (1,240 reviews) — 'Absolute best quality hoodie for college winters!'" },
-            { id: '2', name: "Cyberpunk Oversized Tee", price: 799, category: "T-Shirts", emoji: "👕", badge: "Popular", span: "span-4", description: "Acid-washed relaxed fit tee featuring global campus circuit graphics.", specs: "240GSM Combed Cotton • Acid Washed • Relaxed Streetwear Fit", shipping: "Standard campus shipping 3-5 days.", reviews: "⭐ 4.8/5 (850 reviews) — 'Super breathable and stylish.'" },
-            { id: '3', name: "Global Innovator Hoodie", price: 1499, category: "Hoodies", emoji: "🧶", badge: "Limited", span: "span-4", description: "Minimalist tonal embroidered pullover crafted for late-night coding.", specs: "Fleece lined • Tonal embroidery • Ribbed cuffs", shipping: "Dispatches within 24 hours.", reviews: "⭐ 5.0/5 (310 reviews) — 'Cleanest hoodie ever.'" },
-            { id: '4', name: "Borderless Heavyweight Tee", price: 749, category: "T-Shirts", emoji: "👔", badge: "Classic", span: "span-8", description: "Ultra-durable breathable streetwear tee engineered for daily campus wear.", specs: "Heavy cotton jersey • Crew neckline • Durable stitch", shipping: "Campus delivery available.", reviews: "⭐ 4.7/5 (920 reviews) — 'Never loses shape after washing.'" },
-            { id: '5', name: "Signature Cyber Cap", price: 599, category: "Accessories", emoji: "🧢", badge: "Essential", span: "span-6", description: "Unstructured 6-panel low profile cotton twill cap with metal clasp.", specs: "100% Cotton Twill • Metal Strap Closure", shipping: "Standard shipping applies.", reviews: "⭐ 4.9/5 (410 reviews) — 'Fits perfectly.'" },
-            { id: '6', name: "Holographic Sticker & Lanyard Pack", price: 299, category: "Accessories", emoji: "🎒", badge: "Bundle", description: "Durable campus ID lanyard paired with reflective holographic stickers.", specs: "Weatherproof vinyl • Breakaway safety lanyard", shipping: "Instant digital confirmation + physical dispatch.", reviews: "⭐ 5.0/5 (600 reviews) — 'Looks dope on my laptop!'" }
+            { id: '1', name: "Hoknex Core Heavyweight Hoodie", price: 1599, category: "Hoodies", emoji: "🧥", badge: "Best Seller", description: "450GSM luxury French Terry cotton with embroidered Hoknex wordmark.", angles: ["🧥", "👕", "🔎"] },
+            { id: '2', name: "Cyberpunk Oversized Graphic Tee", price: 799, category: "T-Shirts", emoji: "👕", badge: "Popular", description: "Acid-washed relaxed fit tee featuring global campus circuit graphics.", angles: ["👕", "👔", "🔎"] },
+            { id: '3', name: "Global Innovator Minimalist Hoodie", price: 1499, category: "Hoodies", emoji: "🧶", badge: "Limited", description: "Minimalist tonal embroidered pullover crafted for late-night coding.", angles: ["🧶", "🧥", "🔎"] },
+            { id: '4', name: "Borderless Heavyweight Tee", price: 749, category: "T-Shirts", emoji: "👔", badge: "Classic", description: "Ultra-durable breathable streetwear tee engineered for daily campus wear.", angles: ["👔", "👕", "🔎"] },
+            { id: '5', name: "Hoknex Signature Cyber Cap", price: 599, category: "Accessories", emoji: "🧢", badge: "Essential", description: "Unstructured 6-panel low profile cotton twill cap with metal clasp.", angles: ["🧢", "🎒", "🔎"] },
+            { id: '6', name: "Holographic Sticker & Lanyard Pack", price: 299, category: "Accessories", emoji: "🎒", badge: "Bundle", description: "Durable campus ID lanyard paired with reflective holographic stickers.", angles: ["🎒", "🧢", "🔎"] }
         ];
 
-        // Persistent Cart Memory (Loaded from localStorage)
         let bag = JSON.parse(localStorage.getItem('hoknex_persistent_cart') || '[]');
+        let currentPdpItem = null;
+        let selectedSize = 'S';
 
-        function renderBentoGrid(items) {
-            const grid = document.getElementById('bentoGrid');
-            if (items.length === 0) {
-                grid.innerHTML = `<div style="grid-column: span 12; text-align: center; padding: 4rem; color: var(--text-muted);"><h3>No products match your filters.</h3></div>`;
-                return;
-            }
-
+        function renderCatalog(items) {
+            const grid = document.getElementById('catalogGrid');
             grid.innerHTML = items.map(item => `
-                <div class="bento-card ${item.span}">
-                    <span class="bento-badge">${item.badge}</span>
-                    <div onclick="openPdpModal('${item.id}')" style="cursor: pointer;">
-                        <div class="bento-preview">${item.emoji}</div>
+                <div class="product-item-card" onclick="openPdpModal('${item.id}')">
+                    <span class="product-badge">${item.badge}</span>
+                    <div>
+                        <div class="product-preview">${item.emoji}</div>
                         <h3>${item.name}</h3>
                         <p>${item.description}</p>
                     </div>
-                    <div class="bento-footer">
-                        <span class="bento-price">₹${item.price}</span>
-                        <div style="display:flex; gap:8px;">
-                            <button onclick="openPdpModal('${item.id}')" class="btn-bento-action" style="background:#fff;">Quick View 👁️</button>
-                            <button onclick="addToBag('${item.id}')" class="btn-bento-action">Add to Bag 🛍️</button>
-                        </div>
+                    <div class="card-bottom">
+                        <span class="price-tag">₹${item.price}</span>
+                        <button class="btn-quick-view">Quick View 👁️</button>
                     </div>
                 </div>
             `).join('');
             updateBagUI();
         }
 
-        // Faceted Search and Filters
-        function applyFacetedFilters() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const category = document.getElementById('categoryFilter').value;
-            const sortBy = document.getElementById('sortBy').value;
-
-            let filtered = catalog.filter(item => {
-                const matchText = item.name.toLowerCase().includes(search) || item.description.toLowerCase().includes(search);
-                const matchCat = category === 'all' || item.category === category;
-                return matchText && matchCat;
-            });
-
-            if (sortBy === 'low-high') filtered.sort((a, b) => a.price - b.price);
-            if (sortBy === 'high-low') filtered.sort((a, b) => b.price - a.price);
-
-            renderBentoGrid(filtered);
+        function filterCatalog(cat, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (cat === 'all') {
+                renderCatalog(catalog);
+            } else {
+                renderCatalog(catalog.filter(i => i.category === cat));
+            }
         }
 
-        // Progressive Disclosure on PDPs
-        let currentPdpItem = null;
         function openPdpModal(id) {
             currentPdpItem = catalog.find(i => i.id === id);
             if (!currentPdpItem) return;
 
-            document.getElementById('pdpEmoji').innerText = currentPdpItem.emoji;
+            document.getElementById('pdpMainEmoji').innerText = currentPdpItem.emoji;
             document.getElementById('pdpBadge').innerText = currentPdpItem.badge;
             document.getElementById('pdpTitle').innerText = currentPdpItem.name;
             document.getElementById('pdpPrice').innerText = '₹' + currentPdpItem.price;
-            
-            switchPdpTab('specs');
-            document.getElementById('pdpAddBtn').onclick = () => {
-                addToBag(currentPdpItem.id);
-                closeModal('pdpModal');
-            };
+            document.getElementById('pdpDesc').innerText = currentPdpItem.description;
+
+            const thumbs = document.querySelectorAll('.thumb-box');
+            currentPdpItem.angles.forEach((angle, idx) => {
+                if(thumbs[idx]) thumbs[idx].innerText = angle;
+            });
 
             document.getElementById('pdpModal').style.display = 'flex';
         }
 
-        function switchPdpTab(tabType) {
-            document.querySelectorAll('.pdp-tab-btn').forEach(b => b.classList.remove('active'));
-            event && event.target && event.target.classList.add('active');
-
-            const content = document.getElementById('pdpTabContent');
-            if (tabType === 'specs') content.innerText = currentPdpItem.specs;
-            if (tabType === 'shipping') content.innerText = currentPdpItem.shipping;
-            if (tabType === 'reviews') content.innerText = currentPdpItem.reviews;
+        function switchAngle(index, thumbEl) {
+            document.querySelectorAll('.thumb-box').forEach(t => t.classList.remove('active'));
+            thumbEl.classList.add('active');
+            if(currentPdpItem && currentPdpItem.angles[index]) {
+                document.getElementById('pdpMainEmoji').innerText = currentPdpItem.angles[index];
+            }
         }
 
-        function addToBag(id) {
-            const product = catalog.find(i => i.id === id);
-            const found = bag.find(b => b.id === id);
+        function selectSize(size, el) {
+            document.querySelectorAll('.size-chip').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedSize = size;
+        }
+
+        function addCurrentPdpToBag() {
+            if (!currentPdpItem) return;
+            const cartItemKey = `${currentPdpItem.id}-${selectedSize}`;
+            const found = bag.find(b => b.cartKey === cartItemKey);
             if (found) {
                 found.qty += 1;
             } else {
-                bag.push({ ...product, qty: 1 });
+                bag.push({ ...currentPdpItem, cartKey: cartItemKey, size: selectedSize, qty: 1 });
             }
-            savePersistentCart();
+            saveCart();
             updateBagUI();
-            showToast(`Added ${product.name} to your bag!`, '🛍️');
+            closeModal('pdpModal');
+            showToast(`Added ${currentPdpItem.name} (${selectedSize}) to bag!`, '🛍️');
         }
 
-        function savePersistentCart() {
+        function saveCart() {
             localStorage.setItem('hoknex_persistent_cart', JSON.stringify(bag));
         }
 
@@ -728,10 +688,10 @@
             list.innerHTML = bag.map((item, index) => {
                 subtotal += (item.price * item.qty);
                 return `
-                    <div class="cart-item-row" style="background:#fff; border:2px solid var(--border-color); border-radius:10px; padding:10px; margin-bottom:8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; border: 2.5px solid var(--border-color); padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; box-shadow: 2px 2px 0px var(--border-color);">
                         <div>
-                            <div style="font-weight: 900; font-size: 0.9rem;">${item.emoji} ${item.name}</div>
-                            <div style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 800; margin-top: 2px;">₹${item.price} × ${item.qty}</div>
+                            <div style="font-weight: 900; font-size: 0.9rem;">${item.emoji} ${item.name} (${item.size})</div>
+                            <div style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 900; margin-top: 2px;">₹${item.price} × ${item.qty}</div>
                         </div>
                         <button onclick="removeBagItem(${index})" style="background:var(--accent-coral); color:#fff; border:2px solid var(--border-color); width:26px; height:26px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
                     </div>
@@ -743,7 +703,7 @@
 
         function removeBagItem(index) {
             bag.splice(index, 1);
-            savePersistentCart();
+            saveCart();
             updateBagUI();
         }
 
@@ -765,7 +725,6 @@
             const name = document.getElementById('shipName').value;
             const phone = document.getElementById('shipPhone').value;
             const address = document.getElementById('shipAddress').value;
-            const upi = document.getElementById('shipUpi').value;
 
             const orderId = 'HOK-' + Math.floor(10000 + Math.random() * 90000);
             
@@ -774,7 +733,6 @@
                 name,
                 phone,
                 address,
-                upi,
                 items: bag,
                 total: bag.reduce((sum, i) => sum + (i.price * i.qty), 0),
                 status: 'Dispatched & Out for Delivery 🚚',
@@ -786,11 +744,11 @@
             localStorage.setItem('hoknex_store_orders', JSON.stringify(allOrders));
 
             bag = [];
-            savePersistentCart();
+            saveCart();
             closeModal('checkoutModal');
             updateBagUI();
 
-            alert(`Order Successfully Placed (Guest Checkout)!\nYour Order ID is: ${orderId}\nYou can use this ID anytime in "Track Order".`);
+            alert(`Order Successfully Placed!\nYour Order ID is: ${orderId}\nYou can use this ID anytime in "Track Order" to check status.`);
         }
 
         function performTracking() {
@@ -825,7 +783,7 @@
             }, 3500);
         }
 
-        renderBentoGrid(catalog);
+        renderCatalog(catalog);
     </script>
 </body>
 </html>
