@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoknex — Secure Owner Dashboard</title>
+    <title>Hoknex — Professional Owner Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -20,7 +20,7 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 2.5rem 2rem; }
 
-        .admin-container { max-width: 1200px; margin: 0 auto; }
+        .admin-container { max-width: 1250px; margin: 0 auto; }
         .admin-header {
             display: flex; justify-content: space-between; align-items: center; background: var(--bg-card);
             border: 3.5px solid var(--border-color); padding: 1.8rem 2.5rem; border-radius: 20px; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
@@ -29,7 +29,8 @@
             background: var(--bg-card); border: 3.5px solid var(--border-color);
             border-radius: 20px; padding: 2.5rem; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
         }
-        h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; }
+        h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color: var(--text-main); border-bottom: 2px solid #F3F4F6; padding-bottom: 8px; }
+        
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
         .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
         .form-group label { font-size: 0.8rem; font-weight: 900; text-transform: uppercase; }
@@ -42,7 +43,7 @@
             transition: transform 0.15s, box-shadow 0.15s; text-decoration: none; display: inline-block;
         }
         .btn-action:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0px var(--border-color); }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.88rem; }
         th, td { border: 2.5px solid var(--border-color); padding: 12px; text-align: left; font-weight: 800; }
         th { background: #FAF9F6; font-weight: 900; }
     </style>
@@ -52,8 +53,8 @@
     <div class="admin-container">
         <div class="admin-header">
             <div>
-                <h1 style="font-size: 1.8rem; font-weight: 900;">⚡ Hoknex Owner Dashboard</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage products with multiple angles, delivery fees, QR codes, and orders.</p>
+                <h1 style="font-size: 1.8rem; font-weight: 900;">⚡ Hoknex Professional Owner Command Center</h1>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage catalog multi-images, delivery charges, stock availability, demand voting, custom tracker messages, invoices, and email alerts.</p>
             </div>
             <a href="store.html" class="btn-action" style="background:var(--accent-ochre);">View Public Store 🛍️</a>
         </div>
@@ -67,10 +68,32 @@
             </div>
         </div>
 
-        <!-- 2. QR Code Manager -->
+        <!-- 2. Coming Soon / Drop Preview Uploader -->
+        <div class="admin-section">
+            <h2>🚀 Upload Upcoming Drops ("Coming Soon" Segment)</h2>
+            <form onsubmit="handleComingSoonUpload(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Drop Title</label>
+                        <input type="text" id="dropTitle" placeholder="e.g. Winter Heavyweight Trench 2026" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Drop Preview Image / Video File</label>
+                        <input type="file" id="dropFile" accept="image/*,video/*" required style="background:#fff;">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Description / Stay Tuned Details</label>
+                        <textarea id="dropDesc" rows="2" placeholder="Dropping soon for campus innovators..." required></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn-action">Publish Coming Soon Drop ✨</button>
+            </form>
+            <div id="comingSoonListContainer" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;"></div>
+        </div>
+
+        <!-- 3. QR Code Manager -->
         <div class="admin-section">
             <h2>📷 Founder UPI QR Code Manager</h2>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.2rem;">Upload QR codes. The checkout randomly displays one when customers choose Direct Founder UPI.</p>
             <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1.5rem;">
                 <input type="file" id="newQrFile" accept="image/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800;">
                 <button onclick="uploadNewQrCode()" class="btn-action">Upload QR Code ➕</button>
@@ -78,9 +101,9 @@
             <div id="qrListContainer" style="display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 3. Launch New Product with Multiple Images & Delivery Fee -->
+        <!-- 4. Launch New Product (Multi-Angle & Delivery Charge) -->
         <div class="admin-section">
-            <h2>🚀 Launch New Product (Multi-Angle Photos & Delivery Charge)</h2>
+            <h2>📦 Launch Product (Multi-Angle Images & Delivery Charge)</h2>
             <form onsubmit="handleNewProduct(event)">
                 <div class="form-grid">
                     <div class="form-group">
@@ -103,7 +126,7 @@
                         <input type="number" id="prodDelivery" placeholder="49" value="0" required>
                     </div>
                     <div class="form-group" style="grid-column: span 2;">
-                        <label>Upload Multiple Images (Select 2-3 angles at once)</label>
+                        <label>Upload Multiple Images (Multi-Angle Gallery)</label>
                         <input type="file" id="prodGalleryFiles" accept="image/*" multiple required style="background:#fff;">
                     </div>
                     <div class="form-group" style="grid-column: span 2;">
@@ -111,25 +134,26 @@
                         <textarea id="prodDesc" rows="2" placeholder="Heavyweight organic cotton fleece..." required></textarea>
                     </div>
                 </div>
-                <button type="submit" class="btn-action">Publish Multi-Angle Product ✨</button>
+                <button type="submit" class="btn-action">Publish Product ✨</button>
             </form>
         </div>
 
-        <!-- 4. Manage Products -->
+        <!-- 5. Manage Catalog, Stock, Sizes & Demand Votes -->
         <div class="admin-section">
-            <h2>🗂️ Manage Catalog Products</h2>
-            <div id="productsTableWrap" style="overflow-x:auto;"><p>Loading products...</p></div>
+            <h2>🗂️ Catalog Stock, Sizes & Demand Voting Manager</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1rem;">Mark items in/out of stock, manage available sizes, and view customer "Vote to Come Fast" demands.</p>
+            <div id="productsTableWrap" style="overflow-x:auto;"><p>Loading catalog...</p></div>
         </div>
 
-        <!-- 5. Customer Orders -->
+        <!-- 6. Customer Orders, Tracker, Invoice Export & Custom Message Sender -->
         <div class="admin-section">
-            <h2>📦 Customer Orders & Live Tracker Manager</h2>
+            <h2>🚚 Customer Orders, Invoices & Custom Tracker Messaging</h2>
             <div id="ordersTableWrap" style="overflow-x:auto;"><p>Loading orders...</p></div>
         </div>
 
-        <!-- 6. Leads -->
+        <!-- 7. Newsletter Leads with Delete & Direct Emailer -->
         <div class="admin-section">
-            <h2>💌 Newsletter Subscribers</h2>
+            <h2>💌 Newsletter Subscribers & Direct Emailer</h2>
             <div id="leadsTableWrap" style="overflow-x:auto;"><p>Loading leads...</p></div>
         </div>
     </div>
@@ -141,14 +165,52 @@
             alert('Announcement banner updated successfully!');
         }
 
+        // Coming Soon Drops
+        function renderComingSoonManager() {
+            let drops = JSON.parse(localStorage.getItem('hoknex_coming_soon') || '[]');
+            const container = document.getElementById('comingSoonListContainer');
+            if(drops.length === 0) { container.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No coming soon drops uploaded yet.</p>`; return; }
+            container.innerHTML = drops.map((d, idx) => `
+                <div style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:12px; width:180px; text-align:center;">
+                    <img src="${d.image}" style="width:100%; height:100px; object-fit:cover; border-radius:8px; margin-bottom:6px;">
+                    <h5 style="font-weight:900; font-size:0.85rem;">${d.title}</h5>
+                    <button onclick="deleteDrop(${idx})" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem; margin-top:6px;">Delete Drop</button>
+                </div>
+            `).join('');
+        }
+
+        function handleComingSoonUpload(e) {
+            e.preventDefault();
+            const title = document.getElementById('dropTitle').value;
+            const desc = document.getElementById('dropDesc').value;
+            const fileInput = document.getElementById('dropFile');
+            if(fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    let drops = JSON.parse(localStorage.getItem('hoknex_coming_soon') || '[]');
+                    drops.push({ title, desc, image: event.target.result });
+                    localStorage.setItem('hoknex_coming_soon', JSON.stringify(drops));
+                    renderComingSoonManager();
+                    alert('Coming soon drop published!');
+                    document.getElementById('dropTitle').value = '';
+                    document.getElementById('dropDesc').value = '';
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
+        function deleteDrop(idx) {
+            let drops = JSON.parse(localStorage.getItem('hoknex_coming_soon') || '[]');
+            drops.splice(idx, 1);
+            localStorage.setItem('hoknex_coming_soon', JSON.stringify(drops));
+            renderComingSoonManager();
+        }
+
         // QR Manager
         function renderQrManager() {
             let qrs = JSON.parse(localStorage.getItem('hoknex_owner_qrs') || '[]');
             const container = document.getElementById('qrListContainer');
-            if (qrs.length === 0) {
-                container.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No QR codes uploaded yet.</p>`;
-                return;
-            }
+            if (qrs.length === 0) { container.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No QR codes uploaded yet.</p>`; return; }
             container.innerHTML = qrs.map((qr, idx) => `
                 <div style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:12px; text-align:center;">
                     <img src="${qr}" style="width:100px; height:100px; object-fit:cover; border-radius:8px; display:block; margin-bottom:8px;">
@@ -179,10 +241,10 @@
             renderQrManager();
         }
 
-        // Product Catalog with Multi-Images & Delivery Fee
+        // Catalog
         let defaultCatalog = [
-            { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49, emoji: "🧥", badge: "New Drop", description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.", galleryImages: ["🧥", "👔", "🔎"] },
-            { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99, emoji: "👟", badge: "Best Seller", description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.", galleryImages: ["👟", "🥾", "🔎"] }
+            { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49, emoji: "🧥", badge: "New Drop", inStock: true, sizes: ['S', 'M', 'L', 'XL'], ratings: [5, 5, 4], votes: 12, description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.", galleryImages: ["🧥", "👔", "🔎"] },
+            { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99, emoji: "👟", badge: "Best Seller", inStock: true, sizes: ['7', '8', '9', '10'], ratings: [5, 5, 5], votes: 8, description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.", galleryImages: ["👟", "🥾", "🔎"] }
         ];
         let catalog = JSON.parse(localStorage.getItem('hoknex_custom_catalog') || JSON.stringify(defaultCatalog));
 
@@ -210,11 +272,15 @@
                                 name, category, price, deliveryFee, description,
                                 image: base64Images[0],
                                 galleryImages: base64Images,
+                                inStock: true,
+                                sizes: ['S', 'M', 'L', 'XL'],
+                                ratings: [5],
+                                votes: 0,
                                 badge: 'New Arrival'
                             };
                             catalog.push(newProd);
                             localStorage.setItem('hoknex_custom_catalog', JSON.stringify(catalog));
-                            alert('Multi-angle product published successfully!');
+                            alert('Product published successfully!');
                             location.reload();
                         }
                     };
@@ -226,18 +292,31 @@
         function renderProductsTable() {
             document.getElementById('productsTableWrap').innerHTML = `
                 <table>
-                    <thead><tr><th>Preview</th><th>Name</th><th>Category</th><th>Price</th><th>Delivery Fee</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Preview</th><th>Name</th><th>Stock Status</th><th>Demand Votes</th><th>Action</th></tr></thead>
                     <tbody>
                         ${catalog.map((p, idx) => `
                             <tr>
                                 <td style="width:50px; text-align:center;">${p.image ? `<img src="${p.image}" style="width:35px;height:35px;object-fit:cover;border-radius:6px;">` : (p.emoji || '📦')}</td>
-                                <td><b>${p.name}</b></td><td>${p.category}</td><td>₹${p.price}.00</td><td>₹${p.deliveryFee || 0}</td>
+                                <td><b>${p.name}</b><br><small>₹${p.price} | Del: ₹${p.deliveryFee || 0}</small></td>
+                                <td>
+                                    <select onchange="toggleStock(${idx}, this.value)" style="padding:4px; font-weight:800;">
+                                        <option value="true" ${p.inStock?'selected':''}>In Stock ✅</option>
+                                        <option value="false" ${!p.inStock?'selected':''}>Out of Stock ❌</option>
+                                    </select>
+                                </td>
+                                <td>🔥 ${p.votes || 0} user votes</td>
                                 <td><button onclick="deleteProduct(${idx})" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
                             </tr>
                         `).join('')}
                     </tbody>
                 </table>
             `;
+        }
+
+        function toggleStock(idx, val) {
+            catalog[idx].inStock = (val === 'true');
+            localStorage.setItem('hoknex_custom_catalog', JSON.stringify(catalog));
+            alert('Stock status updated!');
         }
 
         function deleteProduct(index) {
@@ -247,29 +326,37 @@
             renderProductsTable();
         }
 
-        // Orders & Timeline History
+        // Orders & Custom Tracker Messaging & Invoice Export
         function renderOrdersTable() {
             const orders = JSON.parse(localStorage.getItem('hoknex_store_orders') || '[]');
             const wrap = document.getElementById('ordersTableWrap');
             if(orders.length === 0) { wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No customer orders yet.</p>`; return; }
             wrap.innerHTML = `
                 <table>
-                    <thead><tr><th>ID</th><th>Customer</th><th>Summary (Incl. Delivery)</th><th>Address</th><th>Live Status</th><th>Action</th></tr></thead>
+                    <thead><tr><th>ID</th><th>Customer</th><th>Summary</th><th>Status</th><th>Custom Tracker Message</th><th>Actions</th></tr></thead>
                     <tbody>
                         ${orders.map((o, idx) => `
                             <tr>
                                 <td><b>#${o.orderId}</b></td><td>${o.name}<br><small>${o.phone}</small></td>
-                                <td>₹${o.total}.00 (Sub: ₹${o.subtotal} + Del: ₹${o.deliveryFee})</td>
-                                <td style="font-size:0.8rem;">${o.address}</td>
+                                <td>₹${o.total}.00 (${o.items.length} items)</td>
                                 <td>
-                                    <select onchange="updateOrderStatus(${idx}, this.value)" style="padding:6px; font-weight:800; border-radius:8px;">
+                                    <select onchange="updateOrderStatus(${idx}, this.value)" style="padding:4px; font-weight:800; border-radius:8px;">
                                         <option value="Order Placed & Awaiting Owner Approval ⏳" ${o.status.includes('Awaiting')?'selected':''}>Awaiting Approval</option>
                                         <option value="Confirmed & Preparing for Campus Delivery 🚚" ${o.status.includes('Confirmed')?'selected':''}>Confirmed & Preparing</option>
-                                        <option value="Dispatched & Out for Delivery 🚚" ${o.status.includes('Dispatched')?'selected':''}>Out for Delivery</option>
+                                        <option value="Dispatched 📦" ${o.status.includes('Dispatched')?'selected':''}>Dispatched</option>
+                                        <option value="At Nearest Hub 📍" ${o.status.includes('Nearest Hub')?'selected':''}>At Nearest Hub</option>
+                                        <option value="Out for Delivery 🚀" ${o.status.includes('Out for Delivery')?'selected':''}>Out for Delivery</option>
                                         <option value="Delivery Completed Successfully 🎉" ${o.status.includes('Completed')?'selected':''}>Delivery Completed 🎉</option>
                                     </select>
                                 </td>
-                                <td><button onclick="deleteOrder(${idx})" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
+                                <td>
+                                    <input type="text" id="msg-${idx}" placeholder="Custom note..." value="${o.customMessage||''}" style="padding:4px; font-size:0.8rem; width:130px;">
+                                    <button onclick="saveCustomMsg(${idx})" class="btn-action" style="padding:2px 6px; font-size:0.7rem; margin-top:2px;">Send Msg</button>
+                                </td>
+                                <td style="display:flex; gap:4px; flex-direction:column;">
+                                    <button onclick="exportInvoice(${idx})" class="btn-action" style="background:#D9822B; padding:4px 8px; font-size:0.75rem;">Invoice 📄</button>
+                                    <button onclick="deleteOrder(${idx})" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button>
+                                </td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -283,8 +370,41 @@
             if(!orders[index].timeline) orders[index].timeline = [];
             orders[index].timeline.push({ title: newStatus, time: new Date().toLocaleString() });
             localStorage.setItem('hoknex_store_orders', JSON.stringify(orders));
-            alert('Order status & timeline updated successfully!');
+            alert('Order status & timeline updated!');
             renderOrdersTable();
+        }
+
+        function saveCustomMsg(idx) {
+            let orders = JSON.parse(localStorage.getItem('hoknex_store_orders') || '[]');
+            const msg = document.getElementById(`msg-${idx}`).value;
+            orders[idx].customMessage = msg;
+            localStorage.setItem('hoknex_store_orders', JSON.stringify(orders));
+            alert('Custom message attached to customer order tracker!');
+        }
+
+        function exportInvoice(idx) {
+            let orders = JSON.parse(localStorage.getItem('hoknex_store_orders') || '[]');
+            let o = orders[idx];
+            let invWindow = window.open('', '_blank');
+            invWindow.document.write(`
+                <html><head><title>Invoice #${o.orderId}</title></head>
+                <body style="font-family:'Plus Jakarta Sans',sans-serif; padding:2rem; color:#4C5844;">
+                    <h2>HOKNEX OFFICIAL INVOICE</h2>
+                    <p><b>Order ID:</b> #${o.orderId} | <b>Date:</b> ${o.date}</p>
+                    <hr style="margin:1rem 0;">
+                    <p><b>Customer Name:</b> ${o.name}</p>
+                    <p><b>Phone & Email:</b> ${o.phone} | ${o.email||'N/A'}</p>
+                    <p><b>Delivery Address:</b> ${o.address}</p>
+                    <p><b>Payment Mode:</b> ${o.payMode}</p>
+                    <hr style="margin:1rem 0;">
+                    <h3>Ordered Items:</h3>
+                    <ul>${o.items.map(i=>`<li>${i.name} (Size: ${i.size}) — Qty: ${i.qty} — ₹${i.price} each</li>`).join('')}</ul>
+                    <h3>Subtotal: ₹${o.subtotal} | Delivery: ₹${o.deliveryFee} | Final Total: ₹${o.total}</h3>
+                    <p style="margin-top:2rem; font-weight:bold;">Thank you for shopping with Hoknex!</p>
+                </body></html>
+            `);
+            invWindow.document.close();
+            invWindow.print();
         }
 
         function deleteOrder(index) {
@@ -295,14 +415,35 @@
             renderOrdersTable();
         }
 
-        // Leads
+        // Leads & Direct Emailer
         function renderLeadsTable() {
             const leads = JSON.parse(localStorage.getItem('hoknex_newsletter_leads') || '[]');
             const wrap = document.getElementById('leadsTableWrap');
             if(leads.length === 0) { wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No subscribers yet.</p>`; return; }
-            wrap.innerHTML = `<table><thead><tr><th>Email</th><th>Date</th></tr></thead><tbody>${leads.map(l => `<tr><td><b>${l.email}</b></td><td>${l.date}</td></tr>`).join('')}</tbody></table>`;
+            wrap.innerHTML = `
+                <table>
+                    <thead><tr><th>Subscriber Email</th><th>Registered Time</th><th>Direct Email Action</th><th>Action</th></tr></thead>
+                    <tbody>
+                        ${leads.map((l, idx) => `
+                            <tr>
+                                <td><b>${l.email}</b></td><td>${l.date}</td>
+                                <td><a href="mailto:${l.email}?subject=Hoknex%20Exclusive%20Drop" class="btn-action" style="padding:4px 10px; font-size:0.75rem; text-decoration:none;">Send Email ✉️</a></td>
+                                <td><button onclick="deleteLead(${idx})" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
         }
 
+        function deleteLead(idx) {
+            let leads = JSON.parse(localStorage.getItem('hoknex_newsletter_leads') || '[]');
+            leads.splice(idx, 1);
+            localStorage.setItem('hoknex_newsletter_leads', JSON.stringify(leads));
+            renderLeadsTable();
+        }
+
+        renderComingSoonManager();
         renderQrManager();
         renderProductsTable();
         renderOrdersTable();
