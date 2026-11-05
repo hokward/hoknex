@@ -20,7 +20,11 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 2.5rem 2rem; }
 
-        .admin-container { max-width: 1300px; margin: 0 auto; }
+        /* Password Protection Gate */
+        #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 99999; padding: 1rem; }
+        #authBox { background: #FAF9F6; border: 4px solid var(--border-color); border-radius: 24px; padding: 3rem; max-width: 440px; width: 100%; text-align: center; box-shadow: 10px 10px 0px var(--border-color); }
+
+        .admin-container { max-width: 1300px; margin: 0 auto; display: none; }
         .admin-header {
             display: flex; justify-content: space-between; align-items: center; background: var(--bg-card);
             border: 3.5px solid var(--border-color); padding: 1.8rem 2.5rem; border-radius: 20px; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
@@ -60,6 +64,17 @@
 </head>
 <body>
 
+    <!-- Password Protection Modal Gate -->
+    <div id="authOverlay">
+        <div id="authBox">
+            <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem; border:none;">🔐 Owner Access</h2>
+            <p style="font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 1.5rem;">Enter your owner password to access the Hoknex Command Center.</p>
+            <input type="password" id="adminPasswordInput" placeholder="Enter owner password..." style="background:#fff; border:2.5px solid var(--border-color); padding:12px; border-radius:10px; font-weight:800; width:100%; margin-bottom:1rem; outline:none; text-align:center;">
+            <button onclick="verifyAdminPassword()" class="btn-action" style="width:100%;">Unlock Dashboard 🔓</button>
+        </div>
+    </div>
+
+    <!-- Modern Notification Modal -->
     <div id="proModalOverlay">
         <div id="proModalBox">
             <h3 id="proModalTitle" style="font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem;">Hoknex Admin</h3>
@@ -70,19 +85,20 @@
         </div>
     </div>
 
-    <div class="admin-container">
+    <div class="admin-container" id="adminMainContent">
         <div class="admin-header">
             <div>
                 <h1 style="font-size: 1.8rem; font-weight: 900;">⚡ Hoknex Professional Owner Command Center</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage global magazine articles, coming soon drops, multi-angle catalog, delivery fees, stock/sizes, demand voting, tracker messages, and invoices.</p>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage fund donations, help tickets, Zine magazine articles, campaigns, products, and orders.</p>
             </div>
             <div style="display:flex; gap:10px;">
                 <a href="store.html" class="btn-action" style="background:var(--accent-ochre);">View Store 🛍️</a>
                 <a href="magazine.html" class="btn-action" style="background:#232D2F;">View Zine 📰</a>
+                <a href="donation.html" class="btn-action" style="background:#1E3A8A;">View Fund 💚</a>
             </div>
         </div>
 
-        <!-- 1. Announcement Banner -->
+        <!-- 1. Store Announcement Banner -->
         <div class="admin-section">
             <h2>📢 1. Store Announcement Banner</h2>
             <div style="display:flex; gap:1rem; flex-wrap:wrap;">
@@ -91,52 +107,63 @@
             </div>
         </div>
 
-        <!-- 2. SEPARATE COLUMN: Global Zine Magazine & News Manager -->
+        <!-- 2. NEW: Fund & Support Help Desk & Certificate Verification Dashboard -->
         <div class="admin-section">
-            <h2>📰 2. Global Zine Magazine & News Manager</h2>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Publish and manage global news, picture-based, video-based, and book-based magazine articles. You can also delete pre-defined or custom articles instantly.</p>
-            
-            <form onsubmit="handleMagazineUpload(event)">
-                <div class="form-grid">
-                    <div class="form-group"><label>Headline / Article Title</label><input type="text" id="magTitle" placeholder="e.g. Global Tech Summit 2026" required></div>
-                    <div class="form-group"><label>Category</label><select id="magCategory"><option value="World News">World News</option><option value="Picture">Picture Feature</option><option value="Video">Video Dispatch</option><option value="Book">Book Review</option><option value="Culture">Culture & Arts</option></select></div>
-                    <div class="form-group"><label>Media Format Type</label><select id="magType"><option value="text">Text Article</option><option value="image">Picture Based</option><option value="video">Video Based</option><option value="book">Book Based</option></select></div>
-                    <div class="form-group"><label>Upload Media File (Image / Video / Cover)</label><input type="file" id="magMediaFile" accept="image/*,video/*" style="background:#fff;"></div>
-                    <div class="form-group"><label>Author & Read Time</label><input type="text" id="magAuthor" placeholder="International Bureau • 4 min read" value="International Bureau • 4 min read" required></div>
-                    <div class="form-group"><label>Preview Excerpt Summary</label><textarea id="magExcerpt" rows="2" placeholder="Brief summary..." required></textarea></div>
-                    <div class="form-group" style="grid-column: span 2;"><label>Full Article Body Content</label><textarea id="magBody" rows="4" placeholder="Full story content..." required></textarea></div>
-                </div>
-                <button type="submit" class="btn-action">Publish Article to Global Zine ⚡</button>
-            </form>
-            <div id="magazineTableWrap" style="overflow-x:auto; margin-top:2rem;"><p>Loading articles...</p></div>
+            <h2>💚 2. Fund & Support Help Desk & Certificate Verification Dashboard</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Review incoming help tickets and donation payment screenshot proofs. Click verify and send certificate links to donors.</p>
+            <div id="supportTicketsTableWrap" style="overflow-x:auto;"><p>Loading support tickets...</p></div>
         </div>
 
-        <!-- 3. Coming Soon / Drop Segment Uploader -->
+        <!-- 3. Zine Magazine Article Manager -->
         <div class="admin-section">
-            <h2>🚀 3. Upcoming Drops ("Coming Soon" Segment)</h2>
+            <h2>📰 3. Global Zine Magazine & News Manager</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Publish and manage global news, picture-based, video-based, and book-based magazine articles.</p>
+            <form onsubmit="handleMagazineUpload(event)">
+                <div class="form-grid">
+                    <div class="form-group"><label>Article Title</label><input type="text" id="magTitle" placeholder="Title" required></div>
+                    <div class="form-group"><label>Category</label><select id="magCategory"><option value="World News">World News</option><option value="Picture">Picture Feature</option><option value="Video">Video Dispatch</option><option value="Book">Book Review</option><option value="Culture">Culture & Arts</option></select></div>
+                    <div class="form-group"><label>Type</label><select id="magType"><option value="text">Text Article</option><option value="image">Picture Based</option><option value="video">Video Based</option><option value="book">Book Based</option></select></div>
+                    <div class="form-group"><label>Media File</label><input type="file" id="magMediaFile" accept="image/*,video/*" style="background:#fff;"></div>
+                    <div class="form-group"><label>Author & Read Time</label><input type="text" id="magAuthor" value="International Bureau • 4 min read" required></div>
+                    <div class="form-group"><label>Summary</label><textarea id="magExcerpt" rows="2" placeholder="Summary..." required></textarea></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Full Body</label><textarea id="magBody" rows="3" placeholder="Full body..." required></textarea></div>
+                </div>
+                <button type="submit" class="btn-action">Publish Article ⚡</button>
+            </form>
+            <div id="magazineTableWrap" style="overflow-x:auto; margin-top:1.5rem;"><p>Loading articles...</p></div>
+        </div>
+
+        <!-- 4. Visual Campaign Showcase Manager -->
+        <div class="admin-section">
+            <h2>🖼️ 4. Visual Campaign & Banner Showcase Manager</h2>
+            <form onsubmit="handleCampaignUpload(event)">
+                <div class="form-grid">
+                    <div class="form-group"><label>Title</label><input type="text" id="campTitle" placeholder="Title" required></div>
+                    <div class="form-group"><label>Image</label><input type="file" id="campFile" accept="image/*" required style="background:#fff;"></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Description</label><textarea id="campDesc" rows="2" placeholder="Description..." required></textarea></div>
+                </div>
+                <button type="submit" class="btn-action">Add Campaign Tile ✨</button>
+            </form>
+            <div id="campaignListContainer" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;"></div>
+        </div>
+
+        <!-- 5. Upcoming Drops -->
+        <div class="admin-section">
+            <h2>🚀 5. Upcoming Drops ("Coming Soon")</h2>
             <form onsubmit="handleComingSoonUpload(event)">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>Drop Title</label>
-                        <input type="text" id="dropTitle" placeholder="e.g. Winter Heavyweight Trench 2026" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Drop Media Preview (Image or Short Clip)</label>
-                        <input type="file" id="dropFile" accept="image/*,video/*" required style="background:#fff;">
-                    </div>
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label>Description / Stay Tuned Details</label>
-                        <textarea id="dropDesc" rows="2" placeholder="Dropping soon for campus innovators..." required></textarea>
-                    </div>
+                    <div class="form-group"><label>Title</label><input type="text" id="dropTitle" placeholder="Title" required></div>
+                    <div class="form-group"><label>Media</label><input type="file" id="dropFile" accept="image/*,video/*" required style="background:#fff;"></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Description</label><textarea id="dropDesc" rows="2" placeholder="Description..." required></textarea></div>
                 </div>
-                <button type="submit" class="btn-action">Publish Coming Soon Drop ✨</button>
+                <button type="submit" class="btn-action">Publish Drop ✨</button>
             </form>
             <div id="comingSoonListContainer" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 4. QR Code Manager -->
+        <!-- 6. QR Code Manager -->
         <div class="admin-section">
-            <h2>📷 4. Founder UPI QR Code Manager</h2>
+            <h2>📷 6. Founder UPI QR Code Manager</h2>
             <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1.5rem;">
                 <input type="file" id="newQrFile" accept="image/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800;">
                 <button onclick="uploadNewQrCode()" class="btn-action">Upload QR Code ➕</button>
@@ -144,65 +171,55 @@
             <div id="qrListContainer" style="display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 5. Launch Product (Multi-Angle & Delivery Charge) -->
+        <!-- 7. Launch Product -->
         <div class="admin-section">
-            <h2>📦 5. Launch Product (Multi-Angle Images & Delivery Charge)</h2>
+            <h2>📦 7. Launch Product</h2>
             <form onsubmit="handleNewProduct(event)">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label>Product Name</label>
-                        <input type="text" id="prodName" placeholder="e.g. Hoknex Heavy Hoodie" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select id="prodCategory">
-                            <option value="Apparel">Apparel</option>
-                            <option value="Footwear">Footwear & Gear</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Price (₹)</label>
-                        <input type="number" id="prodPrice" placeholder="1499" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Delivery Charge for this Product (₹)</label>
-                        <input type="number" id="prodDelivery" placeholder="49" value="0" required>
-                    </div>
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label>Upload Multiple Images (Multi-Angle Gallery)</label>
-                        <input type="file" id="prodGalleryFiles" accept="image/*" multiple required style="background:#fff;">
-                    </div>
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label>Description</label>
-                        <textarea id="prodDesc" rows="2" placeholder="Heavyweight organic cotton fleece..." required></textarea>
-                    </div>
+                    <div class="form-group"><label>Product Name</label><input type="text" id="prodName" placeholder="Name" required></div>
+                    <div class="form-group"><label>Category</label><select id="prodCategory"><option value="Apparel">Apparel</option><option value="Footwear">Footwear & Gear</option></select></div>
+                    <div class="form-group"><label>Price (₹)</label><input type="number" id="prodPrice" placeholder="1499" required></div>
+                    <div class="form-group"><label>Delivery Charge (₹)</label><input type="number" id="prodDelivery" placeholder="49" value="0" required></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Gallery Images</label><input type="file" id="prodGalleryFiles" accept="image/*" multiple required style="background:#fff;"></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Description</label><textarea id="prodDesc" rows="2" placeholder="Description..." required></textarea></div>
                 </div>
                 <button type="submit" class="btn-action">Publish Product ✨</button>
             </form>
         </div>
 
-        <!-- 6. Catalog, Stock, Sizes & Demand Votes -->
+        <!-- 8. Catalog Manager -->
         <div class="admin-section">
-            <h2>🗂️ 6. Catalog Stock, Sizes & Demand Voting Manager</h2>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.0rem;">Mark items in/out of stock, update available sizes, and view customer "Vote to Come Fast" demands.</p>
+            <h2>🗂️ 8. Catalog Stock & Sizes Manager</h2>
             <div id="productsTableWrap" style="overflow-x:auto;"><p>Loading catalog...</p></div>
         </div>
 
-        <!-- 7. Customer Orders & Custom Tracker Messaging -->
+        <!-- 9. Customer Orders -->
         <div class="admin-section">
-            <h2>🚚 7. Customer Orders, Invoices & Custom Tracker Messaging</h2>
+            <h2>🚚 9. Customer Orders & Invoices</h2>
             <div id="ordersTableWrap" style="overflow-x:auto;"><p>Loading orders...</p></div>
         </div>
 
-        <!-- 8. Newsletter Subscribers & Direct Emailer -->
+        <!-- 10. Newsletter Subscribers -->
         <div class="admin-section">
-            <h2>💌 8. Newsletter Subscribers & Direct Emailer</h2>
+            <h2>💌 10. Newsletter Subscribers</h2>
             <div id="leadsTableWrap" style="overflow-x:auto;"><p>Loading leads...</p></div>
         </div>
     </div>
 
     <script>
         const API_URL = '/api';
+        const OWNER_PASSWORD = 'hoknex2026'; // You can change this password anytime
+
+        function verifyAdminPassword() {
+            const val = document.getElementById('adminPasswordInput').value;
+            if (val === OWNER_PASSWORD) {
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('adminMainContent').style.display = 'block';
+                loadAllAdminData();
+            } else {
+                alert('Incorrect owner password! Please try again.');
+            }
+        }
 
         function showProModal(title, message, callback = null) {
             document.getElementById('proModalTitle').innerText = title;
@@ -230,26 +247,90 @@
             showProModal('Success', 'Announcement banner updated successfully!');
         }
 
-        // --- Magazine Admin Manager with Delete Support ---
+        // --- Support / Help Desk & Certificate Verification Dashboard ---
+        async function renderSupportTicketsTable() {
+            try {
+                const res = await fetch(`${API_URL}/support`);
+                const tickets = await res.json();
+                const wrap = document.getElementById('supportTicketsTableWrap');
+                if(!tickets || tickets.length === 0) {
+                    wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No support or donation tickets submitted yet.</p>`;
+                    return;
+                }
+                wrap.innerHTML = `
+                    <table>
+                        <thead><tr><th>User / Donor</th><th>Query / Inquiry / Proof</th><th>Status</th><th>Actions & Certificate Generator</th></tr></thead>
+                        <tbody>
+                            ${tickets.map((t, idx) => {
+                                const hasProof = t.description.includes('Proof:');
+                                let proofUrl = '';
+                                if (hasProof) {
+                                    const match = t.description.match(/Proof:\s*(https?:\/\/[^\s]+)/);
+                                    if (match) proofUrl = match[1];
+                                }
+                                return `
+                                    <tr>
+                                        <td><b>@${t.username}</b><br><small>${new Date(t.createdAt).toLocaleString()}</small></td>
+                                        <td>
+                                            ${t.description}
+                                            ${proofUrl ? `<br><a href="${proofUrl}" target="_blank" style="color:var(--primary-trust); font-weight:900; text-decoration:underline;">🔍 View Payment Proof Screenshot</a>` : ''}
+                                        </td>
+                                        <td><span style="background:${t.status==='Resolved'?'#ECFDF5':'#FFFBEB'}; color:${t.status==='Resolved'?'#059669':'#D97706'}; padding:4px 8px; border-radius:6px; font-size:0.75rem;">${t.status}</span></td>
+                                        <td>
+                                            <div style="display:flex; flex-direction:column; gap:6px;">
+                                                <input type="text" id="cert-link-${idx}" placeholder="Certificate URL or PDF link..." value="${t.reply || ''}" style="padding:6px; font-size:0.8rem;">
+                                                <button onclick="verifyAndSendCertificate('${t._id}', ${idx})" class="btn-action" style="background:#10B981; padding:4px 8px; font-size:0.75rem;">Verify & Send Certificate 🎓</button>
+                                                <button onclick="deleteTicket('${t._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete Ticket ✕</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch(e) { console.error(e); }
+        }
+
+        async function verifyAndSendCertificate(ticketId, idx) {
+            const certUrl = document.getElementById(`cert-link-${idx}`).value.trim();
+            if(!certUrl) {
+                showProModal('Link Required', 'Please enter a certificate download link or URL before verifying.');
+                return;
+            }
+            try {
+                await fetch(`${API_URL}/support/${ticketId}/reply`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reply: certUrl })
+                });
+                showProModal('Verified & Sent! 🎉', 'Certificate link successfully dispatched to the user portal!');
+                renderSupportTicketsTable();
+            } catch(e) { showProModal('Error', 'Could not verify ticket.'); }
+        }
+
+        async function deleteTicket(ticketId) {
+            showProModal('Confirm Delete', 'Delete this ticket?', async () => {
+                await fetch(`${API_URL}/support/${ticketId}`, { method: 'DELETE' });
+                renderSupportTicketsTable();
+                showProModal('Deleted', 'Ticket removed.');
+            });
+        }
+
+        // --- Magazine Manager ---
         async function renderMagazineTable() {
             try {
                 const res = await fetch(`${API_URL}/magazine/articles`);
                 const articles = await res.json();
                 const wrap = document.getElementById('magazineTableWrap');
-                if(!articles || articles.length === 0) {
-                    wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No articles published yet.</p>`;
-                    return;
-                }
+                if(!articles || articles.length === 0) { wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No articles published yet.</p>`; return; }
                 wrap.innerHTML = `
                     <table>
                         <thead><tr><th>Title</th><th>Category</th><th>Type</th><th>Author</th><th>Action</th></tr></thead>
                         <tbody>
                             ${articles.map(a => `
                                 <tr>
-                                    <td><b>${a.title}</b><br><small>${a.excerpt ? a.excerpt.substring(0,50) : ''}...</small></td>
-                                    <td>${a.category}</td>
-                                    <td><span style="background:#E4E0D8; padding:2px 6px; border-radius:4px; font-size:0.75rem;">${a.type ? a.type.toUpperCase() : 'TEXT'}</span></td>
-                                    <td>${a.author}</td>
+                                    <td><b>${a.title}</b></td><td>${a.category}</td><td>${a.type || 'text'}</td><td>${a.author}</td>
                                     <td><button onclick="deleteArticle('${a._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
                                 </tr>
                             `).join('')}
@@ -264,7 +345,6 @@
             const title = document.getElementById('magTitle').value;
             const category = document.getElementById('magCategory').value;
             const type = document.getElementById('magType').value;
-            const icon = type === 'video' ? '🎥' : type === 'image' ? '🖼️' : type === 'book' ? '📚' : '📰';
             const authorInfo = document.getElementById('magAuthor').value;
             const excerpt = document.getElementById('magExcerpt').value;
             const body = document.getElementById('magBody').value;
@@ -274,91 +354,87 @@
             if (fileInput.files && fileInput.files[0]) {
                 const formData = new FormData();
                 formData.append('image', fileInput.files[0]);
-                try {
-                    const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
-                    const upData = await upRes.json();
-                    mediaUrl = upData.url;
-                } catch(err) {
-                    showProModal('Error', 'Media upload failed');
-                    return;
-                }
+                const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                const upData = await upRes.json();
+                mediaUrl = upData.url;
             }
 
             let author = authorInfo.split('•')[0].trim();
             let time = authorInfo.split('•')[1] ? authorInfo.split('•')[1].trim() : '4 min read';
 
-            const newArt = { title, category, type, mediaUrl, icon, author, time, excerpt, body };
-
-            try {
-                await fetch(`${API_URL}/magazine/articles`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newArt)
-                });
-                showProModal('Success', 'Article published to Global Zine!');
-                document.getElementById('magTitle').value = '';
-                document.getElementById('magExcerpt').value = '';
-                document.getElementById('magBody').value = '';
-                document.getElementById('magMediaFile').value = '';
-                renderMagazineTable();
-            } catch(e) { showProModal('Error', 'Failed to publish article.'); }
+            await fetch(`${API_URL}/magazine/articles`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, category, type, mediaUrl, icon: '📰', author, time, excerpt, body })
+            });
+            showProModal('Success', 'Article published!');
+            renderMagazineTable();
         }
 
         function deleteArticle(id) {
-            showProModal('Confirm Delete', 'Are you sure you want to delete this article?', async () => {
+            showProModal('Confirm Delete', 'Delete article?', async () => {
                 await fetch(`${API_URL}/magazine/articles/${id}`, { method: 'DELETE' });
                 renderMagazineTable();
-                showProModal('Deleted', 'Article removed from Zine.');
+                showProModal('Deleted', 'Article removed.');
             });
+        }
+
+        // Campaigns
+        async function renderCampaignManager() {
+            const res = await fetch(`${API_URL}/store/campaigns`);
+            const camps = await res.json();
+            document.getElementById('campaignListContainer').innerHTML = camps.map(c => `
+                <div style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:12px; width:180px; text-align:center;">
+                    <img src="${c.image}" style="width:100%; height:100px; object-fit:cover; border-radius:8px; margin-bottom:6px;">
+                    <h5 style="font-weight:900; font-size:0.85rem;">${c.title}</h5>
+                    <button onclick="deleteCampaign('${c._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem; margin-top:6px;">Delete</button>
+                </div>
+            `).join('');
+        }
+        async function handleCampaignUpload(e) {
+            e.preventDefault();
+            const title = document.getElementById('campTitle').value;
+            const desc = document.getElementById('campDesc').value;
+            const fileInput = document.getElementById('campFile');
+            const formData = new FormData(); formData.append('image', fileInput.files[0]);
+            const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+            const upData = await upRes.json();
+            await fetch(`${API_URL}/store/campaigns`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, desc, image: upData.url }) });
+            renderCampaignManager();
+            showProModal('Success', 'Campaign added!');
+        }
+        async function deleteCampaign(id) {
+            await fetch(`${API_URL}/store/campaigns/${id}`, { method: 'DELETE' });
+            renderCampaignManager();
         }
 
         // Coming Soon Drops
         async function renderComingSoonManager() {
-            try {
-                const res = await fetch(`${API_URL}/store/drops`);
-                const drops = await res.json();
-                const container = document.getElementById('comingSoonListContainer');
-                if(!drops || drops.length === 0) { container.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No coming soon drops uploaded yet.</p>`; return; }
-                container.innerHTML = drops.map((d) => `
-                    <div style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:12px; width:180px; text-align:center;">
-                        <img src="${d.image}" style="width:100%; height:100px; object-fit:cover; border-radius:8px; margin-bottom:6px;">
-                        <h5 style="font-weight:900; font-size:0.85rem;">${d.title}</h5>
-                        <button onclick="deleteDrop('${d._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem; margin-top:6px;">Delete Drop</button>
-                    </div>
-                `).join('');
-            } catch(e) { console.error(e); }
+            const res = await fetch(`${API_URL}/store/drops`);
+            const drops = await res.json();
+            document.getElementById('comingSoonListContainer').innerHTML = drops.map(d => `
+                <div style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:12px; width:180px; text-align:center;">
+                    <img src="${d.image}" style="width:100%; height:100px; object-fit:cover; border-radius:8px; margin-bottom:6px;">
+                    <h5 style="font-weight:900; font-size:0.85rem;">${d.title}</h5>
+                    <button onclick="deleteDrop('${d._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem; margin-top:6px;">Delete</button>
+                </div>
+            `).join('');
         }
-
         async function handleComingSoonUpload(e) {
             e.preventDefault();
             const title = document.getElementById('dropTitle').value;
             const desc = document.getElementById('dropDesc').value;
             const fileInput = document.getElementById('dropFile');
-            if(fileInput.files && fileInput.files[0]) {
-                const formData = new FormData();
-                formData.append('image', fileInput.files[0]);
-                try {
-                    const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
-                    const upData = await upRes.json();
-                    await fetch(`${API_URL}/store/drops`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title, desc, image: upData.url })
-                    });
-                    renderComingSoonManager();
-                    showProModal('Success', 'Coming soon drop published!');
-                    document.getElementById('dropTitle').value = '';
-                    document.getElementById('dropDesc').value = '';
-                } catch(err) { showProModal('Error', 'Upload failed'); }
-            }
+            const formData = new FormData(); formData.append('image', fileInput.files[0]);
+            const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+            const upData = await upRes.json();
+            await fetch(`${API_URL}/store/drops`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, desc, image: upData.url }) });
+            renderComingSoonManager();
+            showProModal('Success', 'Drop added!');
         }
-
-        function deleteDrop(id) {
-            showProModal('Confirm Delete', 'Are you sure you want to delete this drop?', async () => {
-                await fetch(`${API_URL}/store/drops/${id}`, { method: 'DELETE' });
-                renderComingSoonManager();
-                showProModal('Deleted', 'Drop removed successfully.');
-            });
+        async function deleteDrop(id) {
+            await fetch(`${API_URL}/store/drops/${id}`, { method: 'DELETE' });
+            renderComingSoonManager();
         }
 
         // QR Manager
@@ -396,15 +472,15 @@
             }
         }
 
-        function deleteQr(index) {
+        function deleteQr(id) {
             showProModal('Confirm Delete', 'Delete this QR code?', async () => {
-                await fetch(`${API_URL}/store/qrs/${index}`, { method: 'DELETE' });
+                await fetch(`${API_URL}/store/qrs/${id}`, { method: 'DELETE' });
                 renderQrManager();
                 showProModal('Deleted', 'QR removed.');
             });
         }
 
-        // Catalog
+        // Products
         async function handleNewProduct(e) {
             e.preventDefault();
             const name = document.getElementById('prodName').value;
@@ -623,12 +699,16 @@
             });
         }
 
-        renderMagazineTable();
-        renderComingSoonManager();
-        renderQrManager();
-        renderProductsTable();
-        renderOrdersTable();
-        renderLeadsTable();
+        function loadAllAdminData() {
+            renderSupportTicketsTable();
+            renderMagazineTable();
+            renderCampaignManager();
+            renderComingSoonManager();
+            renderQrManager();
+            renderProductsTable();
+            renderOrdersTable();
+            renderLeadsTable();
+        }
     </script>
 </body>
 </html>
