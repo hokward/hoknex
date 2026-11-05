@@ -163,7 +163,6 @@ const ComingSoonDropSchema = new mongoose.Schema({
 });
 const ComingSoonDrop = mongoose.models.ComingSoonDrop || mongoose.model('ComingSoonDrop', ComingSoonDropSchema);
 
-// NEW: Visual Campaign Showcase Schema
 const CampaignSchema = new mongoose.Schema({
     title: String,
     desc: String,
