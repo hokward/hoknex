@@ -6,8 +6,89 @@
     <title>Hoknex — Connect Every Campus in the World</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Mobile-First Responsive & Ultra-Premium Enhancements */
+        @media (max-width: 968px) {
+            .hoknex-navbar {
+                padding: 1rem 1.5rem !important;
+            }
+            .nav-links {
+                display: none; /* Mobile optimization */
+            }
+            .hoknex-hero {
+                flex-direction: column !important;
+                padding: 2.5rem 1.5rem !important;
+                gap: 2rem !important;
+            }
+            .hero-left h1 {
+                font-size: 2.6rem !important;
+            }
+            .hero-right {
+                max-width: 100% !important;
+                padding: 2rem 1.5rem !important;
+            }
+            .hoknex-showcase, .live-preview-section, .hoknex-founder-section, .hoknex-footer-multi {
+                padding: 3rem 1.5rem !important;
+            }
+            .founder-card-box {
+                flex-direction: column !important;
+                padding: 2rem !important;
+                gap: 2rem !important;
+                text-align: center;
+            }
+            .founder-image-wrapper {
+                margin: 0 auto;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr !important;
+                gap: 2.5rem !important;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+
+        /* Premium Toast Notification */
+        #hoknexToastContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .hoknex-toast {
+            background: rgba(13, 18, 30, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 14px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            pointer-events: auto;
+            animation: slideInToast 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            max-width: 380px;
+        }
+        @keyframes slideInToast {
+            from { transform: translateX(100%) scale(0.9); opacity: 0; }
+            to { transform: translateX(0) scale(1); opacity: 1; }
+        }
+    </style>
 </head>
 <body>
+
+    <!-- Toast Notification Container -->
+    <div id="hoknexToastContainer"></div>
 
     <!-- Navbar -->
     <header class="hoknex-navbar">
@@ -17,7 +98,7 @@
         <nav class="nav-links">
             <a href="#vision">Vision</a>
             <a onclick="openFeaturesModal()">Features</a>
-            <a href="#community">Community</a>
+            <a href="#community">Campus Pulse</a>
         </nav>
         <a href="#auth-box" class="btn-join">Join Network</a>
     </header>
@@ -30,11 +111,11 @@
             <p class="hero-subtitle">Hoknex is the ultimate global student network. Bringing together colleges, schools, and campus communities from every corner of the planet into one powerful platform.</p>
             
             <!-- Cartoon Animal Mascot Widget -->
-            <div class="mascot-container">
-                <div class="mascot-avatar">🦊</div>
+            <div class="mascot-container" style="display:flex; align-items:center; gap:12px; background:var(--paper); border:3px solid var(--border); padding:12px 16px; border-radius:14px; box-shadow:var(--shadow-art-sm); width:fit-content; margin-bottom:2rem;">
+                <div class="mascot-avatar" style="font-size:2rem;">🦊</div>
                 <div class="mascot-text">
-                    <p>Hoksy says hello!</p>
-                    <span>Your friendly campus mascot guiding global students</span>
+                    <p style="font-weight:900; font-size:0.95rem;">Hoksy says hello!</p>
+                    <span style="font-size:0.8rem; color:var(--ink-light); font-weight:800;">Your friendly campus mascot guiding global students</span>
                 </div>
             </div>
 
@@ -71,7 +152,7 @@
                     <input type="password" id="loginPassword" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="btn-primary">Sign In 🚀</button>
-                <p id="loginError" class="error-msg"></p>
+                <p id="loginError" class="error-msg" style="color:#fb7185; font-size:0.85rem; margin-top:5px;"></p>
             </form>
 
             <!-- Create Account Form -->
@@ -95,11 +176,11 @@
                 
                 <!-- OTP Input (Hidden by default) -->
                 <div class="form-group" id="otpGroup" style="display:none;">
-                    <label style="color: var(--accent-purple); font-weight: bold;">Enter 6-Digit OTP from Email</label>
+                    <label style="color: var(--accent-cyan); font-weight: bold;">Enter 6-Digit OTP from Email</label>
                     <input type="text" id="otpInput" placeholder="123456" maxlength="6">
                 </div>
 
-                <button type="submit" id="createAccountBtn" class="btn-create btn-primary" style="width:100%; margin-top:10px;">Create Account</button>
+                <button type="submit" id="createAccountBtn" class="btn-primary" style="width:100%; margin-top:10px;">Create Account</button>
             </form>
         </div>
     </section>
@@ -135,14 +216,41 @@
         </div>
     </section>
 
-    <!-- Live Database Preview Section -->
+    <!-- Replaced Active Projects with Campus Pulse & Engagement Hub -->
     <section class="live-preview-section" id="community">
         <div class="preview-container">
-            <h3>🔥 Live Active Projects on Hoknex</h3>
-            <div id="realProjectsList" class="real-items-grid">
-                <div class="real-item-card">
-                    <h4>Loading live projects...</h4>
-                    <p>Fetching real data from your MongoDB database.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+                <div>
+                    <span class="pill-badge" style="background:var(--accent-purple); color:#fff; margin-bottom:0.5rem;">⚡ Global Engagement Hub</span>
+                    <h3 style="font-size: 2.1rem; font-weight: 900; letter-spacing: -0.5px; margin:0;">Live Campus Pulse & Trends</h3>
+                </div>
+                <a href="#auth-box" class="btn-join" style="font-size:0.9rem; padding: 0.5rem 1.2rem;">Join Discussion ✨</a>
+            </div>
+
+            <div class="real-items-grid">
+                <div class="real-item-card" style="border-left: 6px solid var(--accent-blue);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <span style="font-size:0.75rem; font-weight:900; background:var(--accent-yellow); padding:3px 8px; border-radius:6px; border:2px solid var(--border);">HACKATHON 2026</span>
+                        <span style="font-size:0.8rem; color:var(--ink-light); font-weight:800;">🔥 Trending</span>
+                    </div>
+                    <h4>Qryvon Sync & Global Build Fest</h4>
+                    <p>Connecting student innovators across colleges to build cutting-edge IoT wearables, games, and full-stack platforms.</p>
+                </div>
+                <div class="real-item-card" style="border-left: 6px solid var(--accent-cyan);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <span style="font-size:0.75rem; font-weight:900; background:var(--accent-cyan); color:#fff; padding:3px 8px; border-radius:6px; border:2px solid var(--border);">STUDY CIRCLE</span>
+                        <span style="font-size:0.8rem; color:var(--ink-light); font-weight:800;">💬 Active</span>
+                    </div>
+                    <h4>AI & Code Optimization Squads</h4>
+                    <p>Peer-led study groups sharing code repositories, debugging algorithms, and mastering system architecture together.</p>
+                </div>
+                <div class="real-item-card" style="border-left: 6px solid var(--accent-purple);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <span style="font-size:0.75rem; font-weight:900; background:var(--accent-purple); color:#fff; padding:3px 8px; border-radius:6px; border:2px solid var(--border);">CAMPUS LIFE</span>
+                        <span style="font-size:0.8rem; color:var(--ink-light); font-weight:800;">✨ Popular</span>
+                    </div>
+                    <h4>Global Creator Network & Showcase</h4>
+                    <p>Display your graphic design work, short-form video edits, and indie games directly to international student peers.</p>
                 </div>
             </div>
         </div>
@@ -188,9 +296,9 @@
             <div class="footer-col">
                 <h4>Community</h4>
                 <ul>
-                    <li><a href="#community">Active Projects</a></li>
+                    <li><a href="#community">Campus Pulse</a></li>
                     <li><a href="#community">Student Clubs</a></li>
-                    <li><a href="#community">Campus Feed</a></li>
+                    <li><a href="#community">Global Feed</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -210,12 +318,12 @@
 
     <!-- Universal Modern Centered Notification / Popup Modal -->
     <div id="hoknexPopupModal" class="modal-overlay">
-        <div class="modal-content text-center" style="max-width: 400px; text-align: center;">
+        <div class="modal-content text-center" style="max-width: 420px; text-align: center;">
             <button class="close-modal" onclick="closePopupModal()">&times;</button>
-            <div id="popupModalEmoji" style="font-size: 2.8rem; margin-bottom: 0.5rem;">✨</div>
-            <h2 id="popupModalTitle" style="font-size: 1.4rem; margin-bottom: 0.75rem;">Notice</h2>
-            <p id="popupModalText" style="margin-bottom: 1.5rem; font-size: 0.95rem;">Message goes here...</p>
-            <button class="btn-primary" onclick="closePopupModal()" style="width: 100%;">Got it!</button>
+            <div id="popupModalEmoji" style="font-size: 3rem; margin-bottom: 0.5rem;">✨</div>
+            <h2 id="popupModalTitle" style="font-size: 1.6rem; margin-bottom: 0.75rem;">Notice</h2>
+            <p id="popupModalText" style="margin-bottom: 1.8rem; font-size: 0.98rem; line-height: 1.6; color: var(--ink-light);">Message goes here...</p>
+            <button class="btn-primary" onclick="closePopupModal()" style="width: 100%; padding: 0.9rem;">Got it!</button>
         </div>
     </div>
 
@@ -263,7 +371,7 @@
             <button class="close-modal" onclick="closeModal('supportModal')">&times;</button>
             <h2>🛠️ Hoknex Platform Support</h2>
             <p>Need assistance or have queries? Reach out to our official team directly:</p>
-            <p>📧 <strong>Official Email:</strong> <a href="mailto:hoknex.in@gmail.com" style="color: #3b82f6; text-decoration: none;">support@hoknex.edu</a></p>
+            <p>📧 <strong>Official Email:</strong> <a href="mailto:support@hoknex.edu" style="color: var(--accent-blue); text-decoration: none;">support@hoknex.edu</a></p>
             <p>📞 <strong>Send Message:</strong> In Queries Section (Mon-Fri, 9 AM - 6 PM)</p>
             
             <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 1.5rem 0;">
@@ -285,7 +393,22 @@
 
     <!-- Script to Handle Modern Custom Popups, Modals, & Auth Logic -->
     <script>
-        // Custom Modern Popup Handler replacing native alert()
+        // Premium Toast Notification System
+        function showHoknexToast(message, emoji = '✨') {
+            const container = document.getElementById('hoknexToastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'hoknex-toast';
+            toast.innerHTML = `<span style="font-size: 1.3rem;">${emoji}</span> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-15px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // Custom Modern Centered Modal Handler
         function showHoknexPopup(title, message, emoji = '✨') {
             document.getElementById('popupModalTitle').innerText = title;
             document.getElementById('popupModalText').innerText = message;
@@ -342,7 +465,7 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    showHoknexPopup('Query Sent!', 'Your query has been successfully sent to the Hoknex support team!', '🎉');
+                    showHoknexPopup('Query Sent Successfully!', 'Your support ticket has been received by the Hoknex team. We will get back to you shortly!', '🎉');
                     closeModal('supportModal');
                     document.getElementById('supportDesc').value = '';
                     if (screenshotInput) screenshotInput.value = '';
@@ -367,26 +490,6 @@
         }
         fetchLiveStats();
 
-        // Fetch Real Database Projects
-        async function fetchRealProjects() {
-            try {
-                const res = await fetch('/api/projects');
-                const projects = await res.json();
-                const container = document.getElementById('realProjectsList');
-                if(projects.length > 0) {
-                    container.innerHTML = projects.map(p => `
-                        <div class="real-item-card">
-                            <h4>🚀 ${p.title}</h4>
-                            <p>${p.pitch}</p>
-                        </div>
-                    `).join('');
-                } else {
-                    container.innerHTML = `<div class="real-item-card"><h4>No projects yet</h4><p>Be the first to launch a project on Hoknex!</p></div>`;
-                }
-            } catch(e) { console.error('Projects error:', e); }
-        }
-        fetchRealProjects();
-
         // Handle Login API
         async function handleLogin(e) {
             e.preventDefault();
@@ -404,12 +507,17 @@
                 const data = await res.json();
                 if(res.ok) {
                     localStorage.setItem('hoknex_user', data.username || identifier);
-                    window.location.href = 'feed.html';
+                    showHoknexToast('Login successful! Redirecting to feed...', '🚀');
+                    setTimeout(() => {
+                        window.location.href = 'feed.html';
+                    }, 1000);
                 } else {
                     err.innerText = data.error || 'Login failed';
+                    showHoknexToast(data.error || 'Login failed', '⚠️');
                 }
             } catch(err) {
                 err.innerText = 'Connection error.';
+                showHoknexToast('Connection error.', '❌');
             }
         }
 
@@ -440,7 +548,7 @@
 
                     if (data.success) {
                         pendingVerificationEmail = email;
-                        showHoknexPopup('Verification Code Sent', 'A 6-digit code has been sent to your email!', '✉️');
+                        showHoknexPopup('Verification Code Sent', 'A secure 6-digit code has been dispatched to your campus email address!', '✉️');
 
                         document.getElementById('regName').parentElement.style.display = 'none';
                         document.getElementById('regUsername').parentElement.style.display = 'none';
@@ -450,7 +558,7 @@
                         document.getElementById('otpGroup').style.display = 'block';
                         btn.innerText = "Verify OTP & Create Account";
                     } else {
-                        showHoknexPopup('Error', data.error, '⚠️');
+                        showHoknexPopup('Registration Notice', data.error, '⚠️');
                         btn.innerText = "Create Account";
                     }
                 } catch (e) {
@@ -462,7 +570,7 @@
             else {
                 const otp = document.getElementById('otpInput').value;
                 if (!otp) {
-                    showHoknexPopup('Missing Code', 'Please enter the OTP!', '⚠️');
+                    showHoknexToast('Please enter the verification OTP!', '⚠️');
                     return;
                 }
 
@@ -479,7 +587,7 @@
 
                     if (data.success) {
                         localStorage.setItem('hoknex_user', document.getElementById('regUsername').value);
-                        showHoknexPopup('Welcome!', 'Welcome to Hoknex! Account created successfully.', '🎉');
+                        showHoknexPopup('Welcome to Hoknex!', 'Your student account has been successfully verified and created.', '🎉');
                         setTimeout(() => {
                             window.location.href = 'feed.html';
                         }, 1200);
