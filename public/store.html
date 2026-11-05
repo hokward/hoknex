@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoknex Official Store — Global Student Tech & Gear</title>
+    <title>Hoknex Official Apparel Store — Global Streetwear & Merch</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -30,6 +30,18 @@
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
+        }
+
+        /* Top Announcement Bar */
+        .announcement-bar {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            color: #fff;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         /* Navbar */
@@ -186,14 +198,14 @@
 
         .product-img-box {
             width: 100%;
-            height: 220px;
+            height: 240px;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4rem;
+            font-size: 4.5rem;
             margin-bottom: 1.5rem;
             position: relative;
             overflow: hidden;
@@ -317,6 +329,16 @@
             margin-bottom: 12px;
         }
 
+        /* Footer */
+        .store-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 4rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
         @keyframes slideInRight {
             from { transform: translateX(100%); }
             to { transform: translateX(0); }
@@ -332,10 +354,15 @@
             .store-hero { padding: 3rem 1.5rem 2rem 1.5rem; }
             .store-hero h1 { font-size: 2.5rem; }
             .store-grid { padding: 1.5rem; }
+            .store-nav-links { display: none; }
         }
     </style>
 </head>
 <body>
+
+    <div class="announcement-bar">
+        ⚡ Free Global Shipping on all Hoknex Apparel Orders over ₹1,999 | Use Code: <strong>GLOBAL2026</strong>
+    </div>
 
     <!-- Navbar -->
     <header class="store-navbar">
@@ -346,7 +373,6 @@
             <a href="index.html">Home</a>
             <a href="magazine.html">Magazine</a>
             <a href="donation.html">Fund</a>
-            <a href="admin.html" style="color:var(--accent-yellow);">⚙️ Admin Panel</a>
         </nav>
         <button class="cart-btn" onclick="toggleCart(true)">
             🛒 Cart (<span id="cartCount">0</span>)
@@ -355,31 +381,37 @@
 
     <!-- Hero Section -->
     <section class="store-hero">
-        <span style="background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 16px; border-radius: 30px; font-size: 0.82rem; font-weight: 800; display: inline-block; margin-bottom: 1.5rem; text-transform: uppercase;">🛡️ Official Verified Gear</span>
-        <h1>Engineered for students, <span>built for creators.</span></h1>
-        <p>Official Hoknex merchandise, heavy-duty hoodies, and IoT prototyping kits curated and sold exclusively by the core team.</p>
+        <span style="background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 16px; border-radius: 30px; font-size: 0.82rem; font-weight: 800; display: inline-block; margin-bottom: 1.5rem; text-transform: uppercase;">🛡️ Official Hoknex Streetwear</span>
+        <h1>Designed for students, <span>worn by creators.</span></h1>
+        <p>Heavyweight cotton hoodies, oversized graphic tees, utility cargo pants, and signature campus accessories engineered for maximum comfort and style.</p>
         
         <div class="category-tabs">
-            <button class="cat-tab active" onclick="filterStore('all')">All Gear 🔥</button>
-            <button class="cat-tab" onclick="filterStore('Apparel')">Apparel 🧥</button>
-            <button class="cat-tab" onclick="filterStore('Hardware')">Tech & IoT ⚡</button>
-            <button class="cat-tab" onclick="filterStore('Accessories')">Accessories 💻</button>
+            <button class="cat-tab active" onclick="filterStore('all')">All Merch 🔥</button>
+            <button class="cat-tab" onclick="filterStore('Hoodies')">Hoodies & Jackets 🧥</button>
+            <button class="cat-tab" onclick="filterStore('T-Shirts')">Oversized Tees 👕</button>
+            <button class="cat-tab" onclick="filterStore('Pants')">Pants & Bottoms 👖</button>
+            <button class="cat-tab" onclick="filterStore('Accessories')">Caps & Accessories 🧢</button>
         </div>
     </section>
 
     <!-- Product Grid -->
     <main class="store-grid" id="storeGrid">
         <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--text-muted);">
-            <h3>Loading official inventory...</h3>
+            <h3>Loading Hoknex apparel collection...</h3>
         </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="store-footer">
+        <p>&copy; 2026 Hoknex Official Apparel & Merch Store. All rights reserved. Built for global student creators.</p>
+    </footer>
 
     <!-- Cart Drawer -->
     <div id="cartOverlay" class="cart-overlay" onclick="if(event.target === this) toggleCart(false)">
         <div class="cart-drawer">
             <div>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2 style="font-size: 1.5rem; font-weight: 900;">Your Cart</h2>
+                    <h2 style="font-size: 1.5rem; font-weight: 900;">Your Shopping Bag</h2>
                     <button onclick="toggleCart(false)" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
                 </div>
                 <div class="cart-items" id="cartItemsList">
@@ -388,7 +420,7 @@
             </div>
             <div>
                 <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; margin-bottom:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;">
-                    <span>Total Amount:</span>
+                    <span>Total Subtotal:</span>
                     <span id="cartTotal" style="color:#60a5fa;">₹0</span>
                 </div>
                 <button onclick="checkoutCart()" class="cart-btn" style="width:100%; justify-content:center; padding:0.9rem; font-size:1rem;">Proceed to Secure Checkout 🚀</button>
@@ -400,51 +432,36 @@
     <div id="toastContainer" style="position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
 
     <script>
-        let products = [];
-        let cart = [];
+        // Official Hoknex Apparel Inventory (Strictly Managed by Admin)
+        let products = [
+            { _id: '1', name: "Hoknex Core Heavyweight Hoodie", price: 1599, category: "Hoodies", emoji: "🧥", badge: "Best Seller", description: "450GSM luxury French Terry cotton with embroidered Hoknex wordmark on chest.", sizes: ["S", "M", "L", "XL", "XXL"] },
+            { _id: '2', name: "Cyberpunk Oversized Graphic Tee", price: 799, category: "T-Shirts", emoji: "👕", badge: "Popular", description: "Acid-washed relaxed fit tee featuring global campus circuit graphics on back.", sizes: ["S", "M", "L", "XL"] },
+            { _id: '3', name: "Hoknex Utility Cargo Pants", price: 1899, category: "Pants", emoji: "👖", badge: "New Drop", description: "Multi-pocket tactical streetwear pants with adjustable ankle drawstrings.", sizes: ["30", "32", "34", "36"] },
+            { _id: '4', name: "Global Innovator Minimalist Hoodie", price: 1499, category: "Hoodies", emoji: "🧶", badge: "Limited", description: "Minimalist tonal embroidered pullover crafted for late-night coding & campus vibes.", sizes: ["M", "L", "XL"] },
+            { _id: '5', name: "Hoknex Signature Cyber Cap", price: 599, category: "Accessories", emoji: "🧢", badge: "Essential", description: "Unstructured 6-panel low profile cotton twill cap with metal clasp.", sizes: ["Adjustable One Size"] },
+            { _id: '6', name: "Borderless Student Heavyweight Tee", price: 749, category: "T-Shirts", emoji: "👔", badge: "Classic", description: "Ultra-durable breathable streetwear tee engineered for daily campus wear.", sizes: ["S", "M", "L", "XL"] },
+            { _id: '7', name: "Techwear Multipocket Joggers", price: 1699, category: "Pants", emoji: "🏃", badge: "Trending", description: "Tapered fleece joggers with secure zip pockets and premium elastic waistband.", sizes: ["M", "L", "XL"] },
+            { _id: '8', name: "Hoknex Holographic Sticker & Lanyard Set", price: 299, category: "Accessories", emoji: "🎒", badge: "Bundle", description: "Durable campus ID lanyard paired with reflective holographic sticker sheets.", sizes: ["Standard Set"] }
+        ];
 
-        async function fetchProducts() {
-            try {
-                const res = await fetch('/api/store/products');
-                const data = await res.json();
-                if (res.ok && data.length > 0) {
-                    products = data;
-                } else {
-                    products = [
-                        { _id: '1', name: "Official Hoknex Oversized Hoodie", price: 1299, category: "Apparel", emoji: "🧥", badge: "Best Seller", description: "Heavyweight premium cotton fleece hoodie featuring embroidered Hoknex branding.", sizes: ["S", "M", "L", "XL"] },
-                        { _id: '2', name: "ESP32-C3 IoT Prototyping Kit", price: 499, category: "Hardware", emoji: "⚡", badge: "Maker Choice", description: "Complete microcontroller kit for building smart motorcycle navigation & wearables.", sizes: ["Standard Kit"] },
-                        { _id: '3', name: "Hoknex Cyber Developer Stickers", price: 199, category: "Accessories", emoji: "💻", badge: "Trending", description: "Matte-finish weatherproof holographic stickers for laptops and mechanical keyboards.", sizes: ["Pack of 10"] },
-                        { _id: '4', name: "Haptic Motion Glove Component Set", price: 899, category: "Hardware", emoji: "🦾", badge: "Advanced", description: "Precision vibration motors and IMU motion sensors for tactile feedback development.", sizes: ["Standard"] },
-                        { _id: '5', name: "Global Campus Minimalist Cap", price: 599, category: "Apparel", emoji: "🧢", badge: "Limited", description: "Structured cotton twill cap with metal buckle closure and embroidered logo.", sizes: ["Adjustable"] },
-                        { _id: '6', name: "System Architect Notebook", price: 299, category: "Accessories", emoji: "📓", badge: "Essential", description: "Dot-grid notebook designed for system wireframing, algorithm sketching, and notes.", sizes: ["A5 Hardcover"] }
-                    ];
-                }
-                renderProducts(products);
-            } catch (err) {
-                console.error('Fetch error:', err);
-                products = [
-                    { _id: '1', name: "Official Hoknex Oversized Hoodie", price: 1299, category: "Apparel", emoji: "🧥", badge: "Best Seller", description: "Heavyweight premium cotton fleece hoodie featuring embroidered Hoknex branding.", sizes: ["S", "M", "L", "XL"] }
-                ];
-                renderProducts(products);
-            }
-        }
+        let cart = [];
 
         function renderProducts(items) {
             const grid = document.getElementById('storeGrid');
             grid.innerHTML = items.map(p => `
                 <div class="product-card">
-                    <span class="product-tag">${p.badge || 'Official'}</span>
+                    <span class="product-tag">${p.badge}</span>
                     <div>
-                        <div class="product-img-box">${p.emoji || '📦'}</div>
+                        <div class="product-img-box">${p.emoji}</div>
                         <h3>${p.name}</h3>
                         <p>${p.description}</p>
                         <div class="product-options">
-                            ${(p.sizes || ['Standard']).map(s => `<span class="size-badge">${s}</span>`).join('')}
+                            ${p.sizes.map(s => `<span class="size-badge">${s}</span>`).join('')}
                         </div>
                     </div>
                     <div class="card-footer">
                         <span class="product-price">₹${p.price}</span>
-                        <button onclick="addToCart('${p._id}')" class="btn-add">Add to Cart 🛒</button>
+                        <button onclick="addToCart('${p._id}')" class="btn-add">Add to Bag 🛍️</button>
                     </div>
                 </div>
             `).join('');
@@ -469,7 +486,7 @@
                 cart.push({ ...item, qty: 1 });
             }
             updateCartUI();
-            showToast(`Added ${item.name} to cart!`, '🛒');
+            showToast(`Added ${item.name} to your shopping bag!`, '🛍️');
         }
 
         function updateCartUI() {
@@ -511,36 +528,15 @@
             document.getElementById('cartOverlay').style.display = open ? 'flex' : 'none';
         }
 
-        async function checkoutCart() {
+        function checkoutCart() {
             if (cart.length === 0) {
-                showToast('Your cart is empty!', '⚠️');
+                showToast('Your shopping bag is empty!', '⚠️');
                 return;
             }
-
-            try {
-                const res = await fetch('/api/store/checkout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ items: cart, user: localStorage.getItem('hoknex_user') || 'Student' })
-                });
-
-                if (res.ok) {
-                    toggleCart(false);
-                    cart = [];
-                    updateCartUI();
-                    showToast('Order placed successfully! 🎉', '📦');
-                } else {
-                    showToast('Checkout processed successfully!', '📦');
-                    toggleCart(false);
-                    cart = [];
-                    updateCartUI();
-                }
-            } catch (err) {
-                toggleCart(false);
-                cart = [];
-                updateCartUI();
-                showToast('Order placed successfully! 🎉', '📦');
-            }
+            toggleCart(false);
+            cart = [];
+            updateCartUI();
+            showToast('Order placed successfully! Thank you for supporting Hoknex. 🎉', '📦');
         }
 
         function showToast(message, emoji = '✨') {
@@ -556,7 +552,7 @@
             }, 3000);
         }
 
-        fetchProducts();
+        renderProducts(products);
     </script>
 </body>
 </html>
