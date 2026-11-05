@@ -95,7 +95,7 @@ app.use(async (req, res, next) => {
 });
 
 // ==========================================
-// --- NEW: STORE, ADMIN, & MAGAZINE SCHEMAS & API ROUTES ---
+// --- STORE, ADMIN, MAGAZINE & CAMPAIGNS SCHEMAS & API ROUTES ---
 // ==========================================
 
 const ProductSchema = new mongoose.Schema({
@@ -162,6 +162,14 @@ const ComingSoonDropSchema = new mongoose.Schema({
     image: String
 });
 const ComingSoonDrop = mongoose.models.ComingSoonDrop || mongoose.model('ComingSoonDrop', ComingSoonDropSchema);
+
+// NEW: Visual Campaign Showcase Schema
+const CampaignSchema = new mongoose.Schema({
+    title: String,
+    desc: String,
+    image: String
+});
+const Campaign = mongoose.models.Campaign || mongoose.model('Campaign', CampaignSchema);
 
 // --- Store Products Endpoints ---
 app.get('/api/store/products', async (req, res) => {
@@ -299,6 +307,22 @@ app.post('/api/store/drops', async (req, res) => {
 
 app.delete('/api/store/drops/:id', async (req, res) => {
     try { await ComingSoonDrop.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// --- Visual Campaign Showcase Endpoints ---
+app.get('/api/store/campaigns', async (req, res) => {
+    try { const camps = await Campaign.find(); res.json(camps); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/store/campaigns', async (req, res) => {
+    try { const c = new Campaign(req.body); await c.save(); res.json({ success: true, c }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/store/campaigns/:id', async (req, res) => {
+    try { await Campaign.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -1572,6 +1596,7 @@ app.delete('/api/lostfound/:id', async (req, res) => {
         await LostFound.findOneAndDelete({ id: req.params.id });
         res.status(200).json({ message: 'Item deleted successfully' });
     } catch (err) {
+        console.error("Error deleting item:", err);
         res.status(500).json({ error: 'Failed to delete item' });
     }
 });
