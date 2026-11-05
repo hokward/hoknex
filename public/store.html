@@ -17,45 +17,33 @@
             --shadow-brand: 4px 4px 0px #4C5844;
         }
 
-        *, *::before, *::after {
-            box-sizing: border-box; margin: 0; padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
-        .top-announcement {
-            background: var(--text-main); color: #F5F2EB; text-align: center;
-            padding: 9px 1rem; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase;
-        }
-
-        .store-navbar {
-            display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 4rem;
-            background: rgba(245, 242, 235, 0.95); backdrop-filter: blur(16px);
-            border-bottom: 2.5px solid var(--border-color); position: sticky; top: 0; z-index: 100;
-        }
-
+        .top-announcement { background: var(--text-main); color: #F5F2EB; text-align: center; padding: 9px 1rem; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; }
+        .store-navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 4rem; background: rgba(245, 242, 235, 0.95); backdrop-filter: blur(16px); border-bottom: 2.5px solid var(--border-color); position: sticky; top: 0; z-index: 100; }
         .nav-left-links { display: flex; gap: 2rem; align-items: center; }
         .nav-left-links a { color: var(--text-main); text-decoration: none; font-weight: 800; font-size: 0.92rem; cursor: pointer; transition: color 0.2s; }
         .nav-left-links a:hover { color: var(--accent-terracotta); }
 
-        .store-logo-brand {
-            font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main);
-            text-decoration: none; display: flex; flex-direction: column; align-items: center; line-height: 1.1;
-        }
+        .store-logo-brand { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main); text-decoration: none; display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
         .store-logo-brand span { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2.5px; color: var(--accent-terracotta); }
 
         .nav-right-actions { display: flex; gap: 1.2rem; align-items: center; }
-        .search-box-wrap {
-            display: flex; align-items: center; background: #fff; border: 2px solid var(--border-color);
-            border-radius: 10px; padding: 5px 12px; width: 240px;
-        }
+        .search-box-wrap { display: flex; align-items: center; background: #fff; border: 2px solid var(--border-color); border-radius: 10px; padding: 5px 12px; width: 220px; }
         .search-box-wrap input { border: none; outline: none; background: transparent; font-size: 0.85rem; font-weight: 700; color: var(--text-main); width: 100%; margin-left: 6px; }
-        .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-main); font-weight: 900; }
+        .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-main); font-weight: 900; position: relative; }
 
         .store-hero { padding: 4rem 4rem 2rem 4rem; max-width: 1350px; margin: 0 auto; text-align: center; }
         .store-hero h1 { font-size: 3rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 0.8rem; }
         .store-hero p { color: var(--text-muted); font-size: 1.05rem; font-weight: 700; max-width: 600px; margin: 0 auto 2rem auto; }
+
+        /* Coming Soon / Drop Segment */
+        .coming-soon-section { padding: 2rem 4rem; max-width: 1350px; margin: 0 auto; }
+        .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+        .drop-card { background: var(--bg-card); border: 2.5px solid var(--border-color); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-brand); padding: 1rem; }
+        .drop-img { width: 100%; height: 220px; background: #EAE6DF; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 0.8rem; }
+        .drop-img img { width: 100%; height: 100%; object-fit: cover; }
 
         .product-catalog-section { padding: 2rem 4rem 5rem 4rem; max-width: 1350px; margin: 0 auto; }
         .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; margin-top: 1.5rem; }
@@ -77,16 +65,11 @@
         .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; border-top: 1.5px solid #F3F4F6; padding-top: 0.8rem; }
         .prod-price { font-size: 1.2rem; font-weight: 900; color: var(--text-main); }
 
-        .btn-add-bag {
-            background: #fff; border: 2px solid var(--border-color); padding: 6px 12px;
-            border-radius: 8px; font-weight: 900; font-size: 0.8rem; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color);
-        }
+        .btn-add-bag { background: #fff; border: 2px solid var(--border-color); padding: 6px 12px; border-radius: 8px; font-weight: 900; font-size: 0.8rem; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color); }
         .btn-add-bag:hover { background: var(--accent-terracotta); color: #fff; }
+        .btn-wishlist { background: none; border: none; font-size: 1.2rem; cursor: pointer; position: absolute; top: 15px; left: 15px; z-index: 5; }
 
-        .store-footer {
-            background: #111827; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem;
-            border-top: 3px solid var(--border-color); position: relative; overflow: hidden;
-        }
+        .store-footer { background: #111827; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 3px solid var(--border-color); position: relative; overflow: hidden; }
         .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.15); position: relative; z-index: 2; }
         .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; }
         .footer-newsletter p { color: #CCBEB1; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
@@ -100,43 +83,17 @@
         .footer-col a { color: #CCBEB1; text-decoration: none; font-weight: 700; }
         .footer-col a:hover { color: #fff; }
 
-        .footer-watermark {
-            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
-            font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.04);
-            white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px;
-        }
+        .footer-watermark { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.04); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; }
 
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(76, 88, 68, 0.7); backdrop-filter: blur(6px);
-            display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(76, 88, 68, 0.7); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
+        .modal-panel { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 24px; padding: 2.5rem; width: 100%; max-width: 650px; box-shadow: 8px 8px 0px var(--border-color); position: relative; max-height: 90vh; overflow-y: auto; }
+        .btn-primary { width: 100%; background: var(--accent-terracotta); color: #fff; border: 2.5px solid var(--border-color); border-radius: 12px; padding: 1rem; font-size: 1rem; font-weight: 900; cursor: pointer; box-shadow: 3px 3px 0px var(--border-color); margin-top: 1rem; }
 
-        .modal-panel {
-            background: var(--bg-card); border: 3.5px solid var(--border-color);
-            border-radius: 24px; padding: 2.5rem; width: 100%; max-width: 650px;
-            box-shadow: 8px 8px 0px var(--border-color); position: relative; max-height: 90vh; overflow-y: auto;
-        }
-
-        .btn-primary {
-            width: 100%; background: var(--accent-terracotta); color: #fff;
-            border: 2.5px solid var(--border-color); border-radius: 12px;
-            padding: 1rem; font-size: 1rem; font-weight: 900; cursor: pointer;
-            box-shadow: 3px 3px 0px var(--border-color); margin-top: 1rem;
-        }
-
-        #proModalOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px);
-            display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem;
-        }
-        #proModalBox {
-            background: #FAF9F6; border: 3.5px solid var(--border-color); border-radius: 20px;
-            padding: 2rem; max-width: 420px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--border-color);
-        }
+        #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
+        #proModalBox { background: #FAF9F6; border: 3.5px solid var(--border-color); border-radius: 20px; padding: 2rem; max-width: 420px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--border-color); }
 
         @media (max-width: 968px) {
-            .store-navbar, .store-hero, .product-catalog-section, .store-footer { padding: 2rem 1.5rem; }
+            .store-navbar, .store-hero, .coming-soon-section, .product-catalog-section, .store-footer { padding: 2rem 1.5rem; }
             .footer-links-grid { grid-template-columns: 1fr; }
             .nav-left-links { display: none; }
         }
@@ -174,6 +131,7 @@
                 <span>🔍</span>
                 <input type="text" placeholder="Search Hoknex..." oninput="filterCatalogSearch(this.value)">
             </div>
+            <button class="icon-btn" onclick="openWishlistModal()" title="Wishlist">❤️(<span id="wishlistCount">0</span>)</button>
             <button class="icon-btn" onclick="openTrackModal()" title="Track Order">📦</button>
             <button class="icon-btn" onclick="openCartModal()" title="Shopping Bag">🛒(<span id="bagCount">0</span>)</button>
         </div>
@@ -182,6 +140,15 @@
     <section class="store-hero">
         <h1>Engineered for students, <span>worn by creators.</span></h1>
         <p>Premium oversized hoodies, heavyweight graphic tees, and streetwear essentials designed for global campus innovators.</p>
+    </section>
+
+    <!-- Coming Soon / Drop Preview Section -->
+    <section class="coming-soon-section" id="comingSoonSection" style="display:none;">
+        <div style="background:var(--bg-card); border:3px solid var(--border-color); border-radius:20px; padding:2rem; box-shadow:var(--shadow-brand);">
+            <h3 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 0.4rem;">Coming Soon 🚀 Stay Tuned</h3>
+            <p style="color:var(--text-muted); font-weight:700; font-size:0.9rem;">Exclusive upcoming drops and unreleased apparel previews.</p>
+            <div class="coming-soon-grid" id="comingSoonGrid"></div>
+        </div>
     </section>
 
     <section class="product-catalog-section" id="catalog">
@@ -251,7 +218,7 @@
         <div class="footer-watermark">hoknex</div>
     </footer>
 
-    <!-- PDP Modal with Multi-Angle Gallery -->
+    <!-- PDP Modal with Multi-Angle Gallery, Out of Stock / Vote, and Star Rating -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
         <div class="modal-panel" style="max-width: 850px;">
             <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
@@ -267,20 +234,49 @@
                     <span id="pdpBadge" style="background:var(--accent-ochre); color:#fff; border:2px solid var(--border-color); padding:3px 10px; border-radius:6px; font-size:0.75rem; font-weight:900; text-transform:uppercase;">Best Seller</span>
                     <h2 id="pdpTitle" style="font-size:1.8rem; font-weight:900; margin:0.4rem 0;">Product Title</h2>
                     <div id="pdpPrice" style="font-size:1.4rem; font-weight:900; color:var(--accent-terracotta); margin-bottom:0.4rem;">₹0</div>
-                    <div id="pdpDeliveryNote" style="font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:0.8rem;">Delivery Fee: ₹0</div>
+                    <div id="pdpDeliveryNote" style="font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:0.4rem;">Delivery Fee: ₹0</div>
+                    <div id="pdpRatingDisplay" style="font-size:0.85rem; font-weight:900; color:var(--accent-ochre); margin-bottom:0.8rem;">⭐ 5.0 (0 reviews)</div>
                     <p id="pdpDesc" style="color:var(--text-muted); font-size:0.9rem; font-weight:700; line-height:1.5; margin-bottom:1.2rem;"></p>
 
-                    <div style="font-size:0.8rem; font-weight:900; color:var(--text-main); text-transform:uppercase; margin-bottom:0.4rem;">Select Size</div>
-                    <div style="display:flex; gap:8px; margin-bottom:1.2rem;" id="sizeGroup">
-                        <button class="btn-add-bag" style="padding:8px 16px; background:var(--accent-terracotta); color:#fff;" onclick="selectSize('S', this)">S</button>
-                        <button class="btn-add-bag" style="padding:8px 16px;" onclick="selectSize('M', this)">M</button>
-                        <button class="btn-add-bag" style="padding:8px 16px;" onclick="selectSize('L', this)">L</button>
-                        <button class="btn-add-bag" style="padding:8px 16px;" onclick="selectSize('XL', this)">XL</button>
+                    <!-- Sizes Selector (Hidden if Out of Stock) -->
+                    <div id="pdpSizeSection">
+                        <div style="font-size:0.8rem; font-weight:900; color:var(--text-main); text-transform:uppercase; margin-bottom:0.4rem;">Select Size</div>
+                        <div style="display:flex; gap:8px; margin-bottom:1.2rem;" id="sizeGroup"></div>
                     </div>
 
-                    <button onclick="addPdpToBag()" class="btn-primary">Add to Bag 🛍️</button>
+                    <!-- Out of Stock / Vote Section -->
+                    <div id="pdpStockSection" style="display:none; margin-bottom:1.2rem;">
+                        <p style="color:#C27D65; font-weight:900; font-size:0.95rem; margin-bottom:8px;">Currently Out of Stock ❌</p>
+                        <button onclick="voteForStock()" class="btn-explore" style="background:var(--accent-ochre); border-radius:10px; padding:10px 20px;">Vote to Come Fast 🔥 (<span id="voteCountDisplay">0</span>)</button>
+                    </div>
+
+                    <button id="pdpAddBtn" onclick="addPdpToBag()" class="btn-primary">Add to Bag 🛍️</button>
+
+                    <!-- User Star Rating Option -->
+                    <div style="margin-top:1.5rem; border-top:1.5px solid #F3F4F6; padding-top:1rem;">
+                        <label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Rate this product:</label>
+                        <select id="userRatingSelect" onchange="submitUserRating()" style="margin-top:4px; padding:6px; font-weight:800; border-radius:8px;">
+                            <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                            <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                            <option value="3">⭐⭐⭐ (3/5)</option>
+                            <option value="2">⭐⭐ (2/5)</option>
+                            <option value="1">⭐ (1/5)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Wishlist Modal -->
+    <div id="wishlistModal" class="modal-overlay" onclick="if(event.target === this) closeModal('wishlistModal')">
+        <div class="modal-panel" style="max-width: 480px;">
+            <button onclick="closeModal('wishlistModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem;">Your Wishlist ❤️</h2>
+            <div id="wishlistItemsList" style="max-height: 280px; overflow-y: auto; margin-bottom: 1.5rem;">
+                <p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your wishlist is empty.</p>
+            </div>
+            <button onclick="closeModal('wishlistModal')" class="btn-primary" style="margin-top:0;">Continue Shopping 🛍️</button>
         </div>
     </div>
 
@@ -301,28 +297,61 @@
         </div>
     </div>
 
-    <!-- Checkout Modal with Conditional COD & Mandatory Proof -->
+    <!-- Strict Mandatory Checkout Form -->
     <div id="checkoutModal" class="modal-overlay" onclick="if(event.target === this) closeModal('checkoutModal')">
-        <div class="modal-panel" style="max-width: 520px;">
+        <div class="modal-panel" style="max-width: 540px;">
             <button onclick="closeModal('checkoutModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
             <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.4rem;">Hoknex Secure Checkout 🛡️</h2>
             <p id="checkoutSubNotice" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;"></p>
             
             <form onsubmit="finalizeOrder(event)" style="display:flex; flex-direction:column; gap:0.8rem;">
                 <div>
-                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Full Name</label>
+                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Full Name *</label>
                     <input type="text" id="shipName" placeholder="Alex Morgan" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;">
                 </div>
-                <div>
-                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Phone Number & Email</label>
-                    <input type="text" id="shipPhone" placeholder="+91 9876543210 | email@student.edu" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div>
+                        <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Phone Number *</label>
+                        <input type="tel" id="shipPhone" placeholder="+91 9876543210" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Email Address *</label>
+                        <input type="email" id="shipEmail" placeholder="student@edu.in" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;">
+                    </div>
+                </div>
+
+                <!-- Structured Address Inputs -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div>
+                        <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Country *</label>
+                        <input type="text" id="shipCountry" value="India" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; margin-top:3px; outline:none;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">State *</label>
+                        <input type="text" id="shipState" placeholder="Bihar / AP" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; margin-top:3px; outline:none;">
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div>
+                        <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">City *</label>
+                        <input type="text" id="shipCity" placeholder="Muzaffarpur" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; margin-top:3px; outline:none;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Pin Code *</label>
+                        <input type="text" id="shipPin" placeholder="842001" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; margin-top:3px; outline:none;">
+                    </div>
                 </div>
                 <div>
-                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Hostel / Campus Delivery Address</label>
-                    <textarea id="shipAddress" rows="2" placeholder="Room 404, Block A, University Campus..." required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none; resize:vertical;"></textarea>
+                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Landmark *</label>
+                    <input type="text" id="shipLandmark" placeholder="Near University Gate / Library" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; margin-top:3px; outline:none;">
                 </div>
                 <div>
-                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Payment Mode</label>
+                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Full Address / Hostel Room *</label>
+                    <textarea id="shipAddress" rows="2" placeholder="Room 404, Block A..." required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none; resize:vertical;"></textarea>
+                </div>
+
+                <div>
+                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Payment Mode *</label>
                     <select id="payMode" onchange="toggleQrScanner(this.value)" style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;">
                         <option id="codOption" value="COD">Pay on Campus Delivery (Cash / UPI on arrival)</option>
                         <option value="DirectUPI">Direct Founder UPI (hoknex@upi)</option>
@@ -331,9 +360,7 @@
 
                 <div id="qrScannerSection" style="display:none; background:#FAF9F6; border:2.5px dashed var(--border-color); padding:1.2rem; border-radius:14px; text-align:center; margin-top:0.5rem;">
                     <h4 style="font-size:0.95rem; font-weight:900; margin-bottom:0.4rem;">📷 Scan Founder UPI QR Code to Pay</h4>
-                    <div id="qrImageContainer" style="width:160px; height:160px; margin:0 auto; background:#fff; border:2px solid var(--border-color); border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                        📱 QR Code Loading...
-                    </div>
+                    <div id="qrImageContainer" style="width:160px; height:160px; margin:0 auto; background:#fff; border:2px solid var(--border-color); border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">📱 QR Loading...</div>
                     <p style="font-size:0.75rem; font-weight:800; color:var(--accent-terracotta); margin-top:0.5rem;">UPI ID: hoknex@upi</p>
                     
                     <div style="margin-top:1rem; text-align:left;">
@@ -347,21 +374,22 @@
         </div>
     </div>
 
-    <!-- Enhanced Order Tracking Modal with Timeline History -->
+    <!-- Order Tracking Modal -->
     <div id="trackModal" class="modal-overlay" onclick="if(event.target === this) closeModal('trackModal')">
         <div class="modal-panel" style="max-width: 480px; text-align: center;">
             <button onclick="closeModal('trackModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
             <h2 style="font-size: 1.4rem; font-weight: 900; margin-bottom: 0.4rem;">📦 Track Your Hoknex Order</h2>
-            <p style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;">Enter your Order ID to check live delivery status & timeline.</p>
+            <p style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;">Enter your Order ID to check live delivery status & custom updates.</p>
             
             <div style="display:flex; gap:8px; margin-bottom:1.2rem;">
                 <input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:#fff; border:2.5px solid var(--border-color); border-radius:10px; padding:10px; font-weight:800; flex:1; outline:none;">
                 <button onclick="performTracking()" class="btn-primary" style="margin:0; padding:10px 14px; width:110px;">Track 🔍</button>
             </div>
 
-            <div id="trackResultBox" style="text-align:left; background:#fff; border:2.5px solid var(--border-color); padding:1.2rem; border-radius:12px; display:none;">
-                <h4 id="resId" style="font-size:1rem; font-weight:900; margin-bottom:0.4rem;">Order ID: #</h4>
-                <div id="resTimeline" style="display:flex; flex-direction:column; gap:8px; margin-top:10px; font-size:0.82rem; font-weight:800;"></div>
+            <div id="trackResultBox" style="text-align:left; background:#fff; border:2.5px solid var(--border-color); padding:1.2rem; border-radius:10px; display:none;">
+                <h4 id="resId" style="font-size:0.95rem; font-weight:900; margin-bottom:0.4rem;">Order ID: #</h4>
+                <div id="resCustomMsgContainer" style="display:none; background:#F5F2EB; border:2px solid var(--accent-ochre); padding:10px; border-radius:8px; margin-bottom:10px;"></div>
+                <div id="resTimeline" style="display:flex; flex-direction:column; gap:8px; font-size:0.82rem; font-weight:800;"></div>
             </div>
         </div>
     </div>
@@ -378,14 +406,32 @@
         if(savedAnnouncement) { document.getElementById('topAnnouncementBar').innerText = savedAnnouncement; }
 
         let defaultCatalog = [
-            { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49, emoji: "🧥", badge: "New Drop", description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.", images: ["🧥", "👔", "🔎"] },
-            { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99, emoji: "👟", badge: "Best Seller", description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.", images: ["👟", "🥾", "🔎"] }
+            { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49, emoji: "🧥", badge: "New Drop", inStock: true, sizes: ['S', 'M', 'L', 'XL'], ratings: [5, 5, 4], description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.", images: ["🧥", "👔", "🔎"] },
+            { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99, emoji: "👟", badge: "Best Seller", inStock: true, sizes: ['7', '8', '9', '10'], ratings: [5, 5, 5], description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.", images: ["👟", "🥾", "🔎"] }
         ];
 
         let catalog = JSON.parse(localStorage.getItem('hoknex_custom_catalog') || JSON.stringify(defaultCatalog));
         let bag = JSON.parse(localStorage.getItem('hoknex_persistent_cart') || '[]');
+        let wishlist = JSON.parse(localStorage.getItem('hoknex_wishlist') || '[]');
         let currentPdpItem = null;
         let selectedSize = 'S';
+
+        // Load Coming Soon Drops
+        function renderComingSoon() {
+            let drops = JSON.parse(localStorage.getItem('hoknex_coming_soon') || '[]');
+            const section = document.getElementById('comingSoonSection');
+            const grid = document.getElementById('comingSoonGrid');
+            if(drops.length === 0) { section.style.display = 'none'; return; }
+            section.style.display = 'block';
+            grid.innerHTML = drops.map(d => `
+                <div class="drop-card">
+                    <div class="drop-img"><img src="${d.image}" alt="Drop"></div>
+                    <h4 style="font-weight:900; margin-bottom:4px;">${d.title}</h4>
+                    <p style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">${d.desc}</p>
+                </div>
+            `).join('');
+        }
+        renderComingSoon();
 
         function renderCatalog(items) {
             const grid = document.getElementById('catalogGrid');
@@ -393,24 +439,37 @@
                 grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-weight:800; padding:3rem;">No products found.</p>`;
                 return;
             }
-            grid.innerHTML = items.map(item => `
-                <div class="product-card" onclick="openPdpModal('${item.id}')">
-                    <span style="position:absolute; top:12px; right:12px; background:var(--accent-ochre); color:#fff; border:2px solid var(--border-color); padding:2px 8px; border-radius:6px; font-size:0.65rem; font-weight:900; text-transform:uppercase;">${item.badge || 'New'}</span>
-                    <div>
-                        <div class="prod-img-box">
-                            ${item.image ? `<img src="${item.image}" alt="${item.name}">` : (item.emoji || '📦')}
+            grid.innerHTML = items.map(item => {
+                const isWishlisted = wishlist.some(w => w.id === item.id);
+                let avgRating = 5.0;
+                if(item.ratings && item.ratings.length > 0) {
+                    avgRating = (item.ratings.reduce((a,b)=>a+b,0)/item.ratings.length).toFixed(1);
+                }
+                return `
+                    <div class="product-card" onclick="openPdpModal('${item.id}')">
+                        <button class="btn-wishlist" onclick="event.stopPropagation(); toggleWishlist('${item.id}')">${isWishlisted ? '❤️' : '🤍'}</button>
+                        <span style="position:absolute; top:12px; right:12px; background:var(--accent-ochre); color:#fff; border:2px solid var(--border-color); padding:2px 8px; border-radius:6px; font-size:0.65rem; font-weight:900; text-transform:uppercase;">${item.badge || 'New'}</span>
+                        <div>
+                            <div class="prod-img-box">
+                                ${item.image ? `<img src="${item.image}" alt="${item.name}">` : (item.emoji || '📦')}
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div class="prod-category">${item.category}</div>
+                                <div style="font-size:0.75rem; font-weight:900; color:var(--accent-ochre);">⭐ ${avgRating}</div>
+                            </div>
+                            <div class="prod-title">${item.name}</div>
+                            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">${item.description}</p>
+                            ${!item.inStock ? '<p style="color:#C27D65; font-weight:900; font-size:0.8rem; margin-top:4px;">Currently Out of Stock ❌</p>' : ''}
                         </div>
-                        <div class="prod-category">${item.category}</div>
-                        <div class="prod-title">${item.name}</div>
-                        <p style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">${item.description}</p>
+                        <div class="prod-bottom-row">
+                            <span class="prod-price">₹${item.price}.00</span>
+                            ${item.inStock ? `<button class="btn-add-bag" onclick="event.stopPropagation(); addToBag('${item.id}')">Add to Bag 🛍️</button>` : `<span style="font-size:0.75rem; font-weight:900; color:var(--text-muted);">Unavailable</span>`}
+                        </div>
                     </div>
-                    <div class="prod-bottom-row">
-                        <span class="prod-price">₹${item.price}.00</span>
-                        <button class="btn-add-bag" onclick="event.stopPropagation(); addToBag('${item.id}')">Add to Bag 🛍️</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
             updateBagUI();
+            updateWishlistUI();
         }
 
         function filterCategory(cat) {
@@ -423,7 +482,51 @@
             renderCatalog(filtered);
         }
 
-        // Multi-Angle PDP Modal
+        // Wishlist functions
+        function toggleWishlist(id) {
+            const item = catalog.find(i => i.id === id);
+            const idx = wishlist.findIndex(w => w.id === id);
+            if(idx > -1) {
+                wishlist.splice(idx, 1);
+                showProModal('Wishlist', `Removed ${item.name} from wishlist.`);
+            } else {
+                wishlist.push(item);
+                showProModal('Wishlist', `Added ${item.name} to wishlist!`);
+            }
+            localStorage.setItem('hoknex_wishlist', JSON.stringify(wishlist));
+            renderCatalog(catalog);
+        }
+
+        function updateWishlistUI() {
+            document.getElementById('wishlistCount').innerText = wishlist.length;
+            const list = document.getElementById('wishlistItemsList');
+            if(wishlist.length === 0) {
+                list.innerHTML = `<p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your wishlist is empty.</p>`;
+                return;
+            }
+            list.innerHTML = wishlist.map((item, index) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; border:2px solid var(--border-color); padding:8px 12px; border-radius:8px; margin-bottom:8px;">
+                    <div>
+                        <div style="font-weight:900; font-size:0.85rem;">${item.name}</div>
+                        <div style="font-size:0.78rem; color:var(--accent-terracotta); font-weight:900;">₹${item.price}</div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="addToBag('${item.id}'); closeModal('wishlistModal'); openCartModal();" class="btn-add-bag">Add 🛍️</button>
+                        <button onclick="removeWishlistItem(${index})" style="background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:24px; height:24px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeWishlistItem(index) {
+            wishlist.splice(index, 1);
+            localStorage.setItem('hoknex_wishlist', JSON.stringify(wishlist));
+            renderCatalog(catalog);
+        }
+
+        function openWishlistModal() { document.getElementById('wishlistModal').style.display = 'flex'; }
+
+        // PDP Modal with Stock status, sizes, voting & rating
         function openPdpModal(id) {
             currentPdpItem = catalog.find(i => i.id === id);
             if (!currentPdpItem) return;
@@ -443,6 +546,33 @@
             document.getElementById('pdpDeliveryNote').innerText = `Delivery Fee: ₹${currentPdpItem.deliveryFee || 0}`;
             document.getElementById('pdpDesc').innerText = currentPdpItem.description;
 
+            let avgRating = 5.0;
+            if(currentPdpItem.ratings && currentPdpItem.ratings.length > 0) {
+                avgRating = (currentPdpItem.ratings.reduce((a,b)=>a+b,0)/currentPdpItem.ratings.length).toFixed(1);
+            }
+            document.getElementById('pdpRatingDisplay').innerText = `⭐ ${avgRating} (${(currentPdpItem.ratings || []).length} ratings)`;
+
+            // Stock / Size logic
+            const sizeSec = document.getElementById('pdpSizeSection');
+            const stockSec = document.getElementById('pdpStockSection');
+            const addBtn = document.getElementById('pdpAddBtn');
+
+            if (currentPdpItem.inStock) {
+                sizeSec.style.display = 'block';
+                stockSec.style.display = 'none';
+                addBtn.style.display = 'block';
+                const availableSizes = currentPdpItem.sizes || ['S', 'M', 'L', 'XL'];
+                selectedSize = availableSizes[0];
+                document.getElementById('sizeGroup').innerHTML = availableSizes.map((sz, idx) => `
+                    <button class="btn-add-bag" style="padding:8px 16px; ${idx===0?'background:var(--accent-terracotta); color:#fff;':''}" onclick="selectSize('${sz}', this)">${sz}</button>
+                `).join('');
+            } else {
+                sizeSec.style.display = 'none';
+                stockSec.style.display = 'block';
+                addBtn.style.display = 'none';
+                document.getElementById('voteCountDisplay').innerText = currentPdpItem.votes || 0;
+            }
+
             document.getElementById('pdpModal').style.display = 'flex';
         }
 
@@ -454,8 +584,32 @@
 
         function selectSize(size, el) {
             document.querySelectorAll('#sizeGroup button').forEach(b => { b.style.background = '#fff'; b.style.color = 'var(--text-main)'; });
-            el.style.background = 'var(--accent-terracotta);'; el.style.color = '#fff';
+            el.style.background = 'var(--accent-terracotta)'; el.style.color = '#fff';
             selectedSize = size;
+        }
+
+        function voteForStock() {
+            if(!currentPdpItem.votes) currentPdpItem.votes = 0;
+            currentPdpItem.votes++;
+            let allCat = JSON.parse(localStorage.getItem('hoknex_custom_catalog') || JSON.stringify(defaultCatalog));
+            let target = allCat.find(i => i.id === currentPdpItem.id);
+            if(target) { target.votes = currentPdpItem.votes; }
+            localStorage.setItem('hoknex_custom_catalog', JSON.stringify(allCat));
+            document.getElementById('voteCountDisplay').innerText = currentPdpItem.votes;
+            showProModal('Vote Recorded!', 'Thank you! The owner has been notified of your demand to restock this item quickly.');
+        }
+
+        function submitUserRating() {
+            const ratingVal = Number(document.getElementById('userRatingSelect').value);
+            if(!currentPdpItem.ratings) currentPdpItem.ratings = [];
+            currentPdpItem.ratings.push(ratingVal);
+
+            let allCat = JSON.parse(localStorage.getItem('hoknex_custom_catalog') || JSON.stringify(defaultCatalog));
+            let target = allCat.find(i => i.id === currentPdpItem.id);
+            if(target) { target.ratings = currentPdpItem.ratings; }
+            localStorage.setItem('hoknex_custom_catalog', JSON.stringify(allCat));
+            showProModal('Rating Submitted', 'Thank you for rating this product!');
+            openPdpModal(currentPdpItem.id);
         }
 
         function addPdpToBag() {
@@ -469,11 +623,13 @@
 
         function addToBag(id) {
             const item = catalog.find(i => i.id === id);
-            const cartKey = `${id}-S`;
+            const availableSizes = item.sizes || ['S'];
+            const defaultSz = availableSizes[0];
+            const cartKey = `${id}-${defaultSz}`;
             const found = bag.find(b => b.cartKey === cartKey);
-            if (found) { found.qty += 1; } else { bag.push({ ...item, cartKey, size: 'S', qty: 1 }); }
+            if (found) { found.qty += 1; } else { bag.push({ ...item, cartKey, size: defaultSz, qty: 1 }); }
             saveCart(); updateBagUI();
-            showProModal('Added to Bag', `Added ${item.name} (Size S) to your bag.`);
+            showProModal('Added to Bag', `Added ${item.name} (Size ${defaultSz}) to your bag.`);
         }
 
         function saveCart() { localStorage.setItem('hoknex_persistent_cart', JSON.stringify(bag)); }
@@ -522,7 +678,6 @@
             if (bag.length === 0) { showProModal('Empty Bag', 'Your shopping bag is empty.'); return; }
             closeModal('cartModal');
 
-            // Conditional Subtotal Check (₹599+)
             let subtotal = bag.reduce((sum, i) => sum + (i.price * i.qty), 0);
             const codOption = document.getElementById('codOption');
             const payModeSelect = document.getElementById('payMode');
@@ -531,7 +686,7 @@
                 codOption.disabled = true;
                 payModeSelect.value = 'DirectUPI';
                 toggleQrScanner('DirectUPI');
-                document.getElementById('checkoutSubNotice').innerText = `Subtotal is ₹${subtotal} (₹599+). Cash on Delivery is disabled. Please pay online via UPI.`;
+                document.getElementById('checkoutSubNotice').innerText = `Subtotal is ₹${subtotal} (₹599+). Pay on Campus Delivery is disabled. Please pay online via UPI.`;
             } else {
                 codOption.disabled = false;
                 payModeSelect.value = 'COD';
@@ -563,7 +718,13 @@
             e.preventDefault();
             const name = document.getElementById('shipName').value;
             const phone = document.getElementById('shipPhone').value;
-            const address = document.getElementById('shipAddress').value;
+            const email = document.getElementById('shipEmail').value;
+            const country = document.getElementById('shipCountry').value;
+            const state = document.getElementById('shipState').value;
+            const city = document.getElementById('shipCity').value;
+            const pin = document.getElementById('shipPin').value;
+            const landmark = document.getElementById('shipLandmark').value;
+            const fullAddr = document.getElementById('shipAddress').value;
             const payMode = document.getElementById('payMode').value;
 
             if (payMode === 'DirectUPI') {
@@ -574,18 +735,20 @@
                 }
             }
 
+            const structuredAddress = `${fullAddr}, Landmark: ${landmark}, City: ${city}, State: ${state} - ${pin}, Country: ${country}`;
+
             let subtotal = bag.reduce((sum, i) => sum + (i.price * i.qty), 0);
             let totalDelivery = bag.reduce((sum, i) => sum + ((i.deliveryFee || 0) * i.qty), 0);
 
             const orderId = 'HOK-' + Math.floor(10000 + Math.random() * 90000);
             
             const orderData = {
-                orderId, name, phone, address, payMode,
+                orderId, name, phone, email, address: structuredAddress, payMode,
                 items: bag,
                 subtotal, deliveryFee: totalDelivery,
                 total: subtotal + totalDelivery,
                 status: 'Order Placed & Awaiting Owner Approval ⏳',
-                timeline: [{ title: 'Order Placed', time: new Date().toLocaleString(), active: true }],
+                timeline: [{ title: 'Order Placed & Awaiting Approval', time: new Date().toLocaleString() }],
                 date: new Date().toLocaleDateString()
             };
 
@@ -607,14 +770,24 @@
 
             if (found) {
                 document.getElementById('resId').innerText = `Order ID: #${found.orderId} (${found.date}) — Status: ${found.status}`;
+                
+                const customMsgBox = document.getElementById('resCustomMsgContainer');
+                if(found.customMessage) {
+                    customMsgBox.style.display = 'block';
+                    customMsgBox.innerHTML = `<b>Message from Hoknex Owner:</b><p>${found.customMessage}</p>${found.customImage ? `<img src="${found.customImage}" style="max-width:100%; height:120px; object-fit:cover; border-radius:6px; margin-top:6px;">` : ''}`;
+                } else {
+                    customMsgBox.style.display = 'none';
+                }
+
                 let timelineHtml = (found.timeline || [{title: found.status, time: found.date}]).map(t => `
-                    <div style="display:flex; align-items:center; gap:8px; border-left:2px solid var(--accent-terracotta); padding-left:10px; margin-bottom:4px;">
+                    <div style="display:flex; align-items:center; gap:8px; border-left:2px solid var(--accent-terracotta); padding-left:10px; margin-bottom:6px;">
                         <div><b>${t.title}</b><br><small style="color:var(--text-muted);">${t.time}</small></div>
                     </div>
                 `).join('');
                 document.getElementById('resTimeline').innerHTML = timelineHtml;
             } else {
                 document.getElementById('resId').innerText = `Order ID: #${queryId}`;
+                document.getElementById('resCustomMsgContainer').style.display = 'none';
                 document.getElementById('resTimeline').innerHTML = `<p style="color:var(--accent-terracotta);">Order ID not found or invalid.</p>`;
             }
         }
@@ -623,7 +796,7 @@
             const email = document.getElementById('newsletterEmailInput').value.trim();
             if(!email) { showProModal('Invalid Email', 'Please enter a valid email address.'); return; }
             let leads = JSON.parse(localStorage.getItem('hoknex_newsletter_leads') || '[]');
-            leads.push({ email, date: new Date().toLocaleDateString() });
+            leads.push({ email, date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString() });
             localStorage.setItem('hoknex_newsletter_leads', JSON.stringify(leads));
             document.getElementById('newsletterEmailInput').value = '';
             showProModal('Welcome to Hoknex', 'Your email has been successfully registered.');
