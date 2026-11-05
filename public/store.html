@@ -18,259 +18,78 @@
         }
 
         *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            box-sizing: border-box; margin: 0; padding: 0;
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
         .top-announcement {
-            background: var(--text-main);
-            color: #F5F2EB;
-            text-align: center;
-            padding: 9px 1rem;
-            font-size: 0.82rem;
-            font-weight: 800;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
+            background: var(--text-main); color: #F5F2EB; text-align: center;
+            padding: 9px 1rem; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase;
         }
 
         .store-navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.25rem 4rem;
-            background: rgba(245, 242, 235, 0.95);
-            backdrop-filter: blur(16px);
-            border-bottom: 2.5px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 4rem;
+            background: rgba(245, 242, 235, 0.95); backdrop-filter: blur(16px);
+            border-bottom: 2.5px solid var(--border-color); position: sticky; top: 0; z-index: 100;
         }
 
-        .nav-left-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-left-links a {
-            color: var(--text-main);
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 0.92rem;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .nav-left-links a:hover {
-            color: var(--accent-terracotta);
-        }
+        .nav-left-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-left-links a { color: var(--text-main); text-decoration: none; font-weight: 800; font-size: 0.92rem; cursor: pointer; transition: color 0.2s; }
+        .nav-left-links a:hover { color: var(--accent-terracotta); }
 
         .store-logo-brand {
-            font-size: 1.5rem;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-            color: var(--text-main);
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            line-height: 1.1;
+            font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main);
+            text-decoration: none; display: flex; flex-direction: column; align-items: center; line-height: 1.1;
         }
+        .store-logo-brand span { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2.5px; color: var(--accent-terracotta); }
 
-        .store-logo-brand span {
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 2.5px;
-            color: var(--accent-terracotta);
-        }
-
-        .nav-right-actions {
-            display: flex;
-            gap: 1.2rem;
-            align-items: center;
-        }
-
+        .nav-right-actions { display: flex; gap: 1.2rem; align-items: center; }
         .search-box-wrap {
-            display: flex;
-            align-items: center;
-            background: #fff;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 5px 12px;
-            width: 240px;
+            display: flex; align-items: center; background: #fff; border: 2px solid var(--border-color);
+            border-radius: 10px; padding: 5px 12px; width: 240px;
         }
+        .search-box-wrap input { border: none; outline: none; background: transparent; font-size: 0.85rem; font-weight: 700; color: var(--text-main); width: 100%; margin-left: 6px; }
+        .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-main); font-weight: 900; }
 
-        .search-box-wrap input {
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-main);
-            width: 100%;
-            margin-left: 6px;
-        }
+        .store-hero { padding: 4rem 4rem 2rem 4rem; max-width: 1350px; margin: 0 auto; text-align: center; }
+        .store-hero h1 { font-size: 3rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 0.8rem; }
+        .store-hero p { color: var(--text-muted); font-size: 1.05rem; font-weight: 700; max-width: 600px; margin: 0 auto 2rem auto; }
 
-        .icon-btn {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: var(--text-main);
-            font-weight: 900;
-        }
-
-        .store-hero {
-            padding: 4.5rem 4rem 2rem 4rem;
-            max-width: 1350px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .store-hero h1 {
-            font-size: 3rem;
-            font-weight: 900;
-            letter-spacing: -1px;
-            margin-bottom: 0.8rem;
-        }
-
-        .store-hero p {
-            color: var(--text-muted);
-            font-size: 1.05rem;
-            font-weight: 700;
-            max-width: 600px;
-            margin: 0 auto 2rem auto;
-        }
-
-        .product-catalog-section {
-            padding: 2rem 4rem 5rem 4rem;
-            max-width: 1350px;
-            margin: 0 auto;
-        }
-
-        .catalog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 1.5rem;
-        }
+        .product-catalog-section { padding: 2rem 4rem 5rem 4rem; max-width: 1350px; margin: 0 auto; }
+        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; margin-top: 1.5rem; }
 
         .product-card {
-            background: var(--bg-card);
-            border: 2.5px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.2rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            box-shadow: var(--shadow-brand);
-            cursor: pointer;
-            transition: transform 0.2s;
+            background: var(--bg-card); border: 2.5px solid var(--border-color); border-radius: 16px;
+            padding: 1.2rem; display: flex; flex-direction: column; justify-content: space-between;
+            position: relative; box-shadow: var(--shadow-brand); cursor: pointer; transition: transform 0.2s;
         }
-
-        .product-card:hover {
-            transform: translateY(-4px);
-        }
+        .product-card:hover { transform: translateY(-4px); }
 
         .prod-img-box {
-            width: 100%;
-            height: 250px;
-            background: #EAE6DF;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            margin-bottom: 1.0rem;
-            overflow: hidden;
+            width: 100%; height: 250px; background: #EAE6DF; border: 2px solid var(--border-color);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1rem; overflow: hidden;
         }
-
-        .prod-img-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .prod-title {
-            font-size: 1.05rem;
-            font-weight: 900;
-            margin-bottom: 0.3rem;
-        }
-
-        .prod-category {
-            font-size: 0.75rem;
-            font-weight: 800;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-        }
-
-        .prod-bottom-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1rem;
-            border-top: 1.5px solid #F3F4F6;
-            padding-top: 0.8rem;
-        }
-
-        .prod-price {
-            font-size: 1.2rem;
-            font-weight: 900;
-            color: var(--text-main);
-        }
+        .prod-img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .prod-title { font-size: 1.05rem; font-weight: 900; margin-bottom: 0.3rem; }
+        .prod-category { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; border-top: 1.5px solid #F3F4F6; padding-top: 0.8rem; }
+        .prod-price { font-size: 1.2rem; font-weight: 900; color: var(--text-main); }
 
         .btn-add-bag {
-            background: #fff;
-            border: 2px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: 900;
-            font-size: 0.8rem;
-            cursor: pointer;
-            box-shadow: 2px 2px 0px var(--border-color);
-            transition: all 0.15s;
+            background: #fff; border: 2px solid var(--border-color); padding: 6px 12px;
+            border-radius: 8px; font-weight: 900; font-size: 0.8rem; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color);
         }
-
-        .btn-add-bag:hover {
-            background: var(--accent-terracotta);
-            color: #fff;
-        }
+        .btn-add-bag:hover { background: var(--accent-terracotta); color: #fff; }
 
         .store-footer {
-            background: #111827;
-            color: #F5F2EB;
-            padding: 5rem 4rem 3rem 4rem;
-            margin-top: 4rem;
-            border-top: 3px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
+            background: #111827; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem;
+            border-top: 3px solid var(--border-color); position: relative; overflow: hidden;
         }
-
-        .footer-newsletter {
-            max-width: 800px;
-            margin-bottom: 4rem;
-            padding-bottom: 3rem;
-            border-bottom: 1px solid rgba(255,255,255,0.15);
-            position: relative;
-            z-index: 2;
-        }
-
+        .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.15); position: relative; z-index: 2; }
         .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; }
         .footer-newsletter p { color: #CCBEB1; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
-
         .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; }
         .newsletter-input-group input { flex: 1; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.2); padding: 12px 16px; border-radius: 10px; color: #fff; font-weight: 800; outline: none; }
         .btn-newsletter { background: var(--accent-ochre); color: #fff; border: none; padding: 0 2rem; border-radius: 10px; font-weight: 900; cursor: pointer; }
@@ -278,7 +97,7 @@
         .footer-links-grid { display: grid; grid-template-columns: repeat(5, 1fr) 1.5fr; gap: 2rem; font-size: 0.88rem; position: relative; z-index: 2; }
         .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FAF9F6; }
         .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
-        .footer-col a { color: #CCBEB1; text-decoration: none; font-weight: 700; transition: color 0.2s; }
+        .footer-col a { color: #CCBEB1; text-decoration: none; font-weight: 700; }
         .footer-col a:hover { color: #fff; }
 
         .footer-watermark {
@@ -295,7 +114,7 @@
 
         .modal-panel {
             background: var(--bg-card); border: 3.5px solid var(--border-color);
-            border-radius: 24px; padding: 2.5rem; width: 100%; max-width: 600px;
+            border-radius: 24px; padding: 2.5rem; width: 100%; max-width: 650px;
             box-shadow: 8px 8px 0px var(--border-color); position: relative; max-height: 90vh; overflow-y: auto;
         }
 
@@ -306,6 +125,16 @@
             box-shadow: 3px 3px 0px var(--border-color); margin-top: 1rem;
         }
 
+        #proModalOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px);
+            display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem;
+        }
+        #proModalBox {
+            background: #FAF9F6; border: 3.5px solid var(--border-color); border-radius: 20px;
+            padding: 2rem; max-width: 420px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--border-color);
+        }
+
         @media (max-width: 968px) {
             .store-navbar, .store-hero, .product-catalog-section, .store-footer { padding: 2rem 1.5rem; }
             .footer-links-grid { grid-template-columns: 1fr; }
@@ -314,6 +143,14 @@
     </style>
 </head>
 <body>
+
+    <div id="proModalOverlay">
+        <div id="proModalBox">
+            <h3 id="proModalTitle" style="font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem;">Hoknex Notice</h3>
+            <p id="proModalMessage" style="font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1.5rem;"></p>
+            <button onclick="closeProModal()" class="btn-primary" style="margin-top:0; padding: 0.6rem 1.5rem;">Okay 👍</button>
+        </div>
+    </div>
 
     <div class="top-announcement" id="topAnnouncementBar">
         ⚡ Free Campus Delivery on all Hoknex Apparel Orders over ₹999 | Crafted for Global Creators
@@ -351,7 +188,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
             <div>
                 <h3 style="font-size: 1.8rem; font-weight: 900;" id="activeCategoryTitle">Featured Hoknex Collection</h3>
-                <p style="color: var(--text-muted); font-weight: 700; font-size: 0.9rem;">Click any product to inspect and place an order instantly.</p>
+                <p style="color: var(--text-muted); font-weight: 700; font-size: 0.9rem;">Click any product to inspect multi-angle views and place an order.</p>
             </div>
         </div>
 
@@ -414,20 +251,23 @@
         <div class="footer-watermark">hoknex</div>
     </footer>
 
-    <!-- PDP Modal -->
+    <!-- PDP Modal with Multi-Angle Gallery -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
-        <div class="modal-panel" style="max-width: 800px;">
+        <div class="modal-panel" style="max-width: 850px;">
             <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            
             <div style="display:flex; gap:2.5rem; flex-wrap:wrap;">
                 <div style="flex:1; min-width:280px; text-align:center;">
-                    <div id="pdpMainBox" class="prod-img-box" style="height:320px;">
+                    <div id="pdpMainBox" class="prod-img-box" style="height:300px;">
                         <span id="pdpMainEmoji" style="font-size:6rem;">🧥</span>
                     </div>
+                    <div id="pdpThumbnails" style="display:flex; gap:8px; margin-top:10px; justify-content:center;"></div>
                 </div>
                 <div style="flex:1; min-width:280px;">
                     <span id="pdpBadge" style="background:var(--accent-ochre); color:#fff; border:2px solid var(--border-color); padding:3px 10px; border-radius:6px; font-size:0.75rem; font-weight:900; text-transform:uppercase;">Best Seller</span>
                     <h2 id="pdpTitle" style="font-size:1.8rem; font-weight:900; margin:0.4rem 0;">Product Title</h2>
-                    <div id="pdpPrice" style="font-size:1.4rem; font-weight:900; color:var(--accent-terracotta); margin-bottom:0.8rem;">₹0</div>
+                    <div id="pdpPrice" style="font-size:1.4rem; font-weight:900; color:var(--accent-terracotta); margin-bottom:0.4rem;">₹0</div>
+                    <div id="pdpDeliveryNote" style="font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:0.8rem;">Delivery Fee: ₹0</div>
                     <p id="pdpDesc" style="color:var(--text-muted); font-size:0.9rem; font-weight:700; line-height:1.5; margin-bottom:1.2rem;"></p>
 
                     <div style="font-size:0.8rem; font-weight:900; color:var(--text-main); text-transform:uppercase; margin-bottom:0.4rem;">Select Size</div>
@@ -452,20 +292,21 @@
             <div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem;">
                 <p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your bag is empty.</p>
             </div>
-            <div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:900; margin-bottom:1.5rem; border-top:2px solid var(--border-color); padding-top:1rem;">
-                <span>Total Subtotal:</span>
-                <span id="bagTotal" style="color:var(--accent-terracotta);">₹0</span>
+            <div style="font-size:0.88rem; font-weight:800; margin-bottom:1rem; border-top:2px solid var(--border-color); padding-top:0.8rem;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Items Subtotal:</span><span id="bagSubtotal">₹0</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Total Delivery Charge:</span><span id="bagDelivery">₹0</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:900; margin-top:6px; color:var(--accent-terracotta);"><span>Final Total:</span><span id="bagTotal">₹0</span></div>
             </div>
-            <button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Free Campus Checkout 🚀</button>
+            <button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Checkout 🚀</button>
         </div>
     </div>
 
-    <!-- Free Checkout Modal -->
+    <!-- Checkout Modal with Conditional COD & Mandatory Proof -->
     <div id="checkoutModal" class="modal-overlay" onclick="if(event.target === this) closeModal('checkoutModal')">
-        <div class="modal-panel" style="max-width: 500px;">
+        <div class="modal-panel" style="max-width: 520px;">
             <button onclick="closeModal('checkoutModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
-            <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.4rem;">Hoknex Free Campus Checkout 🛡️</h2>
-            <p style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;">Zero gateway fees. Pay cash on campus delivery or direct founder UPI.</p>
+            <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.4rem;">Hoknex Secure Checkout 🛡️</h2>
+            <p id="checkoutSubNotice" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;"></p>
             
             <form onsubmit="finalizeOrder(event)" style="display:flex; flex-direction:column; gap:0.8rem;">
                 <div>
@@ -473,7 +314,7 @@
                     <input type="text" id="shipName" placeholder="Alex Morgan" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;">
                 </div>
                 <div>
-                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Phone Number & Email (for Confirmation)</label>
+                    <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Phone Number & Email</label>
                     <input type="text" id="shipPhone" placeholder="+91 9876543210 | email@student.edu" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;">
                 </div>
                 <div>
@@ -482,45 +323,63 @@
                 </div>
                 <div>
                     <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Payment Mode</label>
-                    <select id="payMode" style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;">
-                        <option value="COD">Pay on Campus Delivery (Cash / UPI on arrival)</option>
+                    <select id="payMode" onchange="toggleQrScanner(this.value)" style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;">
+                        <option id="codOption" value="COD">Pay on Campus Delivery (Cash / UPI on arrival)</option>
                         <option value="DirectUPI">Direct Founder UPI (hoknex@upi)</option>
                     </select>
                 </div>
-                <button type="submit" class="btn-primary" style="margin-top:0.3rem;">Place Order Now 🎉</button>
+
+                <div id="qrScannerSection" style="display:none; background:#FAF9F6; border:2.5px dashed var(--border-color); padding:1.2rem; border-radius:14px; text-align:center; margin-top:0.5rem;">
+                    <h4 style="font-size:0.95rem; font-weight:900; margin-bottom:0.4rem;">📷 Scan Founder UPI QR Code to Pay</h4>
+                    <div id="qrImageContainer" style="width:160px; height:160px; margin:0 auto; background:#fff; border:2px solid var(--border-color); border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                        📱 QR Code Loading...
+                    </div>
+                    <p style="font-size:0.75rem; font-weight:800; color:var(--accent-terracotta); margin-top:0.5rem;">UPI ID: hoknex@upi</p>
+                    
+                    <div style="margin-top:1rem; text-align:left;">
+                        <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Upload Payment Screenshot (Mandatory) *</label>
+                        <input type="file" id="paymentProofInput" accept="image/*" style="width:100%; margin-top:4px; font-size:0.8rem; font-weight:800;">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" style="margin-top:0.5rem;">Place Order Now 🎉</button>
             </form>
         </div>
     </div>
 
-    <!-- Order Tracking Modal -->
+    <!-- Enhanced Order Tracking Modal with Timeline History -->
     <div id="trackModal" class="modal-overlay" onclick="if(event.target === this) closeModal('trackModal')">
-        <div class="modal-panel" style="max-width: 440px; text-align: center;">
+        <div class="modal-panel" style="max-width: 480px; text-align: center;">
             <button onclick="closeModal('trackModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
             <h2 style="font-size: 1.4rem; font-weight: 900; margin-bottom: 0.4rem;">📦 Track Your Hoknex Order</h2>
-            <p style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;">Enter your Order ID to check live delivery status.</p>
+            <p style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;">Enter your Order ID to check live delivery status & timeline.</p>
             
             <div style="display:flex; gap:8px; margin-bottom:1.2rem;">
                 <input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:#fff; border:2.5px solid var(--border-color); border-radius:10px; padding:10px; font-weight:800; flex:1; outline:none;">
                 <button onclick="performTracking()" class="btn-primary" style="margin:0; padding:10px 14px; width:110px;">Track 🔍</button>
             </div>
 
-            <div id="trackResultBox" style="text-align:left; background:#fff; border:2.5px solid var(--border-color); padding:1rem; border-radius:10px; display:none;">
-                <h4 id="resId" style="font-size:0.95rem; font-weight:900; margin-bottom:0.2rem;">Order ID: #</h4>
-                <p id="resStatus" style="font-size:0.82rem; font-weight:900; color:var(--accent-terracotta); margin-bottom:0.2rem;">Status: Processing</p>
-                <p id="resDetails" style="font-size:0.78rem; color:var(--text-muted); font-weight:800;">Customer & Address details...</p>
+            <div id="trackResultBox" style="text-align:left; background:#fff; border:2.5px solid var(--border-color); padding:1.2rem; border-radius:12px; display:none;">
+                <h4 id="resId" style="font-size:1rem; font-weight:900; margin-bottom:0.4rem;">Order ID: #</h4>
+                <div id="resTimeline" style="display:flex; flex-direction:column; gap:8px; margin-top:10px; font-size:0.82rem; font-weight:800;"></div>
             </div>
         </div>
     </div>
 
     <script>
+        function showProModal(title, message) {
+            document.getElementById('proModalTitle').innerText = title;
+            document.getElementById('proModalMessage').innerText = message;
+            document.getElementById('proModalOverlay').style.display = 'flex';
+        }
+        function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
+
         const savedAnnouncement = localStorage.getItem('hoknex_announcement');
         if(savedAnnouncement) { document.getElementById('topAnnouncementBar').innerText = savedAnnouncement; }
 
         let defaultCatalog = [
-            { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, emoji: "🧥", badge: "New Drop", description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing." },
-            { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, emoji: "👟", badge: "Best Seller", description: "Hand-stitched premium leather lifestyle sneakers built for campus creators." },
-            { id: '3', name: "Hoknex Pavilion Resort Polo", category: "Apparel", price: 2299, emoji: "👕", badge: "Classic", description: "Breathable sustainable linen polo engineered with tailored collar finish." },
-            { id: '4', name: "Hoknex Creator Heavyweight Hoodie", category: "Apparel", price: 1599, emoji: "🧶", badge: "Popular", description: "450GSM luxury French Terry cotton with embroidered Hoknex wordmark." }
+            { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49, emoji: "🧥", badge: "New Drop", description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.", images: ["🧥", "👔", "🔎"] },
+            { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99, emoji: "👟", badge: "Best Seller", description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.", images: ["👟", "🥾", "🔎"] }
         ];
 
         let catalog = JSON.parse(localStorage.getItem('hoknex_custom_catalog') || JSON.stringify(defaultCatalog));
@@ -531,7 +390,7 @@
         function renderCatalog(items) {
             const grid = document.getElementById('catalogGrid');
             if(items.length === 0) {
-                grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-weight:800; padding:3rem;">No products found in this category.</p>`;
+                grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-weight:800; padding:3rem;">No products found.</p>`;
                 return;
             }
             grid.innerHTML = items.map(item => `
@@ -555,12 +414,8 @@
         }
 
         function filterCategory(cat) {
-            document.getElementById('activeCategoryTitle').innerText = cat === 'all' ? 'Featured Hoknex Collection' : `${cat} Collection`;
-            if (cat === 'all') {
-                renderCatalog(catalog);
-            } else {
-                renderCatalog(catalog.filter(i => i.category.toLowerCase() === cat.toLowerCase()));
-            }
+            if (cat === 'all') { renderCatalog(catalog); } 
+            else { renderCatalog(catalog.filter(i => i.category.toLowerCase() === cat.toLowerCase())); }
         }
 
         function filterCatalogSearch(keyword) {
@@ -568,26 +423,38 @@
             renderCatalog(filtered);
         }
 
+        // Multi-Angle PDP Modal
         function openPdpModal(id) {
             currentPdpItem = catalog.find(i => i.id === id);
             if (!currentPdpItem) return;
 
-            document.getElementById('pdpMainBox').innerHTML = currentPdpItem.image ? `<img src="${currentPdpItem.image}" alt="${currentPdpItem.name}">` : `<span id="pdpMainEmoji" style="font-size:6rem;">${currentPdpItem.emoji || '📦'}</span>`;
+            const imgs = currentPdpItem.galleryImages && currentPdpItem.galleryImages.length > 0 ? currentPdpItem.galleryImages : [currentPdpItem.image || currentPdpItem.emoji || '📦'];
+            
+            document.getElementById('pdpMainBox').innerHTML = imgs[0].startsWith('data:') || imgs[0].startsWith('http') ? `<img src="${imgs[0]}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:6rem;">${imgs[0]}</span>`;
+            document.getElementById('pdpThumbnails').innerHTML = imgs.map((img, idx) => `
+                <div onclick="switchPdpImage(${idx})" style="width:55px; height:55px; background:#EAE6DF; border:2px solid var(--border-color); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;">
+                    ${img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">` : img}
+                </div>
+            `).join('');
+
             document.getElementById('pdpBadge').innerText = currentPdpItem.badge || 'New';
             document.getElementById('pdpTitle').innerText = currentPdpItem.name;
             document.getElementById('pdpPrice').innerText = '₹' + currentPdpItem.price + '.00';
+            document.getElementById('pdpDeliveryNote').innerText = `Delivery Fee: ₹${currentPdpItem.deliveryFee || 0}`;
             document.getElementById('pdpDesc').innerText = currentPdpItem.description;
 
             document.getElementById('pdpModal').style.display = 'flex';
         }
 
+        function switchPdpImage(idx) {
+            const imgs = currentPdpItem.galleryImages && currentPdpItem.galleryImages.length > 0 ? currentPdpItem.galleryImages : [currentPdpItem.image || currentPdpItem.emoji || '📦'];
+            const img = imgs[idx];
+            document.getElementById('pdpMainBox').innerHTML = img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:6rem;">${img}</span>`;
+        }
+
         function selectSize(size, el) {
-            document.querySelectorAll('#sizeGroup button').forEach(b => {
-                b.style.background = '#fff';
-                b.style.color = 'var(--text-main)';
-            });
-            el.style.background = 'var(--accent-terracotta)';
-            el.style.color = '#fff';
+            document.querySelectorAll('#sizeGroup button').forEach(b => { b.style.background = '#fff'; b.style.color = 'var(--text-main)'; });
+            el.style.background = 'var(--accent-terracotta);'; el.style.color = '#fff';
             selectedSize = size;
         }
 
@@ -596,10 +463,8 @@
             const cartKey = `${currentPdpItem.id}-${selectedSize}`;
             const found = bag.find(b => b.cartKey === cartKey);
             if (found) { found.qty += 1; } else { bag.push({ ...currentPdpItem, cartKey, size: selectedSize, qty: 1 }); }
-            saveCart();
-            updateBagUI();
-            closeModal('pdpModal');
-            alert(`Added ${currentPdpItem.name} (${selectedSize}) to bag!`);
+            saveCart(); updateBagUI(); closeModal('pdpModal');
+            showProModal('Added to Bag', `Added ${currentPdpItem.name} (${selectedSize}) to your bag.`);
         }
 
         function addToBag(id) {
@@ -607,31 +472,30 @@
             const cartKey = `${id}-S`;
             const found = bag.find(b => b.cartKey === cartKey);
             if (found) { found.qty += 1; } else { bag.push({ ...item, cartKey, size: 'S', qty: 1 }); }
-            saveCart();
-            updateBagUI();
-            alert(`Added ${item.name} (Size S) to bag!`);
+            saveCart(); updateBagUI();
+            showProModal('Added to Bag', `Added ${item.name} (Size S) to your bag.`);
         }
 
-        function saveCart() {
-            localStorage.setItem('hoknex_persistent_cart', JSON.stringify(bag));
-        }
+        function saveCart() { localStorage.setItem('hoknex_persistent_cart', JSON.stringify(bag)); }
 
         function updateBagUI() {
             const count = bag.reduce((sum, i) => sum + i.qty, 0);
             document.getElementById('bagCount').innerText = count;
 
             const list = document.getElementById('cartItemsList');
-            const totalEl = document.getElementById('bagTotal');
-
             if (bag.length === 0) {
                 list.innerHTML = `<p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your bag is empty.</p>`;
-                totalEl.innerText = '₹0.00';
+                document.getElementById('bagSubtotal').innerText = '₹0';
+                document.getElementById('bagDelivery').innerText = '₹0';
+                document.getElementById('bagTotal').innerText = '₹0';
                 return;
             }
 
             let subtotal = 0;
+            let totalDelivery = 0;
             list.innerHTML = bag.map((item, index) => {
                 subtotal += (item.price * item.qty);
+                totalDelivery += ((item.deliveryFee || 0) * item.qty);
                 return `
                     <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; border:2px solid var(--border-color); padding:8px 12px; border-radius:8px; margin-bottom:8px;">
                         <div>
@@ -643,23 +507,56 @@
                 `;
             }).join('');
 
-            totalEl.innerText = '₹' + subtotal + '.00';
+            document.getElementById('bagSubtotal').innerText = '₹' + subtotal;
+            document.getElementById('bagDelivery').innerText = '₹' + totalDelivery;
+            document.getElementById('bagTotal').innerText = '₹' + (subtotal + totalDelivery);
         }
 
-        function removeBagItem(index) {
-            bag.splice(index, 1);
-            saveCart();
-            updateBagUI();
-        }
+        function removeBagItem(index) { bag.splice(index, 1); saveCart(); updateBagUI(); }
 
         function openCartModal() { document.getElementById('cartModal').style.display = 'flex'; }
         function openTrackModal() { document.getElementById('trackModal').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function proceedToCheckout() {
-            if (bag.length === 0) { alert('Your shopping bag is empty!'); return; }
+            if (bag.length === 0) { showProModal('Empty Bag', 'Your shopping bag is empty.'); return; }
             closeModal('cartModal');
+
+            // Conditional Subtotal Check (₹599+)
+            let subtotal = bag.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            const codOption = document.getElementById('codOption');
+            const payModeSelect = document.getElementById('payMode');
+
+            if (subtotal >= 599) {
+                codOption.disabled = true;
+                payModeSelect.value = 'DirectUPI';
+                toggleQrScanner('DirectUPI');
+                document.getElementById('checkoutSubNotice').innerText = `Subtotal is ₹${subtotal} (₹599+). Cash on Delivery is disabled. Please pay online via UPI.`;
+            } else {
+                codOption.disabled = false;
+                payModeSelect.value = 'COD';
+                toggleQrScanner('COD');
+                document.getElementById('checkoutSubNotice').innerText = `Subtotal is ₹${subtotal}. Pay on Campus Delivery or Direct Founder UPI available.`;
+            }
+
             document.getElementById('checkoutModal').style.display = 'flex';
+        }
+
+        function toggleQrScanner(mode) {
+            const section = document.getElementById('qrScannerSection');
+            const container = document.getElementById('qrImageContainer');
+            if (mode === 'DirectUPI') {
+                section.style.display = 'block';
+                let qrs = JSON.parse(localStorage.getItem('hoknex_owner_qrs') || '[]');
+                if (qrs.length > 0) {
+                    const randomQr = qrs[Math.floor(Math.random() * qrs.length)];
+                    container.innerHTML = `<img src="${randomQr}" style="width:100%; height:100%; object-fit:cover;">`;
+                } else {
+                    container.innerHTML = `📱 Default QR (Upload in Admin)`;
+                }
+            } else {
+                section.style.display = 'none';
+            }
         }
 
         function finalizeOrder(e) {
@@ -669,13 +566,26 @@
             const address = document.getElementById('shipAddress').value;
             const payMode = document.getElementById('payMode').value;
 
+            if (payMode === 'DirectUPI') {
+                const proofInput = document.getElementById('paymentProofInput');
+                if (!proofInput.files || !proofInput.files[0]) {
+                    showProModal('Payment Screenshot Required', 'For Direct Founder UPI payments, you must attach your payment screenshot before placing the order.');
+                    return;
+                }
+            }
+
+            let subtotal = bag.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            let totalDelivery = bag.reduce((sum, i) => sum + ((i.deliveryFee || 0) * i.qty), 0);
+
             const orderId = 'HOK-' + Math.floor(10000 + Math.random() * 90000);
             
             const orderData = {
                 orderId, name, phone, address, payMode,
                 items: bag,
-                total: bag.reduce((sum, i) => sum + (i.price * i.qty), 0),
+                subtotal, deliveryFee: totalDelivery,
+                total: subtotal + totalDelivery,
                 status: 'Order Placed & Awaiting Owner Approval ⏳',
+                timeline: [{ title: 'Order Placed', time: new Date().toLocaleString(), active: true }],
                 date: new Date().toLocaleDateString()
             };
 
@@ -683,12 +593,8 @@
             allOrders.push(orderData);
             localStorage.setItem('hoknex_store_orders', JSON.stringify(allOrders));
 
-            bag = [];
-            saveCart();
-            closeModal('checkoutModal');
-            updateBagUI();
-
-            alert(`Order Successfully Placed!\nYour Order ID is: ${orderId}\nThe owner has received your details and will approve & confirm via email / notice bar shortly.`);
+            bag = []; saveCart(); closeModal('checkoutModal'); updateBagUI();
+            showProModal('Order Placed Successfully! 🎉', `Your Order ID is #${orderId}. Check live updates anytime using Track Order.`);
         }
 
         function performTracking() {
@@ -700,26 +606,27 @@
             resultBox.style.display = 'block';
 
             if (found) {
-                document.getElementById('resId').innerText = `Order ID: #${found.orderId} (${found.date})`;
-                document.getElementById('resStatus').innerText = `Status: ${found.status}`;
-                document.getElementById('resDetails').innerText = `Recipient: ${found.name} | Deliver to: ${found.address} | Total: ₹${found.total}`;
+                document.getElementById('resId').innerText = `Order ID: #${found.orderId} (${found.date}) — Status: ${found.status}`;
+                let timelineHtml = (found.timeline || [{title: found.status, time: found.date}]).map(t => `
+                    <div style="display:flex; align-items:center; gap:8px; border-left:2px solid var(--accent-terracotta); padding-left:10px; margin-bottom:4px;">
+                        <div><b>${t.title}</b><br><small style="color:var(--text-muted);">${t.time}</small></div>
+                    </div>
+                `).join('');
+                document.getElementById('resTimeline').innerHTML = timelineHtml;
             } else {
                 document.getElementById('resId').innerText = `Order ID: #${queryId}`;
-                document.getElementById('resStatus').innerText = `Status: Not Found / Invalid ID`;
-                document.getElementById('resDetails').innerText = `Please check your Order ID and try again.`;
+                document.getElementById('resTimeline').innerHTML = `<p style="color:var(--accent-terracotta);">Order ID not found or invalid.</p>`;
             }
         }
 
         function submitNewsletterEmail() {
             const email = document.getElementById('newsletterEmailInput').value.trim();
-            if(!email) { alert('Please enter a valid email address.'); return; }
-            
+            if(!email) { showProModal('Invalid Email', 'Please enter a valid email address.'); return; }
             let leads = JSON.parse(localStorage.getItem('hoknex_newsletter_leads') || '[]');
             leads.push({ email, date: new Date().toLocaleDateString() });
             localStorage.setItem('hoknex_newsletter_leads', JSON.stringify(leads));
-
             document.getElementById('newsletterEmailInput').value = '';
-            alert('Thank you! Your email has been successfully registered to the Hoknex movement.');
+            showProModal('Welcome to Hoknex', 'Your email has been successfully registered.');
         }
 
         renderCatalog(catalog);
