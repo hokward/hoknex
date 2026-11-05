@@ -177,37 +177,14 @@
         <div class="catalog-grid" id="catalogGrid"></div>
     </section>
 
-    <!-- 5-6 Picture Visual Campaign Showcase Segment -->
+    <!-- Dynamic Visual Campaign Showcase Segment -->
     <section class="campaign-showcase-section">
         <div class="campaign-header">
             <h2>The Hoknex Visual Archive ⚡</h2>
             <p>Glimpses into our underground campus labs, hacker houses, and heavyweight apparel craftsmanship.</p>
         </div>
-        <div class="campaign-grid-layout">
-            <div class="campaign-tile">
-                <div class="campaign-img-wrap"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=700&auto=format&fit=crop&q=80" alt="Campaign 1"></div>
-                <div class="campaign-caption"><h4>01 / Campus Innovations</h4><p>Designed by students, field-tested in live hackathons.</p></div>
-            </div>
-            <div class="campaign-tile">
-                <div class="campaign-img-wrap"><img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=700&auto=format&fit=crop&q=80" alt="Campaign 2"></div>
-                <div class="campaign-caption"><h4>02 / Heavyweight Fleece</h4><p>450GSM organic cotton built for zero compromises.</p></div>
-            </div>
-            <div class="campaign-tile">
-                <div class="campaign-img-wrap"><img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=700&auto=format&fit=crop&q=80" alt="Campaign 3"></div>
-                <div class="campaign-caption"><h4>03 / Streetwear Aesthetics</h4><p>Neo-brutalist cuts that make a statement on every quad.</p></div>
-            </div>
-            <div class="campaign-tile">
-                <div class="campaign-img-wrap"><img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=700&auto=format&fit=crop&q=80" alt="Campaign 4"></div>
-                <div class="campaign-caption"><h4>04 / Maker Culture</h4><p>Hardware prototyping meets high-end creator apparel.</p></div>
-            </div>
-            <div class="campaign-tile">
-                <div class="campaign-img-wrap"><img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=700&auto=format&fit=crop&q=80" alt="Campaign 5"></div>
-                <div class="campaign-caption"><h4>05 / Global Creator Guild</h4><p>Worn by innovators across 50+ university campuses.</p></div>
-            </div>
-            <div class="campaign-tile">
-                <div class="campaign-img-wrap"><img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=700&auto=format&fit=crop&q=80" alt="Campaign 6"></div>
-                <div class="campaign-caption"><h4>06 / Uncompromising Drops</h4><p>Limited batch releases engineered for the relentless.</p></div>
-            </div>
+        <div class="campaign-grid-layout" id="campaignGridContainer">
+            <!-- Rendered dynamically from backend database -->
         </div>
     </section>
 
@@ -367,9 +344,10 @@
 
         async function fetchStoreData() {
             try {
-                const [prodRes, dropRes] = await Promise.all([
+                const [prodRes, dropRes, campRes] = await Promise.all([
                     fetch(`${API_URL}/store/products`),
-                    fetch(`${API_URL}/store/drops`)
+                    fetch(`${API_URL}/store/drops`),
+                    fetch(`${API_URL}/store/campaigns`)
                 ]);
                 const dbProducts = await prodRes.json();
                 catalog = (dbProducts && dbProducts.length > 0) ? dbProducts : defaultCatalog;
@@ -377,10 +355,14 @@
                 
                 const drops = await dropRes.json();
                 renderComingSoon(drops);
+
+                const campaigns = await campRes.json();
+                renderCampaignShowcase(campaigns);
             } catch (err) {
                 console.warn('API offline, falling back to default catalog.');
                 catalog = defaultCatalog;
                 renderCatalog(catalog);
+                renderCampaignShowcase([]);
             }
         }
 
@@ -396,6 +378,30 @@
                     </div>
                     <h4 style="font-weight:900; font-size:1.05rem; margin-bottom:4px; color:var(--text-main);">${d.title}</h4>
                     <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">${d.desc}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderCampaignShowcase(camps) {
+            const container = document.getElementById('campaignGridContainer');
+            if (!container) return;
+            
+            let displayCamps = (camps && camps.length > 0) ? camps : [
+                { title: '01 / Campus Innovations', desc: 'Designed by students, field-tested in live hackathons.', image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=700&auto=format&fit=crop&q=80' },
+                { title: '02 / Heavyweight Fleece', desc: '450GSM organic cotton built for zero compromises.', image: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=700&auto=format&fit=crop&q=80' },
+                { title: '03 / Streetwear Aesthetics', desc: 'Neo-brutalist cuts that make a statement on every quad.', image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=700&auto=format&fit=crop&q=80' },
+                { title: '04 / Maker Culture', desc: 'Hardware prototyping meets high-end creator apparel.', image: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=700&auto=format&fit=crop&q=80' },
+                { title: '05 / Global Creator Guild', desc: 'Worn by innovators across 50+ university campuses.', image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=700&auto=format&fit=crop&q=80' },
+                { title: '06 / Uncompromising Drops', desc: 'Limited batch releases engineered for the relentless.', image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=700&auto=format&fit=crop&q=80' }
+            ];
+
+            container.innerHTML = displayCamps.map(c => `
+                <div class="campaign-tile">
+                    <div class="campaign-img-wrap"><img src="${c.image}" alt="${c.title}"></div>
+                    <div class="campaign-caption">
+                        <h4>${c.title}</h4>
+                        <p>${c.desc}</p>
+                    </div>
                 </div>
             `).join('');
         }
