@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoknex Magazine — Tech, Gaming & Underground Student Culture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0A0A0C;
+            --bg-card: #12131A;
+            --bg-surface: #1A1C24;
+            --border-color: rgba(223, 252, 243, 0.1);
+            --text-frost: #DFFCF3;
+            --text-muted: #94A3B8;
+            --accent-tangerine: #FF5A09;
+            --accent-lavender: #D9A5CD;
+            --shadow-zine: 0 15px 35px rgba(0, 0, 0, 0.8);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-frost);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Ticker Bar */
+        .zine-ticker {
+            background: linear-gradient(90deg, var(--accent-tangerine), var(--accent-lavender));
+            color: #0A0A0C;
+            text-align: center;
+            padding: 8px 1rem;
+            font-size: 0.8rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Header / Navbar */
+        .zine-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 4rem;
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .zine-brand {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text-frost);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .zine-brand span {
+            color: var(--accent-tangerine);
+        }
+
+        .zine-nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .zine-nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.92rem;
+            transition: color 0.2s;
+        }
+
+        .zine-nav-links a:hover, .zine-nav-links a.active {
+            color: var(--text-frost);
+        }
+
+        .btn-subscribe-zine {
+            background: var(--accent-tangerine);
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1.4rem;
+            border-radius: 30px;
+            font-weight: 900;
+            font-size: 0.88rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 90, 9, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .btn-subscribe-zine:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Zine Hero Section */
+        .zine-hero {
+            padding: 5rem 4rem 3rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .zine-hero-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2.5rem;
+            align-items: stretch;
+        }
+
+        .featured-story-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            position: relative;
+            min-height: 450px;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: var(--shadow-zine);
+            transition: border-color 0.3s;
+        }
+
+        .featured-story-card:hover {
+            border-color: var(--accent-tangerine);
+        }
+
+        .story-tag {
+            background: rgba(217, 165, 205, 0.15);
+            color: var(--accent-lavender);
+            border: 1px solid rgba(217, 165, 205, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            width: fit-content;
+            margin-bottom: 1rem;
+        }
+
+        .featured-story-card h1 {
+            font-size: 2.4rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            color: var(--text-frost);
+        }
+
+        .featured-story-card p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Sidebar Trending Panel */
+        .trending-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .trending-panel h3 {
+            font-size: 1.2rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-lavender);
+        }
+
+        .trending-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: padding-left 0.2s;
+        }
+
+        .trending-item:hover {
+            padding-left: 6px;
+        }
+
+        .trending-item:last-child {
+            border-bottom: none;
+        }
+
+        .trending-num {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--accent-tangerine);
+            margin-bottom: 4px;
+        }
+
+        .trending-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-frost);
+            line-height: 1.4;
+        }
+
+        /* Category Filter Bar */
+        .zine-filters {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 4rem 2rem 4rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .zine-filter-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.55rem 1.4rem;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .zine-filter-btn.active, .zine-filter-btn:hover {
+            background: var(--accent-tangerine);
+            color: #fff;
+            border-color: var(--accent-tangerine);
+        }
+
+        /* Article Grid */
+        .zine-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 4rem 6rem 4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .zine-article-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            box-shadow: var(--shadow-zine);
+            transition: transform 0.25s, border-color 0.25s;
+        }
+
+        .zine-article-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(217, 165, 205, 0.4);
+        }
+
+        .article-preview-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.2rem;
+            background: var(--bg-surface);
+            width: 70px; height: 70px;
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .zine-article-card h3 {
+            font-size: 1.3rem;
+            font-weight: 900;
+            margin-bottom: 0.6rem;
+            line-height: 1.3;
+        }
+
+        .zine-article-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        /* Article Reader Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1.5rem;
+        }
+
+        .modal-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 3.5rem;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.9);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Footer */
+        .zine-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 700;
+            background: #060608;
+        }
+
+        @media (max-width: 968px) {
+            .zine-nav, .zine-hero, .zine-filters, .zine-grid, .zine-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .zine-hero-grid { grid-template-columns: 1fr; }
+            .zine-nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="zine-ticker">
+        🔥 DROP #04 LIVE NOW: The Rise of Autonomous Campus Hackathons & Decentralized Student Guilds
+    </div>
+
+    <!-- Navigation -->
+    <header class="zine-nav">
+        <a href="index.html" class="zine-brand">
+            <span>⚡</span> HOKNEX ZINE
+        </a>
+        <nav class="zine-nav-links">
+            <a href="store.html">Store</a>
+            <a href="magazine.html" class="active">Magazine</a>
+            <a href="donation.html">Fund & Support</a>
+        </nav>
+        <button class="btn-subscribe-zine" onclick="alert('Subscribed to Zine Dispatch!')">Get Dispatch ⚡</button>
+    </header>
+
+    <!-- Hero Story & Trending -->
+    <section class="zine-hero">
+        <div class="zine-hero-grid">
+            <!-- Featured Story -->
+            <div class="featured-story-card" onclick="openArticle('feat')">
+                <span class="story-tag">Cover Story • Tech & Architecture</span>
+                <h1>Building Borderless Networks: How Gen-Z Builders Are Rewiring Global Student Collaboration</h1>
+                <p>An deep-dive exploration into self-hosted local infrastructure, cloudless mesh networks, and the tools powering autonomous student developer collectives across continents.</p>
+                <div class="article-meta" style="border:none; padding:0; color: var(--accent-lavender);">
+                    <span>By Hoknex Editorial Board</span>
+                    <span>⏱️ 6 min read</span>
+                </div>
+            </div>
+
+            <!-- Trending Sidebar -->
+            <div class="trending-panel">
+                <h3>⚡ Trending Dispatches</h3>
+                <div>
+                    <div class="trending-item" onclick="openArticle('t1')">
+                        <div class="trending-num">01</div>
+                        <div class="trending-title">Godot 4 vs Unity: Why Indie Game Devs Are Migrating to Open Source</div>
+                    </div>
+                    <div class="trending-item" onclick="openArticle('t2')">
+                        <div class="trending-num">02</div>
+                        <div class="trending-title">Designing Wearable IoT Hardware on a Student Budget</div>
+                    </div>
+                    <div class="trending-item" onclick="openArticle('t3')">
+                        <div class="trending-num">03</div>
+                        <div class="trending-title">The Psychology of Neo-Brutalist UI in Modern Developer Portfolios</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <div class="zine-filters">
+        <button class="zine-filter-btn active" onclick="filterZine('all', this)">All Dispatches 🌐</button>
+        <button class="zine-filter-btn" onclick="filterZine('Tech', this)">Tech & Code 💻</button>
+        <button class="zine-filter-btn" onclick="filterZine('Gaming', this)">Game Dev 🎮</button>
+        <button class="zine-filter-btn" onclick="filterZine('Culture', this)">Campus Culture 🎒</button>
+    </div>
+
+    <!-- Article Grid -->
+    <main class="zine-grid" id="zineGrid">
+        <!-- Rendered via JS -->
+    </main>
+
+    <!-- Article Reader Modal -->
+    <div id="articleModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
+        <div class="modal-panel">
+            <button onclick="closeModal()" style="position:absolute; top:20px; right:20px; background:var(--bg-surface); color:#fff; border:1px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <span id="modalTag" class="story-tag">Category</span>
+            <h2 id="modalTitle" style="font-size: 2.2rem; font-weight: 900; margin: 1rem 0; line-height: 1.2;">Article Title</h2>
+            <div id="modalMeta" style="color: var(--accent-lavender); font-size: 0.85rem; font-weight: 800; margin-bottom: 2rem;">Author • Read time</div>
+            <div id="modalBody" style="color: var(--text-muted); font-size: 1rem; font-weight: 600; line-height: 1.8; display: flex; flex-direction: column; gap: 1rem;">
+                Article body...
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="zine-footer">
+        <p>&copy; 2026 Hoknex Magazine. Built for digital zines, tech creators, and modern campus innovators.</p>
+    </footer>
+
+    <script>
+        let articles = [
+            {
+                id: 'feat', category: 'Tech', icon: '🌐',
+                title: "Building Borderless Networks: How Gen-Z Builders Are Rewiring Global Student Collaboration",
+                excerpt: "An deep-dive exploration into self-hosted local infrastructure, cloudless mesh networks, and the tools powering autonomous student developer collectives across continents.",
+                author: "Hoknex Editorial", time: "6 min read",
+                body: "Self-hosting and decentralized application architectures are no longer reserved for enterprise backend engineers. Across university labs and dorm rooms, student developers are spinning up local XAMPP nodes, Cloudflare Tunnels, and DuckDNS instances to deploy self-managed networks. This article examines how lightweight microcontrollers like the ESP32 and real-time socket communication are redefining how campus communities connect without relying on rigid corporate APIs."
+            },
+            {
+                id: 't1', category: 'Gaming', icon: '🎮',
+                title: "Godot 4 vs Unity: Why Indie Game Devs Are Migrating to Open Source",
+                excerpt: "Analyzing node-based architecture, physics performance, and why indie 2D/3D creators are choosing Godot for rapid arcade prototyping.",
+                author: "Devenger Team", time: "4 min read",
+                body: "The shift toward open-source game engines has accelerated rapidly. With Godot 4's overhauled renderer, robust GDScript performance, and zero licensing fees, solo developers building arcade and platformer mechanics can focus entirely on collision physics and retro audio integration without worrying about unexpected runtime fees."
+            },
+            {
+                id: 't2', category: 'Tech', icon: '⚡',
+                title: "Designing Wearable IoT Hardware on a Student Budget",
+                excerpt: "Prototyping smart motorcycle navigation and haptic feedback gear using ESP32-C3 and MPU6050 sensors.",
+                author: "OmniRider Labs", time: "5 min read",
+                body: "Hardware prototyping used to require expensive proprietary industrial modules. Today, combining an ESP32-C3 microcontroller with an MPU6050 6-axis motion tracking sensor, BLE modules, and haptic vibration motors allows makers to build sophisticated wearable safety systems for under ₹1,500. Here is our step-by-step breakdown of debugging BLE handshakes and low-power battery optimization."
+            },
+            {
+                id: 't3', category: 'Culture', icon: '🎨',
+                title: "The Psychology of Neo-Brutalist UI in Modern Developer Portfolios",
+                excerpt: "Why high-contrast borders, raw typography, and brutalist card layouts are overtaking minimalist corporate design.",
+                author: "Design Guild", time: "3 min read",
+                body: "Minimalism had its decade. Today's student creators and digital zines are leaning heavily into Neo-Brutalism—sharp borders, vibrant accent blocks, heavy drop shadows, and unapologetic typography. It signals authenticity, raw experimentation, and builder-first ethos in a sea of sterile corporate templates."
+            }
+        ];
+
+        function renderZineGrid(items) {
+            const grid = document.getElementById('zineGrid');
+            grid.innerHTML = items.map(art => `
+                <div class="zine-article-card" onclick="openArticle('${art.id}')">
+                    <div>
+                        <div class="article-preview-icon">${art.icon}</div>
+                        <span style="font-size:0.75rem; font-weight:800; color:var(--accent-lavender); text-transform:uppercase; letter-spacing:1px;">${art.category}</span>
+                        <h3>${art.title}</h3>
+                        <p>${art.excerpt}</p>
+                    </div>
+                    <div class="article-meta">
+                        <span>${art.author}</span>
+                        <span>⏱️ ${art.time}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterZine(cat, btn) {
+            document.querySelectorAll('.zine-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (cat === 'all') {
+                renderZineGrid(articles);
+            } else {
+                renderZineGrid(articles.filter(a => a.category.toLowerCase() === cat.toLowerCase()));
+            }
+        }
+
+        function openArticle(id) {
+            const art = articles.find(a => a.id === id);
+            if (!art) return;
+            document.getElementById('modalTag').innerText = art.category;
+            document.getElementById('modalTitle').innerText = art.title;
+            document.getElementById('modalMeta').innerText = `${art.author} • ${art.time}`;
+            document.getElementById('modalBody').innerHTML = `<p>${art.body}</p>`;
+            document.getElementById('articleModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('articleModal').style.display = 'none';
+        }
+
+        renderZineGrid(articles);
+    </script>
+</body>
+</html>
