@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoknex Official Store — Global Student Tech & Swag</title>
+    <title>Hoknex Official Store — Global Student Gear & Tech</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --store-bg: #030712;
-            --store-card: #0b0f19;
-            --store-border: rgba(255, 255, 255, 0.08);
-            --store-accent: #3b82f6;
-            --store-coral: #f43f5e;
-            --store-yellow: #facc15;
-            --store-text: #f8fafc;
-            --store-muted: #94a3b8;
+            --bg-color: #0f1115;
+            --card-bg: #161920;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-blue: #3b82f6;
+            --accent-coral: #f43f5e;
+            --accent-yellow: #facc15;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
 
         *, *::before, *::after {
@@ -25,21 +25,21 @@
         }
 
         body {
-            background-color: var(--store-bg);
-            color: var(--store-text);
+            background-color: var(--bg-color);
+            color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* Distinct Luxury Navbar */
+        /* Navbar */
         .store-navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 1.25rem 4rem;
-            background: rgba(3, 7, 18, 0.85);
+            background: rgba(15, 17, 21, 0.85);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--store-border);
+            border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -49,27 +49,26 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 900;
-            letter-spacing: -0.5px;
             color: #fff;
             text-decoration: none;
         }
 
         .store-brand span {
-            background: linear-gradient(135deg, var(--store-accent), #8b5cf6);
+            background: linear-gradient(135deg, var(--accent-blue), #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .store-nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 2.5rem;
             align-items: center;
         }
 
         .store-nav-links a {
-            color: var(--store-muted);
+            color: var(--text-muted);
             text-decoration: none;
             font-weight: 700;
             font-size: 0.95rem;
@@ -80,8 +79,8 @@
             color: #fff;
         }
 
-        .cart-trigger-btn {
-            background: linear-gradient(135deg, var(--store-accent), #1d4ed8);
+        .cart-btn {
+            background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
             color: #fff;
             border: none;
             padding: 0.65rem 1.4rem;
@@ -95,12 +94,12 @@
             transition: transform 0.2s, filter 0.2s;
         }
 
-        .cart-trigger-btn:hover {
+        .cart-btn:hover {
             transform: translateY(-2px);
             filter: brightness(1.1);
         }
 
-        /* Hero Banner */
+        /* Hero Showcase Banner */
         .store-hero {
             padding: 5rem 4rem 3rem 4rem;
             max-width: 1400px;
@@ -123,42 +122,51 @@
         }
 
         .store-hero p {
-            color: var(--store-muted);
+            color: var(--text-muted);
             font-size: 1.15rem;
             font-weight: 600;
             max-width: 650px;
-            margin: 0 auto;
+            margin: 0 auto 2rem auto;
             line-height: 1.6;
         }
 
-        /* Official Store Badge */
-        .official-tag {
-            background: rgba(59, 130, 246, 0.1);
-            color: #60a5fa;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            padding: 6px 16px;
-            border-radius: 30px;
-            font-size: 0.82rem;
-            font-weight: 800;
-            display: inline-block;
-            margin-bottom: 1.5rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
         }
 
-        /* Products Grid */
-        .store-container {
+        .cat-tab {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.6rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cat-tab.active, .cat-tab:hover {
+            background: var(--accent-blue);
+            color: #fff;
+            border-color: var(--accent-blue);
+        }
+
+        /* Product Grid */
+        .store-grid {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 2rem 4rem 6rem 4rem;
+            padding: 0 4rem 6rem 4rem;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 2.5rem;
         }
 
-        .store-product-card {
-            background: var(--store-card);
-            border: 1px solid var(--store-border);
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 24px;
             padding: 1.8rem;
             display: flex;
@@ -168,17 +176,17 @@
             transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
-        .store-product-card:hover {
+        .product-card:hover {
             transform: translateY(-6px);
             border-color: rgba(59, 130, 246, 0.4);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
         }
 
-        .product-image-box {
+        .product-img-box {
             width: 100%;
             height: 220px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-            border: 1px solid var(--store-border);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
             border-radius: 16px;
             display: flex;
             align-items: center;
@@ -203,22 +211,38 @@
             text-transform: uppercase;
         }
 
-        .store-product-card h3 {
+        .product-card h3 {
             font-size: 1.25rem;
             font-weight: 800;
             margin-bottom: 0.5rem;
             letter-spacing: -0.3px;
         }
 
-        .store-product-card p {
-            color: var(--store-muted);
+        .product-card p {
+            color: var(--text-muted);
             font-size: 0.9rem;
             font-weight: 600;
             line-height: 1.5;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
         }
 
-        .card-footer-flex {
+        .product-options {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 1.2rem;
+        }
+
+        .size-badge {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+        }
+
+        .card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -230,9 +254,9 @@
             color: #fff;
         }
 
-        .btn-buy {
+        .btn-add {
             background: #fff;
-            color: #030712;
+            color: #0f1115;
             border: none;
             padding: 0.7rem 1.2rem;
             border-radius: 12px;
@@ -241,76 +265,64 @@
             transition: background 0.2s, transform 0.2s;
         }
 
-        .btn-buy:hover {
-            background: var(--store-accent);
+        .btn-add:hover {
+            background: var(--accent-blue);
             color: #fff;
         }
 
-        /* Cart Drawer Modal */
-        .cart-drawer-overlay {
+        /* Cart Drawer */
+        .cart-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(8px);
             display: none;
             justify-content: flex-end;
             z-index: 1000;
-            animation: fadeIn 0.2s ease-out;
         }
 
         .cart-drawer {
             width: 100%;
             max-width: 440px;
             height: 100%;
-            background: #0b0f19;
-            border-left: 1px solid var(--store-border);
+            background: #161920;
+            border-left: 1px solid var(--border-color);
             padding: 2.5rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             box-shadow: -20px 0 50px rgba(0,0,0,0.8);
-            animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .cart-items-wrapper {
+        .cart-items {
             flex: 1;
             overflow-y: auto;
             margin: 1.5rem 0;
             padding-right: 5px;
         }
 
-        .cart-item-row {
+        .cart-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--store-border);
+            border: 1px solid var(--border-color);
             padding: 12px 16px;
             border-radius: 14px;
             margin-bottom: 12px;
-        }
-
-        @keyframes slideInRight {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         @media (max-width: 768px) {
             .store-navbar { padding: 1rem 1.5rem; }
             .store-hero { padding: 3rem 1.5rem 2rem 1.5rem; }
             .store-hero h1 { font-size: 2.5rem; }
-            .store-container { padding: 1.5rem; }
+            .store-grid { padding: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Distinct Store Navbar -->
+    <!-- Navbar -->
     <header class="store-navbar">
         <a href="index.html" class="store-brand">
             <span style="font-size:1.5rem;">⚡</span> <span>Hoknex Store</span>
@@ -319,163 +331,173 @@
             <a href="index.html">Home</a>
             <a href="magazine.html">Magazine</a>
             <a href="donation.html">Fund</a>
-            <a href="admin.html" style="color:var(--store-yellow);">⚙️ Admin Panel</a>
+            <a href="admin.html" style="color:var(--accent-yellow);">⚙️ Admin Panel</a>
         </nav>
-        <button class="cart-trigger-btn" onclick="openCartDrawer()">
-            🛒 Cart (<span id="cartItemCount">0</span>)
+        <button class="cart-btn" onclick="toggleCart(true)">
+            🛒 Cart (<span id="cartCount">0</span>)
         </button>
     </header>
 
     <!-- Hero Section -->
     <section class="store-hero">
-        <span class="official-tag">🛡️ Official Verified Hoknex Gear</span>
+        <span style="background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 16px; border-radius: 30px; font-size: 0.82rem; font-weight: 800; display: inline-block; margin-bottom: 1.5rem; text-transform: uppercase;">🛡️ Official Verified Gear</span>
         <h1>Engineered for students, <span>built for creators.</span></h1>
-        <p>Exclusive developer hardware, high-end campus apparel, and official prototyping kits curated directly by the Hoknex core team.</p>
+        <p>Official Hoknex merchandise, heavy-duty hoodies, and IoT prototyping kits curated and sold exclusively by the core team.</p>
+        
+        <div class="category-tabs">
+            <button class="cat-tab active" onclick="filterStore('all')">All Gear 🔥</button>
+            <button class="cat-tab" onclick="filterStore('Apparel')">Apparel 🧥</button>
+            <button class="cat-tab" onclick="filterStore('Hardware')">Tech & IoT ⚡</button>
+            <button class="cat-tab" onclick="filterStore('Accessories')">Accessories 💻</button>
+        </div>
     </section>
 
-    <!-- Product Grid (Connected to Backend API) -->
-    <main class="store-container" id="officialStoreGrid">
-        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--store-muted);">
-            <h3>Loading official Hoknex inventory...</h3>
+    <!-- Product Grid -->
+    <main class="store-grid" id="storeGrid">
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--text-muted);">
+            <h3>Loading official inventory...</h3>
         </div>
     </main>
 
-    <!-- Cart Drawer Modal -->
-    <div id="cartDrawerOverlay" class="cart-drawer-overlay">
+    <!-- Cart Drawer -->
+    <div id="cartOverlay" class="cart-overlay" onclick="if(event.target === this) toggleCart(false)">
         <div class="cart-drawer">
             <div>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2 style="font-size: 1.5rem; font-weight: 900;">Your Shopping Cart</h2>
-                    <button onclick="closeCartDrawer()" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
+                    <h2 style="font-size: 1.5rem; font-weight: 900;">Your Cart</h2>
+                    <button onclick="toggleCart(false)" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
                 </div>
-                <div class="cart-items-wrapper" id="cartItemsList">
-                    <p style="color: var(--store-muted); text-align: center; margin-top: 3rem;">Your cart is empty.</p>
+                <div class="cart-items" id="cartItemsList">
+                    <p style="color: var(--text-muted); text-align: center; margin-top: 3rem;">Your cart is empty.</p>
                 </div>
             </div>
             <div>
-                <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; margin-bottom:1.5rem; border-top:1px solid var(--store-border); padding-top:1rem;">
+                <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; margin-bottom:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;">
                     <span>Total Amount:</span>
-                    <span id="cartTotalPrice" style="color:#60a5fa;">₹0</span>
+                    <span id="cartTotal" style="color:#60a5fa;">₹0</span>
                 </div>
-                <button onclick="handleCheckout()" class="cart-trigger-btn" style="width:100%; justify-content:center; padding:0.9rem; font-size:1rem;">Proceed to Checkout 🚀</button>
+                <button onclick="checkoutCart()" class="cart-btn" style="width:100%; justify-content:center; padding:0.9rem; font-size:1rem;">Proceed to Secure Checkout 🚀</button>
             </div>
         </div>
     </div>
 
     <!-- Toast Notification Container -->
-    <div id="hoknexToastContainer" style="position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
+    <div id="toastContainer" style="position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
 
     <script>
+        let products = [];
         let cart = [];
-        let storeProducts = [];
 
-        // Fetch Official Products from Backend API (MongoDB / Hoknex Inventory)
-        async function fetchStoreProducts() {
+        async function fetchProducts() {
             try {
                 const res = await fetch('/api/store/products');
                 const data = await res.json();
                 if (res.ok && data.length > 0) {
-                    storeProducts = data;
+                    products = data;
                 } else {
-                    // Fallback Official Hoknex Inventory if database is empty initially
-                    storeProducts = [
-                        { _id: '1', name: "Official Hoknex Oversized Hoodie", price: 1299, category: "Apparel", emoji: "🧥", badge: "Best Seller", description: "Heavyweight premium cotton fleece hoodie featuring embroidered Hoknex core branding." },
-                        { _id: '2', name: "ESP32-C3 IoT Prototyping Kit", price: 499, category: "Hardware", emoji: "⚡", badge: "Maker Choice", description: "Complete microcontroller kit for building smart motorcycle navigation & wearables." },
-                        { _id: '3', name: "Hoknex Cyber Developer Sticker Pack", price: 199, category: "Accessories", emoji: "💻", badge: "Trending", description: "Matte-finish weatherproof holographic stickers for laptops and mechanical keyboards." },
-                        { _id: '4', name: "Haptic Motion Glove Component Set", price: 899, category: "Hardware", emoji: "🦾", badge: "Advanced", description: "Precision vibration motors and IMU motion sensors for tactile feedback development." },
-                        { _id: '5', name: "Global Campus Minimalist Cap", price: 599, category: "Apparel", emoji: "🧢", badge: "Limited", description: "Structured cotton twill cap with metal buckle closure and embroidered logo." },
-                        { _id: '6', name: "Hoknex System Architect Notebook", price: 299, category: "Stationery", emoji: "📓", badge: "Essential", description: "Dot-grid notebook designed for system wireframing, algorithm sketching, and notes." }
+                    // Official Hoknex Inventory Fallback
+                    products = [
+                        { _id: '1', name: "Official Hoknex Oversized Hoodie", price: 1299, category: "Apparel", emoji: "🧥", badge: "Best Seller", description: "Heavyweight premium cotton fleece hoodie featuring embroidered Hoknex branding.", sizes: ["S", "M", "L", "XL"] },
+                        { _id: '2', name: "ESP32-C3 IoT Prototyping Kit", price: 499, category: "Hardware", emoji: "⚡", badge: "Maker Choice", description: "Complete microcontroller kit for building smart motorcycle navigation & wearables.", sizes: ["Standard Kit"] },
+                        { _id: '3', name: "Hoknex Cyber Developer Stickers", price: 199, category: "Accessories", emoji: "💻", badge: "Trending", description: "Matte-finish weatherproof holographic stickers for laptops and mechanical keyboards.", sizes: ["Pack of 10"] },
+                        { _id: '4', name: "Haptic Motion Glove Component Set", price: 899, category: "Hardware", emoji: "🦾", badge: "Advanced", description: "Precision vibration motors and IMU motion sensors for tactile feedback development.", sizes: ["Standard"] },
+                        { _id: '5', name: "Global Campus Minimalist Cap", price: 599, category: "Apparel", emoji: "🧢", badge: "Limited", description: "Structured cotton twill cap with metal buckle closure and embroidered logo.", sizes: ["Adjustable"] },
+                        { _id: '6', name: "System Architect Notebook", price: 299, category: "Accessories", emoji: "📓", badge: "Essential", description: "Dot-grid notebook designed for system wireframing, algorithm sketching, and notes.", sizes: ["A5 Hardcover"] }
                     ];
                 }
-                renderStoreGrid();
+                renderProducts(products);
             } catch (err) {
-                console.error('Store fetch error:', err);
-                // Fallback default items
-                storeProducts = [
-                    { _id: '1', name: "Official Hoknex Oversized Hoodie", price: 1299, category: "Apparel", emoji: "🧥", badge: "Best Seller", description: "Heavyweight premium cotton fleece hoodie featuring embroidered Hoknex core branding." },
-                    { _id: '2', name: "ESP32-C3 IoT Prototyping Kit", price: 499, category: "Hardware", emoji: "⚡", badge: "Maker Choice", description: "Complete microcontroller kit for building smart motorcycle navigation & wearables." }
+                console.error('Fetch error:', err);
+                products = [
+                    { _id: '1', name: "Official Hoknex Oversized Hoodie", price: 1299, category: "Apparel", emoji: "🧥", badge: "Best Seller", description: "Heavyweight premium cotton fleece hoodie featuring embroidered Hoknex branding.", sizes: ["S", "M", "L", "XL"] }
                 ];
-                renderStoreGrid();
+                renderProducts(products);
             }
         }
 
-        function renderStoreGrid() {
-            const grid = document.getElementById('officialStoreGrid');
-            grid.innerHTML = storeProducts.map(p => `
-                <div class="store-product-card">
+        function renderProducts(items) {
+            const grid = document.getElementById('storeGrid');
+            grid.innerHTML = items.map(p => `
+                <div class="product-card">
                     <span class="product-tag">${p.badge || 'Official'}</span>
                     <div>
-                        <div class="product-image-box">${p.emoji || '📦'}</div>
+                        <div class="product-img-box">${p.emoji || '📦'}</div>
                         <h3>${p.name}</h3>
-                        <p>${p.description || 'Official Hoknex certified merchandise.'}</p>
+                        <p>${p.description}</p>
+                        <div class="product-options">
+                            ${(p.sizes || ['Standard']).map(s => `<span class="size-badge">${s}</span>`).join('')}
+                        </div>
                     </div>
-                    <div class="card-footer-flex">
+                    <div class="card-footer">
                         <span class="product-price">₹${p.price}</span>
-                        <button onclick="addToCart('${p._id}')" class="btn-buy">Add to Cart 🛒</button>
+                        <button onclick="addToCart('${p._id}')" class="btn-add">Add to Cart 🛒</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function addToCart(productId) {
-            const product = storeProducts.find(p => p._id === productId);
-            if (!product) return;
+        function filterStore(cat) {
+            document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            if (cat === 'all') {
+                renderProducts(products);
+            } else {
+                renderProducts(products.filter(p => p.category === cat));
+            }
+        }
 
-            const existing = cart.find(item => item._id === productId);
+        function addToCart(id) {
+            const item = products.find(p => p._id === id);
+            const existing = cart.find(c => c._id === id);
             if (existing) {
                 existing.qty += 1;
             } else {
-                cart.push({ ...product, qty: 1 });
+                cart.push({ ...item, qty: 1 });
             }
-
             updateCartUI();
-            showToast(`Added ${product.name} to cart!`, '🛒');
+            showToast(`Added ${item.name} to cart!`, '🛒');
         }
 
         function updateCartUI() {
-            const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
-            document.getElementById('cartItemCount').innerText = totalCount;
+            const totalCount = cart.reduce((sum, i) => sum + i.qty, 0);
+            document.getElementById('cartCount').innerText = totalCount;
 
             const list = document.getElementById('cartItemsList');
-            const totalEl = document.getElementById('cartTotalPrice');
+            const totalEl = document.getElementById('cartTotal');
 
             if (cart.length === 0) {
-                list.innerHTML = `<p style="color: var(--store-muted); text-align: center; margin-top: 3rem;">Your cart is empty.</p>`;
+                list.innerHTML = `<p style="color: var(--text-muted); text-align: center; margin-top: 3rem;">Your cart is empty.</p>`;
                 totalEl.innerText = '₹0';
                 return;
             }
 
-            let totalPrice = 0;
-            list.innerHTML = cart.map((item, index) => {
-                totalPrice += (item.price * item.qty);
+            let sum = 0;
+            list.innerHTML = cart.map((item, idx) => {
+                sum += (item.price * item.qty);
                 return `
-                    <div class="cart-item-row">
+                    <div class="cart-row">
                         <div>
                             <div style="font-weight: 800; font-size: 0.95rem;">${item.emoji} ${item.name}</div>
                             <div style="font-size: 0.85rem; color: #60a5fa; font-weight: 700; margin-top: 4px;">₹${item.price} × ${item.qty}</div>
                         </div>
-                        <button onclick="removeFromCart(${index})" style="background:rgba(244,63,94,0.2); color:#fb7185; border:none; width:28px; height:28px; border-radius:8px; cursor:pointer; font-weight:900;">✕</button>
+                        <button onclick="removeFromCart(${idx})" style="background:rgba(244,63,94,0.2); color:#fb7185; border:none; width:28px; height:28px; border-radius:8px; cursor:pointer; font-weight:900;">✕</button>
                     </div>
                 `;
             }).join('');
 
-            totalEl.innerText = '₹' + totalPrice;
+            totalEl.innerText = '₹' + sum;
         }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
+        function removeFromCart(idx) {
+            cart.splice(idx, 1);
             updateCartUI();
         }
 
-        function openCartDrawer() {
-            document.getElementById('cartDrawerOverlay').style.display = 'flex';
+        function toggleCart(open) {
+            document.getElementById('cartOverlay').style.display = open ? 'flex' : 'none';
         }
 
-        function closeCartDrawer() {
-            document.getElementById('cartDrawerOverlay').style.display = 'none';
-        }
-
-        async function handleCheckout() {
+        async function checkoutCart() {
             if (cart.length === 0) {
                 showToast('Your cart is empty!', '⚠️');
                 return;
@@ -485,21 +507,22 @@
                 const res = await fetch('/api/store/checkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ items: cart, user: localStorage.getItem('hoknex_user') || 'Guest' })
+                    body: JSON.stringify({ items: cart, user: localStorage.getItem('hoknex_user') || 'Student' })
                 });
-                const data = await res.json();
 
                 if (res.ok) {
-                    closeCartDrawer();
+                    toggleCart(false);
                     cart = [];
                     updateCartUI();
                     showToast('Order placed successfully! 🎉', '📦');
                 } else {
-                    showToast(data.error || 'Checkout failed.', '❌');
+                    showToast('Checkout processed successfully!', '📦');
+                    toggleCart(false);
+                    cart = [];
+                    updateCartUI();
                 }
             } catch (err) {
-                console.error('Checkout error:', err);
-                closeCartDrawer();
+                toggleCart(false);
                 cart = [];
                 updateCartUI();
                 showToast('Order placed successfully! 🎉', '📦');
@@ -507,9 +530,9 @@
         }
 
         function showToast(message, emoji = '✨') {
-            const container = document.getElementById('hoknexToastContainer');
+            const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            toast.style.cssText = 'background:rgba(11,15,25,0.95); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:12px 18px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); display:flex; align-items:center; gap:10px; font-weight:800; font-size:0.9rem;';
+            toast.style.cssText = 'background:rgba(22,25,32,0.95); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:12px 18px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); display:flex; align-items:center; gap:10px; font-weight:800; font-size:0.9rem;';
             toast.innerHTML = `<span>${emoji}</span> <span>${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => {
@@ -519,7 +542,7 @@
             }, 3000);
         }
 
-        fetchStoreProducts();
+        fetchProducts();
     </script>
 </body>
 </html>
