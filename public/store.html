@@ -3,583 +3,528 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoknex Official Apparel Store — Global Streetwear & Merch</title>
+    <title>Hoknex Official Store — Global Student Apparel & Merch</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ==========================================
-   HOKNEX STORE — LUXURY BRAND STYLES (store.css)
-   ========================================== */
-:root {
-    --bg-primary: #080b11;
-    --bg-surface: #0f141d;
-    --bg-card: #151b26;
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --border-glow: rgba(59, 130, 246, 0.3);
-    --accent-blue: #3b82f6;
-    --accent-purple: #8b5cf6;
-    --accent-coral: #f43f5e;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --shadow-premium: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-}
+        :root {
+            --bg-body: #0b0f17;
+            --bg-card: #121824;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-blue: #2563eb;
+            --accent-purple: #7c3aed;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --shadow-card: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
 
-*, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-}
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
 
-body {
-    background-color: var(--bg-primary);
-    color: var(--text-main);
-    min-height: 100vh;
-    overflow-x: hidden;
-}
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-/* Announcement Top Bar */
-.store-topbar {
-    background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-    color: #fff;
-    text-align: center;
-    padding: 9px;
-    font-size: 0.82rem;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
+        /* Announcement Bar */
+        .announcement-bar {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            color: #fff;
+            text-align: center;
+            padding: 8px 1rem;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
 
-/* Navbar */
-.store-navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 4rem;
-    background: rgba(8, 11, 17, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-subtle);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
+        /* Store Header / Navbar */
+        .store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 4rem;
+            background: rgba(11, 15, 23, 0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-.store-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 1.45rem;
-    font-weight: 900;
-    color: #fff;
-    text-decoration: none;
-    letter-spacing: -0.5px;
-}
+        .store-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #fff;
+            text-decoration: none;
+        }
 
-.store-brand span {
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+        .store-brand span {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-.store-nav-links {
-    display: flex;
-    gap: 2.5rem;
-    align-items: center;
-}
+        .store-nav {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
 
-.store-nav-links a {
-    color: var(--text-muted);
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 0.95rem;
-    transition: color 0.2s ease;
-}
+        .store-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
 
-.store-nav-links a:hover {
-    color: #fff;
-}
+        .store-nav a:hover {
+            color: #fff;
+        }
 
-.cart-trigger-btn {
-    background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
-    color: #fff;
-    border: none;
-    padding: 0.65rem 1.4rem;
-    border-radius: 12px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: transform 0.2s, filter 0.2s;
-}
+        .cart-trigger {
+            background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
+            color: #fff;
+            border: none;
+            padding: 0.65rem 1.4rem;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
 
-.cart-trigger-btn:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.1);
-}
+        .cart-trigger:hover {
+            transform: translateY(-2px);
+        }
 
-/* Hero Showcase Banner */
-.store-hero {
-    padding: 5.5rem 4rem 2.5rem 4rem;
-    max-width: 1400px;
-    margin: 0 auto;
-    text-align: center;
-}
+        /* Store Hero Banner */
+        .store-hero {
+            padding: 4.5rem 4rem 2rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
 
-.store-hero h1 {
-    font-size: 3.8rem;
-    font-weight: 900;
-    letter-spacing: -1.5px;
-    margin-bottom: 1rem;
-    line-height: 1.1;
-}
+        .store-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            margin-bottom: 1rem;
+        }
 
-.store-hero h1 span {
-    background: linear-gradient(135deg, #60a5fa, #c084fc, #f43f5e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+        .store-hero h1 span {
+            background: linear-gradient(135deg, #60a5fa, #c084fc, #f43f5e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-.store-hero p {
-    color: var(--text-muted);
-    font-size: 1.15rem;
-    font-weight: 600;
-    max-width: 650px;
-    margin: 0 auto 2.5rem auto;
-    line-height: 1.6;
-}
+        .store-hero p {
+            color: var(--text-muted);
+            font-size: 1.12rem;
+            font-weight: 600;
+            max-width: 600px;
+            margin: 0 auto 2.5rem auto;
+            line-height: 1.6;
+        }
 
-/* Category Filter Tabs */
-.category-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 3.5rem;
-    flex-wrap: wrap;
-}
+        /* Filter Tabs */
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
 
-.cat-tab {
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    color: var(--text-muted);
-    padding: 0.65rem 1.6rem;
-    border-radius: 30px;
-    font-weight: 800;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
+        .filter-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.6rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-.cat-tab.active, .cat-tab:hover {
-    background: var(--accent-blue);
-    color: #fff;
-    border-color: var(--accent-blue);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--accent-blue);
+            color: #fff;
+            border-color: var(--accent-blue);
+        }
 
-/* Product Grid Layout */
-.store-grid {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 4rem 6rem 4rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2.5rem;
-}
+        /* Product Catalog Grid */
+        .catalog-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 4rem 6rem 4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
 
-.product-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: 24px;
-    padding: 1.8rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-}
+        .product-item-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
 
-.product-card:hover {
-    transform: translateY(-6px);
-    border-color: var(--border-glow);
-    box-shadow: var(--shadow-premium);
-}
+        .product-item-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(37, 99, 235, 0.4);
+            box-shadow: var(--shadow-card);
+        }
 
-.product-img-box {
-    width: 100%;
-    height: 240px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--border-subtle);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 4.5rem;
-    margin-bottom: 1.5rem;
-    position: relative;
-    overflow: hidden;
-}
+        .product-preview {
+            width: 100%;
+            height: 220px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
 
-.product-tag {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: rgba(244, 63, 94, 0.15);
-    color: #fb7185;
-    border: 1px solid rgba(244, 63, 94, 0.3);
-    padding: 4px 10px;
-    border-radius: 8px;
-    font-size: 0.72rem;
-    font-weight: 800;
-    text-transform: uppercase;
-}
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(244, 63, 94, 0.15);
+            color: #fb7185;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
 
-.product-card h3 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.3px;
-}
+        .product-item-card h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+        }
 
-.product-card p {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    font-weight: 600;
-    line-height: 1.5;
-    margin-bottom: 1.2rem;
-}
+        .product-item-card p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+        }
 
-.product-options {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 1.2rem;
-    flex-wrap: wrap;
-}
+        .color-swatches {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 1rem;
+        }
 
-.size-badge {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--border-subtle);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: var(--text-muted);
-}
+        .swatch {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+        }
 
-.card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.product-price {
-    font-size: 1.35rem;
-    font-weight: 900;
-    color: #fff;
-}
+        .price-tag {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #fff;
+        }
 
-.btn-add {
-    background: #fff;
-    color: #0f1115;
-    border: none;
-    padding: 0.7rem 1.2rem;
-    border-radius: 12px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s, color 0.2s;
-}
+        .btn-buy-now {
+            background: #fff;
+            color: #0f1115;
+            border: none;
+            padding: 0.6rem 1.1rem;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
 
-.btn-add:hover {
-    background: var(--accent-blue);
-    color: #fff;
-}
+        .btn-buy-now:hover {
+            background: var(--accent-blue);
+            color: #fff;
+        }
 
-/* Slide-out Cart Drawer */
-.cart-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    display: none;
-    justify-content: flex-end;
-    z-index: 1000;
-    animation: fadeIn 0.2s ease-out;
-}
+        /* Cart Drawer */
+        .cart-drawer-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            display: none;
+            justify-content: flex-end;
+            z-index: 1000;
+        }
 
-.cart-drawer {
-    width: 100%;
-    max-width: 440px;
-    height: 100%;
-    background: var(--bg-surface);
-    border-left: 1px solid var(--border-subtle);
-    padding: 2.5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-shadow: -20px 0 50px rgba(0,0,0,0.8);
-    animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
+        .cart-drawer-panel {
+            width: 100%;
+            max-width: 420px;
+            height: 100%;
+            background: #121824;
+            border-left: 1px solid var(--border-color);
+            padding: 2.2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+        }
 
-.cart-items-container {
-    flex: 1;
-    overflow-y: auto;
-    margin: 1.5rem 0;
-    padding-right: 4px;
-}
+        .cart-list-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            margin: 1.5rem 0;
+            padding-right: 4px;
+        }
 
-.cart-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--border-subtle);
-    padding: 12px 16px;
-    border-radius: 14px;
-    margin-bottom: 12px;
-}
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
 
-/* Toast Notifications */
-#toastContainer {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    pointer-events: none;
-}
+        /* Footer */
+        .store-footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 4rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
 
-.hoknex-toast {
-    background: rgba(21, 27, 38, 0.95);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #fff;
-    padding: 12px 18px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 800;
-    font-size: 0.9rem;
-    pointer-events: auto;
-    animation: slideInToast 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-@keyframes slideInRight {
-    from { transform: translateX(100%); }
-    to { transform: translateX(0); }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideInToast {
-    from { transform: translateX(100%) scale(0.9); opacity: 0; }
-    to { transform: translateX(0) scale(1); opacity: 1; }
-}
-
-@media (max-width: 768px) {
-    .store-navbar { padding: 1rem 1.5rem; }
-    .store-hero { padding: 3rem 1.5rem 2rem 1.5rem; }
-    .store-hero h1 { font-size: 2.5rem; }
-    .store-grid { padding: 1.5rem; }
-    .store-nav-links { display: none; }
-}
-        </style>
+        @media (max-width: 768px) {
+            .store-header { padding: 1rem 1.5rem; }
+            .store-hero { padding: 3rem 1.5rem 2rem 1.5rem; }
+            .store-hero h1 { font-size: 2.2rem; }
+            .catalog-grid { padding: 1.5rem; }
+            .store-nav { display: none; }
+        }
+    </style>
 </head>
 <body>
 
     <div class="announcement-bar">
-        ⚡ Free Shipping on all Hoknex Apparel Orders over ₹1,999 | Use Code: <strong>hoknex2026</strong>
+        ⚡ Free Global Shipping on all Hoknex Apparel Orders over ₹1,999 | Use Code: <strong>GLOBAL2026</strong>
     </div>
 
-    <!-- Navbar -->
-    <header class="store-navbar">
+    <!-- Header / Navbar -->
+    <header class="store-header">
         <a href="index.html" class="store-brand">
-            <span style="font-size:1.5rem;">⚡</span> <span>Hoknex Store</span>
+            <span>⚡ Hoknex Store</span>
         </a>
-        <nav class="store-nav-links">
+        <nav class="store-nav">
             <a href="index.html">Home</a>
             <a href="magazine.html">Magazine</a>
             <a href="donation.html">Fund</a>
         </nav>
-        <button class="cart-btn" onclick="toggleCart(true)">
-            🛒 Cart (<span id="cartCount">0</span>)
+        <button class="cart-trigger" onclick="openCart(true)">
+            🛒 Bag (<span id="bagCount">0</span>)
         </button>
     </header>
 
     <!-- Hero Section -->
     <section class="store-hero">
-        <span style="background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 16px; border-radius: 30px; font-size: 0.82rem; font-weight: 800; display: inline-block; margin-bottom: 1.5rem; text-transform: uppercase;">🛡️ Official Hoknex Streetwear</span>
-        <h1>Designed for students, <span>worn by creators.</span></h1>
-        <p>Heavyweight cotton hoodies, oversized graphic tees, utility cargo pants, and signature campus accessories engineered for maximum comfort and style.</p>
+        <span style="background: rgba(37, 99, 235, 0.1); color: #60a5fa; border: 1px solid rgba(37, 99, 235, 0.3); padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; display: inline-block; margin-bottom: 1.2rem; text-transform: uppercase;">Official Hoknex Collection</span>
+        <h1>Engineered for students, <span>worn by creators.</span></h1>
+        <p>Premium oversized hoodies, heavyweight graphic tees, and streetwear essentials designed for global campus innovators.</p>
         
-        <div class="category-tabs">
-            <button class="cat-tab active" onclick="filterStore('all')">All Merch 🔥</button>
-            <button class="cat-tab" onclick="filterStore('Hoodies')">Hoodies & Jackets 🧥</button>
-            <button class="cat-tab" onclick="filterStore('T-Shirts')">Oversized Tees 👕</button>
-            <button class="cat-tab" onclick="filterStore('Pants')">Pants & Bottoms 👖</button>
-            <button class="cat-tab" onclick="filterStore('Accessories')">Caps & Accessories 🧢</button>
+        <div class="filter-container">
+            <button class="filter-btn active" onclick="filterCatalog('all', this)">All Merch 🔥</button>
+            <button class="filter-btn" onclick="filterCatalog('Hoodies', this)">Hoodies 🧥</button>
+            <button class="filter-btn" onclick="filterCatalog('T-Shirts', this)">Oversized Tees 👕</button>
+            <button class="filter-btn" onclick="filterCatalog('Accessories', this)">Caps & Gear 🧢</button>
         </div>
     </section>
 
-    <!-- Product Grid -->
-    <main class="store-grid" id="storeGrid">
+    <!-- Catalog Grid -->
+    <main class="catalog-grid" id="catalogGrid">
         <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--text-muted);">
-            <h3>Loading Hoknex apparel collection...</h3>
+            <h3>Loading Hoknex catalog...</h3>
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="store-footer">
-        <p>&copy; 2026 Hoknex Official Apparel & Merch Store. All rights reserved. Built for global student creators.</p>
+        <p>&copy; 2026 Hoknex Official Store. All rights reserved. Built for global campus creators.</p>
     </footer>
 
-    <!-- Cart Drawer -->
-    <div id="cartOverlay" class="cart-overlay" onclick="if(event.target === this) toggleCart(false)">
-        <div class="cart-drawer">
+    <!-- Cart Slide-out Drawer -->
+    <div id="cartOverlay" class="cart-drawer-overlay" onclick="if(event.target === this) openCart(false)">
+        <div class="cart-drawer-panel">
             <div>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2 style="font-size: 1.5rem; font-weight: 900;">Your Shopping Bag</h2>
-                    <button onclick="toggleCart(false)" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
+                    <h2 style="font-size: 1.4rem; font-weight: 900;">Your Shopping Bag</h2>
+                    <button onclick="openCart(false)" style="background:none; border:none; color:#fff; font-size:1.4rem; cursor:pointer;">&times;</button>
                 </div>
-                <div class="cart-items" id="cartItemsList">
-                    <p style="color: var(--text-muted); text-align: center; margin-top: 3rem;">Your cart is empty.</p>
+                <div class="cart-list-wrapper" id="cartItemsList">
+                    <p style="color: var(--text-muted); text-align: center; margin-top: 3rem;">Your bag is empty.</p>
                 </div>
             </div>
             <div>
-                <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; margin-bottom:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;">
-                    <span>Total Subtotal:</span>
-                    <span id="cartTotal" style="color:#60a5fa;">₹0</span>
+                <div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:900; margin-bottom:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;">
+                    <span>Subtotal:</span>
+                    <span id="bagTotal" style="color:#60a5fa;">₹0</span>
                 </div>
-                <button onclick="checkoutCart()" class="cart-btn" style="width:100%; justify-content:center; padding:0.9rem; font-size:1rem;">Proceed to Secure Checkout 🚀</button>
+                <button onclick="checkoutBag()" class="cart-trigger" style="width:100%; justify-content:center; padding:0.85rem; font-size:0.95rem;">Proceed to Checkout 🚀</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification Container -->
-    <div id="toastContainer" style="position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
+    <!-- Toast Notifications Container -->
+    <div id="toastBox" style="position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
 
     <script>
-        // Official Hoknex Apparel Inventory (Strictly Managed by Admin)
-        let products = [
-            { _id: '1', name: "Hoknex Core Heavyweight Hoodie", price: 1599, category: "Hoodies", emoji: "🧥", badge: "Best Seller", description: "450GSM luxury French Terry cotton with embroidered Hoknex wordmark on chest.", sizes: ["S", "M", "L", "XL", "XXL"] },
-            { _id: '2', name: "Cyberpunk Oversized Graphic Tee", price: 799, category: "T-Shirts", emoji: "👕", badge: "Popular", description: "Acid-washed relaxed fit tee featuring global campus circuit graphics on back.", sizes: ["S", "M", "L", "XL"] },
-            { _id: '3', name: "Hoknex Utility Cargo Pants", price: 1899, category: "Pants", emoji: "👖", badge: "New Drop", description: "Multi-pocket tactical streetwear pants with adjustable ankle drawstrings.", sizes: ["30", "32", "34", "36"] },
-            { _id: '4', name: "Global Innovator Minimalist Hoodie", price: 1499, category: "Hoodies", emoji: "🧶", badge: "Limited", description: "Minimalist tonal embroidered pullover crafted for late-night coding & campus vibes.", sizes: ["M", "L", "XL"] },
-            { _id: '5', name: "Hoknex Signature Cyber Cap", price: 599, category: "Accessories", emoji: "🧢", badge: "Essential", description: "Unstructured 6-panel low profile cotton twill cap with metal clasp.", sizes: ["Adjustable One Size"] },
-            { _id: '6', name: "Borderless Student Heavyweight Tee", price: 749, category: "T-Shirts", emoji: "👔", badge: "Classic", description: "Ultra-durable breathable streetwear tee engineered for daily campus wear.", sizes: ["S", "M", "L", "XL"] },
-            { _id: '7', name: "Techwear Multipocket Joggers", price: 1699, category: "Pants", emoji: "🏃", badge: "Trending", description: "Tapered fleece joggers with secure zip pockets and premium elastic waistband.", sizes: ["M", "L", "XL"] },
-            { _id: '8', name: "Hoknex Holographic Sticker & Lanyard Set", price: 299, category: "Accessories", emoji: "🎒", badge: "Bundle", description: "Durable campus ID lanyard paired with reflective holographic sticker sheets.", sizes: ["Standard Set"] }
+        // Official Hoknex Apparel Inventory
+        let catalog = [
+            { id: '1', name: "Hoknex Core Heavyweight Hoodie", price: 1599, category: "Hoodies", emoji: "🧥", badge: "Best Seller", description: "450GSM luxury French Terry cotton with embroidered Hoknex wordmark.", colors: ["#111", "#2563eb", "#7c3aed"] },
+            { id: '2', name: "Cyberpunk Oversized Graphic Tee", price: 799, category: "T-Shirts", emoji: "👕", badge: "Popular", description: "Acid-washed relaxed fit tee featuring global campus circuit graphics.", colors: ["#111", "#f43f5e", "#94a3b8"] },
+            { id: '3', name: "Global Innovator Minimalist Hoodie", price: 1499, category: "Hoodies", emoji: "🧶", badge: "Limited", description: "Minimalist tonal embroidered pullover crafted for late-night coding.", colors: ["#111", "#3b82f6"] },
+            { id: '4', name: "Borderless Student Heavyweight Tee", price: 749, category: "T-Shirts", emoji: "👔", badge: "Classic", description: "Ultra-durable breathable streetwear tee engineered for daily campus wear.", colors: ["#111", "#fff", "#7c3aed"] },
+            { id: '5', name: "Hoknex Signature Cyber Cap", price: 599, category: "Accessories", emoji: "🧢", badge: "Essential", description: "Unstructured 6-panel low profile cotton twill cap with metal clasp.", colors: ["#111", "#2563eb"] },
+            { id: '6', name: "Holographic Sticker & Lanyard Pack", price: 299, category: "Accessories", emoji: "🎒", badge: "Bundle", description: "Durable campus ID lanyard paired with reflective holographic stickers.", colors: ["#111", "#f43f5e"] }
         ];
 
-        let cart = [];
+        let bag = [];
 
-        function renderProducts(items) {
-            const grid = document.getElementById('storeGrid');
-            grid.innerHTML = items.map(p => `
-                <div class="product-card">
-                    <span class="product-tag">${p.badge}</span>
+        function renderCatalog(items) {
+            const grid = document.getElementById('catalogGrid');
+            grid.innerHTML = items.map(item => `
+                <div class="product-item-card">
+                    <span class="product-badge">${item.badge}</span>
                     <div>
-                        <div class="product-img-box">${p.emoji}</div>
-                        <h3>${p.name}</h3>
-                        <p>${p.description}</p>
-                        <div class="product-options">
-                            ${p.sizes.map(s => `<span class="size-badge">${s}</span>`).join('')}
+                        <div class="product-preview">${item.emoji}</div>
+                        <h3>${item.name}</h3>
+                        <p>${item.description}</p>
+                        <div class="color-swatches">
+                            ${item.colors.map(c => `<div class="swatch" style="background:${c};"></div>`).join('')}
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <span class="product-price">₹${p.price}</span>
-                        <button onclick="addToCart('${p._id}')" class="btn-add">Add to Bag 🛍️</button>
+                    <div class="card-bottom">
+                        <span class="price-tag">₹${item.price}</span>
+                        <button onclick="addToBag('${item.id}')" class="btn-buy-now">Add to Bag 🛍️</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function filterStore(cat) {
-            document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+        function filterCatalog(cat, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
             if (cat === 'all') {
-                renderProducts(products);
+                renderCatalog(catalog);
             } else {
-                renderProducts(products.filter(p => p.category === cat));
+                renderCatalog(catalog.filter(i => i.category === cat));
             }
         }
 
-        function addToCart(id) {
-            const item = products.find(p => p._id === id);
-            const existing = cart.find(c => c._id === id);
-            if (existing) {
-                existing.qty += 1;
+        function addToBag(id) {
+            const product = catalog.find(i => i.id === id);
+            const found = bag.find(b => b.id === id);
+            if (found) {
+                found.qty += 1;
             } else {
-                cart.push({ ...item, qty: 1 });
+                bag.push({ ...product, qty: 1 });
             }
-            updateCartUI();
-            showToast(`Added ${item.name} to your shopping bag!`, '🛍️');
+            updateBagUI();
+            triggerToast(`Added ${product.name} to your bag!`, '🛍️');
         }
 
-        function updateCartUI() {
-            const totalCount = cart.reduce((sum, i) => sum + i.qty, 0);
-            document.getElementById('cartCount').innerText = totalCount;
+        function updateBagUI() {
+            const totalItems = bag.reduce((sum, i) => sum + i.qty, 0);
+            document.getElementById('bagCount').innerText = totalItems;
 
             const list = document.getElementById('cartItemsList');
-            const totalEl = document.getElementById('cartTotal');
+            const totalEl = document.getElementById('bagTotal');
 
-            if (cart.length === 0) {
-                list.innerHTML = `<p style="color: var(--text-muted); text-align: center; margin-top: 3rem;">Your cart is empty.</p>`;
+            if (bag.length === 0) {
+                list.innerHTML = `<p style="color: var(--text-muted); text-align: center; margin-top: 3rem;">Your bag is empty.</p>`;
                 totalEl.innerText = '₹0';
                 return;
             }
 
-            let sum = 0;
-            list.innerHTML = cart.map((item, idx) => {
-                sum += (item.price * item.qty);
+            let subtotal = 0;
+            list.innerHTML = bag.map((item, index) => {
+                subtotal += (item.price * item.qty);
                 return `
-                    <div class="cart-row">
+                    <div class="cart-item-row">
                         <div>
-                            <div style="font-weight: 800; font-size: 0.95rem;">${item.emoji} ${item.name}</div>
-                            <div style="font-size: 0.85rem; color: #60a5fa; font-weight: 700; margin-top: 4px;">₹${item.price} × ${item.qty}</div>
+                            <div style="font-weight: 800; font-size: 0.9rem;">${item.emoji} ${item.name}</div>
+                            <div style="font-size: 0.8rem; color: #60a5fa; font-weight: 700; margin-top: 3px;">₹${item.price} × ${item.qty}</div>
                         </div>
-                        <button onclick="removeFromCart(${idx})" style="background:rgba(244,63,94,0.2); color:#fb7185; border:none; width:28px; height:28px; border-radius:8px; cursor:pointer; font-weight:900;">✕</button>
+                        <button onclick="removeBagItem(${index})" style="background:rgba(244,63,94,0.2); color:#fb7185; border:none; width:26px; height:26px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
                     </div>
                 `;
             }).join('');
 
-            totalEl.innerText = '₹' + sum;
+            totalEl.innerText = '₹' + subtotal;
         }
 
-        function removeFromCart(idx) {
-            cart.splice(idx, 1);
-            updateCartUI();
+        function removeBagItem(index) {
+            bag.splice(index, 1);
+            updateBagUI();
         }
 
-        function toggleCart(open) {
-            document.getElementById('cartOverlay').style.display = open ? 'flex' : 'none';
+        function openCart(isOpen) {
+            document.getElementById('cartOverlay').style.display = isOpen ? 'flex' : 'none';
         }
 
-        function checkoutCart() {
-            if (cart.length === 0) {
-                showToast('Your shopping bag is empty!', '⚠️');
+        function checkoutBag() {
+            if (bag.length === 0) {
+                triggerToast('Your bag is empty!', '⚠️');
                 return;
             }
-            toggleCart(false);
-            cart = [];
-            updateCartUI();
-            showToast('Order placed successfully! Thank you for supporting Hoknex. 🎉', '📦');
+            openCart(false);
+            bag = [];
+            updateBagUI();
+            triggerToast('Order placed successfully! Thank you for shopping with Hoknex. 🎉', '📦');
         }
 
-        function showToast(message, emoji = '✨') {
-            const container = document.getElementById('toastContainer');
+        function triggerToast(message, emoji = '✨') {
+            const box = document.getElementById('toastBox');
             const toast = document.createElement('div');
-            toast.style.cssText = 'background:rgba(17,24,39,0.95); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:12px 18px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); display:flex; align-items:center; gap:10px; font-weight:800; font-size:0.9rem;';
+            toast.className = 'hoknex-toast';
             toast.innerHTML = `<span>${emoji}</span> <span>${message}</span>`;
-            container.appendChild(toast);
+            box.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transition = 'opacity 0.3s ease';
@@ -587,7 +532,7 @@ body {
             }, 3000);
         }
 
-        renderProducts(products);
+        renderCatalog(catalog);
     </script>
 </body>
 </html>
