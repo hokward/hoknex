@@ -29,7 +29,7 @@
             background: var(--bg-card); border: 3.5px solid var(--border-color);
             border-radius: 20px; padding: 2.5rem; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
         }
-        h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color: var(--text-main); border-bottom: 2px solid #F3F4F6; padding-bottom: 8px; }
+        h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 1.0rem; color: var(--text-main); border-bottom: 2px solid #F3F4F6; padding-bottom: 8px; }
         
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
         .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
@@ -74,7 +74,7 @@
         <div class="admin-header">
             <div>
                 <h1 style="font-size: 1.8rem; font-weight: 900;">⚡ Hoknex Professional Owner Command Center</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage campaigns, magazine articles, products, orders, coming soon drops, and store banners from one place.</p>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage global magazine articles, visual campaigns, store products, orders, and banners.</p>
             </div>
             <div style="display:flex; gap:10px;">
                 <a href="store.html" class="btn-action" style="background:var(--accent-ochre);">View Store 🛍️</a>
@@ -91,22 +91,24 @@
             </div>
         </div>
 
-        <!-- 2. NEW: Zine Magazine Article Manager -->
+        <!-- 2. SEPARATE COLUMN: Global Zine Magazine & News Manager -->
         <div class="admin-section">
-            <h2>📰 2. Zine Magazine Article Manager</h2>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Publish and manage dispatches, stories, and newspaper articles for the Hoknex Chronicle Zine.</p>
+            <h2>📰 2. Global Zine Magazine & News Manager</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Publish and manage global news, picture-based, video-based, and book-based magazine articles. You can also delete pre-defined or custom articles instantly.</p>
+            
             <form onsubmit="handleMagazineUpload(event)">
                 <div class="form-grid">
-                    <div class="form-group"><label>Article Title</label><input type="text" id="magTitle" placeholder="e.g. The Rise of Autonomous Systems" required></div>
-                    <div class="form-group"><label>Category</label><select id="magCategory"><option value="Tech">Tech</option><option value="Gaming">Gaming</option><option value="Culture">Culture</option></select></div>
-                    <div class="form-group"><label>Preview Icon Emoji</label><input type="text" id="magIcon" placeholder="🌐" value="💡" required></div>
-                    <div class="form-group"><label>Author & Read Time</label><input type="text" id="magAuthor" placeholder="Hoknex Editorial • 5 min read" value="Hoknex Editorial • 4 min read" required></div>
-                    <div class="form-group" style="grid-column: span 2;"><label>Short Excerpt Summary</label><textarea id="magExcerpt" rows="2" placeholder="Brief summary..." required></textarea></div>
-                    <div class="form-group" style="grid-column: span 2;"><label>Full Article Body Content</label><textarea id="magBody" rows="4" placeholder="Full article body..." required></textarea></div>
+                    <div class="form-group"><label>Headline / Article Title</label><input type="text" id="magTitle" placeholder="e.g. Global Tech Summit 2026" required></div>
+                    <div class="form-group"><label>Category</label><select id="magCategory"><option value="World News">World News</option><option value="Picture">Picture Feature</option><option value="Video">Video Dispatch</option><option value="Book">Book Review</option><option value="Culture">Culture & Arts</option></select></div>
+                    <div class="form-group"><label>Media Format Type</label><select id="magType"><option value="text">Text Article</option><option value="image">Picture Based</option><option value="video">Video Based</option><option value="book">Book Based</option></select></div>
+                    <div class="form-group"><label>Upload Media File (Image / Video / Cover)</label><input type="file" id="magMediaFile" accept="image/*,video/*" style="background:#fff;"></div>
+                    <div class="form-group"><label>Author & Read Time</label><input type="text" id="magAuthor" placeholder="International Bureau • 4 min read" value="International Bureau • 4 min read" required></div>
+                    <div class="form-group"><label>Preview Excerpt Summary</label><textarea id="magExcerpt" rows="2" placeholder="Brief summary..." required></textarea></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Full Article Body Content</label><textarea id="magBody" rows="4" placeholder="Full story content..." required></textarea></div>
                 </div>
-                <button type="submit" class="btn-action">Publish Article to Zine ⚡</button>
+                <button type="submit" class="btn-action">Publish Article to Global Zine ⚡</button>
             </form>
-            <div id="magazineTableWrap" style="overflow-x:auto; margin-top:1.5rem;"><p>Loading articles...</p></div>
+            <div id="magazineTableWrap" style="overflow-x:auto; margin-top:2rem;"><p>Loading articles...</p></div>
         </div>
 
         <!-- 3. Visual Campaign Showcase Manager -->
@@ -212,7 +214,7 @@
             showProModal('Success', 'Announcement banner updated successfully!');
         }
 
-        // --- Magazine Admin Manager ---
+        // --- Magazine Admin Manager with Delete Support ---
         async function renderMagazineTable() {
             try {
                 const res = await fetch(`${API_URL}/magazine/articles`);
@@ -224,15 +226,15 @@
                 }
                 wrap.innerHTML = `
                     <table>
-                        <thead><tr><th>Icon</th><th>Title</th><th>Category</th><th>Author</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Title</th><th>Category</th><th>Type</th><th>Author</th><th>Action</th></tr></thead>
                         <tbody>
                             ${articles.map(a => `
                                 <tr>
-                                    <td style="text-align:center; font-size:1.5rem;">${a.icon || '📰'}</td>
-                                    <td><b>${a.title}</b><br><small>${a.excerpt ? a.excerpt.substring(0,60) : ''}...</small></td>
+                                    <td><b>${a.title}</b><br><small>${a.excerpt ? a.excerpt.substring(0,50) : ''}...</small></td>
                                     <td>${a.category}</td>
+                                    <td><span style="background:#E4E0D8; padding:2px 6px; border-radius:4px; font-size:0.75rem;">${a.type ? a.type.toUpperCase() : 'TEXT'}</span></td>
                                     <td>${a.author}</td>
-                                    <td><button onclick="deleteArticle('${a._id}')" class="btn-action" style="background:#A16A5E; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
+                                    <td><button onclick="deleteArticle('${a._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -245,15 +247,31 @@
             e.preventDefault();
             const title = document.getElementById('magTitle').value;
             const category = document.getElementById('magCategory').value;
-            const icon = document.getElementById('magIcon').value;
+            const type = document.getElementById('magType').value;
+            const icon = document.getElementById('magIcon') ? document.getElementById('magIcon').value : (type === 'video' ? '🎥' : type === 'image' ? '🖼️' : type === 'book' ? '📚' : '📰');
             const authorInfo = document.getElementById('magAuthor').value;
             const excerpt = document.getElementById('magExcerpt').value;
             const body = document.getElementById('magBody').value;
+            const fileInput = document.getElementById('magMediaFile');
+
+            let mediaUrl = '';
+            if (fileInput.files && fileInput.files[0]) {
+                const formData = new FormData();
+                formData.append('image', fileInput.files[0]);
+                try {
+                    const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                    const upData = await upRes.json();
+                    mediaUrl = upData.url;
+                } catch(err) {
+                    showProModal('Error', 'Media upload failed');
+                    return;
+                }
+            }
 
             let author = authorInfo.split('•')[0].trim();
             let time = authorInfo.split('•')[1] ? authorInfo.split('•')[1].trim() : '4 min read';
 
-            const newArt = { title, category, icon, author, time, excerpt, body };
+            const newArt = { title, category, type, mediaUrl, icon, author, time, excerpt, body };
 
             try {
                 await fetch(`${API_URL}/magazine/articles`, {
@@ -261,10 +279,11 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(newArt)
                 });
-                showProModal('Success', 'Article published to Zine Magazine!');
+                showProModal('Success', 'Article published to Global Zine!');
                 document.getElementById('magTitle').value = '';
                 document.getElementById('magExcerpt').value = '';
                 document.getElementById('magBody').value = '';
+                document.getElementById('magMediaFile').value = '';
                 renderMagazineTable();
             } catch(e) { showProModal('Error', 'Failed to publish article.'); }
         }
@@ -284,7 +303,7 @@
                 const camps = await res.json();
                 const container = document.getElementById('campaignListContainer');
                 if(!camps || camps.length === 0) {
-                    container.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No campaign tiles added yet (Default showcase active).</p>`;
+                    container.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No campaign tiles added yet.</p>`;
                     return;
                 }
                 container.innerHTML = camps.map((c) => `
