@@ -74,9 +74,12 @@
         <div class="admin-header">
             <div>
                 <h1 style="font-size: 1.8rem; font-weight: 900;">⚡ Hoknex Professional Owner Command Center</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage campaigns, products, orders, coming soon drops, and store banners from one place.</p>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage campaigns, magazine articles, products, orders, coming soon drops, and store banners from one place.</p>
             </div>
-            <a href="store.html" class="btn-action" style="background:var(--accent-ochre);">View Public Store 🛍️</a>
+            <div style="display:flex; gap:10px;">
+                <a href="store.html" class="btn-action" style="background:var(--accent-ochre);">View Store 🛍️</a>
+                <a href="magazine.html" class="btn-action" style="background:#232D2F;">View Zine 📰</a>
+            </div>
         </div>
 
         <!-- 1. Store Announcement Banner -->
@@ -88,11 +91,28 @@
             </div>
         </div>
 
-        <!-- 2. NEW: Visual Campaign Showcase Manager -->
+        <!-- 2. NEW: Zine Magazine Article Manager -->
         <div class="admin-section">
-            <h2>🖼️ 2. Visual Campaign & Banner Showcase Manager</h2>
+            <h2>📰 2. Zine Magazine Article Manager</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Publish and manage dispatches, stories, and newspaper articles for the Hoknex Chronicle Zine.</p>
+            <form onsubmit="handleMagazineUpload(event)">
+                <div class="form-grid">
+                    <div class="form-group"><label>Article Title</label><input type="text" id="magTitle" placeholder="e.g. The Rise of Autonomous Systems" required></div>
+                    <div class="form-group"><label>Category</label><select id="magCategory"><option value="Tech">Tech</option><option value="Gaming">Gaming</option><option value="Culture">Culture</option></select></div>
+                    <div class="form-group"><label>Preview Icon Emoji</label><input type="text" id="magIcon" placeholder="🌐" value="💡" required></div>
+                    <div class="form-group"><label>Author & Read Time</label><input type="text" id="magAuthor" placeholder="Hoknex Editorial • 5 min read" value="Hoknex Editorial • 4 min read" required></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Short Excerpt Summary</label><textarea id="magExcerpt" rows="2" placeholder="Brief summary..." required></textarea></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Full Article Body Content</label><textarea id="magBody" rows="4" placeholder="Full article body..." required></textarea></div>
+                </div>
+                <button type="submit" class="btn-action">Publish Article to Zine ⚡</button>
+            </form>
+            <div id="magazineTableWrap" style="overflow-x:auto; margin-top:1.5rem;"><p>Loading articles...</p></div>
+        </div>
+
+        <!-- 3. Visual Campaign Showcase Manager -->
+        <div class="admin-section">
+            <h2>🖼️ 3. Visual Campaign & Banner Showcase Manager</h2>
             <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Upload and manage the 6-picture advertisement archive displayed below your store's product catalog.</p>
-            
             <form onsubmit="handleCampaignUpload(event)">
                 <div class="form-grid">
                     <div class="form-group"><label>Campaign Title</label><input type="text" id="campTitle" placeholder="e.g. 07 / Sustainable Tech" required></div>
@@ -104,9 +124,9 @@
             <div id="campaignListContainer" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 3. Upcoming Drops -->
+        <!-- 4. Upcoming Drops -->
         <div class="admin-section">
-            <h2>🚀 3. Upcoming Drops ("Coming Soon" Segment)</h2>
+            <h2>🚀 4. Upcoming Drops ("Coming Soon" Segment)</h2>
             <form onsubmit="handleComingSoonUpload(event)">
                 <div class="form-grid">
                     <div class="form-group"><label>Drop Title</label><input type="text" id="dropTitle" placeholder="e.g. Winter Trench 2026" required></div>
@@ -118,9 +138,9 @@
             <div id="comingSoonListContainer" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 4. QR Code Manager -->
+        <!-- 5. QR Code Manager -->
         <div class="admin-section">
-            <h2>📷 4. Founder UPI QR Code Manager</h2>
+            <h2>📷 5. Founder UPI QR Code Manager</h2>
             <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1.5rem;">
                 <input type="file" id="newQrFile" accept="image/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800;">
                 <button onclick="uploadNewQrCode()" class="btn-action">Upload QR Code ➕</button>
@@ -128,9 +148,9 @@
             <div id="qrListContainer" style="display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 5. Launch Product -->
+        <!-- 6. Launch Product -->
         <div class="admin-section">
-            <h2>📦 5. Launch Product (Multi-Angle & Delivery Charge)</h2>
+            <h2>📦 6. Launch Product (Multi-Angle & Delivery Charge)</h2>
             <form onsubmit="handleNewProduct(event)">
                 <div class="form-grid">
                     <div class="form-group"><label>Product Name</label><input type="text" id="prodName" placeholder="e.g. Hoknex Hoodie" required></div>
@@ -144,21 +164,21 @@
             </form>
         </div>
 
-        <!-- 6. Catalog Manager -->
+        <!-- 7. Catalog Manager -->
         <div class="admin-section">
-            <h2>🗂️ 6. Catalog Stock, Sizes & Demand Voting Manager</h2>
+            <h2>🗂️ 7. Catalog Stock, Sizes & Demand Voting Manager</h2>
             <div id="productsTableWrap" style="overflow-x:auto;"><p>Loading catalog...</p></div>
         </div>
 
-        <!-- 7. Customer Orders -->
+        <!-- 8. Customer Orders -->
         <div class="admin-section">
-            <h2>🚚 7. Customer Orders & Invoices</h2>
+            <h2>🚚 8. Customer Orders & Invoices</h2>
             <div id="ordersTableWrap" style="overflow-x:auto;"><p>Loading orders...</p></div>
         </div>
 
-        <!-- 8. Newsletter Subscribers -->
+        <!-- 9. Newsletter Subscribers -->
         <div class="admin-section">
-            <h2>💌 8. Newsletter Subscribers</h2>
+            <h2>💌 9. Newsletter Subscribers</h2>
             <div id="leadsTableWrap" style="overflow-x:auto;"><p>Loading leads...</p></div>
         </div>
     </div>
@@ -190,6 +210,71 @@
         function updateAnnouncement() {
             localStorage.setItem('hoknex_announcement', document.getElementById('announcementInput').value);
             showProModal('Success', 'Announcement banner updated successfully!');
+        }
+
+        // --- Magazine Admin Manager ---
+        async function renderMagazineTable() {
+            try {
+                const res = await fetch(`${API_URL}/magazine/articles`);
+                const articles = await res.json();
+                const wrap = document.getElementById('magazineTableWrap');
+                if(!articles || articles.length === 0) {
+                    wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No articles published yet.</p>`;
+                    return;
+                }
+                wrap.innerHTML = `
+                    <table>
+                        <thead><tr><th>Icon</th><th>Title</th><th>Category</th><th>Author</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${articles.map(a => `
+                                <tr>
+                                    <td style="text-align:center; font-size:1.5rem;">${a.icon || '📰'}</td>
+                                    <td><b>${a.title}</b><br><small>${a.excerpt ? a.excerpt.substring(0,60) : ''}...</small></td>
+                                    <td>${a.category}</td>
+                                    <td>${a.author}</td>
+                                    <td><button onclick="deleteArticle('${a._id}')" class="btn-action" style="background:#A16A5E; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch(e) { console.error(e); }
+        }
+
+        async function handleMagazineUpload(e) {
+            e.preventDefault();
+            const title = document.getElementById('magTitle').value;
+            const category = document.getElementById('magCategory').value;
+            const icon = document.getElementById('magIcon').value;
+            const authorInfo = document.getElementById('magAuthor').value;
+            const excerpt = document.getElementById('magExcerpt').value;
+            const body = document.getElementById('magBody').value;
+
+            let author = authorInfo.split('•')[0].trim();
+            let time = authorInfo.split('•')[1] ? authorInfo.split('•')[1].trim() : '4 min read';
+
+            const newArt = { title, category, icon, author, time, excerpt, body };
+
+            try {
+                await fetch(`${API_URL}/magazine/articles`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newArt)
+                });
+                showProModal('Success', 'Article published to Zine Magazine!');
+                document.getElementById('magTitle').value = '';
+                document.getElementById('magExcerpt').value = '';
+                document.getElementById('magBody').value = '';
+                renderMagazineTable();
+            } catch(e) { showProModal('Error', 'Failed to publish article.'); }
+        }
+
+        function deleteArticle(id) {
+            showProModal('Confirm Delete', 'Are you sure you want to delete this article?', async () => {
+                await fetch(`${API_URL}/magazine/articles/${id}`, { method: 'DELETE' });
+                renderMagazineTable();
+                showProModal('Deleted', 'Article removed from Zine.');
+            });
         }
 
         // --- Visual Campaign Uploader Logic ---
@@ -554,6 +639,7 @@
             });
         }
 
+        renderMagazineTable();
         renderCampaignManager();
         renderComingSoonManager();
         renderQrManager();
