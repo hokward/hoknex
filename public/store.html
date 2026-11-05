@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoknex Store — Student Swag & Tech Kits</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .store-hero {
+            padding: 4rem 3rem 2rem 3rem;
+            max-width: 1350px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .store-hero h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+        .store-hero h1 span {
+            background: linear-gradient(135deg, var(--accent-yellow), var(--accent-coral));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .store-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1350px;
+            margin: 0 auto 2.5rem auto;
+            padding: 0 3rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .filter-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: var(--paper);
+            border: 2.5px solid var(--border);
+            padding: 0.5rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: var(--shadow-art-sm);
+            transition: all 0.2s ease;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--accent-yellow);
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 0px var(--border);
+        }
+        .store-grid-container {
+            max-width: 1350px;
+            margin: 0 auto;
+            padding: 0 3rem 5rem 3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+        }
+        .product-card {
+            background: var(--paper);
+            border: 3.5px solid var(--border);
+            border-radius: 20px;
+            padding: 1.8rem;
+            box-shadow: var(--shadow-art);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 8px 10px 0px var(--border);
+        }
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent-coral);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 900;
+            border: 2px solid var(--border);
+            box-shadow: 2px 2px 0px var(--border);
+        }
+        .product-img {
+            width: 100%;
+            height: 180px;
+            background: #f1f5f9;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            margin-bottom: 1.2rem;
+        }
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--accent-blue);
+            margin: 0.5rem 0 1rem 0;
+        }
+        .cart-drawer-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent-yellow);
+            border: 3.5px solid var(--border);
+            padding: 0.9rem 1.6rem;
+            border-radius: 30px;
+            font-weight: 900;
+            box-shadow: var(--shadow-art);
+            cursor: pointer;
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s;
+        }
+        .cart-drawer-btn:hover {
+            transform: scale(1.05);
+        }
+        @media (max-width: 768px) {
+            .store-controls, .store-hero, .store-grid-container {
+                padding: 0 1.5rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="hoknex-navbar">
+        <div class="nav-brand">
+            <span class="logo-badge" onclick="window.location.href='index.html'" style="cursor:pointer;"><img src="hoknexlogo.png.jpeg"></span> <strong>Hoknex Store</strong>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html">Home 🏠</a>
+            <a href="magazine.html">Magazine 📖</a>
+            <a href="donation.html">Fund 💖</a>
+        </nav>
+        <a onclick="openCartModal()" class="btn-join" style="cursor:pointer;">Cart (<span id="cartCount">0</span>) 🛍️</a>
+    </header>
+
+    <!-- Store Hero -->
+    <section class="store-hero">
+        <span class="pill-badge" style="background:var(--accent-yellow); margin-bottom:1rem;">🛍️ Official Student Merchandise & Hardware</span>
+        <h1>Equip yourself with the <span>ultimate student gear.</span></h1>
+        <p style="color:var(--ink-light); font-weight:700; max-width:700px; margin:0 auto;">From IoT prototyping kits and mechanical keyboards to official Hoknex hoodies and developer stickers designed by global students.</p>
+    </section>
+
+    <!-- Controls & Filters -->
+    <div class="store-controls">
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterProducts('all')">All Gear 🔥</button>
+            <button class="filter-btn" onclick="filterProducts('swag')">Apparel & Swag 👕</button>
+            <button class="filter-btn" onclick="filterProducts('tech')">Tech & IoT Kits ⚡</button>
+            <button class="filter-btn" onclick="filterProducts('stationery')">Stationery & Merch 🎒</button>
+        </div>
+        <button onclick="openListingModal()" class="btn-join" style="background:var(--accent-cyan); color:#fff; cursor:pointer;">List Your Product 🚀</button>
+    </div>
+
+    <!-- Product Grid -->
+    <div id="productGrid" class="store-grid-container">
+        <!-- Rendered dynamically via JavaScript -->
+    </div>
+
+    <!-- Floating Cart Button -->
+    <button class="cart-drawer-btn" onclick="openCartModal()">
+        🛒 View Cart <span id="floatingCartCount" style="background:var(--accent-coral); color:#fff; padding:2px 8px; border-radius:10px; border:2px solid var(--border); font-size:0.8rem;">0</span>
+    </button>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="close-modal" onclick="closeModal('cartModal')">&times;</button>
+            <h2>🛍️ Your Hoknex Cart</h2>
+            <div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin: 1rem 0; padding-right: 5px;">
+                <p style="color:var(--ink-light); text-align:center;">Your cart is currently empty.</p>
+            </div>
+            <hr style="border: 0; border-top: 2px solid var(--border); margin: 1rem 0;">
+            <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; margin-bottom:1.5rem;">
+                <span>Total Amount:</span>
+                <span id="cartTotal" style="color:var(--accent-blue);">₹0</span>
+            </div>
+            <button onclick="checkoutCart()" class="btn-primary" style="width:100%;">Proceed to Secure Checkout 🚀</button>
+        </div>
+    </div>
+
+    <!-- List Product Modal -->
+    <div id="listingModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="close-modal" onclick="closeModal('listingModal')">&times;</button>
+            <h2>🚀 List Your Student Product</h2>
+            <p style="margin-bottom:1.2rem;">Are you a student creator or maker? Sell your merchandise or tech kits on Hoknex Store!</p>
+            <form onsubmit="handleProductListing(event)" style="display:flex; flex-direction:column; gap:1rem;">
+                <div class="form-group" style="text-align:left;">
+                    <label style="font-size:0.78rem; font-weight:800; color:var(--ink-light);">Product Name</label>
+                    <input type="text" id="listName" placeholder="e.g. Custom Keycaps Set" required style="background:var(--paper)!important; color:var(--ink)!important; border:2px solid var(--border)!important; padding:10px; border-radius:10px;">
+                </div>
+                <div class="form-group" style="text-align:left;">
+                    <label style="font-size:0.78rem; font-weight:800; color:var(--ink-light);">Category</label>
+                    <select id="listCategory" style="width:100%; padding:10px; border-radius:10px; border:2px solid var(--border); font-weight:800; background:var(--paper); color:var(--ink);">
+                        <option value="swag">Apparel & Swag</option>
+                        <option value="tech">Tech & IoT Kits</option>
+                        <option value="stationery">Stationery & Merch</option>
+                    </select>
+                </div>
+                <div class="form-group" style="text-align:left;">
+                    <label style="font-size:0.78rem; font-weight:800; color:var(--ink-light);">Price (₹)</label>
+                    <input type="number" id="listPrice" placeholder="499" required style="background:var(--paper)!important; color:var(--ink)!important; border:2px solid var(--border)!important; padding:10px; border-radius:10px;">
+                </div>
+                <div class="form-group" style="text-align:left;">
+                    <label style="font-size:0.78rem; font-weight:800; color:var(--ink-light);">Emoji Icon / Preview</label>
+                    <input type="text" id="listEmoji" placeholder="⌨️" required style="background:var(--paper)!important; color:var(--ink)!important; border:2px solid var(--border)!important; padding:10px; border-radius:10px;">
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top:0.5rem;">Publish Product 🚀</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Universal Modern Centered Notification Modal -->
+    <div id="hoknexPopupModal" class="modal-overlay">
+        <div class="modal-content text-center" style="max-width: 400px; text-align: center;">
+            <button class="close-modal" onclick="closePopupModal()">&times;</button>
+            <div id="popupModalEmoji" style="font-size: 3rem; margin-bottom: 0.5rem;">✨</div>
+            <h2 id="popupModalTitle" style="font-size: 1.5rem; margin-bottom: 0.75rem;">Notice</h2>
+            <p id="popupModalText" style="margin-bottom: 1.5rem; font-size: 0.95rem; color: var(--ink-light);">Message goes here...</p>
+            <button class="btn-primary" onclick="closePopupModal()" style="width: 100%;">Got it!</button>
+        </div>
+    </div>
+
+    <script>
+        // Initial Store Inventory
+        let products = [
+            { id: 1, name: "Official Hoknex Oversized Hoodie", category: "swag", price: 1299, emoji: "🧥", badge: "Best Seller" },
+            { id: 2, name: "ESP32-C3 IoT Prototyping Board", category: "tech", price: 499, emoji: "⚡", badge: "Maker Choice" },
+            { id: 3, name: "Hoknex Developer Sticker Pack", category: "stationery", price: 199, emoji: "💻", badge: "Trending" },
+            { id: 4, name: "Haptic Motion Glove Component Kit", category: "tech", price: 899, emoji: "🦾", badge: "Advanced" },
+            { id: 5, name: "Global Campus Cyber Cap", category: "swag", price: 599, emoji: "🧢", badge: "New" },
+            { id: 6, name: "Minimalist Student Notebook & Pen", category: "stationery", price: 299, emoji: "📓", badge: "Essential" }
+        ];
+
+        let cart = [];
+
+        function renderProducts(filter = 'all') {
+            const grid = document.getElementById('productGrid');
+            const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+            
+            grid.innerHTML = filtered.map(p => `
+                <div class="product-card">
+                    <span class="product-badge">${p.badge}</span>
+                    <div>
+                        <div class="product-img">${p.emoji}</div>
+                        <h3 style="font-size: 1.2rem; font-weight: 900; margin-bottom: 0.4rem;">${p.name}</h3>
+                        <div class="product-price">₹${p.price}</div>
+                    </div>
+                    <button onclick="addToCart(${p.id})" class="btn-primary" style="padding: 0.7rem; font-size: 0.9rem;">Add to Cart 🛒</button>
+                </div>
+            `).join('');
+        }
+        renderProducts();
+
+        function filterProducts(cat) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderProducts(cat);
+        }
+
+        function addToCart(id) {
+            const item = products.find(p => p.id === id);
+            cart.push(item);
+            updateCartUI();
+            showHoknexToast(`Added ${item.name} to cart!`, '🛒');
+        }
+
+        function updateCartUI() {
+            document.getElementById('cartCount').innerText = cart.length;
+            document.getElementById('floatingCartCount').innerText = cart.length;
+
+            const list = document.getElementById('cartItemsList');
+            const totalEl = document.getElementById('cartTotal');
+
+            if (cart.length === 0) {
+                list.innerHTML = `<p style="color:var(--ink-light); text-align:center;">Your cart is currently empty.</p>`;
+                totalEl.innerText = '₹0';
+                return;
+            }
+
+            let total = 0;
+            list.innerHTML = cart.map((item, index) => {
+                total += item.price;
+                return `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.03); padding:10px; border-radius:10px; margin-bottom:8px;">
+                        <div>
+                            <span style="font-weight:900;">${item.emoji} ${item.name}</span>
+                            <div style="font-size:0.85rem; color:var(--accent-blue); font-weight:800;">₹${item.price}</div>
+                        </div>
+                        <button onclick="removeFromCart(${index})" style="background:var(--accent-coral); color:#fff; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
+                    </div>
+                `;
+            }).join('');
+
+            totalEl.innerText = '₹' + total;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function openCartModal() {
+            document.getElementById('cartModal').style.display = 'flex';
+        }
+
+        function openListingModal() {
+            document.getElementById('listingModal').style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function checkoutCart() {
+            if (cart.length === 0) {
+                showHoknexPopup('Cart Empty', 'Please add items to your cart before checking out!', '⚠️');
+                return;
+            }
+            closeModal('cartModal');
+            cart = [];
+            updateCartUI();
+            showHoknexPopup('Order Placed Successfully! 🎉', 'Thank you for supporting student creators on Hoknex Store. Your order is confirmed!', '📦');
+        }
+
+        function handleProductListing(e) {
+            e.preventDefault();
+            const name = document.getElementById('listName').value;
+            const category = document.getElementById('listCategory').value;
+            const price = Number(document.getElementById('listPrice').value);
+            const emoji = document.getElementById('listEmoji').value;
+
+            products.push({ id: products.length + 1, name, category, price, emoji, badge: 'Creator Item' });
+            renderProducts();
+            closeModal('listingModal');
+            document.getElementById('listName').value = '';
+            document.getElementById('listPrice').value = '';
+            document.getElementById('listEmoji').value = '';
+            showHoknexPopup('Product Listed!', 'Your product has been successfully published to the Hoknex Store.', '🚀');
+        }
+
+        function showHoknexToast(message, emoji = '✨') {
+            const container = document.getElementById('hoknexToastContainer');
+            if(!container) {
+                const c = document.createElement('div');
+                c.id = 'hoknexToastContainer';
+                c.style.cssText = 'position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;';
+                document.body.appendChild(c);
+            }
+            const toast = document.createElement('div');
+            toast.className = 'hoknex-toast';
+            toast.innerHTML = `<span style="font-size: 1.3rem;">${emoji}</span> <span>${message}</span>`;
+            document.getElementById('hoknexToastContainer').appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-15px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function showHoknexPopup(title, message, emoji = '✨') {
+            document.getElementById('popupModalTitle').innerText = title;
+            document.getElementById('popupModalText').innerText = message;
+            document.getElementById('popupModalEmoji').innerText = emoji;
+            document.getElementById('hoknexPopupModal').style.display = 'flex';
+        }
+
+        function closePopupModal() {
+            document.getElementById('hoknexPopupModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
