@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoknex Fund & Support — Global Empowerment for Teenagers & Creators</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #F4F4F6;
+            --bg-card: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --primary-trust: #1E3A8A; /* Deep Sapphire / Slate Blue */
+            --accent-cta: #10B981;    /* Vibrant Emerald Green */
+            --accent-amber: #F59E0B;  /* Warm Amber */
+            --border-color: #E2E8F0;
+            --shadow-card: 0 10px 25px -5px rgba(30, 58, 138, 0.08), 0 8px 10px -6px rgba(30, 58, 138, 0.08);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+
+        /* Top Trust Banner */
+        .trust-banner { background: var(--primary-trust); color: #FFFFFF; text-align: center; padding: 10px 1rem; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.5px; }
+
+        /* Navigation Header */
+        .fund-navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 4rem; background: #FFFFFF; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .fund-brand { font-size: 1.4rem; font-weight: 900; color: var(--primary-trust); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .fund-nav-links { display: flex; gap: 2rem; align-items: center; }
+        .fund-nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: color 0.2s; }
+        .fund-nav-links a:hover, .fund-nav-links a.active { color: var(--primary-trust); }
+
+        .btn-primary-cta { background: var(--accent-cta); color: #FFFFFF; border: none; padding: 0.7rem 1.6rem; border-radius: 12px; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .btn-primary-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4); }
+
+        /* Hero Section */
+        .fund-hero { padding: 5rem 2rem 3rem 2rem; max-width: 1100px; margin: 0 auto; text-align: center; }
+        .fund-hero h1 { font-size: 3.2rem; font-weight: 900; letter-spacing: -1px; color: var(--primary-trust); margin-bottom: 1rem; line-height: 1.2; }
+        .fund-hero p { color: var(--text-muted); font-size: 1.1rem; font-weight: 600; max-width: 700px; margin: 0 auto 2.5rem auto; line-height: 1.6; }
+
+        /* Impact Statistics Grid */
+        .impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; max-width: 1100px; margin: 0 auto 4rem auto; padding: 0 2rem; }
+        .impact-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.8rem; text-align: center; box-shadow: var(--shadow-card); }
+        .impact-card h3 { font-size: 2.2rem; font-weight: 900; color: var(--primary-trust); margin-bottom: 0.3rem; }
+        .impact-card p { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Main Action Grid (Donate & Support Portal) */
+        .portal-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2.5rem; max-width: 1100px; margin: 0 auto 5rem auto; padding: 0 2rem; }
+        @media (max-width: 968px) { .portal-grid { grid-template-columns: 1fr; } .fund-navbar { padding: 1rem 1.5rem; } }
+
+        .portal-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 24px; padding: 3rem; box-shadow: var(--shadow-card); }
+        .portal-box h2 { font-size: 1.8rem; font-weight: 900; color: var(--primary-trust); margin-bottom: 0.5rem; }
+        .portal-box p { color: var(--text-muted); font-size: 0.95rem; font-weight: 600; margin-bottom: 2rem; }
+
+        /* Donation Tier Buttons */
+        .tier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .tier-btn { background: #F8FAFC; border: 2px solid var(--border-color); border-radius: 12px; padding: 1rem; font-size: 1.1rem; font-weight: 800; color: var(--text-main); cursor: pointer; transition: all 0.2s; text-align: center; }
+        .tier-btn:hover, .tier-btn.selected { border-color: var(--primary-trust); background: #EFF6FF; color: var(--primary-trust); }
+
+        .custom-input-group { position: relative; margin-bottom: 1.5rem; }
+        .custom-input-group span { position: absolute; left: 16px; top: 14px; font-weight: 800; color: var(--text-muted); }
+        .custom-input-group input { width: 100%; background: #F8FAFC; border: 2px solid var(--border-color); border-radius: 12px; padding: 12px 16px 12px 35px; font-size: 1rem; font-weight: 800; outline: none; color: var(--text-main); }
+
+        .form-field { margin-bottom: 1.2rem; }
+        .form-field label { display: block; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
+        .form-field input, .form-field textarea { width: 100%; background: #F8FAFC; border: 2px solid var(--border-color); border-radius: 12px; padding: 12px 16px; font-size: 0.95rem; font-weight: 700; outline: none; color: var(--text-main); }
+
+        /* Status Pills */
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; }
+        .status-success { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
+        .status-pending { background: #FFFBEB; color: #D97706; border: 1px solid #FDE68A; }
+
+        /* Global Footer */
+        .global-footer { background: #FFFFFF; border-top: 1px solid var(--border-color); padding: 3rem 4rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <div class="trust-banner">
+        🛡️ Secure Global Fund & Support Network — Empowering Teenagers & Creators Worldwide with 0% Platform Fees.
+    </div>
+
+    <header class="fund-navbar">
+        <a href="index.html" class="fund-brand">🌐 HOKNEX GLOBAL FUND</a>
+        <nav class="fund-nav-links">
+            <a href="store.html">Store</a>
+            <a href="magazine.html">Zine Magazine</a>
+            <a href="donation.html" class="active">Fund & Support</a>
+        </nav>
+        <button class="btn-primary-cta" onclick="document.getElementById('donateBox').scrollIntoView({behavior: 'smooth'})">Donate Now 💚</button>
+    </header>
+
+    <section class="fund-hero">
+        <h1>Fueling the Next Generation of <span>Global Innovators.</span></h1>
+        <p>Hoknex Fund & Support provides financial grants, open-source resources, and mental/technical mentorship to teenagers and independent creators across 50+ countries.</p>
+    </section>
+
+    <div class="impact-grid">
+        <div class="impact-card">
+            <h3>$142K+</h3>
+            <p>Grants Disbursed</p>
+        </div>
+        <div class="impact-card">
+            <h3>1,250+</h3>
+            <p>Teen Creators Backed</p>
+        </div>
+        <div class="impact-card">
+            <h3>54</h3>
+            <p>Countries Reached</p>
+        </div>
+        <div class="impact-card">
+            <span class="status-badge status-success" style="font-size: 0.9rem; padding: 8px 16px;">● Fully Verified</span>
+            <p style="margin-top: 8px;">Trust & Transparency</p>
+        </div>
+    </div>
+
+    <!-- Main Dual Portal: Donate & Support Inquiry -->
+    <div class="portal-grid">
+        <!-- Left Box: Donate Portal -->
+        <div class="portal-box" id="donateBox">
+            <h2>Support Global Creators 💚</h2>
+            <p>Choose an impact tier or enter a custom contribution to fund student hackathons, open-source tools, and creative grants.</p>
+            
+            <div class="tier-grid">
+                <button class="tier-btn selected" onclick="selectTier(500, this)">₹500</button>
+                <button class="tier-btn" onclick="selectTier(2000, this)">₹2,000</button>
+                <button class="tier-btn" onclick="selectTier(5000, this)">₹5,000</button>
+            </div>
+
+            <div class="custom-input-group">
+                <span>₹</span>
+                <input type="number" id="customAmount" placeholder="Enter custom amount" value="500">
+            </div>
+
+            <div class="form-field">
+                <label>Your Name / Supporter Handle *</label>
+                <input type="text" id="supporterName" placeholder="Alex Morgan">
+            </div>
+            <div class="form-field">
+                <label>Email Address *</label>
+                <input type="email" id="supporterEmail" placeholder="supporter@global.org">
+            </div>
+
+            <button onclick="processDonation()" class="btn-primary-cta" style="width: 100%; padding: 1rem; font-size: 1rem; margin-top: 0.5rem;">Contribute Securely ✨</button>
+        </div>
+
+        <!-- Right Box: Request Support / Inquiry Portal -->
+        <div class="portal-box">
+            <h2>Need Support or a Grant? 🤝</h2>
+            <p>Are you a teenager or creator building something impactful? Submit your support inquiry or grant application below.</p>
+            
+            <form onsubmit="submitSupportTicket(event)">
+                <div class="form-field">
+                    <label>Full Name / Team Name *</label>
+                    <input type="text" id="ticketName" placeholder="Sarah Chen" required>
+                </div>
+                <div class="form-field">
+                    <label>Contact Email *</label>
+                    <input type="email" id="ticketEmail" placeholder="creator@edu.in" required>
+                </div>
+                <div class="form-field">
+                    <label>Inquiry Category *</label>
+                    <select id="ticketCategory" style="width:100%; background:#F8FAFC; border:2px solid var(--border-color); border-radius:12px; padding:12px; font-weight:700; outline:none; color:var(--text-main);">
+                        <option value="Grant">Creator Financial Grant</option>
+                        <option value="Mentorship">Technical Mentorship</option>
+                        <option value="Hackathon">Hackathon Sponsorship</option>
+                        <option value="General">General Inquiry</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Project Details / Message *</label>
+                    <textarea id="ticketMessage" rows="3" placeholder="Tell us about what you are building..." required style="resize:vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn-primary-cta" style="width: 100%; padding: 1rem; font-size: 1rem; background: var(--primary-trust); box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);">Submit Inquiry 🚀</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="global-footer">
+        <p>&copy; 2026 Hoknex Global Foundation. Empowering teenagers and creators across all borders.</p>
+    </footer>
+
+    <script>
+        const API_URL = '/api';
+
+        function selectTier(amount, el) {
+            document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('customAmount').value = amount;
+        }
+
+        async function processDonation() {
+            const amount = document.getElementById('customAmount').value;
+            const name = document.getElementById('supporterName').value;
+            const email = document.getElementById('supporterEmail').value;
+
+            if(!amount || !name || !email) {
+                alert('Please fill in all donation fields.');
+                return;
+            }
+
+            try {
+                await fetch(`${API_URL}/support`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: name,
+                        query: `[GLOBAL DONATION RECEIVED]: ₹${amount} contributed by ${name} (${email}).`
+                    })
+                });
+                alert(`Thank you so much, ${name}! Your contribution of ₹${amount} has been securely registered to the Hoknex Global Fund.`);
+                document.getElementById('supporterName').value = '';
+                document.getElementById('supporterEmail').value = '';
+            } catch(e) {
+                alert('Donation processing encountered an error. Please try again.');
+            }
+        }
+
+        async function submitSupportTicket(e) {
+            e.preventDefault();
+            const name = document.getElementById('ticketName').value;
+            const email = document.getElementById('ticketEmail').value;
+            const category = document.getElementById('ticketCategory').value;
+            const message = document.getElementById('ticketMessage').value;
+
+            try {
+                await fetch(`${API_URL}/support`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: name,
+                        query: `[SUPPORT INQUIRY - ${category.toUpperCase()}]: From ${email}. Message: ${message}`
+                    })
+                });
+                alert('Your support inquiry has been successfully submitted! Our team will review it within 24 hours.');
+                document.getElementById('ticketName').value = '';
+                document.getElementById('ticketEmail').value = '';
+                document.getElementById('ticketMessage').value = '';
+            } catch(e) {
+                alert('Could not submit support ticket.');
+            }
+        }
+    </script>
+</body>
+</html>
