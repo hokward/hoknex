@@ -75,9 +75,13 @@
         .btn-wishlist { background: #fff; border: 2px solid var(--border-color); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; position: absolute; top: 18px; left: 18px; z-index: 5; box-shadow: 2px 2px 0px var(--border-color); transition: transform 0.15s; }
         .btn-wishlist:hover { transform: scale(1.1); }
 
-        .store-footer { background: #111827; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 3px solid var(--border-color); position: relative; overflow: hidden; }
+        /* Signature Dark Footer with Watermark */
+        .store-footer {
+            background: #111827; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem;
+            border-top: 3px solid var(--border-color); position: relative; overflow: hidden;
+        }
         .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.15); position: relative; z-index: 2; }
-        .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; }
+        .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; }
         .footer-newsletter p { color: #CCBEB1; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
         .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; }
         .newsletter-input-group input { flex: 1; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.2); padding: 12px 16px; border-radius: 10px; color: #fff; font-weight: 800; outline: none; }
@@ -86,10 +90,14 @@
         .footer-links-grid { display: grid; grid-template-columns: repeat(5, 1fr) 1.5fr; gap: 2rem; font-size: 0.88rem; position: relative; z-index: 2; }
         .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FAF9F6; }
         .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
-        .footer-col a { color: #CCBEB1; text-decoration: none; font-weight: 700; }
+        .footer-col a { color: #CCBEB1; text-decoration: none; font-weight: 700; cursor: pointer; }
         .footer-col a:hover { color: #fff; }
 
-        .footer-watermark { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.04); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; }
+        .footer-watermark {
+            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+            font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.04);
+            white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px;
+        }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(76, 88, 68, 0.7); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
         .modal-panel { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 24px; padding: 2.5rem; width: 100%; max-width: 650px; box-shadow: 8px 8px 0px var(--border-color); position: relative; max-height: 90vh; overflow-y: auto; }
@@ -97,6 +105,12 @@
 
         #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
         #proModalBox { background: #FAF9F6; border: 3.5px solid var(--border-color); border-radius: 20px; padding: 2rem; max-width: 420px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--border-color); }
+
+        @media (max-width: 968px) {
+            .store-navbar, .store-hero, .coming-soon-container, .product-catalog-section, .store-footer { padding: 2rem 1.5rem; }
+            .footer-links-grid { grid-template-columns: 1fr; }
+            .nav-left-links { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -145,10 +159,73 @@
     </section>
 
     <section class="product-catalog-section" id="catalog">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+            <div>
+                <h3 style="font-size: 1.8rem; font-weight: 900;" id="activeCategoryTitle">Featured Hoknex Collection</h3>
+                <p style="color: var(--text-muted); font-weight: 700; font-size: 0.9rem;">Click any product to inspect multi-angle views and place an order.</p>
+            </div>
+        </div>
         <div class="catalog-grid" id="catalogGrid"></div>
     </section>
 
-    <!-- Modals for PDP, Wishlist, Cart, Checkout, Tracking omitted for brevity but fully active -->
+    <!-- Signature Dark Footer -->
+    <footer class="store-footer">
+        <div class="footer-newsletter">
+            <h3>Join the Hoknex movement</h3>
+            <p>Get exclusive drops, campus hackathon invites, and stories that fuel your next breakthrough - straight to your inbox.</p>
+            <div class="newsletter-input-group">
+                <input type="email" id="newsletterEmailInput" placeholder="Enter your email address">
+                <button class="btn-newsletter" onclick="submitNewsletterEmail()">Join</button>
+            </div>
+        </div>
+
+        <div class="footer-links-grid">
+            <div class="footer-col">
+                <h4>Shop</h4>
+                <ul>
+                    <li><a onclick="filterCategory('Apparel')">Apparel & Hoodies</a></li>
+                    <li><a onclick="filterCategory('Footwear')">Footwear & Gear</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Hoknex</h4>
+                <ul>
+                    <li><a href="index.html">About Hoknex</a></li>
+                    <li><a href="index.html">The Hoknex Promise</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Customer Support</h4>
+                <ul>
+                    <li><a onclick="openTrackModal()">Track Order</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="index.html">Student Sign In</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a>Privacy Policy</a></li>
+                    <li><a>Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Follow</h4>
+                <p style="color: #CCBEB1; font-size: 0.8rem; margin-top: 8px;">Connect with us on social channels for student spotlights.</p>
+            </div>
+        </div>
+        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #CCBEB1; position: relative; z-index: 2;">
+            <span>&copy; Hoknex 2026. All rights reserved.</span>
+            <span>Secure Campus Checkout (Zero Fees)</span>
+        </div>
+        <div class="footer-watermark">hoknex</div>
+    </footer>
+
+    <!-- Modals (PDP, Wishlist, Cart, Checkout, Tracking) -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
         <div class="modal-panel" style="max-width: 850px;">
             <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
@@ -222,7 +299,7 @@
     </div>
 
     <script>
-        const API_URL = '/api'; // Communicates with your main server.js endpoints
+        const API_URL = '/api';
 
         function showProModal(title, message) {
             document.getElementById('proModalTitle').innerText = title;
@@ -230,6 +307,14 @@
             document.getElementById('proModalOverlay').style.display = 'flex';
         }
         function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
+
+        const savedAnnouncement = localStorage.getItem('hoknex_announcement');
+        if(savedAnnouncement) { document.getElementById('topAnnouncementBar').innerText = savedAnnouncement; }
+
+        let defaultCatalog = [
+            { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49, emoji: "🧥", badge: "New Drop", inStock: true, sizes: ['S', 'M', 'L', 'XL'], ratings: [5, 5, 4], votes: 12, description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.", galleryImages: ["🧥", "👔", "🔎"] },
+            { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99, emoji: "👟", badge: "Best Seller", inStock: true, sizes: ['7', '8', '9', '10'], ratings: [5, 5, 5], votes: 8, description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.", galleryImages: ["👟", "🥾", "🔎"] }
+        ];
 
         let catalog = [];
         let wishlist = JSON.parse(localStorage.getItem('hoknex_wishlist') || '[]');
@@ -243,13 +328,16 @@
                     fetch(`${API_URL}/store/products`),
                     fetch(`${API_URL}/store/drops`)
                 ]);
-                catalog = await prodRes.json();
+                const dbProducts = await prodRes.json();
+                catalog = (dbProducts && dbProducts.length > 0) ? dbProducts : defaultCatalog;
                 renderCatalog(catalog);
                 
                 const drops = await dropRes.json();
                 renderComingSoon(drops);
             } catch (err) {
-                console.error('Failed to load store data from API, using fallback', err);
+                console.warn('API offline, falling back to default catalog.');
+                catalog = defaultCatalog;
+                renderCatalog(catalog);
             }
         }
 
