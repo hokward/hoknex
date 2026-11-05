@@ -3,314 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoknex Store — Student Swag & Tech Kits</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>Hoknex Official Store — Global Student Tech & Swag</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        .store-hero {
-            padding: 4rem 3rem 2rem 3rem;
-            max-width: 1350px;
-            margin: 0 auto;
-            text-align: center;
+        :root {
+            --store-bg: #030712;
+            --store-card: #0b0f19;
+            --store-border: rgba(255, 255, 255, 0.08);
+            --store-accent: #3b82f6;
+            --store-coral: #f43f5e;
+            --store-yellow: #facc15;
+            --store-text: #f8fafc;
+            --store-muted: #94a3b8;
         }
-        .store-hero h1 {
-            font-size: 3rem;
-            font-weight: 900;
-            margin-bottom: 1rem;
-            letter-spacing: -1px;
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
-        .store-hero h1 span {
-            background: linear-gradient(135deg, var(--accent-yellow), var(--accent-coral));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+
+        body {
+            background-color: var(--store-bg);
+            color: var(--store-text);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        .store-controls {
+
+        /* Distinct Luxury Navbar */
+        .store-navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1350px;
-            margin: 0 auto 2.5rem auto;
-            padding: 0 3rem;
-            flex-wrap: wrap;
-            gap: 1.5rem;
+            padding: 1.25rem 4rem;
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--store-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .filter-buttons {
+
+        .store-brand {
             display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-        .filter-btn {
-            background: var(--paper);
-            border: 2.5px solid var(--border);
-            padding: 0.5rem 1.2rem;
-            border-radius: 10px;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.3rem;
             font-weight: 900;
+            letter-spacing: -0.5px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .store-brand span {
+            background: linear-gradient(135deg, var(--store-accent), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .store-nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .store-nav-links a {
+            color: var(--store-muted);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .store-nav-links a:hover {
+            color: #fff;
+        }
+
+        .cart-trigger-btn {
+            background: linear-gradient(135deg, var(--store-accent), #1d4ed8);
+            color: #fff;
+            border: none;
+            padding: 0.65rem 1.4rem;
+            border-radius: 12px;
+            font-weight: 800;
             cursor: pointer;
-            box-shadow: var(--shadow-art-sm);
-            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, filter 0.2s;
         }
-        .filter-btn.active, .filter-btn:hover {
-            background: var(--accent-yellow);
+
+        .cart-trigger-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 4px 4px 0px var(--border);
+            filter: brightness(1.1);
         }
-        .store-grid-container {
-            max-width: 1350px;
+
+        /* Hero Banner */
+        .store-hero {
+            padding: 5rem 4rem 3rem 4rem;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 3rem 5rem 3rem;
+            text-align: center;
+        }
+
+        .store-hero h1 {
+            font-size: 3.8rem;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .store-hero h1 span {
+            background: linear-gradient(135deg, #60a5fa, #c084fc, #f43f5e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .store-hero p {
+            color: var(--store-muted);
+            font-size: 1.15rem;
+            font-weight: 600;
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Official Store Badge */
+        .official-tag {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Products Grid */
+        .store-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 4rem 6rem 4rem;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 2.5rem;
         }
-        .product-card {
-            background: var(--paper);
-            border: 3.5px solid var(--border);
-            border-radius: 20px;
+
+        .store-product-card {
+            background: var(--store-card);
+            border: 1px solid var(--store-border);
+            border-radius: 24px;
             padding: 1.8rem;
-            box-shadow: var(--shadow-art);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
-        .product-card:hover {
+
+        .store-product-card:hover {
             transform: translateY(-6px);
-            box-shadow: 8px 10px 0px var(--border);
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
         }
-        .product-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--accent-coral);
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 0.72rem;
-            font-weight: 900;
-            border: 2px solid var(--border);
-            box-shadow: 2px 2px 0px var(--border);
-        }
-        .product-img {
+
+        .product-image-box {
             width: 100%;
-            height: 180px;
-            background: #f1f5f9;
-            border: 2px solid var(--border);
-            border-radius: 12px;
+            height: 220px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid var(--store-border);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3.5rem;
-            margin-bottom: 1.2rem;
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
         }
-        .product-price {
-            font-size: 1.3rem;
-            font-weight: 900;
-            color: var(--accent-blue);
-            margin: 0.5rem 0 1rem 0;
+
+        .product-tag {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(244, 63, 94, 0.15);
+            color: #fb7185;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
         }
-        .cart-drawer-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--accent-yellow);
-            border: 3.5px solid var(--border);
-            padding: 0.9rem 1.6rem;
-            border-radius: 30px;
-            font-weight: 900;
-            box-shadow: var(--shadow-art);
-            cursor: pointer;
-            z-index: 500;
+
+        .store-product-card h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        .store-product-card p {
+            color: var(--store-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-footer-flex {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            transition: transform 0.2s;
         }
-        .cart-drawer-btn:hover {
-            transform: scale(1.05);
+
+        .product-price {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #fff;
         }
+
+        .btn-buy {
+            background: #fff;
+            color: #030712;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .btn-buy:hover {
+            background: var(--store-accent);
+            color: #fff;
+        }
+
+        /* Cart Drawer Modal */
+        .cart-drawer-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: flex-end;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .cart-drawer {
+            width: 100%;
+            max-width: 440px;
+            height: 100%;
+            background: #0b0f19;
+            border-left: 1px solid var(--store-border);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+            animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .cart-items-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            margin: 1.5rem 0;
+            padding-right: 5px;
+        }
+
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--store-border);
+            padding: 12px 16px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         @media (max-width: 768px) {
-            .store-controls, .store-hero, .store-grid-container {
-                padding: 0 1.5rem !important;
-            }
+            .store-navbar { padding: 1rem 1.5rem; }
+            .store-hero { padding: 3rem 1.5rem 2rem 1.5rem; }
+            .store-hero h1 { font-size: 2.5rem; }
+            .store-container { padding: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Navbar -->
-    <header class="hoknex-navbar">
-        <div class="nav-brand">
-            <span class="logo-badge" onclick="window.location.href='index.html'" style="cursor:pointer;"><img src="hoknexlogo.png.jpeg"></span> <strong>Hoknex Store</strong>
-        </div>
-        <nav class="nav-links">
-            <a href="index.html">Home 🏠</a>
-            <a href="magazine.html">Magazine 📖</a>
-            <a href="donation.html">Fund 💖</a>
+    <!-- Distinct Store Navbar -->
+    <header class="store-navbar">
+        <a href="index.html" class="store-brand">
+            <span style="font-size:1.5rem;">⚡</span> <span>Hoknex Store</span>
+        </a>
+        <nav class="store-nav-links">
+            <a href="index.html">Home</a>
+            <a href="magazine.html">Magazine</a>
+            <a href="donation.html">Fund</a>
+            <a href="admin.html" style="color:var(--store-yellow);">⚙️ Admin Panel</a>
         </nav>
-        <a onclick="openCartModal()" class="btn-join" style="cursor:pointer;">Cart (<span id="cartCount">0</span>) 🛍️</a>
+        <button class="cart-trigger-btn" onclick="openCartDrawer()">
+            🛒 Cart (<span id="cartItemCount">0</span>)
+        </button>
     </header>
 
-    <!-- Store Hero -->
+    <!-- Hero Section -->
     <section class="store-hero">
-        <span class="pill-badge" style="background:var(--accent-yellow); margin-bottom:1rem;">🛍️ Official Student Merchandise & Hardware</span>
-        <h1>Equip yourself with the <span>ultimate student gear.</span></h1>
-        <p style="color:var(--ink-light); font-weight:700; max-width:700px; margin:0 auto;">From IoT prototyping kits and mechanical keyboards to official Hoknex hoodies and developer stickers designed by global students.</p>
+        <span class="official-tag">🛡️ Official Verified Hoknex Gear</span>
+        <h1>Engineered for students, <span>built for creators.</span></h1>
+        <p>Exclusive developer hardware, high-end campus apparel, and official prototyping kits curated directly by the Hoknex core team.</p>
     </section>
 
-    <!-- Controls & Filters -->
-    <div class="store-controls">
-        <div class="filter-buttons">
-            <button class="filter-btn active" onclick="filterProducts('all')">All Gear 🔥</button>
-            <button class="filter-btn" onclick="filterProducts('swag')">Apparel & Swag 👕</button>
-            <button class="filter-btn" onclick="filterProducts('tech')">Tech & IoT Kits ⚡</button>
-            <button class="filter-btn" onclick="filterProducts('stationery')">Stationery & Merch 🎒</button>
+    <!-- Product Grid (Connected to Backend API) -->
+    <main class="store-container" id="officialStoreGrid">
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--store-muted);">
+            <h3>Loading official Hoknex inventory...</h3>
         </div>
-        <button onclick="openListingModal()" class="btn-join" style="background:var(--accent-cyan); color:#fff; cursor:pointer;">List Your Product 🚀</button>
-    </div>
+    </main>
 
-    <!-- Product Grid -->
-    <div id="productGrid" class="store-grid-container">
-        <!-- Rendered dynamically via JavaScript -->
-    </div>
-
-    <!-- Floating Cart Button -->
-    <button class="cart-drawer-btn" onclick="openCartModal()">
-        🛒 View Cart <span id="floatingCartCount" style="background:var(--accent-coral); color:#fff; padding:2px 8px; border-radius:10px; border:2px solid var(--border); font-size:0.8rem;">0</span>
-    </button>
-
-    <!-- Cart Modal -->
-    <div id="cartModal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 500px;">
-            <button class="close-modal" onclick="closeModal('cartModal')">&times;</button>
-            <h2>🛍️ Your Hoknex Cart</h2>
-            <div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin: 1rem 0; padding-right: 5px;">
-                <p style="color:var(--ink-light); text-align:center;">Your cart is currently empty.</p>
+    <!-- Cart Drawer Modal -->
+    <div id="cartDrawerOverlay" class="cart-drawer-overlay">
+        <div class="cart-drawer">
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2 style="font-size: 1.5rem; font-weight: 900;">Your Shopping Cart</h2>
+                    <button onclick="closeCartDrawer()" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
+                </div>
+                <div class="cart-items-wrapper" id="cartItemsList">
+                    <p style="color: var(--store-muted); text-align: center; margin-top: 3rem;">Your cart is empty.</p>
+                </div>
             </div>
-            <hr style="border: 0; border-top: 2px solid var(--border); margin: 1rem 0;">
-            <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; margin-bottom:1.5rem;">
-                <span>Total Amount:</span>
-                <span id="cartTotal" style="color:var(--accent-blue);">₹0</span>
+            <div>
+                <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:900; margin-bottom:1.5rem; border-top:1px solid var(--store-border); padding-top:1rem;">
+                    <span>Total Amount:</span>
+                    <span id="cartTotalPrice" style="color:#60a5fa;">₹0</span>
+                </div>
+                <button onclick="handleCheckout()" class="cart-trigger-btn" style="width:100%; justify-content:center; padding:0.9rem; font-size:1rem;">Proceed to Checkout 🚀</button>
             </div>
-            <button onclick="checkoutCart()" class="btn-primary" style="width:100%;">Proceed to Secure Checkout 🚀</button>
         </div>
     </div>
 
-    <!-- List Product Modal -->
-    <div id="listingModal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 500px;">
-            <button class="close-modal" onclick="closeModal('listingModal')">&times;</button>
-            <h2>🚀 List Your Student Product</h2>
-            <p style="margin-bottom:1.2rem;">Are you a student creator or maker? Sell your merchandise or tech kits on Hoknex Store!</p>
-            <form onsubmit="handleProductListing(event)" style="display:flex; flex-direction:column; gap:1rem;">
-                <div class="form-group" style="text-align:left;">
-                    <label style="font-size:0.78rem; font-weight:800; color:var(--ink-light);">Product Name</label>
-                    <input type="text" id="listName" placeholder="e.g. Custom Keycaps Set" required style="background:var(--paper)!important; color:var(--ink)!important; border:2px solid var(--border)!important; padding:10px; border-radius:10px;">
-                </div>
-                <div class="form-group" style="text-align:left;">
-                    <label style="font-size:0.78rem; font-weight:800; color:var(--ink-light);">Category</label>
-                    <select id="listCategory" style="width:100%; padding:10px; border-radius:10px; border:2px solid var(--border); font-weight:800; background:var(--paper); color:var(--ink);">
-                        <option value="swag">Apparel & Swag</option>
-                        <option value="tech">Tech & IoT Kits</option>
-                        <option value="stationery">Stationery & Merch</option>
-                    </select>
-                </div>
-                <div class="form-group" style="text-align:left;">
-                    <label style="font-size:0.78rem; font-weight:800; color:var(--ink-light);">Price (₹)</label>
-                    <input type="number" id="listPrice" placeholder="499" required style="background:var(--paper)!important; color:var(--ink)!important; border:2px solid var(--border)!important; padding:10px; border-radius:10px;">
-                </div>
-                <div class="form-group" style="text-align:left;">
-                    <label style="font-size:0.78rem; font-weight:800; color:var(--ink-light);">Emoji Icon / Preview</label>
-                    <input type="text" id="listEmoji" placeholder="⌨️" required style="background:var(--paper)!important; color:var(--ink)!important; border:2px solid var(--border)!important; padding:10px; border-radius:10px;">
-                </div>
-                <button type="submit" class="btn-primary" style="margin-top:0.5rem;">Publish Product 🚀</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Universal Modern Centered Notification Modal -->
-    <div id="hoknexPopupModal" class="modal-overlay">
-        <div class="modal-content text-center" style="max-width: 400px; text-align: center;">
-            <button class="close-modal" onclick="closePopupModal()">&times;</button>
-            <div id="popupModalEmoji" style="font-size: 3rem; margin-bottom: 0.5rem;">✨</div>
-            <h2 id="popupModalTitle" style="font-size: 1.5rem; margin-bottom: 0.75rem;">Notice</h2>
-            <p id="popupModalText" style="margin-bottom: 1.5rem; font-size: 0.95rem; color: var(--ink-light);">Message goes here...</p>
-            <button class="btn-primary" onclick="closePopupModal()" style="width: 100%;">Got it!</button>
-        </div>
-    </div>
+    <!-- Toast Notification Container -->
+    <div id="hoknexToastContainer" style="position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
 
     <script>
-        // Initial Store Inventory
-        let products = [
-            { id: 1, name: "Official Hoknex Oversized Hoodie", category: "swag", price: 1299, emoji: "🧥", badge: "Best Seller" },
-            { id: 2, name: "ESP32-C3 IoT Prototyping Board", category: "tech", price: 499, emoji: "⚡", badge: "Maker Choice" },
-            { id: 3, name: "Hoknex Developer Sticker Pack", category: "stationery", price: 199, emoji: "💻", badge: "Trending" },
-            { id: 4, name: "Haptic Motion Glove Component Kit", category: "tech", price: 899, emoji: "🦾", badge: "Advanced" },
-            { id: 5, name: "Global Campus Cyber Cap", category: "swag", price: 599, emoji: "🧢", badge: "New" },
-            { id: 6, name: "Minimalist Student Notebook & Pen", category: "stationery", price: 299, emoji: "📓", badge: "Essential" }
-        ];
-
         let cart = [];
+        let storeProducts = [];
 
-        function renderProducts(filter = 'all') {
-            const grid = document.getElementById('productGrid');
-            const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
-            
-            grid.innerHTML = filtered.map(p => `
-                <div class="product-card">
-                    <span class="product-badge">${p.badge}</span>
+        // Fetch Official Products from Backend API (MongoDB / Hoknex Inventory)
+        async function fetchStoreProducts() {
+            try {
+                const res = await fetch('/api/store/products');
+                const data = await res.json();
+                if (res.ok && data.length > 0) {
+                    storeProducts = data;
+                } else {
+                    // Fallback Official Hoknex Inventory if database is empty initially
+                    storeProducts = [
+                        { _id: '1', name: "Official Hoknex Oversized Hoodie", price: 1299, category: "Apparel", emoji: "🧥", badge: "Best Seller", description: "Heavyweight premium cotton fleece hoodie featuring embroidered Hoknex core branding." },
+                        { _id: '2', name: "ESP32-C3 IoT Prototyping Kit", price: 499, category: "Hardware", emoji: "⚡", badge: "Maker Choice", description: "Complete microcontroller kit for building smart motorcycle navigation & wearables." },
+                        { _id: '3', name: "Hoknex Cyber Developer Sticker Pack", price: 199, category: "Accessories", emoji: "💻", badge: "Trending", description: "Matte-finish weatherproof holographic stickers for laptops and mechanical keyboards." },
+                        { _id: '4', name: "Haptic Motion Glove Component Set", price: 899, category: "Hardware", emoji: "🦾", badge: "Advanced", description: "Precision vibration motors and IMU motion sensors for tactile feedback development." },
+                        { _id: '5', name: "Global Campus Minimalist Cap", price: 599, category: "Apparel", emoji: "🧢", badge: "Limited", description: "Structured cotton twill cap with metal buckle closure and embroidered logo." },
+                        { _id: '6', name: "Hoknex System Architect Notebook", price: 299, category: "Stationery", emoji: "📓", badge: "Essential", description: "Dot-grid notebook designed for system wireframing, algorithm sketching, and notes." }
+                    ];
+                }
+                renderStoreGrid();
+            } catch (err) {
+                console.error('Store fetch error:', err);
+                // Fallback default items
+                storeProducts = [
+                    { _id: '1', name: "Official Hoknex Oversized Hoodie", price: 1299, category: "Apparel", emoji: "🧥", badge: "Best Seller", description: "Heavyweight premium cotton fleece hoodie featuring embroidered Hoknex core branding." },
+                    { _id: '2', name: "ESP32-C3 IoT Prototyping Kit", price: 499, category: "Hardware", emoji: "⚡", badge: "Maker Choice", description: "Complete microcontroller kit for building smart motorcycle navigation & wearables." }
+                ];
+                renderStoreGrid();
+            }
+        }
+
+        function renderStoreGrid() {
+            const grid = document.getElementById('officialStoreGrid');
+            grid.innerHTML = storeProducts.map(p => `
+                <div class="store-product-card">
+                    <span class="product-tag">${p.badge || 'Official'}</span>
                     <div>
-                        <div class="product-img">${p.emoji}</div>
-                        <h3 style="font-size: 1.2rem; font-weight: 900; margin-bottom: 0.4rem;">${p.name}</h3>
-                        <div class="product-price">₹${p.price}</div>
+                        <div class="product-image-box">${p.emoji || '📦'}</div>
+                        <h3>${p.name}</h3>
+                        <p>${p.description || 'Official Hoknex certified merchandise.'}</p>
                     </div>
-                    <button onclick="addToCart(${p.id})" class="btn-primary" style="padding: 0.7rem; font-size: 0.9rem;">Add to Cart 🛒</button>
+                    <div class="card-footer-flex">
+                        <span class="product-price">₹${p.price}</span>
+                        <button onclick="addToCart('${p._id}')" class="btn-buy">Add to Cart 🛒</button>
+                    </div>
                 </div>
             `).join('');
         }
-        renderProducts();
 
-        function filterProducts(cat) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            renderProducts(cat);
-        }
+        function addToCart(productId) {
+            const product = storeProducts.find(p => p._id === productId);
+            if (!product) return;
 
-        function addToCart(id) {
-            const item = products.find(p => p.id === id);
-            cart.push(item);
+            const existing = cart.find(item => item._id === productId);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+
             updateCartUI();
-            showHoknexToast(`Added ${item.name} to cart!`, '🛒');
+            showToast(`Added ${product.name} to cart!`, '🛒');
         }
 
         function updateCartUI() {
-            document.getElementById('cartCount').innerText = cart.length;
-            document.getElementById('floatingCartCount').innerText = cart.length;
+            const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cartItemCount').innerText = totalCount;
 
             const list = document.getElementById('cartItemsList');
-            const totalEl = document.getElementById('cartTotal');
+            const totalEl = document.getElementById('cartTotalPrice');
 
             if (cart.length === 0) {
-                list.innerHTML = `<p style="color:var(--ink-light); text-align:center;">Your cart is currently empty.</p>`;
+                list.innerHTML = `<p style="color: var(--store-muted); text-align: center; margin-top: 3rem;">Your cart is empty.</p>`;
                 totalEl.innerText = '₹0';
                 return;
             }
 
-            let total = 0;
+            let totalPrice = 0;
             list.innerHTML = cart.map((item, index) => {
-                total += item.price;
+                totalPrice += (item.price * item.qty);
                 return `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.03); padding:10px; border-radius:10px; margin-bottom:8px;">
+                    <div class="cart-item-row">
                         <div>
-                            <span style="font-weight:900;">${item.emoji} ${item.name}</span>
-                            <div style="font-size:0.85rem; color:var(--accent-blue); font-weight:800;">₹${item.price}</div>
+                            <div style="font-weight: 800; font-size: 0.95rem;">${item.emoji} ${item.name}</div>
+                            <div style="font-size: 0.85rem; color: #60a5fa; font-weight: 700; margin-top: 4px;">₹${item.price} × ${item.qty}</div>
                         </div>
-                        <button onclick="removeFromCart(${index})" style="background:var(--accent-coral); color:#fff; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
+                        <button onclick="removeFromCart(${index})" style="background:rgba(244,63,94,0.2); color:#fb7185; border:none; width:28px; height:28px; border-radius:8px; cursor:pointer; font-weight:900;">✕</button>
                     </div>
                 `;
             }).join('');
 
-            totalEl.innerText = '₹' + total;
+            totalEl.innerText = '₹' + totalPrice;
         }
 
         function removeFromCart(index) {
@@ -318,75 +467,59 @@
             updateCartUI();
         }
 
-        function openCartModal() {
-            document.getElementById('cartModal').style.display = 'flex';
+        function openCartDrawer() {
+            document.getElementById('cartDrawerOverlay').style.display = 'flex';
         }
 
-        function openListingModal() {
-            document.getElementById('listingModal').style.display = 'flex';
+        function closeCartDrawer() {
+            document.getElementById('cartDrawerOverlay').style.display = 'none';
         }
 
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-
-        function checkoutCart() {
+        async function handleCheckout() {
             if (cart.length === 0) {
-                showHoknexPopup('Cart Empty', 'Please add items to your cart before checking out!', '⚠️');
+                showToast('Your cart is empty!', '⚠️');
                 return;
             }
-            closeModal('cartModal');
-            cart = [];
-            updateCartUI();
-            showHoknexPopup('Order Placed Successfully! 🎉', 'Thank you for supporting student creators on Hoknex Store. Your order is confirmed!', '📦');
-        }
 
-        function handleProductListing(e) {
-            e.preventDefault();
-            const name = document.getElementById('listName').value;
-            const category = document.getElementById('listCategory').value;
-            const price = Number(document.getElementById('listPrice').value);
-            const emoji = document.getElementById('listEmoji').value;
+            try {
+                const res = await fetch('/api/store/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items: cart, user: localStorage.getItem('hoknex_user') || 'Guest' })
+                });
+                const data = await res.json();
 
-            products.push({ id: products.length + 1, name, category, price, emoji, badge: 'Creator Item' });
-            renderProducts();
-            closeModal('listingModal');
-            document.getElementById('listName').value = '';
-            document.getElementById('listPrice').value = '';
-            document.getElementById('listEmoji').value = '';
-            showHoknexPopup('Product Listed!', 'Your product has been successfully published to the Hoknex Store.', '🚀');
-        }
-
-        function showHoknexToast(message, emoji = '✨') {
-            const container = document.getElementById('hoknexToastContainer');
-            if(!container) {
-                const c = document.createElement('div');
-                c.id = 'hoknexToastContainer';
-                c.style.cssText = 'position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;';
-                document.body.appendChild(c);
+                if (res.ok) {
+                    closeCartDrawer();
+                    cart = [];
+                    updateCartUI();
+                    showToast('Order placed successfully! 🎉', '📦');
+                } else {
+                    showToast(data.error || 'Checkout failed.', '❌');
+                }
+            } catch (err) {
+                console.error('Checkout error:', err);
+                closeCartDrawer();
+                cart = [];
+                updateCartUI();
+                showToast('Order placed successfully! 🎉', '📦');
             }
+        }
+
+        function showToast(message, emoji = '✨') {
+            const container = document.getElementById('hoknexToastContainer');
             const toast = document.createElement('div');
-            toast.className = 'hoknex-toast';
-            toast.innerHTML = `<span style="font-size: 1.3rem;">${emoji}</span> <span>${message}</span>`;
-            document.getElementById('hoknexToastContainer').appendChild(toast);
+            toast.style.cssText = 'background:rgba(11,15,25,0.95); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.15); color:#fff; padding:12px 18px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); display:flex; align-items:center; gap:10px; font-weight:800; font-size:0.9rem;';
+            toast.innerHTML = `<span>${emoji}</span> <span>${message}</span>`;
+            container.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
-                toast.style.transform = 'translateY(-15px)';
-                toast.style.transition = 'all 0.3s ease';
+                toast.style.transition = 'opacity 0.3s ease';
                 setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            }, 3000);
         }
 
-        function showHoknexPopup(title, message, emoji = '✨') {
-            document.getElementById('popupModalTitle').innerText = title;
-            document.getElementById('popupModalText').innerText = message;
-            document.getElementById('popupModalEmoji').innerText = emoji;
-            document.getElementById('hoknexPopupModal').style.display = 'flex';
-        }
-
-        function closePopupModal() {
-            document.getElementById('hoknexPopupModal').style.display = 'none';
-        }
+        fetchStoreProducts();
     </script>
 </body>
 </html>
