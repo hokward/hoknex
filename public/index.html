@@ -98,7 +98,7 @@
         <nav class="nav-links">
             <a href="#vision">Vision</a>
             <a onclick="openFeaturesModal()">Features</a>
-            <a href="#community">Campus Pulse</a>
+            <a href="#community">Campus Radar</a>
         </nav>
         <a href="#auth-box" class="btn-join">Join Network</a>
     </header>
@@ -216,41 +216,49 @@
         </div>
     </section>
 
-    <!-- Replaced Active Projects with Campus Pulse & Engagement Hub -->
+    <!-- Global Campus Radar & Squad Matchmaker -->
     <section class="live-preview-section" id="community">
         <div class="preview-container">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
                 <div>
-                    <span class="pill-badge" style="background:var(--accent-purple); color:#fff; margin-bottom:0.5rem;">⚡ Global Engagement Hub</span>
-                    <h3 style="font-size: 2.1rem; font-weight: 900; letter-spacing: -0.5px; margin:0;">Live Campus Pulse & Trends</h3>
+                    <span class="pill-badge" style="background:var(--accent-purple); color:#fff; margin-bottom:0.5rem;">🌍 Global Campus Radar</span>
+                    <h3 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; margin:0;">Live Student Squads & Hackathons</h3>
                 </div>
-                <a href="#auth-box" class="btn-join" style="font-size:0.9rem; padding: 0.5rem 1.2rem;">Join Discussion ✨</a>
+                <a href="#auth-box" class="btn-join" style="font-size:0.9rem; padding: 0.6rem 1.4rem;">Launch Your Squad 🚀</a>
             </div>
 
             <div class="real-items-grid">
+                <!-- Squad 1 -->
                 <div class="real-item-card" style="border-left: 6px solid var(--accent-blue);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-                        <span style="font-size:0.75rem; font-weight:900; background:var(--accent-yellow); padding:3px 8px; border-radius:6px; border:2px solid var(--border);">HACKATHON 2026</span>
-                        <span style="font-size:0.8rem; color:var(--ink-light); font-weight:800;">🔥 Trending</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+                        <span style="font-size:0.75rem; font-weight:900; background:var(--accent-yellow); padding:3px 8px; border-radius:6px; border:2px solid var(--border);">IOT & HARDWARE</span>
+                        <span style="font-size:0.8rem; color:#22c55e; font-weight:900;">● 2/4 Teammates</span>
                     </div>
-                    <h4>Qryvon Sync & Global Build Fest</h4>
-                    <p>Connecting student innovators across colleges to build cutting-edge IoT wearables, games, and full-stack platforms.</p>
+                    <h4>Smart Wearable Navigation</h4>
+                    <p style="margin-bottom:1rem; color:var(--ink-light); font-weight:800; font-size:0.95rem;">Building an ESP32 haptic feedback helmet for motorcycle safety. Looking for a React frontend developer!</p>
+                    <button onclick="showHoknexToast('Request sent to join squad!', '🤝')" style="background:var(--canvas); border:2px solid var(--border); padding:0.4rem 1rem; border-radius:8px; font-weight:900; cursor:pointer; font-size:0.85rem;">Join Squad ⚡</button>
                 </div>
+
+                <!-- Squad 2 -->
                 <div class="real-item-card" style="border-left: 6px solid var(--accent-cyan);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-                        <span style="font-size:0.75rem; font-weight:900; background:var(--accent-cyan); color:#fff; padding:3px 8px; border-radius:6px; border:2px solid var(--border);">STUDY CIRCLE</span>
-                        <span style="font-size:0.8rem; color:var(--ink-light); font-weight:800;">💬 Active</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+                        <span style="font-size:0.75rem; font-weight:900; background:var(--accent-cyan); color:#fff; padding:3px 8px; border-radius:6px; border:2px solid var(--border);">GAME DEV</span>
+                        <span style="font-size:0.8rem; color:#22c55e; font-weight:900;">● 3/5 Teammates</span>
                     </div>
-                    <h4>AI & Code Optimization Squads</h4>
-                    <p>Peer-led study groups sharing code repositories, debugging algorithms, and mastering system architecture together.</p>
+                    <h4>Godot 2D Indie Platformer</h4>
+                    <p style="margin-bottom:1rem; color:var(--ink-light); font-weight:800; font-size:0.95rem;">Developing a retro arcade game with custom physics and retro audio. Need a pixel artist & sound designer.</p>
+                    <button onclick="showHoknexToast('Request sent to join squad!', '🤝')" style="background:var(--canvas); border:2px solid var(--border); padding:0.4rem 1rem; border-radius:8px; font-weight:900; cursor:pointer; font-size:0.85rem;">Join Squad ⚡</button>
                 </div>
-                <div class="real-item-card" style="border-left: 6px solid var(--accent-purple);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-                        <span style="font-size:0.75rem; font-weight:900; background:var(--accent-purple); color:#fff; padding:3px 8px; border-radius:6px; border:2px solid var(--border);">CAMPUS LIFE</span>
-                        <span style="font-size:0.8rem; color:var(--ink-light); font-weight:800;">✨ Popular</span>
+
+                <!-- Squad 3 -->
+                <div class="real-item-card" style="border-left: 6px solid var(--accent-coral);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+                        <span style="font-size:0.75rem; font-weight:900; background:var(--accent-coral); color:#fff; padding:3px 8px; border-radius:6px; border:2px solid var(--border);">GLOBAL HACKATHON</span>
+                        <span style="font-size:0.8rem; color:#22c55e; font-weight:900;">● Open 24/7</span>
                     </div>
-                    <h4>Global Creator Network & Showcase</h4>
-                    <p>Display your graphic design work, short-form video edits, and indie games directly to international student peers.</p>
+                    <h4>Qryvon Sync Build Arena</h4>
+                    <p style="margin-bottom:1rem; color:var(--ink-light); font-weight:800; font-size:0.95rem;">Form international student teams to pitch full-stack platforms, AI tools, and school community apps.</p>
+                    <button onclick="showHoknexToast('Redirecting to Hackathon Arena...', '🚀')" style="background:var(--canvas); border:2px solid var(--border); padding:0.4rem 1rem; border-radius:8px; font-weight:900; cursor:pointer; font-size:0.85rem;">Enter Arena 🏆</button>
                 </div>
             </div>
         </div>
@@ -296,7 +304,7 @@
             <div class="footer-col">
                 <h4>Community</h4>
                 <ul>
-                    <li><a href="#community">Campus Pulse</a></li>
+                    <li><a href="#community">Campus Radar</a></li>
                     <li><a href="#community">Student Clubs</a></li>
                     <li><a href="#community">Global Feed</a></li>
                 </ul>
