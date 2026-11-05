@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoknex Magazine — Tech, Gaming & Underground Student Culture</title>
+    <title>Hoknex Chronicle — Global News & Magazine Archive</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,411 +18,135 @@
             --shadow-zine: 6px 6px 0px #232D2F;
         }
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        .zine-ticker { background: var(--text-main); color: var(--bg-base); text-align: center; padding: 8px 1rem; font-size: 0.8rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; border-bottom: 2px solid var(--border-color); }
+        .zine-masthead { text-align: center; padding: 2.5rem 2rem 1.5rem 2rem; background: var(--bg-base); border-bottom: 3px solid var(--border-color); }
+        .zine-masthead h1 { font-family: 'Playfair Display', serif; font-size: 4.2rem; font-weight: 900; letter-spacing: -2px; color: var(--text-main); text-transform: uppercase; margin-bottom: 0.2rem; }
+        .zine-masthead p { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; color: var(--accent-sienna); }
 
-        /* Newspaper Ticker Bar */
-        .zine-ticker {
-            background: var(--text-main);
-            color: var(--bg-base);
-            text-align: center;
-            padding: 8px 1rem;
-            font-size: 0.8rem;
-            font-weight: 900;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            border-bottom: 2px solid var(--border-color);
-        }
+        .zine-nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 4rem; background: var(--bg-card); border-bottom: 3px solid var(--border-color); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 0px rgba(35, 45, 47, 0.05); }
+        .zine-nav-links { display: flex; gap: 2rem; align-items: center; }
+        .zine-nav-links a { color: var(--text-main); text-decoration: none; font-weight: 800; font-size: 0.92rem; text-transform: uppercase; transition: color 0.2s; }
+        .zine-nav-links a:hover, .zine-nav-links a.active { color: var(--accent-sienna); text-decoration: underline; text-underline-offset: 4px; }
+        .btn-subscribe-zine { background: var(--accent-sienna); color: #fff; border: 2px solid var(--border-color); padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 900; font-size: 0.85rem; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color); }
 
-        /* Publication Header / Masthead */
-        .zine-masthead {
-            text-align: center;
-            padding: 2.5rem 2rem 1.5rem 2rem;
-            background: var(--bg-base);
-            border-bottom: 3px solid var(--border-color);
-        }
+        .zine-hero { padding: 3rem 4rem 2rem 4rem; max-width: 1400px; margin: 0 auto; }
+        .zine-hero-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2.5rem; align-items: stretch; }
+        .featured-story-card { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 16px; padding: 3rem; display: flex; flex-direction: column; justify-content: flex-end; min-height: 480px; cursor: pointer; box-shadow: var(--shadow-zine); transition: transform 0.2s; }
+        .featured-story-card:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0px var(--border-color); }
+        .story-tag { background: var(--accent-olive); color: #fff; border: 2px solid var(--border-color); padding: 4px 12px; border-radius: 6px; font-size: 0.72rem; font-weight: 900; text-transform: uppercase; width: fit-content; margin-bottom: 1rem; }
+        .featured-story-card h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 1rem; line-height: 1.15; color: var(--text-main); }
+        .featured-story-card p { color: var(--text-muted); font-size: 1.05rem; font-weight: 700; line-height: 1.6; margin-bottom: 1.5rem; }
 
-        .zine-masthead h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 4.5rem;
-            font-weight: 900;
-            letter-spacing: -2px;
-            color: var(--text-main);
-            text-transform: uppercase;
-            margin-bottom: 0.2rem;
-        }
+        .trending-panel { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-zine); display: flex; flex-direction: column; justify-content: space-between; }
+        .trending-panel h3 { font-size: 1.2rem; font-weight: 900; margin-bottom: 1.5rem; color: var(--accent-sienna); border-bottom: 2px solid var(--border-color); padding-bottom: 8px; text-transform: uppercase; }
+        .trending-item { padding: 1rem 0; border-bottom: 2px solid var(--bg-surface); cursor: pointer; }
+        .trending-item:hover .trending-title { color: var(--accent-sienna); }
+        .trending-num { font-size: 1.3rem; font-weight: 900; color: var(--accent-olive); margin-bottom: 2px; }
+        .trending-title { font-size: 0.95rem; font-weight: 800; color: var(--text-main); line-height: 1.4; }
 
-        .zine-masthead p {
-            font-size: 0.85rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: var(--accent-sienna);
-        }
+        .zine-filters { max-width: 1400px; margin: 0 auto; padding: 0 4rem 2rem 4rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+        .zine-filter-btn { background: var(--bg-card); border: 2.5px solid var(--border-color); color: var(--text-main); padding: 0.55rem 1.4rem; border-radius: 12px; font-weight: 900; font-size: 0.85rem; cursor: pointer; box-shadow: 3px 3px 0px var(--border-color); transition: all 0.15s; }
+        .zine-filter-btn.active, .zine-filter-btn:hover { background: var(--text-main); color: var(--bg-base); transform: translate(-2px, -2px); box-shadow: 5px 5px 0px var(--border-color); }
 
-        /* Navigation Bar */
-        .zine-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 4rem;
-            background: var(--bg-card);
-            border-bottom: 3px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 0px rgba(35, 45, 47, 0.05);
-        }
+        .zine-grid { max-width: 1400px; margin: 0 auto; padding: 0 4rem 5rem 4rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2.5rem; }
+        .zine-article-card { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 20px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; box-shadow: var(--shadow-zine); transition: transform 0.2s, box-shadow 0.2s; position: relative; }
+        .zine-article-card:hover { transform: translateY(-5px); box-shadow: 8px 8px 0px var(--border-color); }
+        .article-media-box { width: 100%; height: 200px; background: var(--bg-surface); border: 2px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 1.2rem; display: flex; align-items: center; justify-content: center; }
+        .article-media-box img, .article-media-box video { width: 100%; height: 100%; object-fit: cover; }
+        .zine-article-card h3 { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 900; margin-bottom: 0.6rem; line-height: 1.3; color: var(--text-main); }
+        .zine-article-card p { color: var(--text-muted); font-size: 0.9rem; font-weight: 700; line-height: 1.5; margin-bottom: 1.5rem; }
+        .article-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 900; color: var(--text-main); border-top: 2px solid var(--bg-surface); padding-top: 1rem; }
 
-        .zine-nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
+        /* Modal Reader */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(35, 45, 47, 0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1.5rem; }
+        .modal-panel { background: var(--bg-card); border: 4px solid var(--border-color); border-radius: 24px; padding: 3.5rem; width: 100%; max-width: 800px; box-shadow: 12px 12px 0px var(--border-color); position: relative; max-height: 90vh; overflow-y: auto; }
 
-        .zine-nav-links a {
-            color: var(--text-main);
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 0.92rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: color 0.2s;
-        }
-
-        .zine-nav-links a:hover, .zine-nav-links a.active {
-            color: var(--accent-sienna);
-            text-decoration: underline;
-            text-underline-offset: 4px;
-        }
-
-        .btn-subscribe-zine {
-            background: var(--accent-sienna);
-            color: #fff;
-            border: 2px solid var(--border-color);
-            padding: 0.5rem 1.2rem;
-            border-radius: 8px;
-            font-weight: 900;
-            font-size: 0.85rem;
-            cursor: pointer;
-            box-shadow: 2px 2px 0px var(--border-color);
-            transition: transform 0.15s;
-        }
-
-        .btn-subscribe-zine:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 4px 4px 0px var(--border-color);
-        }
-
-        /* Hero Section (Newspaper Layout) */
-        .zine-hero {
-            padding: 3rem 4rem 2rem 4rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .zine-hero-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2.5rem;
-            align-items: stretch;
-        }
-
-        .featured-story-card {
-            background: var(--bg-card);
-            border: 3.5px solid var(--border-color);
-            border-radius: 16px;
-            padding: 3rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            min-height: 480px;
-            cursor: pointer;
-            box-shadow: var(--shadow-zine);
-            transition: transform 0.2s;
-        }
-
-        .featured-story-card:hover {
-            transform: translate(-3px, -3px);
-            box-shadow: 9px 9px 0px var(--border-color);
-        }
-
-        .story-tag {
-            background: var(--accent-olive);
-            color: #fff;
-            border: 2px solid var(--border-color);
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.72rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            width: fit-content;
-            margin-bottom: 1rem;
-        }
-
-        .featured-story-card h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.6rem;
-            font-weight: 900;
-            letter-spacing: -1px;
-            margin-bottom: 1rem;
-            line-height: 1.15;
-            color: var(--text-main);
-        }
-
-        .featured-story-card p {
-            color: var(--text-muted);
-            font-size: 1.05rem;
-            font-weight: 700;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        /* Trending Panel */
-        .trending-panel {
-            background: var(--bg-card);
-            border: 3.5px solid var(--border-color);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: var(--shadow-zine);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .trending-panel h3 {
-            font-size: 1.2rem;
-            font-weight: 900;
-            margin-bottom: 1.5rem;
-            color: var(--accent-sienna);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 8px;
-            text-transform: uppercase;
-        }
-
-        .trending-item {
-            padding: 1rem 0;
-            border-bottom: 2px solid var(--bg-surface);
-            cursor: pointer;
-        }
-
-        .trending-item:hover .trending-title {
-            color: var(--accent-sienna);
-        }
-
-        .trending-num {
-            font-size: 1.3rem;
-            font-weight: 900;
-            color: var(--accent-olive);
-            margin-bottom: 2px;
-        }
-
-        .trending-title {
-            font-size: 0.95rem;
-            font-weight: 800;
-            color: var(--text-main);
-            line-height: 1.4;
-        }
-
-        /* Filters */
-        .zine-filters {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 4rem 2rem 4rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .zine-filter-btn {
-            background: var(--bg-card);
-            border: 2.5px solid var(--border-color);
-            color: var(--text-main);
-            padding: 0.55rem 1.4rem;
-            border-radius: 12px;
-            font-weight: 900;
-            font-size: 0.85rem;
-            cursor: pointer;
-            box-shadow: 3px 3px 0px var(--border-color);
-            transition: all 0.15s;
-        }
-
-        .zine-filter-btn.active, .zine-filter-btn:hover {
-            background: var(--text-main);
-            color: var(--bg-base);
-            transform: translate(-2px, -2px);
-            box-shadow: 5px 5px 0px var(--border-color);
-        }
-
-        /* Article Grid */
-        .zine-grid {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 4rem 5rem 4rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 2.5rem;
-        }
-
-        .zine-article-card {
-            background: var(--bg-card);
-            border: 3.5px solid var(--border-color);
-            border-radius: 20px;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            cursor: pointer;
-            box-shadow: var(--shadow-zine);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .zine-article-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 8px 8px 0px var(--border-color);
-        }
-
-        .article-preview-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            background: var(--bg-surface);
-            width: 64px; height: 64px;
-            border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            border: 2.5px solid var(--border-color);
-        }
-
-        .zine-article-card h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 900;
-            margin-bottom: 0.6rem;
-            line-height: 1.3;
-            color: var(--text-main);
-        }
-
-        .zine-article-card p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            font-weight: 700;
-            line-height: 1.5;
-            margin-bottom: 1.5rem;
-        }
-
-        .article-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.78rem;
-            font-weight: 900;
-            color: var(--text-main);
-            border-top: 2px solid var(--bg-surface);
-            padding-top: 1rem;
-        }
-
-        /* Reader Modal */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(35, 45, 47, 0.8); backdrop-filter: blur(8px);
-            display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1.5rem;
-        }
-
-        .modal-panel {
-            background: var(--bg-card); border: 4px solid var(--border-color); border-radius: 24px;
-            padding: 3.5rem; width: 100%; max-width: 800px; box-shadow: 12px 12px 0px var(--border-color);
-            position: relative; max-height: 90vh; overflow-y: auto;
-        }
-
-        .zine-footer {
-            border-top: 3px solid var(--border-color);
-            padding: 3rem 4rem;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 800;
-            background: var(--bg-surface);
-        }
+        /* Signature Store Footer */
+        .store-footer { background: #232D2F; color: #EFECE6; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 3.5px solid var(--border-color); position: relative; overflow: hidden; }
+        .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(239,236,230,0.15); position: relative; z-index: 2; }
+        .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; }
+        .footer-newsletter p { color: #C5C0B5; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; }
+        .newsletter-input-group input { flex: 1; background: rgba(255,255,255,0.08); border: 2px solid rgba(239,236,230,0.25); padding: 12px 16px; border-radius: 10px; color: #fff; font-weight: 800; outline: none; }
+        .btn-newsletter { background: var(--accent-sienna); color: #fff; border: none; padding: 0 2rem; border-radius: 10px; font-weight: 900; cursor: pointer; }
+        .footer-links-grid { display: grid; grid-template-columns: repeat(5, 1fr) 1.5fr; gap: 2rem; font-size: 0.88rem; position: relative; z-index: 2; }
+        .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FAF9F6; }
+        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+        .footer-col a { color: #C5C0B5; text-decoration: none; font-weight: 700; cursor: pointer; }
+        .footer-col a:hover { color: #fff; }
+        .footer-watermark { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 15vw; font-weight: 900; color: rgba(239, 236, 230, 0.03); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; }
 
         @media (max-width: 968px) {
-            .zine-nav, .zine-hero, .zine-filters, .zine-grid, .zine-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .zine-nav, .zine-hero, .zine-filters, .zine-grid, .store-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
             .zine-hero-grid { grid-template-columns: 1fr; }
             .zine-nav-links { display: none; }
-            .zine-masthead h1 { font-size: 3rem; }
+            .zine-masthead h1 { font-size: 2.8rem; }
         }
     </style>
 </head>
 <body>
 
     <div class="zine-ticker">
-        🔥 DROP #04 LIVE NOW: The Rise of Autonomous Campus Hackathons & Decentralized Student Guilds
+        🔥 GLOBAL EDITION • Breaking News, World Reports, Global Culture, Picture, Video & Book Chronicles
     </div>
 
-    <!-- Masthead -->
     <header class="zine-masthead">
         <h1>HOKNEX CHRONICLE</h1>
-        <p>The Underground Student Zine & Cultural Archive • Est. 2026</p>
+        <p>The Global News, Picture & Magazine Archive • Est. 2026</p>
     </header>
 
-    <!-- Navigation -->
     <nav class="zine-nav">
         <div class="zine-nav-links">
             <a href="store.html">🛍️ Store</a>
-            <a href="magazine.html" class="active">📰 Zine Magazine</a>
+            <a href="magazine.html" class="active">📰 Global Zine</a>
             <a href="donation.html">☕ Fund & Support</a>
         </div>
-        <button class="btn-subscribe-zine" onclick="alert('Subscribed to Zine Dispatch!')">Get Dispatch ⚡</button>
+        <button class="btn-subscribe-zine" onclick="alert('Subscribed to Global Dispatch!')">Get Dispatch ⚡</button>
     </nav>
 
-    <!-- Hero Story & Trending -->
     <section class="zine-hero">
         <div class="zine-hero-grid">
             <div class="featured-story-card" onclick="openArticle('feat')">
-                <span class="story-tag">Cover Story • Tech & Architecture</span>
-                <h1>Building Borderless Networks: How Gen-Z Builders Are Rewiring Global Student Collaboration</h1>
-                <p>An deep-dive exploration into self-hosted local infrastructure, cloudless mesh networks, and the tools powering autonomous student developer collectives across continents.</p>
+                <span class="story-tag">World News • Global Report</span>
+                <h1>Global Markets Pivot Toward Decentralized Energy Grids Amid Record Renewable Surges</h1>
+                <p>An in-depth global dispatch investigating how international municipalities are adopting decentralized microgrids and peer-to-peer clean power trading.</p>
                 <div class="article-meta" style="border:none; padding:0; color: var(--accent-sienna);">
-                    <span>By Hoknex Editorial Board</span>
-                    <span>⏱️ 6 min read</span>
+                    <span>By World Desk International</span>
+                    <span>⏱️ 7 min read</span>
                 </div>
             </div>
 
             <div class="trending-panel">
-                <h3>⚡ Trending Dispatches</h3>
+                <h3>⚡ Trending Headlines</h3>
                 <div>
                     <div class="trending-item" onclick="openArticle('t1')">
                         <div class="trending-num">01</div>
-                        <div class="trending-title">Godot 4 vs Unity: Why Indie Game Devs Are Migrating to Open Source</div>
+                        <div class="trending-title">The Cinema Renaissance: Why 35mm Film Is Dominating Modern Visuals</div>
                     </div>
                     <div class="trending-item" onclick="openArticle('t2')">
                         <div class="trending-num">02</div>
-                        <div class="trending-title">Designing Wearable IoT Hardware on a Student Budget</div>
+                        <div class="trending-title">Autonomous Logistics: Inside the Mega-Ports of Singapore</div>
                     </div>
                     <div class="trending-item" onclick="openArticle('t3')">
                         <div class="trending-num">03</div>
-                        <div class="trending-title">The Psychology of Neo-Brutalist UI in Modern Developer Portfolios</div>
+                        <div class="trending-title">Bestseller Breakdown: The Philosophy Behind Modern Speculative Fiction</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Filters -->
+    <!-- Filter Buttons (All Types of News & Media Formats) -->
     <div class="zine-filters">
-        <button class="zine-filter-btn active" onclick="filterZine('all', this)">All Dispatches 🌐</button>
-        <button class="zine-filter-btn" onclick="filterZine('Tech', this)">Tech & Code 💻</button>
-        <button class="zine-filter-btn" onclick="filterZine('Gaming', this)">Game Dev 🎮</button>
-        <button class="zine-filter-btn" onclick="filterZine('Culture', this)">Campus Culture 🎒</button>
+        <button class="zine-filter-btn active" onclick="filterZine('all', this)">All Stories 🌐</button>
+        <button class="zine-filter-btn" onclick="filterZine('World News', this)">🌍 World News</button>
+        <button class="zine-filter-btn" onclick="filterZine('Picture', this)">🖼️ Picture Feature</button>
+        <button class="zine-filter-btn" onclick="filterZine('Video', this)">🎥 Video Dispatch</button>
+        <button class="zine-filter-btn" onclick="filterZine('Book', this)">📚 Book Review</button>
+        <button class="zine-filter-btn" onclick="filterZine('Culture', this)">🎨 Culture & Arts</button>
     </div>
 
     <!-- Article Grid -->
@@ -437,15 +161,68 @@
             <span id="modalTag" class="story-tag">Category</span>
             <h2 id="modalTitle" style="font-family:'Playfair Display',serif; font-size: 2.2rem; font-weight: 900; margin: 1rem 0; line-height: 1.2;">Article Title</h2>
             <div id="modalMeta" style="color: var(--accent-sienna); font-size: 0.85rem; font-weight: 900; margin-bottom: 2rem;">Author • Read time</div>
+            <div id="modalMediaContainer" style="margin-bottom:1.5rem;"></div>
             <div id="modalBody" style="color: var(--text-muted); font-size: 1rem; font-weight: 700; line-height: 1.8; display: flex; flex-direction: column; gap: 1rem;">
                 Article body...
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="zine-footer">
-        <p>&copy; 2026 Hoknex Chronicle Magazine. Built for digital zines, tech creators, and modern campus innovators.</p>
+    <!-- Signature Store Footer -->
+    <footer class="store-footer">
+        <div class="footer-newsletter">
+            <h3>Join the Hoknex Chronicle</h3>
+            <p>Get daily global reports, exclusive magazine drops, and stories straight to your inbox.</p>
+            <div class="newsletter-input-group">
+                <input type="email" id="newsletterEmailInput" placeholder="Enter your email address">
+                <button class="btn-newsletter" onclick="submitNewsletterEmail()">Join</button>
+            </div>
+        </div>
+
+        <div class="footer-links-grid">
+            <div class="footer-col">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="store.html">Official Store</a></li>
+                    <li><a href="magazine.html">Global Zine</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Hoknex</h4>
+                <ul>
+                    <li><a href="index.html">About Hoknex</a></li>
+                    <li><a href="index.html">The Vision</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="store.html">Track Order</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="index.html">Sign In</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a>Privacy Policy</a></li>
+                    <li><a>Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Global</h4>
+                <p style="color: #C5C0B5; font-size: 0.8rem; margin-top: 8px;">Connecting global readers across all continents.</p>
+            </div>
+        </div>
+        <div style="margin-top: 3rem; border-top: 1px solid rgba(239,236,230,0.15); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #C5C0B5; position: relative; z-index: 2;">
+            <span>&copy; Hoknex Chronicle 2026. All rights reserved.</span>
+            <span>Global Publication Network</span>
+        </div>
+        <div class="footer-watermark">hoknex</div>
     </footer>
 
     <script>
@@ -455,32 +232,32 @@
         async function fetchMagazineArticles() {
             let defaultArticles = [
                 {
-                    id: 'feat', category: 'Tech', icon: '🌐',
-                    title: "Building Borderless Networks: How Gen-Z Builders Are Rewiring Global Student Collaboration",
-                    excerpt: "An deep-dive exploration into self-hosted local infrastructure, cloudless mesh networks, and the tools powering autonomous student developer collectives across continents.",
-                    author: "Hoknex Editorial", time: "6 min read",
-                    body: "Self-hosting and decentralized application architectures are no longer reserved for enterprise backend engineers. Across university labs and dorm rooms, student developers are spinning up local XAMPP nodes, Cloudflare Tunnels, and DuckDNS instances to deploy self-managed networks. This article examines how lightweight microcontrollers like the ESP32 and real-time socket communication are redefining how campus communities connect without relying on rigid corporate APIs."
+                    id: 'feat', category: 'World News', type: 'text',
+                    title: "Global Markets Pivot Toward Decentralized Energy Grids Amid Record Renewable Surges",
+                    excerpt: "An in-depth global dispatch investigating how international municipalities are adopting decentralized microgrids and peer-to-peer clean power trading.",
+                    author: "World Desk International", time: "7 min read",
+                    body: "International energy policy is undergoing a structural shift. Rather than relying solely on centralized transmission lines, municipal governments and private consortia are deploying localized wind, solar, and battery networks. This report details the economic implications and technological breakthroughs enabling neighborhoods to trade surplus electricity autonomously."
                 },
                 {
-                    id: 't1', category: 'Gaming', icon: '🎮',
-                    title: "Godot 4 vs Unity: Why Indie Game Devs Are Migrating to Open Source",
-                    excerpt: "Analyzing node-based architecture, physics performance, and why indie 2D/3D creators are choosing Godot for rapid arcade prototyping.",
-                    author: "Devenger Team", time: "4 min read",
-                    body: "The shift toward open-source game engines has accelerated rapidly. With Godot 4's overhauled renderer, robust GDScript performance, and zero licensing fees, solo developers building arcade and platformer mechanics can focus entirely on collision physics and retro audio integration without worrying about unexpected runtime fees."
+                    id: 't1', category: 'Picture', type: 'image', mediaUrl: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=80',
+                    title: "The Cinema Renaissance: Why 35mm Film Is Dominating Modern Visuals",
+                    excerpt: "A photo essay capturing analog darkrooms, master cinematographers, and the tactile resurgence of silver halide photography.",
+                    author: "Visual Arts Guild", time: "4 min read",
+                    body: "Despite the prevalence of 8K digital sensors, directors and photographers worldwide are returning to analog celluloid. This pictorial feature explores the unmatched dynamic range, grain structure, and meditative discipline required to shoot exclusively on 35mm film."
                 },
                 {
-                    id: 't2', category: 'Tech', icon: '⚡',
-                    title: "Designing Wearable IoT Hardware on a Student Budget",
-                    excerpt: "Prototyping smart motorcycle navigation and haptic feedback gear using ESP32-C3 and MPU6050 sensors.",
-                    author: "OmniRider Labs", time: "5 min read",
-                    body: "Hardware prototyping used to require expensive proprietary industrial modules. Today, combining an ESP32-C3 microcontroller with an MPU6050 6-axis motion tracking sensor, BLE modules, and haptic vibration motors allows makers to build sophisticated wearable safety systems for under ₹1,500. Here is our step-by-step breakdown of debugging BLE handshakes and low-power battery optimization."
+                    id: 't2', category: 'Video', type: 'video', mediaUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-typing-on-a-laptop-keyboard-4434-large.mp4',
+                    title: "Autonomous Logistics: Inside the Mega-Ports of Singapore",
+                    excerpt: "An exclusive video report on AI-managed container terminals, automated gantry cranes, and the future of maritime supply chains.",
+                    author: "Global Tech Watch", time: "6 min watch",
+                    body: "Singapore's Tuas Port operates at a scale previously thought impossible. Guided entirely by autonomous electric vehicles and AI route optimization algorithms, millions of shipping containers move seamlessly without human intervention. Watch our dispatch covering the control room operations."
                 },
                 {
-                    id: 't3', category: 'Culture', icon: '🎨',
-                    title: "The Psychology of Neo-Brutalist UI in Modern Developer Portfolios",
-                    excerpt: "Why high-contrast borders, raw typography, and brutalist card layouts are overtaking minimalist corporate design.",
-                    author: "Design Guild", time: "3 min read",
-                    body: "Minimalism had its decade. Today's student creators and digital zines are leaning heavily into Neo-Brutalism—sharp borders, vibrant accent blocks, heavy drop shadows, and unapologetic typography. It signals authenticity, raw experimentation, and builder-first ethos in a sea of sterile corporate templates."
+                    id: 't3', category: 'Book', type: 'book', mediaUrl: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&auto=format&fit=crop&q=80',
+                    title: "Bestseller Breakdown: The Philosophy Behind Modern Speculative Fiction",
+                    excerpt: "Reviewing the literary works shaping contemporary discussions on artificial consciousness, ethics, and parallel realities.",
+                    author: "Literary Review", time: "5 min read",
+                    body: "Speculative fiction has evolved from escapist fantasy into rigorous philosophical inquiry. By examining recent award-winning novels, this review unpacks how authors are using speculative futures to diagnose present-day anxieties surrounding automation, societal atomization, and planetary stewardship."
                 }
             ];
 
@@ -499,11 +276,22 @@
             const grid = document.getElementById('zineGrid');
             grid.innerHTML = items.map(art => {
                 const artId = art._id || art.id;
+                let mediaHtml = '';
+                if (art.type === 'image' && art.mediaUrl) {
+                    mediaHtml = `<div class="article-media-box"><img src="${art.mediaUrl}" alt="Media"></div>`;
+                } else if (art.type === 'video' && art.mediaUrl) {
+                    mediaHtml = `<div class="article-media-box"><video src="${art.mediaUrl}" muted autoplay loop></video></div>`;
+                } else if (art.type === 'book' && art.mediaUrl) {
+                    mediaHtml = `<div class="article-media-box"><img src="${art.mediaUrl}" alt="Book Cover"></div>`;
+                } else {
+                    mediaHtml = `<div class="article-media-box" style="font-size:3rem;">📰</div>`;
+                }
+
                 return `
                     <div class="zine-article-card" onclick="openArticle('${artId}')">
                         <div>
-                            <div class="article-preview-icon">${art.icon || '📰'}</div>
-                            <span style="font-size:0.75rem; font-weight:900; color:var(--accent-sienna); text-transform:uppercase; letter-spacing:1px;">${art.category}</span>
+                            ${mediaHtml}
+                            <span style="font-size:0.75rem; font-weight:900; color:var(--accent-sienna); text-transform:uppercase; letter-spacing:1px;">${art.category} • ${art.type ? art.type.toUpperCase() : 'ARTICLE'}</span>
                             <h3>${art.title}</h3>
                             <p>${art.excerpt}</p>
                         </div>
@@ -529,15 +317,41 @@
         function openArticle(id) {
             const art = articles.find(a => (a._id === id || a.id === id));
             if (!art) return;
-            document.getElementById('modalTag').innerText = art.category;
+            document.getElementById('modalTag').innerText = `${art.category} • ${art.type ? art.type.toUpperCase() : 'ARTICLE'}`;
             document.getElementById('modalTitle').innerText = art.title;
             document.getElementById('modalMeta').innerText = `${art.author} • ${art.time}`;
+            
+            const mediaContainer = document.getElementById('modalMediaContainer');
+            if (art.type === 'image' && art.mediaUrl) {
+                mediaContainer.innerHTML = `<img src="${art.mediaUrl}" style="width:100%; max-height:350px; object-fit:cover; border-radius:12px; border:2px solid var(--border-color);">`;
+            } else if (art.type === 'video' && art.mediaUrl) {
+                mediaContainer.innerHTML = `<video src="${art.mediaUrl}" controls autoplay style="width:100%; max-height:350px; object-fit:cover; border-radius:12px; border:2px solid var(--border-color);"></video>`;
+            } else if (art.type === 'book' && art.mediaUrl) {
+                mediaContainer.innerHTML = `<img src="${art.mediaUrl}" style="width:100%; max-height:350px; object-fit:cover; border-radius:12px; border:2px solid var(--border-color);">`;
+            } else {
+                mediaContainer.innerHTML = '';
+            }
+
             document.getElementById('modalBody').innerHTML = `<p>${art.body}</p>`;
             document.getElementById('articleModal').style.display = 'flex';
         }
 
         function closeModal() {
             document.getElementById('articleModal').style.display = 'none';
+        }
+
+        async function submitNewsletterEmail() {
+            const email = document.getElementById('newsletterEmailInput').value.trim();
+            if(!email) { alert('Please enter a valid email address.'); return; }
+            try {
+                await fetch(`${API_URL}/store/subscribers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString() })
+                });
+                document.getElementById('newsletterEmailInput').value = '';
+                alert('Welcome to Hoknex Chronicle! Subscribed successfully.');
+            } catch(e) { alert('Subscription failed.'); }
         }
 
         fetchMagazineArticles();
