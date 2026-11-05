@@ -14,7 +14,8 @@
             --border-color: #4C5844;
             --accent-terracotta: #C27D65;
             --accent-ochre: #D9822B;
-            --shadow-brand: 4px 4px 0px #4C5844;
+            --shadow-brand: 5px 5px 0px #4C5844;
+            --shadow-hover: 8px 8px 0px #4C5844;
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -30,44 +31,54 @@
         .store-logo-brand span { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2.5px; color: var(--accent-terracotta); }
 
         .nav-right-actions { display: flex; gap: 1.2rem; align-items: center; }
-        .search-box-wrap { display: flex; align-items: center; background: #fff; border: 2px solid var(--border-color); border-radius: 10px; padding: 5px 12px; width: 220px; }
+        .search-box-wrap { display: flex; align-items: center; background: #fff; border: 2.5px solid var(--border-color); border-radius: 12px; padding: 6px 14px; width: 240px; box-shadow: 2px 2px 0px var(--border-color); }
         .search-box-wrap input { border: none; outline: none; background: transparent; font-size: 0.85rem; font-weight: 700; color: var(--text-main); width: 100%; margin-left: 6px; }
-        .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-main); font-weight: 900; position: relative; }
+        .icon-btn { background: #fff; border: 2.5px solid var(--border-color); border-radius: 10px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; color: var(--text-main); font-weight: 900; box-shadow: 2px 2px 0px var(--border-color); transition: transform 0.15s; }
+        .icon-btn:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-brand); }
 
         .store-hero { padding: 4rem 4rem 2rem 4rem; max-width: 1350px; margin: 0 auto; text-align: center; }
-        .store-hero h1 { font-size: 3rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 0.8rem; }
-        .store-hero p { color: var(--text-muted); font-size: 1.05rem; font-weight: 700; max-width: 600px; margin: 0 auto 2rem auto; }
+        .store-hero h1 { font-size: 3.2rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 0.8rem; }
+        .store-hero p { color: var(--text-muted); font-size: 1.05rem; font-weight: 700; max-width: 650px; margin: 0 auto 2rem auto; }
 
-        /* Coming Soon / Drop Segment */
-        .coming-soon-section { padding: 2rem 4rem; max-width: 1350px; margin: 0 auto; }
-        .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
-        .drop-card { background: var(--bg-card); border: 2.5px solid var(--border-color); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-brand); padding: 1rem; }
-        .drop-img { width: 100%; height: 220px; background: #EAE6DF; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 0.8rem; }
-        .drop-img img { width: 100%; height: 100%; object-fit: cover; }
+        /* Coming Soon Segment Styling */
+        .coming-soon-container { padding: 2rem 4rem; max-width: 1350px; margin: 0 auto; }
+        .coming-soon-card { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 24px; padding: 2.5rem; text-align: center; box-shadow: var(--shadow-brand); position: relative; overflow: hidden; }
+        .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .drop-preview-card { background: #FAF9F6; border: 2.5px solid var(--border-color); border-radius: 16px; padding: 1rem; text-align: left; box-shadow: 3px 3px 0px var(--border-color); }
+        .drop-media { width: 100%; height: 260px; background: #EAE6DF; border-radius: 12px; border: 2px solid var(--border-color); overflow: hidden; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; }
+        .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: cover; }
 
         .product-catalog-section { padding: 2rem 4rem 5rem 4rem; max-width: 1350px; margin: 0 auto; }
-        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; margin-top: 1.5rem; }
+        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2.5rem; margin-top: 1.5rem; }
 
+        /* Professional Motion Product Card */
         .product-card {
-            background: var(--bg-card); border: 2.5px solid var(--border-color); border-radius: 16px;
+            background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 20px;
             padding: 1.2rem; display: flex; flex-direction: column; justify-content: space-between;
-            position: relative; box-shadow: var(--shadow-brand); cursor: pointer; transition: transform 0.2s;
+            position: relative; box-shadow: var(--shadow-brand); cursor: pointer;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .product-card:hover { transform: translateY(-4px); }
+        .product-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: var(--shadow-hover);
+        }
 
         .prod-img-box {
-            width: 100%; height: 250px; background: #EAE6DF; border: 2px solid var(--border-color);
-            border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1rem; overflow: hidden;
+            width: 100%; height: 260px; background: #EAE6DF; border: 2px solid var(--border-color);
+            border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1rem; overflow: hidden;
         }
-        .prod-img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .prod-title { font-size: 1.05rem; font-weight: 900; margin-bottom: 0.3rem; }
-        .prod-category { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
-        .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; border-top: 1.5px solid #F3F4F6; padding-top: 0.8rem; }
-        .prod-price { font-size: 1.2rem; font-weight: 900; color: var(--text-main); }
+        .prod-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .product-card:hover .prod-img-box img { transform: scale(1.05); }
 
-        .btn-add-bag { background: #fff; border: 2px solid var(--border-color); padding: 6px 12px; border-radius: 8px; font-weight: 900; font-size: 0.8rem; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color); }
-        .btn-add-bag:hover { background: var(--accent-terracotta); color: #fff; }
-        .btn-wishlist { background: none; border: none; font-size: 1.2rem; cursor: pointer; position: absolute; top: 15px; left: 15px; z-index: 5; }
+        .prod-title { font-size: 1.1rem; font-weight: 900; margin-bottom: 0.3rem; }
+        .prod-category { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+        .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; border-top: 1.5px solid #F3F4F6; padding-top: 0.8rem; }
+        .prod-price { font-size: 1.25rem; font-weight: 900; color: var(--text-main); }
+
+        .btn-add-bag { background: #fff; border: 2.5px solid var(--border-color); padding: 7px 14px; border-radius: 10px; font-weight: 900; font-size: 0.82rem; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color); transition: all 0.15s; }
+        .btn-add-bag:hover { background: var(--accent-terracotta); color: #fff; transform: translateY(-1px); }
+        .btn-wishlist { background: #fff; border: 2px solid var(--border-color); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; position: absolute; top: 18px; left: 18px; z-index: 5; box-shadow: 2px 2px 0px var(--border-color); transition: transform 0.15s; }
+        .btn-wishlist:hover { transform: scale(1.1); }
 
         .store-footer { background: #111827; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 3px solid var(--border-color); position: relative; overflow: hidden; }
         .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.15); position: relative; z-index: 2; }
@@ -93,7 +104,7 @@
         #proModalBox { background: #FAF9F6; border: 3.5px solid var(--border-color); border-radius: 20px; padding: 2rem; max-width: 420px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--border-color); }
 
         @media (max-width: 968px) {
-            .store-navbar, .store-hero, .coming-soon-section, .product-catalog-section, .store-footer { padding: 2rem 1.5rem; }
+            .store-navbar, .store-hero, .coming-soon-container, .product-catalog-section, .store-footer { padding: 2rem 1.5rem; }
             .footer-links-grid { grid-template-columns: 1fr; }
             .nav-left-links { display: none; }
         }
@@ -131,9 +142,9 @@
                 <span>🔍</span>
                 <input type="text" placeholder="Search Hoknex..." oninput="filterCatalogSearch(this.value)">
             </div>
-            <button class="icon-btn" onclick="openWishlistModal()" title="Wishlist">❤️(<span id="wishlistCount">0</span>)</button>
+            <button class="icon-btn" onclick="openWishlistModal()" title="Wishlist">❤️<span style="font-size:0.75rem; margin-left:2px;" id="wishlistCount">0</span></button>
             <button class="icon-btn" onclick="openTrackModal()" title="Track Order">📦</button>
-            <button class="icon-btn" onclick="openCartModal()" title="Shopping Bag">🛒(<span id="bagCount">0</span>)</button>
+            <button class="icon-btn" onclick="openCartModal()" title="Shopping Bag">🛒<span style="font-size:0.75rem; margin-left:2px;" id="bagCount">0</span></button>
         </div>
     </header>
 
@@ -142,11 +153,13 @@
         <p>Premium oversized hoodies, heavyweight graphic tees, and streetwear essentials designed for global campus innovators.</p>
     </section>
 
-    <!-- Coming Soon / Drop Preview Section -->
-    <section class="coming-soon-section" id="comingSoonSection" style="display:none;">
-        <div style="background:var(--bg-card); border:3px solid var(--border-color); border-radius:20px; padding:2rem; box-shadow:var(--shadow-brand);">
-            <h3 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 0.4rem;">Coming Soon 🚀 Stay Tuned</h3>
-            <p style="color:var(--text-muted); font-weight:700; font-size:0.9rem;">Exclusive upcoming drops and unreleased apparel previews.</p>
+    <!-- Coming Soon / Stay Tuned Segment (Refined Boutique Layout) -->
+    <section class="coming-soon-container" id="comingSoonSection" style="display:none;">
+        <div class="coming-soon-card">
+            <div style="font-size: 2.2rem; margin-bottom: 0.4rem;">✨</div>
+            <h2 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 0.3rem;">COMING SOON</h2>
+            <p style="font-size: 1rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-terracotta); margin-bottom: 1rem;">STAY TUNED</p>
+            <p style="color: var(--text-muted); font-weight: 700; font-size: 0.95rem; max-width: 600px; margin: 0 auto;">Exclusive upcoming drops and unreleased apparel previews straight from our design lab.</p>
             <div class="coming-soon-grid" id="comingSoonGrid"></div>
         </div>
     </section>
@@ -218,7 +231,7 @@
         <div class="footer-watermark">hoknex</div>
     </footer>
 
-    <!-- PDP Modal with Multi-Angle Gallery, Out of Stock / Vote, and Star Rating -->
+    <!-- PDP Modal -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
         <div class="modal-panel" style="max-width: 850px;">
             <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
@@ -238,13 +251,11 @@
                     <div id="pdpRatingDisplay" style="font-size:0.85rem; font-weight:900; color:var(--accent-ochre); margin-bottom:0.8rem;">⭐ 5.0 (0 reviews)</div>
                     <p id="pdpDesc" style="color:var(--text-muted); font-size:0.9rem; font-weight:700; line-height:1.5; margin-bottom:1.2rem;"></p>
 
-                    <!-- Sizes Selector (Hidden if Out of Stock) -->
                     <div id="pdpSizeSection">
                         <div style="font-size:0.8rem; font-weight:900; color:var(--text-main); text-transform:uppercase; margin-bottom:0.4rem;">Select Size</div>
                         <div style="display:flex; gap:8px; margin-bottom:1.2rem;" id="sizeGroup"></div>
                     </div>
 
-                    <!-- Out of Stock / Vote Section -->
                     <div id="pdpStockSection" style="display:none; margin-bottom:1.2rem;">
                         <p style="color:#C27D65; font-weight:900; font-size:0.95rem; margin-bottom:8px;">Currently Out of Stock ❌</p>
                         <button onclick="voteForStock()" class="btn-explore" style="background:var(--accent-ochre); border-radius:10px; padding:10px 20px;">Vote to Come Fast 🔥 (<span id="voteCountDisplay">0</span>)</button>
@@ -252,7 +263,6 @@
 
                     <button id="pdpAddBtn" onclick="addPdpToBag()" class="btn-primary">Add to Bag 🛍️</button>
 
-                    <!-- User Star Rating Option -->
                     <div style="margin-top:1.5rem; border-top:1.5px solid #F3F4F6; padding-top:1rem;">
                         <label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Rate this product:</label>
                         <select id="userRatingSelect" onchange="submitUserRating()" style="margin-top:4px; padding:6px; font-weight:800; border-radius:8px;">
@@ -320,7 +330,6 @@
                     </div>
                 </div>
 
-                <!-- Structured Address Inputs -->
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div>
                         <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Country *</label>
@@ -343,7 +352,7 @@
                 </div>
                 <div>
                     <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Landmark *</label>
-                    <input type="text" id="shipLandmark" placeholder="Near University Gate / Library" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; margin-top:3px; outline:none;">
+                    <input type="text" id="shipLandmark" placeholder="Near University Gate" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; margin-top:3px; outline:none;">
                 </div>
                 <div>
                     <label style="font-size:0.75rem; font-weight:900; color:var(--text-main); text-transform:uppercase;">Full Address / Hostel Room *</label>
@@ -360,7 +369,7 @@
 
                 <div id="qrScannerSection" style="display:none; background:#FAF9F6; border:2.5px dashed var(--border-color); padding:1.2rem; border-radius:14px; text-align:center; margin-top:0.5rem;">
                     <h4 style="font-size:0.95rem; font-weight:900; margin-bottom:0.4rem;">📷 Scan Founder UPI QR Code to Pay</h4>
-                    <div id="qrImageContainer" style="width:160px; height:160px; margin:0 auto; background:#fff; border:2px solid var(--border-color); border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">📱 QR Loading...</div>
+                    <div id="qrImageContainer" style="width:160px; height:160px; margin:0 auto; background:#fff; border:2px solid var(--border-color); border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">📱 QR Code Loading...</div>
                     <p style="font-size:0.75rem; font-weight:800; color:var(--accent-terracotta); margin-top:0.5rem;">UPI ID: hoknex@upi</p>
                     
                     <div style="margin-top:1rem; text-align:left;">
@@ -406,8 +415,8 @@
         if(savedAnnouncement) { document.getElementById('topAnnouncementBar').innerText = savedAnnouncement; }
 
         let defaultCatalog = [
-            { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49, emoji: "🧥", badge: "New Drop", inStock: true, sizes: ['S', 'M', 'L', 'XL'], ratings: [5, 5, 4], description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.", images: ["🧥", "👔", "🔎"] },
-            { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99, emoji: "👟", badge: "Best Seller", inStock: true, sizes: ['7', '8', '9', '10'], ratings: [5, 5, 5], description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.", images: ["👟", "🥾", "🔎"] }
+            { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49, emoji: "🧥", badge: "New Drop", inStock: true, sizes: ['S', 'M', 'L', 'XL'], ratings: [5, 5, 4], votes: 12, description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.", galleryImages: ["🧥", "👔", "🔎"] },
+            { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99, emoji: "👟", badge: "Best Seller", inStock: true, sizes: ['7', '8', '9', '10'], ratings: [5, 5, 5], votes: 8, description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.", galleryImages: ["👟", "🥾", "🔎"] }
         ];
 
         let catalog = JSON.parse(localStorage.getItem('hoknex_custom_catalog') || JSON.stringify(defaultCatalog));
@@ -424,10 +433,12 @@
             if(drops.length === 0) { section.style.display = 'none'; return; }
             section.style.display = 'block';
             grid.innerHTML = drops.map(d => `
-                <div class="drop-card">
-                    <div class="drop-img"><img src="${d.image}" alt="Drop"></div>
-                    <h4 style="font-weight:900; margin-bottom:4px;">${d.title}</h4>
-                    <p style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">${d.desc}</p>
+                <div class="drop-preview-card">
+                    <div class="drop-media">
+                        ${d.image.includes('data:video') ? `<video src="${d.image}" autoplay loop muted style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${d.image}" alt="Drop">`}
+                    </div>
+                    <h4 style="font-weight:900; font-size:1.05rem; margin-bottom:4px; color:var(--text-main);">${d.title}</h4>
+                    <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">${d.desc}</p>
                 </div>
             `).join('');
         }
@@ -448,7 +459,7 @@
                 return `
                     <div class="product-card" onclick="openPdpModal('${item.id}')">
                         <button class="btn-wishlist" onclick="event.stopPropagation(); toggleWishlist('${item.id}')">${isWishlisted ? '❤️' : '🤍'}</button>
-                        <span style="position:absolute; top:12px; right:12px; background:var(--accent-ochre); color:#fff; border:2px solid var(--border-color); padding:2px 8px; border-radius:6px; font-size:0.65rem; font-weight:900; text-transform:uppercase;">${item.badge || 'New'}</span>
+                        <span style="position:absolute; top:18px; right:18px; background:var(--accent-ochre); color:#fff; border:2px solid var(--border-color); padding:2px 8px; border-radius:6px; font-size:0.65rem; font-weight:900; text-transform:uppercase;">${item.badge || 'New'}</span>
                         <div>
                             <div class="prod-img-box">
                                 ${item.image ? `<img src="${item.image}" alt="${item.name}">` : (item.emoji || '📦')}
@@ -526,7 +537,7 @@
 
         function openWishlistModal() { document.getElementById('wishlistModal').style.display = 'flex'; }
 
-        // PDP Modal with Stock status, sizes, voting & rating
+        // PDP Modal
         function openPdpModal(id) {
             currentPdpItem = catalog.find(i => i.id === id);
             if (!currentPdpItem) return;
@@ -552,7 +563,6 @@
             }
             document.getElementById('pdpRatingDisplay').innerText = `⭐ ${avgRating} (${(currentPdpItem.ratings || []).length} ratings)`;
 
-            // Stock / Size logic
             const sizeSec = document.getElementById('pdpSizeSection');
             const stockSec = document.getElementById('pdpStockSection');
             const addBtn = document.getElementById('pdpAddBtn');
