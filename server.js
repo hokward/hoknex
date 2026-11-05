@@ -6,7 +6,6 @@ const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-require('dotenv').config();
 const OrganizerApp = require('./models/OrganizerApp');
 const User = require('./models/User');
 const Post = require('./models/Post');
@@ -26,7 +25,7 @@ const rateLimit = require('express-rate-limit');
 
 // 1. Secure HTTP headers safely without blocking local assets
 app.use(helmet({
-    contentSecurityPolicy: false, // Disables strict CSP that blocks local scripts/tools
+    contentSecurityPolicy: false,
     crossOriginResourcePolicy: false
 }));
 
@@ -38,12 +37,11 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Ensure large payload limit is set at the very top for base64 images and rich  data
+// Ensure large payload limit is set at the very top for base64 images and rich data
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
 app.use(express.static('public'));
-// This tells Express to allow the frontend to view images inside the 'uploads' folder
 app.use('/uploads', express.static('uploads'));
 
 const uploadDir = path.join(__dirname, 'public', 'uploads');
@@ -57,18 +55,18 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 // 1. Configure Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'wnnotcmw',
+  api_key: process.env.CLOUDINARY_API_KEY || '316289158118826',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'l9kGKimUME38BQhYcCC6NMm5LhY'
 });
 
-// 2. Set up the Cloudinary Storage Engine (Updated to support audio & voice notes)
+// 2. Set up the Cloudinary Storage Engine
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'hoknex_uploads', 
     resource_type: 'auto',
-    allowedFormats: ['jpeg', 'png', 'jpg', 'webp', 'webm', 'mp3', 'wav'] 
+    allowedFormats: ['jpeg', 'png', 'jpg', 'webp', 'webm', 'mp3', 'wav', 'mov', 'mp4'] 
   }
 });
 
@@ -96,6 +94,218 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// ==========================================
+// --- NEW: STORE, ADMIN, & MAGAZINE SCHEMAS & API ROUTES ---
+// ==========================================
+
+const ProductSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    category: { type: String, required: true },
+    price: { type: Number, required: true },
+    deliveryFee: { type: Number, default: 0 },
+    description: String,
+    image: String,
+    galleryImages: [String],
+    inStock: { type: Boolean, default: true },
+    sizes: { type: [String], default: ['S', 'M', 'L', 'XL'] },
+    ratings: [Number],
+    votes: { type: Number, default: 0 },
+    badge: { type: String, default: 'New Arrival' }
+});
+const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
+
+const ArticleSchema = new mongoose.Schema({
+    title: String,
+    category: String,
+    icon: String,
+    author: String,
+    time: String,
+    excerpt: String,
+    body: String,
+    date: { type: Date, default: Date.now }
+});
+const Article = mongoose.models.Article || mongoose.model('Article', ArticleSchema);
+
+const StoreOrderSchema = new mongoose.Schema({
+    orderId: String,
+    name: String,
+    phone: String,
+    email: String,
+    address: String,
+    payMode: String,
+    items: Array,
+    subtotal: Number,
+    deliveryFee: Number,
+    total: Number,
+    status: String,
+    timeline: Array,
+    customMessage: String,
+    customImage: String,
+    date: String
+});
+const StoreOrder = mongoose.models.StoreOrder || mongoose.model('StoreOrder', StoreOrderSchema);
+
+const StoreSubscriberSchema = new mongoose.Schema({
+    email: String,
+    date: String
+});
+const StoreSubscriber = mongoose.models.StoreSubscriber || mongoose.model('StoreSubscriber', StoreSubscriberSchema);
+
+const StoreQRSchema = new mongoose.Schema({
+    imageUrl: String
+});
+const StoreQR = mongoose.models.StoreQR || mongoose.model('StoreQR', StoreQRSchema);
+
+const ComingSoonDropSchema = new mongoose.Schema({
+    title: String,
+    desc: String,
+    image: String
+});
+const ComingSoonDrop = mongoose.models.ComingSoonDrop || mongoose.model('ComingSoonDrop', ComingSoonDropSchema);
+
+// --- Store Products Endpoints ---
+app.get('/api/store/products', async (req, res) => {
+    try { const products = await Product.find(); res.json(products); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/store/products', async (req, res) => {
+    try { const p = new Product(req.body); await p.save(); res.json({ success: true, p }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/store/products/:id', async (req, res) => {
+    try { await Product.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/store/products/:id/stock', async (req, res) => {
+    try {
+        await Product.findByIdAndUpdate(req.params.id, { inStock: req.body.inStock, sizes: req.body.sizes });
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/store/products/:id/vote', async (req, res) => {
+    try {
+        const prod = await Product.findById(req.params.id);
+        if(!prod) return res.status(404).json({ error: 'Product not found' });
+        prod.votes = (prod.votes || 0) + 1;
+        await prod.save();
+        res.json({ success: true, votes: prod.votes });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/store/products/:id/rate', async (req, res) => {
+    try {
+        const { rating } = req.body;
+        const prod = await Product.findById(req.params.id);
+        if(!prod) return res.status(404).json({ error: 'Product not found' });
+        if(!prod.ratings) prod.ratings = [];
+        prod.ratings.push(Number(rating));
+        await prod.save();
+        res.json({ success: true, ratings: prod.ratings });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// --- Magazine (Articles) Endpoints ---
+app.get('/api/magazine/articles', async (req, res) => {
+    try { const articles = await Article.find(); res.json(articles); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/magazine/articles', async (req, res) => {
+    try { const a = new Article(req.body); await a.save(); res.json({ success: true, a }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/magazine/articles/:id', async (req, res) => {
+    try { await Article.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// --- Store Orders Endpoints ---
+app.get('/api/store/orders', async (req, res) => {
+    try { const orders = await StoreOrder.find(); res.json(orders); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/store/orders', async (req, res) => {
+    try { const o = new StoreOrder(req.body); await o.save(); res.json({ success: true, o }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/store/orders/:id', async (req, res) => {
+    try {
+        const { status, customMessage } = req.body;
+        let updateObj = {};
+        if(status) {
+            updateObj.status = status;
+            await StoreOrder.findByIdAndUpdate(req.params.id, { $push: { timeline: { title: status, time: new Date().toLocaleString() } }, status });
+        }
+        if(customMessage !== undefined) updateObj.customMessage = customMessage;
+        await StoreOrder.findByIdAndUpdate(req.params.id, updateObj);
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/store/orders/:id', async (req, res) => {
+    try { await StoreOrder.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// --- Store Subscribers Endpoints ---
+app.get('/api/store/subscribers', async (req, res) => {
+    try { const subs = await StoreSubscriber.find(); res.json(subs); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/store/subscribers', async (req, res) => {
+    try { const s = new StoreSubscriber(req.body); await s.save(); res.json({ success: true }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/store/subscribers/:id', async (req, res) => {
+    try { await StoreSubscriber.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// --- Store QR Codes Endpoints ---
+app.get('/api/store/qrs', async (req, res) => {
+    try { const qrs = await StoreQR.find(); res.json(qrs); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/store/qrs', async (req, res) => {
+    try { const q = new StoreQR(req.body); await q.save(); res.json({ success: true }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/store/qrs/:id', async (req, res) => {
+    try { await StoreQR.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// --- Coming Soon Drops Endpoints ---
+app.get('/api/store/drops', async (req, res) => {
+    try { const drops = await ComingSoonDrop.find(); res.json(drops); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/store/drops', async (req, res) => {
+    try { const d = new ComingSoonDrop(req.body); await d.save(); res.json({ success: true }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/store/drops/:id', async (req, res) => {
+    try { await ComingSoonDrop.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ==========================================
+// --- EXISTING PLATFORM ROUTES & LOGIC ---
+// ==========================================
+
 app.post('/api/register', async (req, res) => {
   try {
     const { name, username, email, password } = req.body;
@@ -111,10 +321,6 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.post('/api/login', async (req, res) => {
-    // 1. Log the exact data coming from the frontend (helpful for debugging)
-    
-
-    // 2. Catch EVERY possible label your frontend might be using for the first box
     const identifier = req.body.username || req.body.email || req.body.identifier || req.body.usernameOrEmail || req.body.loginId || '';
     const password = req.body.password;
 
@@ -122,14 +328,12 @@ app.post('/api/login', async (req, res) => {
         return res.status(400).json({ error: 'Please provide credentials' });
     }
 
-    // 3. Clean the input (remove @ if it's a username, leave it if it's an email)
     let cleanIdentifier = identifier;
     if (!identifier.includes('.com') && !identifier.includes('.in') && !identifier.includes('.edu')) {
          cleanIdentifier = identifier.replace('@', '');
     }
 
     try {
-        // Find the user by username or email FIRST (do not check the password yet)
         const user = await User.findOne({
             $or: [
                 { username: cleanIdentifier },
@@ -141,7 +345,6 @@ app.post('/api/login', async (req, res) => {
             return res.status(400).json({ error: 'User not found or incorrect password' });
         }
         
-        // Compare the typed password with the encrypted database password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ error: 'User not found or incorrect password' });
@@ -225,8 +428,6 @@ app.post('/api/users/follow', async (req, res) => {
             return res.status(404).json({ error: 'User not found.' });
         }
 
-        // Just push the requester's ID directly, and store the note in a separate message payload if needed, 
-        // or update using a simple addToSet to avoid any schema validation crash.
         await User.updateOne(
             { _id: targetUser._id },
             { $addToSet: { followRequests: requester._id } }
@@ -250,7 +451,6 @@ app.post('/api/send-request-note', async (req, res) => {
             return res.status(404).json({ error: 'Recipient not found.' });
         }
 
-        // Save it directly as a Message in the inbox database
         const newMessage = new Message({
             sender: sender ? sender._id : null,
             recipient: recipient._id,
@@ -335,7 +535,7 @@ app.get('/api/notifications/:username', async (req, res) => {
         type: 'follow_request',
         icon: '👤',
         text: `<strong>${reqUser.name}</strong> (@${reqUser.username}) requested to follow you`,
-        note: reqUser.note || '', // <-- Paste/add this line right here!
+        note: reqUser.note || '',
         time: 'Pending request',
         actionData: { requesterId: reqUser._id }
     });
@@ -401,7 +601,6 @@ app.get('/api/notifications/:username', async (req, res) => {
   }
 });
 
-// 1. Unified Post Message Endpoint (Handles Text, Images, Audio, Video, Stickers, and Read Status)
 app.post('/api/messages', async (req, res) => {
     try {
         const { sender, recipient, text, mediaUrl, mediaType, isRead } = req.body;
@@ -425,7 +624,6 @@ app.post('/api/messages', async (req, res) => {
     }
 });
 
-// 2. Fetch Messages Between Two Users
 app.get('/api/messages/:user1/:user2', async (req, res) => {
     try {
         const { user1, user2 } = req.params;
@@ -443,7 +641,6 @@ app.get('/api/messages/:user1/:user2', async (req, res) => {
     }
 });
 
-// 3. Dedicated File & Media Upload Endpoint (For Images, Voice Notes, Short Videos, and Report Proofs)
 app.post('/api/upload', upload.single('image'), async (req, res) => {
     try {
         if (!req.file || !req.file.path) {
@@ -456,7 +653,6 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     }
 });
 
-// 4. Fetch Community Posts
 app.get('/api/posts', async (req, res) => {
     try {
         const posts = await Post.find().populate('author', 'name username dpUrl').sort({ createdAt: -1 });
@@ -466,7 +662,6 @@ app.get('/api/posts', async (req, res) => {
     }
 });
 
-// 5. Delete an Individual Message by ID
 app.delete('/api/messages/single/:msgId', async (req, res) => {
     try {
         await Message.findByIdAndDelete(req.params.msgId);
@@ -476,7 +671,6 @@ app.delete('/api/messages/single/:msgId', async (req, res) => {
     }
 });
 
-// 6. Delete Full Conversation Between Two Users
 app.delete('/api/messages/:user1/:user2', async (req, res) => {
     try {
         const { user1, user2 } = req.params;
@@ -493,7 +687,6 @@ app.delete('/api/messages/:user1/:user2', async (req, res) => {
     }
 });
 
-// 7. Mark Messages as Read (Double Blue Ticks)
 app.put('/api/messages/read/:sender/:recipient', async (req, res) => {
     try {
         await Message.updateMany(
@@ -507,7 +700,6 @@ app.put('/api/messages/read/:sender/:recipient', async (req, res) => {
     }
 });
 
-// 8. Support Report Schema & Submission Endpoint (Supports Optional Screenshot Proof Upload)
 const SupportReportSchema = new mongoose.Schema({
     reporter: { type: String, required: true },
     reportedUser: { type: String, required: true },
@@ -532,7 +724,6 @@ app.post('/api/reports', upload.single('image'), async (req, res) => {
     }
 });
 
-// 9. Persistent User Block / Unblock Management
 const BlockSchema = new mongoose.Schema({
     blocker: { type: String, required: true },
     blocked: { type: String, required: true }
@@ -563,7 +754,6 @@ app.post('/api/blocks', async (req, res) => {
     }
 });
 
-// 10. Middleware to Update User's lastActive Timestamp
 app.use(async (req, res, next) => {
     try {
         const userId = req.headers['x-user-id'] || req.query.userId;
@@ -575,7 +765,6 @@ app.use(async (req, res, next) => {
     next();
 });
 
-// --- VOTE ON A POST POLL API ---
 app.post('/api/posts/:id/vote', async (req, res) => {
     try {
         const { optionIndex } = req.body;
@@ -589,7 +778,6 @@ app.post('/api/posts/:id/vote', async (req, res) => {
             return res.status(400).json({ error: 'Poll not found' });
         }
 
-        // Ensure every option is an object with text and votes
         post.poll.options = post.poll.options.map(opt => {
             if (typeof opt === 'string') {
                 return { text: opt, votes: 0 };
@@ -597,7 +785,6 @@ app.post('/api/posts/:id/vote', async (req, res) => {
             return { text: opt.text || String(opt), votes: opt.votes || 0 };
         });
 
-        // Increment the vote count
         if (post.poll.options[optionIndex]) {
             post.poll.options[optionIndex].votes = (post.poll.options[optionIndex].votes || 0) + 1;
         }
@@ -627,7 +814,7 @@ app.post('/api/posts', upload.single('image'), async (req, res) => {
             content: req.body.content || '',
             username: req.body.username || 'Student',
            imageUrl: req.file ? req.file.path : '',
-            poll: pollData, // <-- SAVE POLL TO DATABASE
+            poll: pollData,
             author: user ? user._id : null
         });
 
@@ -639,6 +826,7 @@ app.post('/api/posts', upload.single('image'), async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
 app.delete('/api/posts/:id', async (req, res) => {
   try {
     await Post.findByIdAndDelete(req.params.id);
@@ -719,7 +907,6 @@ app.post('/api/posts/:id/reply', async (req, res) => {
     let user = username ? await User.findOne({ username }) : null;
     if (!post.replies) post.replies = [];
     
-    // This is the fix: we are now explicitly saving the username into the database
     post.replies.push({ 
         text, 
         username: username || 'User',
@@ -733,6 +920,7 @@ app.post('/api/posts/:id/reply', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 app.get('/api/user-posts/:username', async (req, res) => {
   try {
     const targetUser = await User.findOne({ username: decodeURIComponent(req.params.username) });
@@ -775,35 +963,6 @@ app.get('/api/user-reposts/:username', async (req, res) => {
   }
 });
 
-// --- UPDATED S ENDPOINTS & SCHEMA ---
-app.post('/api/s', async (req, res) => {
-    try {
-        const { title, description, classification, audience, techStack, Url, author, img } = req.body;
-        
-        if (!title || !description) {
-            return res.status(400).json({ error: 'Title and description are required.' });
-        }
-
-        const newProj = new ({
-            title,
-            desc: description,
-            classification: classification || 'Showcase',
-            audience: audience || 'Open to All',
-            techStack: techStack || '',
-            projectUrl: projectUrl || '',
-            img: img || '',
-            author: author || 'Student'
-        });
-
-        await newProj.save();
-        res.status(201).json(newProj);
-    } catch (err) {
-        console.error('Project creation error:', err);
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Added upload.single('image') to parse FormData and handle file uploads
 app.post('/api/projects', upload.single('image'), async (req, res) => {
     try {
         const title = req.body.title;
@@ -839,7 +998,6 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
     }
 });
 
-// Add Delete Route
 app.delete('/api/projects/:id', async (req, res) => {
     try {
         await Project.findByIdAndDelete(req.params.id);
@@ -849,14 +1007,13 @@ app.delete('/api/projects/:id', async (req, res) => {
     }
 });
 
-// Add Reaction & Rating Route
 app.post('/api/projects/:id/react', async (req, res) => {
     try {
-        const { type } = req.body; // 'like', 'love', 'rocket'
+        const { type } = req.body; 
         const proj = await Project.findById(req.params.id);
         if (!proj) return res.status(404).json({ error: 'Project not found' });
         
-        if (proj.reactions[type] !== undefined) {
+        if (proj.reactions && proj.reactions[type] !== undefined) {
             proj.reactions[type] += 1;
             await proj.save();
         }
@@ -868,7 +1025,7 @@ app.post('/api/projects/:id/react', async (req, res) => {
 
 app.post('/api/projects/:id/rate', async (req, res) => {
     try {
-        const { rating } = req.body; // number 1-5
+        const { rating } = req.body; 
         const proj = await Project.findById(req.params.id);
         if (!proj) return res.status(404).json({ error: 'Project not found' });
         
@@ -881,8 +1038,6 @@ app.post('/api/projects/:id/rate', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
-
 
 app.get('/api/clubs', async (req, res) => {
   try {
@@ -1068,8 +1223,6 @@ app.delete('/api/support/delete-server-by-ticket/:ticketId', async (req, res) =>
 
 app.post('/api/support', async (req, res) => {
     const body = req.body || {};
-    console.log("SUPPORT TICKET RECEIVED:", body);
-
     try {
         let safeUsername = 'Anonymous';
         if (body.username && typeof body.username === 'string') {
@@ -1084,7 +1237,7 @@ app.post('/api/support', async (req, res) => {
 
         const newTicket = new Support({
             username: safeUsername,
-            description: queryText, // <-- THIS IS THE FIX! Changed 'query' to 'description'
+            description: queryText,
             status: 'Pending',
             createdAt: new Date()
         });
@@ -1098,10 +1251,8 @@ app.post('/api/support', async (req, res) => {
     }
 });
 
-// Fetch all support tickets to display on the user and admin dashboards
 app.get('/api/support', async (req, res) => {
     try {
-        // Find all tickets and sort them so the newest appear at the top
         const tickets = await Support.find().sort({ createdAt: -1 });
         res.json(tickets);
     } catch (error) {
@@ -1110,7 +1261,6 @@ app.get('/api/support', async (req, res) => {
     }
 });
 
-// Get all events
 app.get('/api/events', async (req, res) => {
   try {
     const events = await Event.find().sort({ date: 1 });
@@ -1137,7 +1287,6 @@ app.post('/api/events', async (req, res) => {
     }
 });
 
-// RSVP to an Event (Secure Version)
 app.post('/api/events/:id/rsvp', async (req, res) => {
     try {
         const { username, campusUser, campusPass } = req.body;
@@ -1151,14 +1300,12 @@ app.post('/api/events/:id/rsvp', async (req, res) => {
             }
         }
 
-        // Check if user already has a ticket
         let attendee = (event.attendees || []).find(a => a.username === username);
         let ticketId;
 
         if (attendee) {
-            ticketId = attendee.ticketId; // Reuse existing ticket if already RSVP'd
+            ticketId = attendee.ticketId;
         } else {
-            // Generate official server-side ticket ID
             ticketId = 'TKT-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             if (!event.attendees) event.attendees = [];
             
@@ -1172,31 +1319,12 @@ app.post('/api/events/:id/rsvp', async (req, res) => {
             await event.save();
         }
 
-        // Send back the event along with the exact ticketId
         res.json({ event, ticketId });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-
-
-// RSVP to an Event (Tracks ticket sales)
-app.post('/api/events/:id/rsvp', async (req, res) => {
-    try {
-        const { username } = req.body;
-        const event = await Event.findByIdAndUpdate(
-            req.params.id,
-            { $addToSet: { attendees: username } }, // Adds user without duplicates
-            { new: true }
-        );
-        res.json(event);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Delete an Event
 app.delete('/api/events/:id', async (req, res) => {
     try {
         await Event.findByIdAndDelete(req.params.id);
@@ -1206,7 +1334,6 @@ app.delete('/api/events/:id', async (req, res) => {
     }
 });
 
-// Submit Organizer Application
 app.post('/api/applications', async (req, res) => {
     try {
         const newApp = new OrganizerApp(req.body);
@@ -1218,14 +1345,11 @@ app.post('/api/applications', async (req, res) => {
     }
 });
 
-// Export Attendance for an Event
-
 app.get('/api/events/:id/export-attendance', async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);
         if (!event) return res.status(404).json({ error: 'Event not found' });
 
-        // Filter only verified attendees
         const verifiedAttendees = (event.attendees || []).filter(a => a.verified);
 
         let csv = 'Ticket ID,Username,Check-in Time\n';
@@ -1241,7 +1365,6 @@ app.get('/api/events/:id/export-attendance', async (req, res) => {
     }
 });
 
-// 1. Get all applications for the Admin Panel
 app.get('/api/applications', async (req, res) => {
     try {
         const apps = await OrganizerApp.find().sort({ appliedAt: -1 });
@@ -1251,7 +1374,6 @@ app.get('/api/applications', async (req, res) => {
     }
 });
 
-// 2. Approve an application
 app.put('/api/applications/:id/approve', async (req, res) => {
     try {
         const application = await OrganizerApp.findByIdAndUpdate(
@@ -1265,7 +1387,6 @@ app.put('/api/applications/:id/approve', async (req, res) => {
     }
 });
 
-// 3. Get a list of all approved usernames
 app.get('/api/organizers', async (req, res) => {
     try {
         const approvedApps = await OrganizerApp.find({ status: 'approved' });
@@ -1276,46 +1397,6 @@ app.get('/api/organizers', async (req, res) => {
     }
 });
 
-// Ensure multer is imported at the top of server.js:
-// const multer = require('multer');
-// const upload = multer({ dest: 'uploads/' });
-
-app.post('/api/support', upload.single('screenshot'), async (req, res) => {
-    // req.body perfectly catches the text regardless of which website form sent it
-    const body = req.body || {};
-    
-    try {
-        let safeUsername = 'Anonymous';
-        if (body.username && typeof body.username === 'string') {
-            safeUsername = body.username.replace('@', '');
-        }
-
-        // Catch the text whether it was labeled 'query' or 'description'
-        const queryText = body.query || body.description || body.text;
-
-        if (!queryText) {
-            return res.status(400).json({ error: 'Please enter a query before submitting.' });
-        }
-
-        const newTicket = new Support({
-            username: safeUsername,
-            description: queryText,
-            status: 'Pending',
-            // If multer caught a photo, save its path. If no photo, leave it blank.
-            screenshot: req.file ? `/uploads/${req.file.filename}` : '', 
-            createdAt: new Date()
-        });
-
-        await newTicket.save();
-        res.json({ success: true, message: 'Ticket submitted successfully!' });
-        
-    } catch (error) {
-        console.error("Support Ticket DB Error:", error);
-        res.status(500).json({ error: 'Failed to save ticket to database.' });
-    }
-});
-
-// --- MONGODB PIN SCHEMA & ROUTES ---
 const pinSchema = new mongoose.Schema({
     title: { type: String, required: true },
     desc: { type: String, default: 'No description provided.' },
@@ -1391,19 +1472,14 @@ app.delete('/api/pins/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete pin' });
     }
 });
+
 app.post('/api/events/verify-ticket', async (req, res) => {
     try {
         const { ticketId, organizerUsername } = req.body;
-        console.log("🔍 Looking for Ticket ID:", ticketId, "Organizer:", organizerUsername);
-
-        // Find event containing this ticket ID in the attendees array
         const event = await Event.findOne({ 'attendees.ticketId': ticketId });
         if (!event) {
-            console.log("❌ No matching event found for ticket:", ticketId);
             return res.status(404).json({ error: 'Invalid Ticket! No matching reservation found.' });
         }
-
-        console.log("✅ Found event:", event.title);
 
         const attendee = event.attendees.find(a => a.ticketId === ticketId);
         if (attendee.verified) {
@@ -1420,63 +1496,48 @@ app.post('/api/events/verify-ticket', async (req, res) => {
             eventTitle: event.title
         });
     } catch (err) {
-        console.error("Server error:", err);
         res.status(500).json({ error: err.message });
     }
 });
 
-// --- GET ALL PROJECTS ---
 app.get('/api/projects', async (req, res) => {
     try {
         const projects = await Project.find().sort({ createdAt: -1 });
         res.json(projects);
     } catch (err) {
-        console.error('Error fetching projects:', err);
         res.status(500).json({ error: err.message });
     }
 });
 
-// --- LOST & FOUND BACKEND ROUTES ---
-
-// 1. Define the Database Schema for Lost & Found
 const lostFoundSchema = new mongoose.Schema({
     id: String,
     title: String,
     desc: String,
-    type: String, // 'Lost' or 'Found'
+    type: String, 
     dropBox: String,
     author: String,
     createdAt: { type: Date, default: Date.now }
 });
-
-// Create the MongoDB Model
 const LostFound = mongoose.models.LostFound || mongoose.model('LostFound', lostFoundSchema);
 
-// 2. GET Route: Fetch all items for everyone's feed
 app.get('/api/lostfound', async (req, res) => {
     try {
-        // Fetch all items from the database, newest first
         const items = await LostFound.find().sort({ createdAt: -1 });
         res.json(items);
     } catch (err) {
-        console.error("Error fetching Lost & Found items:", err);
         res.status(500).json({ error: 'Failed to load items' });
     }
 });
 
-// 3. POST Route: Save a new report to the database globally
 app.post('/api/lostfound', async (req, res) => {
     try {
         const newItem = new LostFound(req.body);
         await newItem.save();
         res.status(201).json(newItem);
     } catch (err) {
-        console.error("Error saving Lost & Found item:", err);
         res.status(500).json({ error: 'Failed to publish report' });
     }
 });
-
-// --- LOST & FOUND CHAT BACKEND ---
 
 const lnfChatSchema = new mongoose.Schema({
     itemId: String,
@@ -1487,7 +1548,6 @@ const lnfChatSchema = new mongoose.Schema({
 });
 const LnfChat = mongoose.models.LnfChat || mongoose.model('LnfChat', lnfChatSchema);
 
-// GET: Fetch all messages for a specific item's chat room
 app.get('/api/lnf-chat/:itemId', async (req, res) => {
     try {
         const messages = await LnfChat.find({ itemId: req.params.itemId });
@@ -1497,7 +1557,6 @@ app.get('/api/lnf-chat/:itemId', async (req, res) => {
     }
 });
 
-// POST: Save a new message to the room
 app.post('/api/lnf-chat', async (req, res) => {
     try {
         const newMsg = new LnfChat(req.body);
@@ -1508,19 +1567,14 @@ app.post('/api/lnf-chat', async (req, res) => {
     }
 });
 
-// DELETE Route: Remove an item from the global database
 app.delete('/api/lostfound/:id', async (req, res) => {
     try {
         await LostFound.findOneAndDelete({ id: req.params.id });
         res.status(200).json({ message: 'Item deleted successfully' });
     } catch (err) {
-        console.error("Error deleting item:", err);
         res.status(500).json({ error: 'Failed to delete item' });
     }
 });
-
-// --- CAMPUS HUB MONGODB SCHEMAS & ROUTES ---
-
 
 const whisperSchema = new mongoose.Schema({
     id: String,
@@ -1546,7 +1600,6 @@ const studySchema = new mongoose.Schema({
 });
 const StudyUser = mongoose.model('StudyUser', studySchema);
 
-// 1. Whispers Routes
 app.get('/api/whispers', async (req, res) => {
     try {
         const whispers = await Whisper.find().sort({ createdAt: -1 });
@@ -1562,7 +1615,6 @@ app.post('/api/whispers', async (req, res) => {
     } catch(e) { res.status(500).json({ error: 'Failed to post whisper' }); }
 });
 
-// 2. Marketplace Routes
 app.get('/api/market', async (req, res) => {
     try {
         const items = await MarketItem.find().sort({ _id: -1 });
@@ -1578,7 +1630,6 @@ app.post('/api/market', async (req, res) => {
     } catch(e) { res.status(500).json({ error: 'Failed to post item' }); }
 });
 
-// 3. Study Leaderboard Routes
 app.get('/api/study', async (req, res) => {
     try {
         const board = await StudyUser.find().sort({ hours: -1 });
@@ -1601,27 +1652,22 @@ app.post('/api/study', async (req, res) => {
     } catch(e) { res.status(500).json({ error: 'Failed to log hours' }); }
 });
 
-
 const nodemailer = require('nodemailer');
-
-// Temporary storage for OTPs (expires after a few minutes)
 const otpStore = {}; 
 
-// Setup the email sender
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
-        user: process.env.EMAIL_USER, // This reads line 5 from your .env
-        pass: process.env.EMAIL_PASS  // This reads line 6 from your .env
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS  
     },
     tls: {
         rejectUnauthorized: false
     }
 });
 
-// 2. The Email Sending Route
 app.post('/api/send-otp', async (req, res) => {
     const name = req.body.name || req.body.fullName || req.body.fullname || 'Hoknex User';
     const username = req.body.username;
@@ -1635,7 +1681,6 @@ app.post('/api/send-otp', async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     otpStore[email] = { otp, name, username, password };
 
-    // The restored email sending code
     const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
@@ -1651,9 +1696,6 @@ app.post('/api/send-otp', async (req, res) => {
         res.status(500).json({ error: 'Failed to send email.' });
     }
 });
-// 2. Route to Verify OTP and Create Account
-// Ensure you have your User model defined at the top of server.js, for example:
-// const User = mongoose.model('User', new mongoose.Schema({ name: String, username: String, email: String, password: String }));
 
 app.post('/api/verify-otp', async (req, res) => {
     const { email, otp } = req.body;
@@ -1664,24 +1706,20 @@ app.post('/api/verify-otp', async (req, res) => {
 
     try {
         const cleanUsername = String(record.username).replace('@', '');
-
-        // Scramble (hash) the password before saving it
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(record.password, salt);
 
-        // Save to MongoDB with the encrypted password
         const newUser = new User({
             name: record.name,
             username: cleanUsername, 
             email: email, 
-            password: hashedPassword // Secure!
+            password: hashedPassword 
         });
         await newUser.save();
         
         delete otpStore[email]; 
         res.json({ success: true, message: 'Account saved!', username: cleanUsername });
     } catch (error) {
-        // ... (Keep your existing error handling here) ...
         if (error.code === 11000) {
             return res.status(400).json({ error: 'This email or username is already registered.' });
         }
@@ -1690,26 +1728,9 @@ app.post('/api/verify-otp', async (req, res) => {
     }
 });
 
-app.get('/api/users/:username', async (req, res) => {
-    try {
-        // Remove the @ symbol (the %40) so it matches the database
-        const cleanUsername = req.params.username.replace('@', '');
-        
-        const user = await User.findOne({ username: cleanUsername });
-        if (!user) return res.status(404).json({ error: 'User not found' });
-        
-        // Send back user data (excluding password for security)
-        res.json({ name: user.name, username: user.username, email: user.email });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch profile' });
-    }
-});
-
 app.post('/api/support/:id/reply', async (req, res) => {
     try {
-        const { reply } = req.body; // Grab the text the admin typed
-        
-        // Find the ticket by its ID, save the reply, and change status to 'Resolved'
+        const { reply } = req.body; 
         const ticket = await Support.findByIdAndUpdate(
             req.params.id, 
             { reply: reply, status: 'Resolved' }, 
@@ -1717,7 +1738,6 @@ app.post('/api/support/:id/reply', async (req, res) => {
         );
         
         if (!ticket) return res.status(404).json({ error: 'Ticket not found' });
-        
         res.json({ success: true, message: 'Reply sent successfully', ticket });
     } catch (err) {
         console.error('Support reply error:', err);
@@ -1725,8 +1745,6 @@ app.post('/api/support/:id/reply', async (req, res) => {
     }
 });
 
-
-// Remove or wrap your app.listen like this:
 const PORT = process.env.PORT || 5000;
 
 if (process.env.NODE_ENV !== 'production') {
@@ -1735,6 +1753,4 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-// trigger vercel build
-// Crucial for Vercel Serverless Deployment
 module.exports = app;
