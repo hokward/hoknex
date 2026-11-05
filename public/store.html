@@ -47,8 +47,22 @@
         .drop-media { width: 100%; height: 260px; background: #EAE6DF; border-radius: 12px; border: 2px solid var(--border-color); overflow: hidden; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; }
         .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: cover; }
 
-        .product-catalog-section { padding: 2rem 4rem 5rem 4rem; max-width: 1350px; margin: 0 auto; }
+        .product-catalog-section { padding: 2rem 4rem 3rem 4rem; max-width: 1350px; margin: 0 auto; }
         .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2.5rem; margin-top: 1.5rem; }
+
+        .campaign-showcase-section { padding: 3rem 4rem 5rem 4rem; max-width: 1350px; margin: 0 auto; }
+        .campaign-header { text-align: center; margin-bottom: 2.5rem; }
+        .campaign-header h2 { font-size: 2.4rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 0.4rem; }
+        .campaign-header p { color: var(--text-muted); font-weight: 700; font-size: 1rem; }
+        .campaign-grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .campaign-tile { background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-brand); position: relative; transition: transform 0.25s ease, box-shadow 0.25s ease; }
+        .campaign-tile:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
+        .campaign-img-wrap { width: 100%; height: 320px; background: #EAE6DF; border-bottom: 2.5px solid var(--border-color); overflow: hidden; }
+        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .campaign-tile:hover .campaign-img-wrap img { transform: scale(1.06); }
+        .campaign-caption { padding: 1.2rem; text-align: left; }
+        .campaign-caption h4 { font-size: 1.1rem; font-weight: 900; margin-bottom: 0.3rem; }
+        .campaign-caption p { font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
 
         .product-card {
             background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 20px;
@@ -75,11 +89,7 @@
         .btn-wishlist { background: #fff; border: 2px solid var(--border-color); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; position: absolute; top: 18px; left: 18px; z-index: 5; box-shadow: 2px 2px 0px var(--border-color); transition: transform 0.15s; }
         .btn-wishlist:hover { transform: scale(1.1); }
 
-        /* Signature Dark Footer with Watermark */
-        .store-footer {
-            background: #111827; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem;
-            border-top: 3px solid var(--border-color); position: relative; overflow: hidden;
-        }
+        .store-footer { background: #111827; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 3px solid var(--border-color); position: relative; overflow: hidden; }
         .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.15); position: relative; z-index: 2; }
         .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; }
         .footer-newsletter p { color: #CCBEB1; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
@@ -93,11 +103,7 @@
         .footer-col a { color: #CCBEB1; text-decoration: none; font-weight: 700; cursor: pointer; }
         .footer-col a:hover { color: #fff; }
 
-        .footer-watermark {
-            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
-            font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.04);
-            white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px;
-        }
+        .footer-watermark { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.04); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(76, 88, 68, 0.7); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
         .modal-panel { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 24px; padding: 2.5rem; width: 100%; max-width: 650px; box-shadow: 8px 8px 0px var(--border-color); position: relative; max-height: 90vh; overflow-y: auto; }
@@ -107,7 +113,8 @@
         #proModalBox { background: #FAF9F6; border: 3.5px solid var(--border-color); border-radius: 20px; padding: 2rem; max-width: 420px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--border-color); }
 
         @media (max-width: 968px) {
-            .store-navbar, .store-hero, .coming-soon-container, .product-catalog-section, .store-footer { padding: 2rem 1.5rem; }
+            .store-navbar, .store-hero, .coming-soon-container, .product-catalog-section, .campaign-showcase-section, .store-footer { padding: 2rem 1.5rem; }
+            .campaign-grid-layout { grid-template-columns: 1fr; }
             .footer-links-grid { grid-template-columns: 1fr; }
             .nav-left-links { display: none; }
         }
@@ -149,6 +156,7 @@
         <p>Premium oversized hoodies, heavyweight graphic tees, and streetwear essentials designed for global campus innovators.</p>
     </section>
 
+    <!-- Coming Soon Section -->
     <section class="coming-soon-container" id="comingSoonSection" style="display:none;">
         <div class="coming-soon-card">
             <div style="font-size: 2.2rem; margin-bottom: 0.4rem;">✨</div>
@@ -158,6 +166,7 @@
         </div>
     </section>
 
+    <!-- Product Catalog Section -->
     <section class="product-catalog-section" id="catalog">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
             <div>
@@ -168,7 +177,41 @@
         <div class="catalog-grid" id="catalogGrid"></div>
     </section>
 
-    <!-- Signature Dark Footer -->
+    <!-- 5-6 Picture Visual Campaign Showcase Segment -->
+    <section class="campaign-showcase-section">
+        <div class="campaign-header">
+            <h2>The Hoknex Visual Archive ⚡</h2>
+            <p>Glimpses into our underground campus labs, hacker houses, and heavyweight apparel craftsmanship.</p>
+        </div>
+        <div class="campaign-grid-layout">
+            <div class="campaign-tile">
+                <div class="campaign-img-wrap"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=700&auto=format&fit=crop&q=80" alt="Campaign 1"></div>
+                <div class="campaign-caption"><h4>01 / Campus Innovations</h4><p>Designed by students, field-tested in live hackathons.</p></div>
+            </div>
+            <div class="campaign-tile">
+                <div class="campaign-img-wrap"><img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=700&auto=format&fit=crop&q=80" alt="Campaign 2"></div>
+                <div class="campaign-caption"><h4>02 / Heavyweight Fleece</h4><p>450GSM organic cotton built for zero compromises.</p></div>
+            </div>
+            <div class="campaign-tile">
+                <div class="campaign-img-wrap"><img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=700&auto=format&fit=crop&q=80" alt="Campaign 3"></div>
+                <div class="campaign-caption"><h4>03 / Streetwear Aesthetics</h4><p>Neo-brutalist cuts that make a statement on every quad.</p></div>
+            </div>
+            <div class="campaign-tile">
+                <div class="campaign-img-wrap"><img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=700&auto=format&fit=crop&q=80" alt="Campaign 4"></div>
+                <div class="campaign-caption"><h4>04 / Maker Culture</h4><p>Hardware prototyping meets high-end creator apparel.</p></div>
+            </div>
+            <div class="campaign-tile">
+                <div class="campaign-img-wrap"><img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=700&auto=format&fit=crop&q=80" alt="Campaign 5"></div>
+                <div class="campaign-caption"><h4>05 / Global Creator Guild</h4><p>Worn by innovators across 50+ university campuses.</p></div>
+            </div>
+            <div class="campaign-tile">
+                <div class="campaign-img-wrap"><img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=700&auto=format&fit=crop&q=80" alt="Campaign 6"></div>
+                <div class="campaign-caption"><h4>06 / Uncompromising Drops</h4><p>Limited batch releases engineered for the relentless.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer class="store-footer">
         <div class="footer-newsletter">
             <h3>Join the Hoknex movement</h3>
@@ -209,8 +252,8 @@
             <div class="footer-col">
                 <h4>Legal</h4>
                 <ul>
-                    <li><a>Privacy Policy</a></li>
-                    <li><a>Terms of Service</a></li>
+                    <li><a onclick="showProModal('Privacy Policy', 'Hoknex respects student privacy. All user and order data are securely encrypted.')">Privacy Policy</a></li>
+                    <li><a onclick="showProModal('Terms of Service', 'By shopping at Hoknex, you agree to campus delivery terms and direct founder UPI guidelines.')">Terms of Service</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -225,7 +268,7 @@
         <div class="footer-watermark">hoknex</div>
     </footer>
 
-    <!-- Modals (PDP, Wishlist, Cart, Checkout, Tracking) -->
+    <!-- PDP Modal -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
         <div class="modal-panel" style="max-width: 850px;">
             <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
