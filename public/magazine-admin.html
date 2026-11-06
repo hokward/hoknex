@@ -40,11 +40,10 @@
 </head>
 <body>
 
-    <!-- 25-Min Session Password Gate -->
     <div id="authOverlay">
         <div id="authBox">
             <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem; border:none;">🔐 Chronicle Admin Access</h2>
-            <p style="font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 1.5rem;">Enter password to manage Zine articles, books & trending headlines.</p>
+            <p style="font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 1.5rem;">Enter password to manage spotlight banners, articles & books.</p>
             <input type="password" id="adminPasswordInput" placeholder="Password..." style="background:#fff; border:2.5px solid var(--border-color); padding:12px; border-radius:10px; font-weight:800; width:100%; margin-bottom:1rem; outline:none; text-align:center;">
             <button onclick="verifyAdminPassword()" class="btn-action" style="width:100%;">Unlock Dashboard 🔓</button>
         </div>
@@ -54,22 +53,39 @@
         <div class="admin-header">
             <div>
                 <h1 style="font-size: 1.8rem; font-weight: 900;">📰 Hoknex Chronicle & Zine Admin Center</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage articles, digital books/novels, and trending headlines.</p>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage hero spotlight banners, articles, books, and trending headlines.</p>
             </div>
             <a href="magazine.html" class="btn-action" style="background:#232D2F;">View Public Chronicle 📰</a>
         </div>
 
-        <!-- 1. Trending Headlines Pinning (Up to 10) -->
+        <!-- 1. Featured Spotlight Banner & Video Manager -->
+        <div class="admin-section" style="background:#FAF9F6; border-color:#232D2F;">
+            <h2>🌟 1. Featured Spotlight Banner / Video (Hero Area)</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Upload a striking banner image or video with description for the main spotlight area on top of World News.</p>
+            <form onsubmit="handleSpotlightUpload(event)">
+                <div class="form-grid">
+                    <div class="form-group"><label>Spotlight Title</label><input type="text" id="spotTitle" placeholder="Headline..." required></div>
+                    <div class="form-group"><label>Tag Label</label><input type="text" id="spotTag" value="WORLD NEWS • SPOTLIGHT" required></div>
+                    <div class="form-group"><label>Media Type</label><select id="spotMediaType"><option value="image">Banner Image</option><option value="video">Featured Video</option></select></div>
+                    <div class="form-group"><label>Banner / Video File</label><input type="file" id="spotFile" accept="image/*,video/*" required style="background:#fff;"></div>
+                    <div class="form-group"><label>Author & Read Time</label><input type="text" id="spotAuthor" value="World Desk International • 5 min read" required></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Short Excerpt / Description</label><textarea id="spotExcerpt" rows="2" placeholder="Summary shown in hero card..." required></textarea></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Full Story Body</label><textarea id="spotBody" rows="3" placeholder="Full story when clicked..." required></textarea></div>
+                </div>
+                <button type="submit" class="btn-action" style="background:#111827;">Publish Spotlight Banner 🌟</button>
+            </form>
+        </div>
+
+        <!-- 2. Manage Trending Headlines -->
         <div class="admin-section">
-            <h2>⚡ 1. Manage Trending Headlines (Pin Up to 10)</h2>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Enter headlines manually or let them auto-populate based on visitor reads.</p>
+            <h2>⚡ 2. Manage Trending Headlines (Pin Up to 10)</h2>
             <div id="trendingInputsWrap" style="display:flex; flex-direction:column; gap:10px; margin-bottom:1.5rem;"></div>
             <button onclick="saveTrendingHeadlines()" class="btn-action">Save Trending Headlines 📌</button>
         </div>
 
-        <!-- 2. Global Zine Article Publisher -->
+        <!-- 3. Global Zine Article Publisher -->
         <div class="admin-section">
-            <h2>📰 2. Publish Zine Article / News Report</h2>
+            <h2>📰 3. Publish Zine Article / News Report</h2>
             <form onsubmit="handleMagazineUpload(event)">
                 <div class="form-grid">
                     <div class="form-group"><label>Article Title</label><input type="text" id="magTitle" placeholder="Title" required></div>
@@ -85,15 +101,15 @@
             <div id="magazineTableWrap" style="overflow-x:auto; margin-top:1.5rem;"><p>Loading articles...</p></div>
         </div>
 
-        <!-- 3. Digital Books & Novels Publisher -->
+        <!-- 4. Digital Books Publisher -->
         <div class="admin-section">
-            <h2>📚 3. Upload Digital Book / Novel</h2>
+            <h2>📚 4. Upload Digital Book / Novel</h2>
             <form onsubmit="handleBookUpload(event)">
                 <div class="form-grid">
                     <div class="form-group"><label>Book Title</label><input type="text" id="bookTitle" placeholder="Novel Title" required></div>
                     <div class="form-group"><label>Author</label><input type="text" id="bookAuthor" placeholder="Author Name" required></div>
                     <div class="form-group"><label>Front Cover Image</label><input type="file" id="bookCoverFile" accept="image/*" required style="background:#fff;"></div>
-                    <div class="form-group" style="grid-column: span 2;"><label>Book Pages (Separate pages with `---NEWPAGE---`)</label><textarea id="bookPagesText" rows="5" placeholder="Page 1 text here...&#10;---NEWPAGE---&#10;Page 2 text here..." required></textarea></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Book Pages (`---NEWPAGE---`)</label><textarea id="bookPagesText" rows="5" placeholder="Page 1...&#10;---NEWPAGE---&#10;Page 2..." required></textarea></div>
                 </div>
                 <button type="submit" class="btn-action">Publish Digital Book 📖</button>
             </form>
@@ -130,7 +146,35 @@
             renderTrendingInputs();
         }
 
-        // Trending Headlines
+        // Spotlight Handler
+        async function handleSpotlightUpload(e) {
+            e.preventDefault();
+            const title = document.getElementById('spotTitle').value;
+            const tag = document.getElementById('spotTag').value;
+            const mediaType = document.getElementById('spotMediaType').value;
+            const authorInfo = document.getElementById('spotAuthor').value;
+            const excerpt = document.getElementById('spotExcerpt').value;
+            const body = document.getElementById('spotBody').value;
+            const fileInput = document.getElementById('spotFile');
+
+            let mediaUrl = '';
+            if (fileInput.files && fileInput.files[0]) {
+                const formData = new FormData(); formData.append('image', fileInput.files[0]);
+                const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                const upData = await upRes.json();
+                mediaUrl = upData.url;
+            }
+
+            let author = authorInfo.split('•')[0].trim();
+            let readTime = authorInfo.split('•')[1] ? authorInfo.split('•')[1].trim() : '5 min read';
+
+            await fetch(`${API_URL}/magazine/spotlight`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, tag, excerpt, body, mediaUrl, mediaType, author, readTime })
+            });
+            alert('Featured Spotlight Banner published successfully!');
+        }
+
         async function renderTrendingInputs() {
             try {
                 const res = await fetch(`${API_URL}/magazine/trending`);
@@ -148,14 +192,12 @@
             let headlines = [];
             inputs.forEach(i => { if(i.value.trim()) headlines.push(i.value.trim()); });
             await fetch(`${API_URL}/magazine/trending`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ headlines })
             });
             alert('Trending headlines updated successfully!');
         }
 
-        // Articles
         async function renderMagazineTable() {
             const res = await fetch(`${API_URL}/magazine/articles`);
             const articles = await res.json();
@@ -208,7 +250,6 @@
             renderMagazineTable();
         }
 
-        // Books
         async function renderBooksTable() {
             const res = await fetch(`${API_URL}/magazine/books`);
             const books = await res.json();
