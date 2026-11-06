@@ -53,11 +53,14 @@
         </div>
     </div>
 
+    <!-- Enhanced Pro Modal with Callback Support -->
     <div id="proModalOverlay">
         <div id="proModalBox">
             <h3 id="proModalTitle" style="font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem;">Hoknex Admin</h3>
             <p id="proModalMessage" style="font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1.5rem;"></p>
-            <button onclick="closeProModal()" class="btn-action" style="padding: 0.6rem 1.5rem;">Okay 👍</button>
+            <div id="proModalButtons" style="display:flex; gap:10px; justify-content:center;">
+                <button onclick="closeProModal()" class="btn-action" style="padding: 0.6rem 1.5rem;">Okay 👍</button>
+            </div>
         </div>
     </div>
 
@@ -176,11 +179,25 @@
             }
         };
 
-        function showProModal(title, message) {
+        function showProModal(title, message, callback = null) {
             document.getElementById('proModalTitle').innerText = title;
             document.getElementById('proModalMessage').innerText = message;
+            const btnContainer = document.getElementById('proModalButtons');
+            if(callback) {
+                btnContainer.innerHTML = `
+                    <button onclick="closeProModal()" class="btn-action" style="background:#6B7280; padding:0.6rem 1.2rem;">Cancel</button>
+                    <button id="proModalConfirmBtn" class="btn-action" style="background:#C27D65; padding:0.6rem 1.2rem;">Confirm</button>
+                `;
+                document.getElementById('proModalConfirmBtn').onclick = function() {
+                    closeProModal();
+                    callback();
+                };
+            } else {
+                btnContainer.innerHTML = `<button onclick="closeProModal()" class="btn-action" style="padding:0.6rem 1.5rem;">Okay 👍</button>`;
+            }
             document.getElementById('proModalOverlay').style.display = 'flex';
         }
+
         function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
 
         // --- QR Scanner Manager ---
@@ -223,7 +240,7 @@
             showProModal('Confirm Delete', 'Remove this payment scanner?', async () => {
                 await fetch(`${API_URL}/store/qrs/${id}`, { method: 'DELETE' });
                 renderQrManager();
-                showProModal('Deleted', 'Scanner removed.');
+                showProModal('Deleted', 'Scanner removed successfully.');
             });
         }
 
