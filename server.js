@@ -159,6 +159,76 @@ const CampaignSchema = new mongoose.Schema({
 const Campaign = mongoose.models.Campaign || mongoose.model('Campaign', CampaignSchema);
 
 // ==========================================
+// --- DEDICATED DONATION & CERTIFICATE ROUTES ---
+// ==========================================
+
+const DonationSchema = new mongoose.Schema({
+    donorName: String,
+    email: String,
+    amount: Number,
+    proofUrl: String,
+    status: { type: String, default: 'Pending Verification ⏳' },
+    certificateUrl: { type: String, default: '' },
+    date: { type: Date, default: Date.now }
+});
+const Donation = mongoose.models.Donation || mongoose.model('Donation', DonationSchema);
+
+app.get('/api/donations', async (req, res) => {
+    try { const donations = await Donation.find().sort({ date: -1 }); res.json(donations); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/donations', async (req, res) => {
+    try { const d = new Donation(req.body); await d.save(); res.json({ success: true, d }); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/donations/:id/verify', async (req, res) => {
+    try {
+        const { certificateUrl } = req.body;
+        await Donation.findByIdAndUpdate(req.params.id, {
+            status: 'Verified & Certificate Issued 🎓',
+            certificateUrl: certificateUrl
+        });
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/donations/:id', async (req, res) => {
+    try { await Donation.findByIdAndDelete(req.params.id); res.json({ success: true }); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ==========================================
+// --- DEDICATED FUND HELP DESK ROUTES ---
+// ==========================================
+
+const FundHelpDeskSchema = new mongoose.Schema({
+    fullName: String,
+    email: String,
+    category: String,
+    message: String,
+    status: { type: String, default: 'Pending ⏳' },
+    date: { type: Date, default: Date.now }
+});
+const FundHelpDesk = mongoose.models.FundHelpDesk || mongoose.model('FundHelpDesk', FundHelpDeskSchema);
+
+app.get('/api/fund-helpdesk', async (req, res) => {
+    try { const tickets = await FundHelpDesk.find().sort({ date: -1 }); res.json(tickets); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/fund-helpdesk', async (req, res) => {
+    try { const t = new FundHelpDesk(req.body); await t.save(); res.json({ success: true, t }); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/fund-helpdesk/:id', async (req, res) => {
+    try { await FundHelpDesk.findByIdAndDelete(req.params.id); res.json({ success: true }); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// ==========================================
 // --- ZINE MAGAZINE, SPOTLIGHT, BOOKS & TRENDING SCHEMAS & ROUTES ---
 // ==========================================
 
