@@ -159,8 +159,21 @@ const CampaignSchema = new mongoose.Schema({
 const Campaign = mongoose.models.Campaign || mongoose.model('Campaign', CampaignSchema);
 
 // ==========================================
-// --- ZINE MAGAZINE, BOOKS & TRENDING SCHEMAS & ROUTES ---
+// --- ZINE MAGAZINE, SPOTLIGHT, BOOKS & TRENDING SCHEMAS & ROUTES ---
 // ==========================================
+
+const SpotlightSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    tag: { type: String, default: 'WORLD NEWS • SPOTLIGHT' },
+    excerpt: { type: String, required: true },
+    body: String,
+    mediaUrl: String,
+    mediaType: { type: String, default: 'image' },
+    author: { type: String, default: 'World Desk International' },
+    readTime: { type: String, default: '5 min read' },
+    updatedAt: { type: Date, default: Date.now }
+});
+const Spotlight = mongoose.models.Spotlight || mongoose.model('Spotlight', SpotlightSchema);
 
 const MagazineArticleSchema = new mongoose.Schema({
     title: { type: String, required: true },
@@ -190,6 +203,23 @@ const TrendingConfigSchema = new mongoose.Schema({
     headlines: [String]
 });
 const TrendingConfig = mongoose.models.TrendingConfig || mongoose.model('TrendingConfig', TrendingConfigSchema);
+
+// --- Spotlight Banner Endpoints ---
+app.get('/api/magazine/spotlight', async (req, res) => {
+    try {
+        const spotlight = await Spotlight.findOne().sort({ updatedAt: -1 });
+        res.json(spotlight || {});
+    } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/magazine/spotlight', async (req, res) => {
+    try {
+        await Spotlight.deleteMany({});
+        const s = new Spotlight(req.body);
+        await s.save();
+        res.json({ success: true, s });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+});
 
 // --- Magazine Article Endpoints ---
 app.get('/api/magazine/articles', async (req, res) => {
