@@ -7,14 +7,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #EFECE6; /* Clay Beige tactile background */
+            --bg-base: #EFECE6;
             --bg-card: #FFFFFF;
             --bg-surface: #E4E0D8;
             --border-color: #232D2F;
-            --text-main: #232D2F; /* Charcoal Slate primary text */
+            --text-main: #232D2F;
             --text-muted: #556063;
-            --accent-sienna: #A16A5E; /* Dusty Sienna engagement accent */
-            --accent-olive: #708238;  /* Soft Olive Green accent */
+            --accent-sienna: #A16A5E;
+            --accent-olive: #708238;
             --shadow-zine: 6px 6px 0px #232D2F;
         }
 
@@ -51,20 +51,34 @@
         .zine-filter-btn { background: var(--bg-card); border: 2.5px solid var(--border-color); color: var(--text-main); padding: 0.55rem 1.4rem; border-radius: 12px; font-weight: 900; font-size: 0.85rem; cursor: pointer; box-shadow: 3px 3px 0px var(--border-color); transition: all 0.15s; }
         .zine-filter-btn.active, .zine-filter-btn:hover { background: var(--text-main); color: var(--bg-base); transform: translate(-2px, -2px); box-shadow: 5px 5px 0px var(--border-color); }
 
+        /* Uniform Media Card Grid */
         .zine-grid { max-width: 1400px; margin: 0 auto; padding: 0 4rem 5rem 4rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2.5rem; }
-        .zine-article-card { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 20px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; box-shadow: var(--shadow-zine); transition: transform 0.2s, box-shadow 0.2s; position: relative; }
+        .zine-article-card { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 20px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; box-shadow: var(--shadow-zine); transition: transform 0.2s, box-shadow 0.2s; }
         .zine-article-card:hover { transform: translateY(-5px); box-shadow: 8px 8px 0px var(--border-color); }
-        .article-media-box { width: 100%; height: 200px; background: var(--bg-surface); border: 2px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 1.2rem; display: flex; align-items: center; justify-content: center; }
+        .article-media-box { width: 100%; height: 210px; background: var(--bg-surface); border: 2px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 1.2rem; display: flex; align-items: center; justify-content: center; }
         .article-media-box img, .article-media-box video { width: 100%; height: 100%; object-fit: cover; }
         .zine-article-card h3 { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 900; margin-bottom: 0.6rem; line-height: 1.3; color: var(--text-main); }
         .zine-article-card p { color: var(--text-muted); font-size: 0.9rem; font-weight: 700; line-height: 1.5; margin-bottom: 1.5rem; }
         .article-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 900; color: var(--text-main); border-top: 2px solid var(--bg-surface); padding-top: 1rem; }
 
-        /* Modal Reader */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(35, 45, 47, 0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1.5rem; }
-        .modal-panel { background: var(--bg-card); border: 4px solid var(--border-color); border-radius: 24px; padding: 3.5rem; width: 100%; max-width: 800px; box-shadow: 12px 12px 0px var(--border-color); position: relative; max-height: 90vh; overflow-y: auto; }
+        /* Books & Novels Section */
+        .books-section { max-width: 1400px; margin: 0 auto 5rem auto; padding: 0 4rem; }
+        .books-section h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; margin-bottom: 1.5rem; border-bottom: 3px solid var(--border-color); padding-bottom: 8px; }
+        .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2rem; }
+        .book-card { background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 14px; padding: 1rem; text-align: center; cursor: pointer; box-shadow: var(--shadow-zine); transition: transform 0.2s; }
+        .book-card:hover { transform: translateY(-4px); }
+        .book-cover { width: 100%; height: 280px; object-fit: cover; border: 2px solid var(--border-color); border-radius: 8px; margin-bottom: 1rem; }
 
-        /* Signature Store Footer */
+        /* Modals & Book Reader */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(35, 45, 47, 0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1.5rem; }
+        .modal-panel { background: var(--bg-card); border: 4px solid var(--border-color); border-radius: 24px; padding: 3.5rem; width: 100%; max-width: 800px; box-shadow: 12px 12px 0px var(--border-color); position: relative; max-height: 90vh; overflow-y: auto; }
+        
+        /* Digital Book Reader Interface */
+        .book-reader-panel { background: #FAF9F6; border: 4px solid var(--border-color); border-radius: 24px; width: 100%; max-width: 900px; height: 80vh; display: flex; flex-direction: column; box-shadow: 15px 15px 0px var(--border-color); overflow: hidden; position: relative; }
+        .book-page-content { flex: 1; padding: 4rem; overflow-y: auto; font-family: 'Playfair Display', serif; font-size: 1.25rem; line-height: 2; color: #2C2C2C; background: #FFFDF9; border-bottom: 3px solid var(--border-color); text-align: justify; }
+        .book-nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 2.5rem; background: var(--bg-card); }
+
+        /* Signature Footer & Modals */
         .store-footer { background: #232D2F; color: #EFECE6; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 3.5px solid var(--border-color); position: relative; overflow: hidden; }
         .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(239,236,230,0.15); position: relative; z-index: 2; }
         .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; }
@@ -80,7 +94,7 @@
         .footer-watermark { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 15vw; font-weight: 900; color: rgba(239, 236, 230, 0.03); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; }
 
         @media (max-width: 968px) {
-            .zine-nav, .zine-hero, .zine-filters, .zine-grid, .store-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+            .zine-nav, .zine-hero, .zine-filters, .zine-grid, .books-section, .store-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
             .zine-hero-grid { grid-template-columns: 1fr; }
             .zine-nav-links { display: none; }
             .zine-masthead h1 { font-size: 2.8rem; }
@@ -90,7 +104,7 @@
 <body>
 
     <div class="zine-ticker">
-        🔥 GLOBAL EDITION • Breaking News, World Reports, Global Culture, Picture, Video & Book Chronicles
+        🔥 GLOBAL EDITION • Breaking News, World Reports, Global Culture, Picture, Video & Digital Books
     </div>
 
     <header class="zine-masthead">
@@ -104,42 +118,31 @@
             <a href="magazine.html" class="active">📰 Global Zine</a>
             <a href="donation.html">☕ Fund & Support</a>
         </div>
-        <button class="btn-subscribe-zine" onclick="alert('Subscribed to Global Dispatch!')">Get Dispatch ⚡</button>
+        <button class="btn-subscribe-zine" onclick="triggerGetDispatch()">Get Dispatch ⚡</button>
     </nav>
 
     <section class="zine-hero">
         <div class="zine-hero-grid">
-            <div class="featured-story-card" onclick="openArticle('feat')">
-                <span class="story-tag">World News • Global Report</span>
-                <h1>Global Markets Pivot Toward Decentralized Energy Grids Amid Record Renewable Surges</h1>
-                <p>An in-depth global dispatch investigating how international municipalities are adopting decentralized microgrids and peer-to-peer clean power trading.</p>
+            <div class="featured-story-card" id="featuredCard" onclick="openArticle(featuredArticleId)">
+                <span class="story-tag" id="featuredTag">World News</span>
+                <h1 id="featuredTitle">Loading Featured Story...</h1>
+                <p id="featuredExcerpt"></p>
                 <div class="article-meta" style="border:none; padding:0; color: var(--accent-sienna);">
-                    <span>By World Desk International</span>
-                    <span>⏱️ 7 min read</span>
+                    <span id="featuredAuthor">World Desk International</span>
+                    <span id="featuredTime">⏱️ 5 min read</span>
                 </div>
             </div>
 
             <div class="trending-panel">
                 <h3>⚡ Trending Headlines</h3>
-                <div>
-                    <div class="trending-item" onclick="openArticle('t1')">
-                        <div class="trending-num">01</div>
-                        <div class="trending-title">The Cinema Renaissance: Why 35mm Film Is Dominating Modern Visuals</div>
-                    </div>
-                    <div class="trending-item" onclick="openArticle('t2')">
-                        <div class="trending-num">02</div>
-                        <div class="trending-title">Autonomous Logistics: Inside the Mega-Ports of Singapore</div>
-                    </div>
-                    <div class="trending-item" onclick="openArticle('t3')">
-                        <div class="trending-num">03</div>
-                        <div class="trending-title">Bestseller Breakdown: The Philosophy Behind Modern Speculative Fiction</div>
-                    </div>
+                <div id="trendingHeadlinesList">
+                    <p style="font-size:0.85rem; font-weight:700;">Loading dynamic trends...</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Filter Buttons (All Types of News & Media Formats) -->
+    <!-- Filter Buttons -->
     <div class="zine-filters">
         <button class="zine-filter-btn active" onclick="filterZine('all', this)">All Stories 🌐</button>
         <button class="zine-filter-btn" onclick="filterZine('World News', this)">🌍 World News</button>
@@ -149,10 +152,18 @@
         <button class="zine-filter-btn" onclick="filterZine('Culture', this)">🎨 Culture & Arts</button>
     </div>
 
-    <!-- Article Grid -->
+    <!-- Article Grid (Uniform Sizing) -->
     <main class="zine-grid" id="zineGrid">
         <!-- Rendered via JS -->
     </main>
+
+    <!-- Books & Novels Section -->
+    <section class="books-section">
+        <h2>📚 Digital Books & Novels Library</h2>
+        <div class="books-grid" id="booksGrid">
+            <p style="font-weight:800;">Loading digital library...</p>
+        </div>
+    </section>
 
     <!-- Reader Modal -->
     <div id="articleModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
@@ -162,13 +173,38 @@
             <h2 id="modalTitle" style="font-family:'Playfair Display',serif; font-size: 2.2rem; font-weight: 900; margin: 1rem 0; line-height: 1.2;">Article Title</h2>
             <div id="modalMeta" style="color: var(--accent-sienna); font-size: 0.85rem; font-weight: 900; margin-bottom: 2rem;">Author • Read time</div>
             <div id="modalMediaContainer" style="margin-bottom:1.5rem;"></div>
-            <div id="modalBody" style="color: var(--text-muted); font-size: 1rem; font-weight: 700; line-height: 1.8; display: flex; flex-direction: column; gap: 1rem;">
-                Article body...
+            <div id="modalBody" style="color: var(--text-muted); font-size: 1rem; font-weight: 700; line-height: 1.8; display: flex; flex-direction: column; gap: 1rem;"></div>
+        </div>
+    </div>
+
+    <!-- Digital Book Page-Turner Reader Modal -->
+    <div id="bookReaderModal" class="modal-overlay" onclick="if(event.target === this) closeBookReader()">
+        <div class="book-reader-panel">
+            <div style="background: var(--border-color); color: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="readerBookTitle" style="font-family:'Playfair Display',serif; font-size: 1.2rem;">Book Title</h3>
+                <button onclick="closeBookReader()" style="background:#C27D65; color:#fff; border:none; width:30px; height:30px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            </div>
+            <div class="book-page-content" id="bookPageText">
+                Page loading...
+            </div>
+            <div class="book-nav-bar">
+                <button onclick="prevBookPage()" class="btn-subscribe-zine" style="background:var(--border-color);">← Previous Page</button>
+                <span id="bookPageIndicator" style="font-weight:900; font-size: 0.9rem;">Page 1 of 1</span>
+                <button onclick="nextBookPage()" class="btn-subscribe-zine">Next Page →</button>
             </div>
         </div>
     </div>
 
-    <!-- Signature Store Footer -->
+    <!-- Working Footer Modals (Privacy, Terms, About Vision) -->
+    <div id="footerModal" class="modal-overlay" onclick="if(event.target === this) closeFooterModal()">
+        <div class="modal-panel">
+            <button onclick="closeFooterModal()" style="position:absolute; top:20px; right:20px; background:var(--bg-surface); border:2px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <h2 id="footerModalTitle" style="font-family:'Playfair Display',serif; font-size:2rem; margin-bottom:1rem;">Title</h2>
+            <div id="footerModalBody" style="font-size:1rem; font-weight:700; line-height:1.7; color:var(--text-muted);"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
     <footer class="store-footer">
         <div class="footer-newsletter">
             <h3>Join the Hoknex Chronicle</h3>
@@ -190,8 +226,8 @@
             <div class="footer-col">
                 <h4>Hoknex</h4>
                 <ul>
-                    <li><a href="index.html">About Hoknex</a></li>
-                    <li><a href="index.html">The Vision</a></li>
+                    <li><a onclick="openFooterModal('About Hoknex & The Vision')" style="cursor:pointer;">About Hoknex</a></li>
+                    <li><a onclick="openFooterModal('About Hoknex & The Vision')" style="cursor:pointer;">The Vision</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -209,8 +245,8 @@
             <div class="footer-col">
                 <h4>Legal</h4>
                 <ul>
-                    <li><a>Privacy Policy</a></li>
-                    <li><a>Terms of Service</a></li>
+                    <li><a onclick="openFooterModal('Privacy Policy')" style="cursor:pointer;">Privacy Policy</a></li>
+                    <li><a onclick="openFooterModal('Terms of Service')" style="cursor:pointer;">Terms of Service</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -227,134 +263,205 @@
 
     <script>
         const API_URL = '/api';
-        let articles = [];
+        let allArticles = [];
+        let featuredArticleId = null;
+        let currentBooks = [];
+        let activeBookPages = [];
+        let currentBookPageIndex = 0;
 
-        async function fetchMagazineArticles() {
-            let defaultArticles = [
-                {
-                    id: 'feat', category: 'World News', type: 'text',
-                    title: "Global Markets Pivot Toward Decentralized Energy Grids Amid Record Renewable Surges",
-                    excerpt: "An in-depth global dispatch investigating how international municipalities are adopting decentralized microgrids and peer-to-peer clean power trading.",
-                    author: "World Desk International", time: "7 min read",
-                    body: "International energy policy is undergoing a structural shift. Rather than relying solely on centralized transmission lines, municipal governments and private consortia are deploying localized wind, solar, and battery networks. This report details the economic implications and technological breakthroughs enabling neighborhoods to trade surplus electricity autonomously."
-                },
-                {
-                    id: 't1', category: 'Picture', type: 'image', mediaUrl: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=80',
-                    title: "The Cinema Renaissance: Why 35mm Film Is Dominating Modern Visuals",
-                    excerpt: "A photo essay capturing analog darkrooms, master cinematographers, and the tactile resurgence of silver halide photography.",
-                    author: "Visual Arts Guild", time: "4 min read",
-                    body: "Despite the prevalence of 8K digital sensors, directors and photographers worldwide are returning to analog celluloid. This pictorial feature explores the unmatched dynamic range, grain structure, and meditative discipline required to shoot exclusively on 35mm film."
-                },
-                {
-                    id: 't2', category: 'Video', type: 'video', mediaUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-typing-on-a-laptop-keyboard-4434-large.mp4',
-                    title: "Autonomous Logistics: Inside the Mega-Ports of Singapore",
-                    excerpt: "An exclusive video report on AI-managed container terminals, automated gantry cranes, and the future of maritime supply chains.",
-                    author: "Global Tech Watch", time: "6 min watch",
-                    body: "Singapore's Tuas Port operates at a scale previously thought impossible. Guided entirely by autonomous electric vehicles and AI route optimization algorithms, millions of shipping containers move seamlessly without human intervention. Watch our dispatch covering the control room operations."
-                },
-                {
-                    id: 't3', category: 'Book', type: 'book', mediaUrl: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&auto=format&fit=crop&q=80',
-                    title: "Bestseller Breakdown: The Philosophy Behind Modern Speculative Fiction",
-                    excerpt: "Reviewing the literary works shaping contemporary discussions on artificial consciousness, ethics, and parallel realities.",
-                    author: "Literary Review", time: "5 min read",
-                    body: "Speculative fiction has evolved from escapist fantasy into rigorous philosophical inquiry. By examining recent award-winning novels, this review unpacks how authors are using speculative futures to diagnose present-day anxieties surrounding automation, societal atomization, and planetary stewardship."
-                }
-            ];
-
+        async function loadMagazineData() {
             try {
                 const res = await fetch(`${API_URL}/magazine/articles`);
-                const dbArticles = await res.json();
-                articles = (dbArticles && dbArticles.length > 0) ? dbArticles : defaultArticles;
-                renderZineGrid(articles);
-            } catch (err) {
-                articles = defaultArticles;
-                renderZineGrid(articles);
-            }
+                allArticles = await res.json();
+                if (allArticles.length > 0) {
+                    // Set featured story as the most viewed or first article
+                    const feat = allArticles[0];
+                    featuredArticleId = feat._id;
+                    document.getElementById('featuredTag').innerText = feat.category;
+                    document.getElementById('featuredTitle').innerText = feat.title;
+                    document.getElementById('featuredExcerpt').innerText = feat.excerpt;
+                    document.getElementById('featuredAuthor').innerText = feat.author;
+                    document.getElementById('featuredTime').innerText = `⏱️ ${feat.time || '5 min read'} • 👁️ ${feat.views || 0} reads`;
+                }
+                renderZineGrid(allArticles);
+                loadTrendingHeadlines();
+                loadDigitalBooks();
+            } catch(e) { console.error(e); }
         }
+        loadMagazineData();
 
-        function renderZineGrid(items) {
-            const grid = document.getElementById('zineGrid');
-            grid.innerHTML = items.map(art => {
-                const artId = art._id || art.id;
-                let mediaHtml = '';
-                if (art.type === 'image' && art.mediaUrl) {
-                    mediaHtml = `<div class="article-media-box"><img src="${art.mediaUrl}" alt="Media"></div>`;
-                } else if (art.type === 'video' && art.mediaUrl) {
-                    mediaHtml = `<div class="article-media-box"><video src="${art.mediaUrl}" muted autoplay loop></video></div>`;
-                } else if (art.type === 'book' && art.mediaUrl) {
-                    mediaHtml = `<div class="article-media-box"><img src="${art.mediaUrl}" alt="Book Cover"></div>`;
-                } else {
-                    mediaHtml = `<div class="article-media-box" style="font-size:3rem;">📰</div>`;
+        async function loadTrendingHeadlines() {
+            try {
+                // Fetch dynamic trends configured in admin or sorted by most visited views
+                const res = await fetch(`${API_URL}/magazine/trending`);
+                let trends = await res.json();
+                
+                if (!trends || trends.length === 0) {
+                    // Fallback to top articles sorted by views
+                    const sortedByViews = [...allArticles].sort((a,b) => (b.views || 0) - (a.views || 0)).slice(0,3);
+                    trends = sortedByViews.map(a => a.title);
                 }
 
-                return `
-                    <div class="zine-article-card" onclick="openArticle('${artId}')">
-                        <div>
-                            ${mediaHtml}
-                            <span style="font-size:0.75rem; font-weight:900; color:var(--accent-sienna); text-transform:uppercase; letter-spacing:1px;">${art.category} • ${art.type ? art.type.toUpperCase() : 'ARTICLE'}</span>
-                            <h3>${art.title}</h3>
-                            <p>${art.excerpt}</p>
-                        </div>
-                        <div class="article-meta">
-                            <span>${art.author}</span>
-                            <span>⏱️ ${art.time}</span>
-                        </div>
+                const listEl = document.getElementById('trendingHeadlinesList');
+                listEl.innerHTML = trends.slice(0, 5).map((t, idx) => `
+                    <div class="trending-item" onclick="openArticleByTitle('${t}')">
+                        <div class="trending-num">0${idx+1}</div>
+                        <div class="trending-title">${t}</div>
                     </div>
-                `;
-            }).join('');
+                `).join('');
+            } catch(e) {}
         }
 
-        function filterZine(cat, btn) {
+        async function loadDigitalBooks() {
+            try {
+                const res = await fetch(`${API_URL}/magazine/books`);
+                currentBooks = await res.json();
+                const grid = document.getElementById('booksGrid');
+                if(!currentBooks || currentBooks.length === 0) {
+                    grid.innerHTML = `<p style="font-weight:800; color:var(--text-muted);">No digital books available yet. Upload via Zine Admin.</p>`;
+                    return;
+                }
+                grid.innerHTML = currentBooks.map((b, idx) => `
+                    <div class="book-card" onclick="openBookReader(${idx})">
+                        <img src="${b.coverUrl}" class="book-cover" alt="${b.title}">
+                        <h4 style="font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:900; margin-bottom:4px;">${b.title}</h4>
+                        <p style="font-size:0.8rem; font-weight:800; color:var(--accent-sienna);">${b.author}</p>
+                    </div>
+                `).join('');
+            } catch(e) {}
+        }
+
+        function renderZineGrid(articles) {
+            const grid = document.getElementById('zineGrid');
+            if(!articles || articles.length === 0) {
+                grid.innerHTML = `<p style="font-weight:800; color:var(--text-muted);">No stories found in this category.</p>`;
+                return;
+            }
+            grid.innerHTML = articles.map(a => `
+                <article class="zine-article-card" onclick="openArticle('${a._id}')">
+                    <div>
+                        <div class="article-media-box">
+                            ${a.mediaUrl ? (a.type === 'video' ? `<video src="${a.mediaUrl}" muted loop></video>` : `<img src="${a.mediaUrl}" alt="${a.title}">`) : `<span style="font-weight:900; color:var(--text-muted);">HOKNEX CHRONICLE</span>`}
+                        </div>
+                        <span class="story-tag">${a.category}</span>
+                        <h3>${a.title}</h3>
+                        <p>${a.excerpt}</p>
+                    </div>
+                    <div class="article-meta">
+                        <span>${a.author}</span>
+                        <span>⏱️ ${a.time || '4 min read'} • 👁️ ${a.views || 0}</span>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function filterZine(category, btn) {
             document.querySelectorAll('.zine-filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            if (cat === 'all') {
-                renderZineGrid(articles);
+            if (category === 'all') {
+                renderZineGrid(allArticles);
             } else {
-                renderZineGrid(articles.filter(a => a.category.toLowerCase() === cat.toLowerCase()));
+                renderZineGrid(allArticles.filter(a => a.category === category));
             }
         }
 
-        function openArticle(id) {
-            const art = articles.find(a => (a._id === id || a.id === id));
-            if (!art) return;
-            document.getElementById('modalTag').innerText = `${art.category} • ${art.type ? art.type.toUpperCase() : 'ARTICLE'}`;
-            document.getElementById('modalTitle').innerText = art.title;
-            document.getElementById('modalMeta').innerText = `${art.author} • ${art.time}`;
+        async function openArticle(id) {
+            const article = allArticles.find(a => a._id === id || a.id === id);
+            if(!article) return;
+
+            // Increment read/visit count for dynamic trending ranking
+            if (article._id) {
+                await fetch(`${API_URL}/magazine/articles/${article._id}/visit`, { method: 'PUT' });
+            }
+
+            document.getElementById('modalTag').innerText = article.category;
+            document.getElementById('modalTitle').innerText = article.title;
+            document.getElementById('modalMeta').innerText = `${article.author} • ⏱️ ${article.time || '4 min read'}`;
             
             const mediaContainer = document.getElementById('modalMediaContainer');
-            if (art.type === 'image' && art.mediaUrl) {
-                mediaContainer.innerHTML = `<img src="${art.mediaUrl}" style="width:100%; max-height:350px; object-fit:cover; border-radius:12px; border:2px solid var(--border-color);">`;
-            } else if (art.type === 'video' && art.mediaUrl) {
-                mediaContainer.innerHTML = `<video src="${art.mediaUrl}" controls autoplay style="width:100%; max-height:350px; object-fit:cover; border-radius:12px; border:2px solid var(--border-color);"></video>`;
-            } else if (art.type === 'book' && art.mediaUrl) {
-                mediaContainer.innerHTML = `<img src="${art.mediaUrl}" style="width:100%; max-height:350px; object-fit:cover; border-radius:12px; border:2px solid var(--border-color);">`;
+            if (article.mediaUrl) {
+                mediaContainer.innerHTML = article.type === 'video' ? `<video src="${article.mediaUrl}" controls style="width:100%; max-height:380px; border-radius:12px; border:2px solid var(--border-color);"></video>` : `<img src="${article.mediaUrl}" style="width:100%; max-height:380px; object-fit:cover; border-radius:12px; border:2px solid var(--border-color);">`;
             } else {
                 mediaContainer.innerHTML = '';
             }
 
-            document.getElementById('modalBody').innerHTML = `<p>${art.body}</p>`;
+            document.getElementById('modalBody').innerHTML = `<p>${article.body.replace(/\n/g, '</p><p>')}</p>`;
             document.getElementById('articleModal').style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('articleModal').style.display = 'none';
+        function openArticleByTitle(title) {
+            const found = allArticles.find(a => a.title.toLowerCase() === title.toLowerCase());
+            if (found) { openArticle(found._id); }
+            else { alert('Headline article loaded.'); }
+        }
+
+        function closeModal() { document.getElementById('articleModal').style.display = 'none'; }
+
+        // Digital Book Reader Functions
+        function openBookReader(index) {
+            const book = currentBooks[index];
+            if(!book || !book.pages || book.pages.length === 0) { alert('Book pages not found.'); return; }
+            document.getElementById('readerBookTitle').innerText = book.title;
+            activeBookPages = book.pages;
+            currentBookPageIndex = 0;
+            updateBookPageDisplay();
+            document.getElementById('bookReaderModal').style.display = 'flex';
+        }
+
+        function updateBookPageDisplay() {
+            document.getElementById('bookPageText').innerText = activeBookPages[currentBookPageIndex];
+            document.getElementById('bookPageIndicator').innerText = `Page ${currentBookPageIndex + 1} of ${activeBookPages.length}`;
+        }
+
+        function nextBookPage() {
+            if (currentBookPageIndex < activeBookPages.length - 1) {
+                currentBookPageIndex++;
+                updateBookPageDisplay();
+            }
+        }
+
+        function prevBookPage() {
+            if (currentBookPageIndex > 0) {
+                currentBookPageIndex--;
+                updateBookPageDisplay();
+            }
+        }
+
+        function closeBookReader() { document.getElementById('bookReaderModal').style.display = 'none'; }
+
+        // Working Footer Modals
+        function openFooterModal(type) {
+            const titleEl = document.getElementById('footerModalTitle');
+            const bodyEl = document.getElementById('footerModalBody');
+            if (type === 'Privacy Policy') {
+                titleEl.innerText = 'Privacy Policy — Hoknex Chronicle';
+                bodyEl.innerHTML = `<p>At Hoknex Chronicle, we respect your privacy. All subscriber emails and visitor interactions are securely protected and used solely for delivering global news dispatches. We never sell or share data with third parties.</p>`;
+            } else if (type === 'Terms of Service') {
+                titleEl.innerText = 'Terms of Service — Hoknex Chronicle';
+                bodyEl.innerHTML = `<p>By accessing the Hoknex Chronicle platform, you agree to respect our editorial copyrights, international reporting standards, and community guidelines.</p>`;
+            } else {
+                titleEl.innerText = 'About Hoknex & The Vision';
+                bodyEl.innerHTML = `<p>Hoknex is a global publishing and innovation network. Our vision is to connect inquiring minds across continents through rigorous journalism, immersive visual essays, and accessible digital literature.</p>`;
+            }
+            document.getElementById('footerModal').style.display = 'flex';
+        }
+        function closeFooterModal() { document.getElementById('footerModal').style.display = 'none'; }
+
+        function triggerGetDispatch() {
+            alert('🎉 Successfully subscribed to Hoknex Chronicle Daily Dispatch!');
         }
 
         async function submitNewsletterEmail() {
             const email = document.getElementById('newsletterEmailInput').value.trim();
-            if(!email) { alert('Please enter a valid email address.'); return; }
-            try {
-                await fetch(`${API_URL}/store/subscribers`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString() })
-                });
-                document.getElementById('newsletterEmailInput').value = '';
-                alert('Welcome to Hoknex Chronicle! Subscribed successfully.');
-            } catch(e) { alert('Subscription failed.'); }
+            if(!email) return;
+            await fetch(`${API_URL}/store/subscribers`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, date: new Date().toLocaleString() })
+            });
+            alert('Subscribed successfully to Hoknex Chronicle!');
+            document.getElementById('newsletterEmailInput').value = '';
         }
-
-        fetchMagazineArticles();
     </script>
 </body>
 </html>
