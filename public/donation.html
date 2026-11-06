@@ -131,22 +131,23 @@
             </form>
         </div>
 
+        <!-- Help Desk Form -->
         <div class="portal-box">
             <h2>Help Desk & Grant Support 🤝</h2>
             <p>Submit your inquiries, request technical mentorship, or apply for student hackathon sponsorships.</p>
             
-            <form onsubmit="submitSupportTicket(event)">
+            <form onsubmit="submitHelpDesk(event)">
                 <div class="form-field">
                     <label>Full Name *</label>
-                    <input type="text" id="ticketName" placeholder="Sarah Chen" required>
+                    <input type="text" id="helpName" placeholder="Sarah Chen" required>
                 </div>
                 <div class="form-field">
                     <label>Contact Email *</label>
-                    <input type="email" id="ticketEmail" placeholder="creator@edu.in" required>
+                    <input type="email" id="helpEmail" placeholder="creator@edu.in" required>
                 </div>
                 <div class="form-field">
                     <label>Help Category *</label>
-                    <select id="ticketCategory">
+                    <select id="helpCategory">
                         <option value="Grant">Creator Financial Grant</option>
                         <option value="Mentorship">Technical Mentorship</option>
                         <option value="Hackathon">Hackathon Sponsorship</option>
@@ -155,14 +156,14 @@
                 </div>
                 <div class="form-field">
                     <label>Inquiry Message *</label>
-                    <textarea id="ticketMessage" rows="4" placeholder="Describe your request or query..." required></textarea>
+                    <textarea id="helpMessage" rows="4" placeholder="Describe your request or query..." required></textarea>
                 </div>
                 <button type="submit" class="btn-primary-cta" style="width:100%; background:var(--primary-trust);">Submit Help Ticket 🚀</button>
             </form>
         </div>
     </div>
 
-    <!-- Certificate Download & Verification Portal -->
+    <!-- Certificate Portal -->
     <section class="cert-section">
         <div class="cert-card">
             <h2 style="font-size:2rem; font-weight:900; margin-bottom:0.5rem;">Download Donor Recognition Certificate 🎓</h2>
@@ -257,24 +258,24 @@
             }
         }
 
-        async function submitSupportTicket(e) {
+        async function submitHelpDesk(e) {
             e.preventDefault();
-            const name = document.getElementById('ticketName').value;
-            const email = document.getElementById('ticketEmail').value;
-            const category = document.getElementById('ticketCategory').value;
-            const message = document.getElementById('ticketMessage').value;
+            const fullName = document.getElementById('helpName').value;
+            const email = document.getElementById('helpEmail').value;
+            const category = document.getElementById('helpCategory').value;
+            const message = document.getElementById('helpMessage').value;
 
             try {
-                await fetch(`${API_URL}/support`, {
+                await fetch(`${API_URL}/fund-helpdesk`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: name, query: `[HELP DESK - ${category.toUpperCase()}]: From ${email}. Msg: ${message}` })
+                    body: JSON.stringify({ fullName, email, category, message })
                 });
-                showProModal('Ticket Submitted 🚀', 'Your help desk ticket has been sent to the owner.');
-                document.getElementById('ticketName').value = '';
-                document.getElementById('ticketEmail').value = '';
-                document.getElementById('ticketMessage').value = '';
-            } catch(e) { showProModal('Error', 'Could not submit ticket.'); }
+                showProModal('Ticket Submitted 🚀', 'Your help desk inquiry has been sent to the fund team.');
+                document.getElementById('helpName').value = '';
+                document.getElementById('helpEmail').value = '';
+                document.getElementById('helpMessage').value = '';
+            } catch(e) { showProModal('Error', 'Could not submit help ticket.'); }
         }
 
         async function requestCertificate() {
