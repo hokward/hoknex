@@ -65,11 +65,83 @@
         .form-group input {
             background: rgba(255, 255, 255, 0.06) !important;
             border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+            color: #fff !important;
         }
 
         .form-group input:focus {
             border-color: var(--accent-cyan) !important;
             background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        /* Store-Style Movement & Multi-Column Footer */
+        .hoknex-footer-multi {
+            background: #111827;
+            color: #F5F2EB;
+            padding: 5rem 4rem 3rem 4rem;
+            margin-top: 4rem;
+            border-top: 3px solid #1E3A8A;
+            position: relative;
+            overflow: hidden;
+            text-align: left;
+        }
+        .footer-newsletter {
+            max-width: 800px;
+            margin-bottom: 4rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            z-index: 2;
+        }
+        .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; }
+        .footer-newsletter p { color: #CCBEB1; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; }
+        .newsletter-input-group input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 800;
+            outline: none;
+        }
+        .btn-newsletter {
+            background: #D9822B;
+            color: #fff;
+            border: none;
+            padding: 0 2rem;
+            border-radius: 10px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .btn-newsletter:hover { transform: translateY(-2px); }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2.5rem;
+            font-size: 0.88rem;
+            position: relative;
+            z-index: 2;
+        }
+        .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FAF9F6; text-transform: uppercase; letter-spacing: 1px; }
+        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+        .footer-col a { color: #CCBEB1; text-decoration: none; font-weight: 700; cursor: pointer; transition: color 0.2s; }
+        .footer-col a:hover { color: #fff; }
+        .footer-col p { color: #CCBEB1; font-size: 0.9rem; font-weight: 600; line-height: 1.5; }
+        .footer-watermark {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 15vw;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.03);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1;
+            letter-spacing: -5px;
         }
 
         /* Premium Toast Notification */
@@ -115,7 +187,7 @@
     <!-- Navbar -->
     <header class="hoknex-navbar">
         <div class="nav-brand">
-            <span class="logo-badge"><img src="hoknexlogo.png.jpeg"></span> <strong>Hoknex</strong>
+            <span class="logo-badge"><img src="hoknexlogo.png.jpeg" alt="Logo"></span> <strong>Hoknex</strong>
         </div>
         <nav class="nav-links">
             <a href="store.html">Store 🛍️</a>
@@ -132,12 +204,12 @@
             <h1>Where students and creators <span>shape the world.</span></h1>
             <p class="hero-subtitle">Hoknex is the ultimate global student network. Bringing together colleges, schools, and campus communities from every corner of the planet into one powerful platform.</p>
             
-            <!-- Cartoon Animal Mascot Widget -->
-            <div class="mascot-container" style="display:flex; align-items:center; gap:12px; background:var(--paper); border:3px solid var(--border); padding:12px 16px; border-radius:14px; box-shadow:var(--shadow-art-sm); width:fit-content; margin-bottom:2rem;">
-                <div class="mascot-avatar" style="font-size:2rem;">🦊</div>
+            <!-- Cartoon Animal Mascot Widget (Raccoon Hacker Theme) -->
+            <div class="mascot-container" style="display:flex; align-items:center; gap:14px; background:var(--paper); border:3px solid var(--border); padding:14px 18px; border-radius:16px; box-shadow:var(--shadow-art-sm); width:fit-content; margin-bottom:2rem;">
+                <div class="mascot-avatar" style="font-size:2.2rem;">🦝</div>
                 <div class="mascot-text">
-                    <p style="font-weight:900; font-size:0.95rem;">Hoksy says hello!</p>
-                    <span style="font-size:0.8rem; color:var(--ink-light); font-weight:800;">Your friendly campus mascot guiding global students</span>
+                    <p style="font-weight:900; font-size:0.98rem; color:var(--ink);">Raccoon Hacker says hello! 🦝✨</p>
+                    <span style="font-size:0.82rem; color:var(--ink-light); font-weight:800;">Your campus mascot guiding global student builders</span>
                 </div>
             </div>
 
@@ -258,12 +330,21 @@
         </div>
     </section>
 
-    <!-- Multi-Column Footer -->
+    <!-- Multi-Column Footer with Join Movement -->
     <footer class="hoknex-footer-multi">
+        <div class="footer-newsletter">
+            <h3>Join the Hoknex movement</h3>
+            <p>Get exclusive drops, campus hackathon invites, and stories that fuel your next breakthrough - straight to your inbox.</p>
+            <div class="newsletter-input-group">
+                <input type="email" id="newsletterEmailInput" placeholder="Enter your email address">
+                <button class="btn-newsletter" onclick="submitIndexNewsletter()">Join</button>
+            </div>
+        </div>
+
         <div class="footer-grid">
             <div class="footer-col">
-                <div class="nav-brand">
-                    <span class="logo-badge">H</span> <strong>Hoknex</strong>
+                <div class="nav-brand" style="margin-bottom: 1rem;">
+                    <span class="logo-badge" style="background:var(--accent-orange); color:#fff; padding:6px 10px; border-radius:8px; font-weight:900;">H</span> <strong style="color:#fff; font-size:1.1rem;">Hoknex</strong>
                 </div>
                 <p>Run by students, for students. Hoknex connects every school and college campus in the world into a single student network.</p>
             </div>
@@ -292,10 +373,11 @@
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Hoknex Platform. All rights reserved. Built for global campus connectivity.</p>
-            <p>System Status: <span style="color:#22c55e;">● Live & Connected</span></p>
+        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #CCBEB1; position: relative; z-index: 2;">
+            <span>&copy; 2026 Hoknex Platform. All rights reserved. Built for global campus connectivity.</span>
+            <span>System Status: <span style="color:#22c55e;">● Live & Connected</span></span>
         </div>
+        <div class="footer-watermark">hoknex</div>
     </footer>
 
     <!-- Universal Modern Centered Notification / Popup Modal -->
@@ -375,6 +457,8 @@
 
     <!-- Script to Handle Modern Custom Popups, Modals, & Auth Logic -->
     <script>
+        const API_URL = '/api';
+
         // Premium Toast Notification System
         function showHoknexToast(message, emoji = '✨') {
             const container = document.getElementById('hoknexToastContainer');
@@ -566,7 +650,7 @@
 
                     if (data.success) {
                         localStorage.setItem('hoknex_user', document.getElementById('regUsername').value);
-                        showHoknexPopup('Welcome to Hoknex!', 'Your student account has beensuccessfully verified and created.', '🎉');
+                        showHoknexPopup('Welcome to Hoknex!', 'Your student account has been successfully verified and created.', '🎉');
                         setTimeout(() => {
                             window.location.href = 'feed.html';
                         }, 1200);
@@ -578,6 +662,22 @@
                     showHoknexPopup('Error', 'Error verifying code.', '❌');
                     btn.innerText = "Verify OTP & Create Account";
                 }
+            }
+        }
+
+        async function submitIndexNewsletter() {
+            const email = document.getElementById('newsletterEmailInput').value.trim();
+            if(!email) { showHoknexToast('Please enter a valid email address!', '⚠️'); return; }
+            try {
+                await fetch(`${API_URL}/store/subscribers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, date: new Date().toLocaleString() })
+                });
+                showHoknexToast('Successfully joined the Hoknex movement! 🎉', '🦝');
+                document.getElementById('newsletterEmailInput').value = '';
+            } catch(e) {
+                showHoknexToast('Subscription failed. Try again later.', '❌');
             }
         }
     </script>
