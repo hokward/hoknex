@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #F5F2EB;
+            --bg-body: #F4F4F6;
             --bg-card: #FFFFFF;
             --text-main: #1E3A8A;
             --text-muted: #64748B;
@@ -34,7 +34,6 @@
         th, td { border: 2.5px solid var(--border-color); padding: 12px; text-align: left; font-weight: 800; }
         th { background: #FAF9F6; font-weight: 900; }
 
-        /* A4 Paper View Modal */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 10000; padding: 1rem; overflow-y: auto; }
         .a4-paper { background: #fff; border: 3px solid #1E3A8A; width: 100%; max-width: 650px; padding: 3rem; position: relative; box-shadow: 15px 15px 0px rgba(0,0,0,0.2); border-radius: 8px; color: #1E293B; }
         .certificate-card { background: #FAF9F6; border: 8px double #1E3A8A; width: 100%; max-width: 750px; padding: 3rem; text-align: center; position: relative; box-shadow: 15px 15px 0px rgba(0,0,0,0.2); }
@@ -92,7 +91,7 @@
                     <p style="font-size:0.65rem; color:#94A3B8; margin-top:2px;">Issued under Global Non-Profit Compliance</p>
                 </div>
                 <div style="text-align:center;">
-                    <img id="previewSigImg" src="" style="max-height:55px; max-width:130px; object-fit:contain; display:block; margin:0 auto;" alt="Signature">
+                    <img id="previewSigImg" src="" style="max-height:65px; max-width:150px; object-fit:contain; display:block; margin:0 auto;" alt="Signature">
                     <p style="font-size:0.75rem; font-weight:900; color:#1E3A8A; border-top:1px solid #1E3A8A; padding-top:2px; margin-top:2px;">Authorized Signature</p>
                 </div>
             </div>
@@ -107,6 +106,17 @@
                 <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Dedicated management panel for donations, payment proofs, certificates, and help desk support.</p>
             </div>
             <a href="donation.html" class="btn-action" style="background:#1E3A8A;">View Public Fund Page 🌐</a>
+        </div>
+
+        <!-- Signature Setup Box -->
+        <div class="admin-section" style="background:#FAF9F6; border-color:#1E3A8A;">
+            <h2>✍️ Owner Signature Setup for Certificates</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1rem;">Upload your signature image once here. It will automatically appear on all generated certificates.</p>
+            <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+                <input type="file" id="sigFileInput" accept="image/*" style="background:#fff; border:2px solid #1E3A8A; padding:8px; border-radius:8px; font-weight:800;">
+                <button onclick="uploadOwnerSignature()" class="btn-action">Upload Signature ✍️</button>
+                <div id="currentSigPreview" style="font-size:0.8rem; font-weight:800; color:#059669;"></div>
+            </div>
         </div>
 
         <!-- Section 1: Donations & Certificate Generator -->
@@ -151,7 +161,23 @@
         }
         function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
 
-        // --- 1. Donations & Certificate Generator Table ---
+        async function uploadOwnerSignature() {
+            const fileInput = document.getElementById('sigFileInput');
+            if(!fileInput.files || !fileInput.files[0]) {
+                showProModal('Select File', 'Please choose your signature image file first.');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+            try {
+                const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                const upData = await upRes.json();
+                localStorage.setItem('hoknex_owner_sig', upData.url);
+                document.getElementById('currentSigPreview').innerText = '✅ Signature saved successfully!';
+                showProModal('Success! ✍️', 'Owner signature uploaded and saved.');
+            } catch(e) { showProModal('Error', 'Failed to upload signature.'); }
+        }
+
         async function renderDonationsTable() {
             try {
                 const res = await fetch(`${API_URL}/donations`);
@@ -176,7 +202,7 @@
                                             <button onclick="viewDonorA4('${d.donorName}', '${d.email}', '${d.amount}', '${d.proofUrl}', '${d.date}')" class="btn-action" style="background:#2563EB; padding:4px 8px; font-size:0.75rem;">👁️ View A4 Details</button>
                                             <button onclick="previewCertificate('${d.donorName}', '${d.amount}', '${d._id}')" class="btn-action" style="background:#3B82F6; padding:4px 8px; font-size:0.75rem;">🎓 Preview Certificate</button>
                                             <input type="text" id="cert-url-${idx}" placeholder="Certificate download link..." value="${d.certificateUrl || ''}" style="padding:6px; font-size:0.8rem; border:2px solid #1E3A8A; border-radius:6px; font-weight:800; outline:none;">
-                                            <button onclick="verifyAndAutoFill('${d._id}', ${idx}, '${d.donorName}')" class="btn-action" style="background:#10B981; padding:4px 8px; font-size:0.75rem;">Auto-Fill & Verify PDF 🎓</button>
+                                            <button onclick="verifyAndAutoFill('${d._id}', ${idx}, '${d.donorName}', '${d.amount}')" class="btn-action" style="background:#10B981; padding:4px 8px; font-size:0.75rem;">Auto-Fill & Verify PDF 🎓</button>
                                             <button onclick="deleteDonation('${d._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete Record ✕</button>
                                         </div>
                                     </td>
@@ -200,26 +226,24 @@
             document.getElementById('detailModalOverlay').style.display = 'flex';
         }
 
-        async function previewCertificate(name, amount, id) {
+        function previewCertificate(name, amount, id) {
             document.getElementById('previewDonorName').innerText = name;
             document.getElementById('previewAmount').innerText = '₹' + amount;
             document.getElementById('previewId').innerText = 'HOKNEX-CERT-' + id.substring(id.length - 6).toUpperCase();
             
-            try {
-                const res = await fetch(`${API_URL}/store/qrs`);
-                const qrs = await res.json();
-                if(qrs.length > 0) {
-                    document.getElementById('previewSigImg').src = qrs[0].imageUrl;
-                }
-            } catch(e) {}
+            const savedSig = localStorage.getItem('hoknex_owner_sig');
+            if(savedSig) {
+                document.getElementById('previewSigImg').src = savedSig;
+            }
 
             document.getElementById('certModalOverlay').style.display = 'flex';
         }
         function closeCertModal() { document.getElementById('certModalOverlay').style.display = 'none'; }
         function closeDetailModal() { document.getElementById('detailModalOverlay').style.display = 'none'; }
 
-        async function verifyAndAutoFill(id, idx, name) {
-            const generatedCertLink = window.location.origin + `/donation.html?verified=true&donor=${encodeURIComponent(name)}`;
+        async function verifyAndAutoFill(id, idx, name, amount) {
+            // Real unique certificate URL generated for this specific donor
+            const generatedCertLink = window.location.origin + `/donation.html?download_cert=true&donor=${encodeURIComponent(name)}&amount=${amount}`;
             document.getElementById(`cert-url-${idx}`).value = generatedCertLink;
 
             try {
@@ -228,7 +252,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ certificateUrl: generatedCertLink })
                 });
-                showProModal('Verified & Dispatched! 🎉', 'Certificate auto-filled and sent to user portal successfully!');
+                showProModal('Verified & Dispatched! 🎉', 'Real certificate link generated and sent to user portal successfully!');
                 renderDonationsTable();
             } catch(e) { showProModal('Error', 'Failed to verify donation.'); }
         }
@@ -241,7 +265,6 @@
             });
         }
 
-        // --- 2. Help Desk Table ---
         async function renderHelpDeskTable() {
             try {
                 const res = await fetch(`${API_URL}/fund-helpdesk`);
@@ -292,7 +315,6 @@
             });
         }
 
-        // --- 3. CSV Data Export Utility ---
         function exportTableToCSV(filename, wrapperId) {
             const wrap = document.getElementById(wrapperId);
             const table = wrap.querySelector('table');
@@ -319,6 +341,9 @@
         function loadFundAdminData() {
             renderDonationsTable();
             renderHelpDeskTable();
+            if(localStorage.getItem('hoknex_owner_sig')) {
+                document.getElementById('currentSigPreview').innerText = '✅ Signature loaded!';
+            }
         }
     </script>
 </body>
