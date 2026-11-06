@@ -55,12 +55,25 @@
         .cert-section { max-width: 1200px; margin: 0 auto 5rem auto; padding: 0 2rem; }
         .cert-card { background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); color: #fff; border-radius: 24px; padding: 3rem; text-align: center; box-shadow: var(--shadow-card); }
 
+        /* Store Footer Match */
         .store-footer { background: #111827; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 3px solid #1E3A8A; position: relative; overflow: hidden; text-align: left; }
+        .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.15); position: relative; z-index: 2; }
+        .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; }
+        .footer-newsletter p { color: #CCBEB1; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; }
+        .newsletter-input-group input { flex: 1; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.2); padding: 12px 16px; border-radius: 10px; color: #fff; font-weight: 800; outline: none; }
+        .btn-newsletter { background: #D9822B; color: #fff; border: none; padding: 0 2rem; border-radius: 10px; font-weight: 900; cursor: pointer; }
+
         .footer-links-grid { display: grid; grid-template-columns: repeat(5, 1fr) 1.5fr; gap: 2rem; font-size: 0.88rem; position: relative; z-index: 2; }
         .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FAF9F6; }
         .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
         .footer-col a { color: #CCBEB1; text-decoration: none; font-weight: 700; cursor: pointer; }
+        .footer-col a:hover { color: #fff; }
         .footer-watermark { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.04); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; }
+
+        /* Integrated Modals */
+        .page-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 10000; padding: 1rem; overflow-y: auto; }
+        .page-modal-box { background: #fff; border: 3px solid #1E3A8A; width: 100%; max-width: 750px; padding: 3rem; position: relative; box-shadow: 15px 15px 0px rgba(0,0,0,0.2); border-radius: 16px; color: #1E293B; max-height: 85vh; overflow-y: auto; text-align: left; }
 
         #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
         #proModalBox { background: #FAF9F6; border: 3.5px solid var(--primary-trust); border-radius: 20px; padding: 2rem; max-width: 400px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--primary-trust); }
@@ -73,6 +86,38 @@
             <h3 id="proModalTitle" style="font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem;">Hoknex Notice</h3>
             <p id="proModalMessage" style="font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1.5rem;"></p>
             <button onclick="closeProModal()" class="btn-primary-cta" style="padding: 0.6rem 1.5rem;">Okay 👍</button>
+        </div>
+    </div>
+
+    <!-- About Mission Modal -->
+    <div id="missionModalOverlay" class="page-modal-overlay" onclick="if(event.target === this) closeMissionModal()">
+        <div class="page-modal-box">
+            <button onclick="closeMissionModal()" style="position:absolute; top:20px; right:20px; background:#C27D65; color:#fff; border:none; width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <h2 style="font-size:2rem; font-weight:900; color:var(--primary-trust); margin-bottom:1rem;">About Hoknex Global Mission 🌐</h2>
+            <p style="font-size:1rem; font-weight:700; color:#475569; margin-bottom:1rem;">Hoknex is an international student-led initiative and creator ecosystem engineered to empower teenagers, student innovators, and open-source developers across the globe.</p>
+            <h3 style="font-size:1.1rem; font-weight:900; color:var(--primary-trust); margin-top:1.5rem; margin-bottom:0.5rem;">Our Core Purpose</h3>
+            <p style="font-size:0.95rem; font-weight:700; color:#475569; margin-bottom:1rem;">We believe that high-impact innovation shouldn't be bottlenecked by financial barriers. Through transparent community-backed funding, student hackathons, and open-source utility tools, Hoknex bridges the gap between raw student talent and real-world deployment.</p>
+            <h3 style="font-size:1.1rem; font-weight:900; color:var(--primary-trust); margin-top:1.5rem; margin-bottom:0.5rem;">What We Fund</h3>
+            <ul style="padding-left:20px; font-size:0.95rem; font-weight:700; color:#475569; margin-bottom:1.5rem;">
+                <li><b>Student Hackathons & Tech Events:</b> Sponsoring venues, prizes, and operational support for regional builder communities.</li>
+                <li><b>Creator Financial Grants:</b> Direct micro-grants for indie game developers, open-source maintainers, and student hardware engineers.</li>
+                <li><b>Educational Infrastructure:</b> Providing web tools, collaboration networks, and developer utilities with 0% platform take-rates.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Legal Guidelines Modal -->
+    <div id="guidelinesModalOverlay" class="page-modal-overlay" onclick="if(event.target === this) closeGuidelinesModal()">
+        <div class="page-modal-box">
+            <button onclick="closeGuidelinesModal()" style="position:absolute; top:20px; right:20px; background:#C27D65; color:#fff; border:none; width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <h2 style="font-size:2rem; font-weight:900; color:var(--primary-trust); margin-bottom:1rem;">Legal Guidelines & Compliance 🛡️</h2>
+            <p style="font-size:1rem; font-weight:700; color:#475569; margin-bottom:1rem;">Hoknex operates under strict legal transparency and ethical guidelines to protect both contributors and the platform administration.</p>
+            <h3 style="font-size:1.1rem; font-weight:900; color:var(--primary-trust); margin-top:1.5rem; margin-bottom:0.5rem;">1. Philanthropic Recognition vs. Tax Exemption</h3>
+            <p style="font-size:0.95rem; font-weight:700; color:#475569; margin-bottom:1rem;">Contributions made through the Hoknex Global Fund are voluntary financial contributions toward youth innovation, hackathons, and creator grants. <b>Certificates issued by Hoknex serve as tokens of philanthropic appreciation and recognition.</b> These certificates are not valid for government tax deductions (such as 80G in India or 501(c)(3) in the US).</p>
+            <h3 style="font-size:1.1rem; font-weight:900; color:var(--primary-trust); margin-top:1.5rem; margin-bottom:0.5rem;">2. Anti-Fraud & Payment Verification</h3>
+            <p style="font-size:0.95rem; font-weight:700; color:#475569; margin-bottom:1rem;">To prevent fraudulent chargebacks or unauthorized transactions, every contributor is required to upload a valid payment screenshot proof. Admin verification is performed manually by matching transaction references before any certificate is issued.</p>
+            <h3 style="font-size:1.1rem; font-weight:900; color:var(--primary-trust); margin-top:1.5rem; margin-bottom:0.5rem;">3. Data Privacy & Security</h3>
+            <p style="font-size:0.95rem; font-weight:700; color:#475569; margin-bottom:1rem;">We respect contributor privacy. Names, emails, and transaction screenshots collected on this platform are used solely for internal ledger verification and certificate generation.</p>
         </div>
     </div>
 
@@ -120,7 +165,7 @@
 
                 <div class="scanner-box">
                     <h4 style="font-size:0.9rem; font-weight:900; margin-bottom:6px;">📷 Scan Founder UPI QR to Pay</h4>
-                    <div id="qrContainer" style="width:140px; height:140px; margin:0 auto; background:#fff; border:2px solid var(--border-color); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:800;">Loading QR...</div>
+                    <div id="dynamicScannerContainer" style="width:160px; height:160px; margin:0 auto; background:#fff; border:2px solid var(--border-color); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:800; border-radius:10px; overflow:hidden;">Loading QR...</div>
                     <div style="margin-top:10px; text-align:left;">
                         <label style="font-size:0.75rem; font-weight:900;">Upload Payment Screenshot (Required) *</label>
                         <input type="file" id="paymentProofInput" accept="image/*" required style="margin-top:4px; font-size:0.8rem;">
@@ -178,18 +223,58 @@
         </div>
     </section>
 
+    <!-- Footer Connected to Modals & Movement -->
     <footer class="store-footer">
-        <div class="footer-links-grid">
-            <div class="footer-col"><h4>Fund & Support</h4><ul><li><a href="donation.html">Make Donation</a></li></ul></div>
-            <div class="footer-col"><h4>Hoknex Foundation</h4><ul><li><a href="index.html">About Mission</a></li></ul></div>
-            <div class="footer-col"><h4>Certificates</h4><ul><li><a href="donation.html">Donor Portal</a></li></ul></div>
-            <div class="footer-col"><h4>Ecosystem</h4><ul><li><a href="store.html">Store</a></li><li><a href="magazine.html">Zine</a></li></ul></div>
-            <div class="footer-col"><h4>Trust & Legal</h4><ul><a>Guidelines</a></ul></div>
-            <div class="footer-col"><h4>Global</h4><p style="color: #CCBEB1; font-size: 0.8rem;">World Network</p></div>
+        <div class="footer-newsletter">
+            <h3>Join the Hoknex movement</h3>
+            <p>Get exclusive drops, campus hackathon invites, and stories that fuel your next breakthrough - straight to your inbox.</p>
+            <div class="newsletter-input-group">
+                <input type="email" id="newsletterEmailInput" placeholder="Enter your email address">
+                <button class="btn-newsletter" onclick="submitNewsletterEmail()">Join</button>
+            </div>
         </div>
-        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #CCBEB1;">
+        <div class="footer-links-grid">
+            <div class="footer-col">
+                <h4>Fund & Support</h4>
+                <ul>
+                    <li><a href="donation.html">Make Donation</a></li>
+                    <li><a href="donation.html">Help Desk</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Hoknex Foundation</h4>
+                <ul>
+                    <li><a onclick="openMissionModal()" style="cursor:pointer;">About Mission</a></li>
+                    <li><a onclick="openMissionModal()" style="cursor:pointer;">Transparency</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Certificates</h4>
+                <ul>
+                    <li><a href="donation.html">Donor Portal</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Ecosystem</h4>
+                <ul>
+                    <li><a href="store.html">Store</a></li>
+                    <li><a href="magazine.html">Zine</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Trust & Legal</h4>
+                <ul>
+                    <li><a onclick="openGuidelinesModal()" style="cursor:pointer;">Guidelines & Compliance</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Global</h4>
+                <p style="color: #CCBEB1; font-size: 0.8rem;">World Network</p>
+            </div>
+        </div>
+        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #CCBEB1; position: relative; z-index: 2;">
             <span>&copy; Hoknex Global Foundation 2026. All rights reserved.</span>
-            <span>0% Platform Fees</span>
+            <span>0% Platform Fees • 100% Impact</span>
         </div>
         <div class="footer-watermark">hoknex</div>
     </footer>
@@ -204,25 +289,31 @@
         }
         function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
 
+        function openMissionModal() { document.getElementById('missionModalOverlay').style.display = 'flex'; }
+        function closeMissionModal() { document.getElementById('missionModalOverlay').style.display = 'none'; }
+
+        function openGuidelinesModal() { document.getElementById('guidelinesModalOverlay').style.display = 'flex'; }
+        function closeGuidelinesModal() { document.getElementById('guidelinesModalOverlay').style.display = 'none'; }
+
         function selectTier(amount, el) {
             document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
             document.getElementById('customAmount').value = amount;
         }
 
-        async function loadQrCode() {
+        async function loadPublicQrCode() {
             try {
                 const res = await fetch(`${API_URL}/store/qrs`);
                 const qrs = await res.json();
-                const container = document.getElementById('qrContainer');
-                if (qrs.length > 0) {
+                const container = document.getElementById('dynamicScannerContainer');
+                if (qrs && qrs.length > 0) {
                     container.innerHTML = `<img src="${qrs[0].imageUrl}" style="width:100%; height:100%; object-fit:cover;">`;
                 } else {
                     container.innerHTML = `📱 Default UPI QR`;
                 }
             } catch(e) { container.innerHTML = `📱 QR Error`; }
         }
-        loadQrCode();
+        loadPublicQrCode();
 
         async function processDonation(e) {
             e.preventDefault();
@@ -303,6 +394,18 @@
             } catch(e) {
                 resBox.innerHTML = `<span style="color:#F59E0B;">Could not check verification status.</span>`;
             }
+        }
+
+        async function submitNewsletterEmail() {
+            const email = document.getElementById('newsletterEmailInput').value.trim();
+            if(!email) return;
+            await fetch(`${API_URL}/store/subscribers`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, date: new Date().toLocaleString() })
+            });
+            showProModal('Subscribed', 'Joined the movement successfully!');
+            document.getElementById('newsletterEmailInput').value = '';
         }
     </script>
 </body>
