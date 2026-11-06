@@ -55,27 +55,12 @@
         .cert-section { max-width: 1200px; margin: 0 auto 5rem auto; padding: 0 2rem; }
         .cert-card { background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); color: #fff; border-radius: 24px; padding: 3rem; text-align: center; box-shadow: var(--shadow-card); }
 
-        /* Dedicated Fund Footer */
         .store-footer { background: #111827; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 3px solid #1E3A8A; position: relative; overflow: hidden; text-align: left; }
-        .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.15); position: relative; z-index: 2; }
-        .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; }
-        .footer-newsletter p { color: #CCBEB1; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
-        .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; }
-        .newsletter-input-group input { flex: 1; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.2); padding: 12px 16px; border-radius: 10px; color: #fff; font-weight: 800; outline: none; }
-        .btn-newsletter { background: #D9822B; color: #fff; border: none; padding: 0 2rem; border-radius: 10px; font-weight: 900; cursor: pointer; }
-
         .footer-links-grid { display: grid; grid-template-columns: repeat(5, 1fr) 1.5fr; gap: 2rem; font-size: 0.88rem; position: relative; z-index: 2; }
         .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FAF9F6; }
         .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
         .footer-col a { color: #CCBEB1; text-decoration: none; font-weight: 700; cursor: pointer; }
-        .footer-col a:hover { color: #fff; }
-
         .footer-watermark { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.04); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; }
-
-        @media (max-width: 968px) {
-            .footer-links-grid { grid-template-columns: 1fr; }
-            .store-footer { padding: 3rem 1.5rem; }
-        }
 
         #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
         #proModalBox { background: #FAF9F6; border: 3.5px solid var(--primary-trust); border-radius: 20px; padding: 2rem; max-width: 400px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--primary-trust); }
@@ -177,74 +162,33 @@
         </div>
     </div>
 
+    <!-- Certificate Download & Verification Portal -->
     <section class="cert-section">
         <div class="cert-card">
             <h2 style="font-size:2rem; font-weight:900; margin-bottom:0.5rem;">Download Donor Recognition Certificate 🎓</h2>
-            <p style="font-size:0.95rem; font-weight:700; margin-bottom:1.5rem; opacity:0.9;">Already donated? Enter your registered name and payment proof to verify and download your verified certificate.</p>
+            <p style="font-size:0.95rem; font-weight:700; margin-bottom:1.5rem; opacity:0.9;">Already donated? Enter your registered name and email below. Once verified by the owner, your download link will appear here.</p>
             
             <div style="max-width:500px; margin:0 auto; display:flex; flex-direction:column; gap:10px; text-align:left;">
                 <input type="text" id="certNameInput" placeholder="Enter Your Registered Name" style="padding:12px; border-radius:10px; border:none; font-weight:800; outline:none;">
                 <input type="email" id="certEmailInput" placeholder="Enter Your Registered Email" style="padding:12px; border-radius:10px; border:none; font-weight:800; outline:none;">
-                <button onclick="requestCertificate()" class="btn-primary-cta" style="background:var(--accent-amber); color:#1E293B; margin-top:5px;">Request Certificate Verification 📥</button>
+                <button onclick="requestCertificate()" class="btn-primary-cta" style="background:var(--accent-amber); color:#1E293B; margin-top:5px;">Check Certificate Status 📥</button>
             </div>
             <div id="certResultBox" style="margin-top:1.5rem; font-weight:800; font-size:0.95rem;"></div>
         </div>
     </section>
 
-    <!-- Footer Customized for Hoknex Global Fund -->
     <footer class="store-footer">
-        <div class="footer-newsletter">
-            <h3>Join the Global Impact Movement</h3>
-            <p>Get quarterly transparency reports, creator spotlight stories, and fund updates straight to your inbox.</p>
-            <div class="newsletter-input-group">
-                <input type="email" id="newsletterEmailInput" placeholder="Enter your email address">
-                <button class="btn-newsletter" onclick="submitNewsletterEmail()">Subscribe</button>
-            </div>
-        </div>
         <div class="footer-links-grid">
-            <div class="footer-col">
-                <h4>Fund & Support</h4>
-                <ul>
-                    <li><a href="donation.html">Make a Donation</a></li>
-                    <li><a href="donation.html">Help Desk & Grants</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Hoknex Foundation</h4>
-                <ul>
-                    <li><a href="index.html">About Our Mission</a></li>
-                    <li><a href="index.html">Global Transparency</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Certificates</h4>
-                <ul>
-                    <li><a href="donation.html">Donor Verification</a></li>
-                    <li><a href="donation.html">Download Portal</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Ecosystem</h4>
-                <ul>
-                    <li><a href="store.html">Hoknex Store</a></li>
-                    <li><a href="magazine.html">Zine Magazine</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Trust & Legal</h4>
-                <ul>
-                    <li><a>Grant Guidelines</a></li>
-                    <li><a>Privacy & Security</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Global Impact</h4>
-                <p style="color: #CCBEB1; font-size: 0.8rem; margin-top: 8px;">Backing Teenagers from worldwide.</p>
-            </div>
+            <div class="footer-col"><h4>Fund & Support</h4><ul><li><a href="donation.html">Make Donation</a></li></ul></div>
+            <div class="footer-col"><h4>Hoknex Foundation</h4><ul><li><a href="index.html">About Mission</a></li></ul></div>
+            <div class="footer-col"><h4>Certificates</h4><ul><li><a href="donation.html">Donor Portal</a></li></ul></div>
+            <div class="footer-col"><h4>Ecosystem</h4><ul><li><a href="store.html">Store</a></li><li><a href="magazine.html">Zine</a></li></ul></div>
+            <div class="footer-col"><h4>Trust & Legal</h4><ul><a>Guidelines</a></ul></div>
+            <div class="footer-col"><h4>Global</h4><p style="color: #CCBEB1; font-size: 0.8rem;">World Network</p></div>
         </div>
-        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #CCBEB1; position: relative; z-index: 2;">
+        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #CCBEB1;">
             <span>&copy; Hoknex Global Foundation 2026. All rights reserved.</span>
-            <span>0% Platform Fees • 100% Impact</span>
+            <span>0% Platform Fees</span>
         </div>
         <div class="footer-watermark">hoknex</div>
     </footer>
@@ -281,8 +225,8 @@
 
         async function processDonation(e) {
             e.preventDefault();
-            const amount = document.getElementById('customAmount').value;
-            const name = document.getElementById('supporterName').value;
+            const amount = Number(document.getElementById('customAmount').value);
+            const donorName = document.getElementById('supporterName').value;
             const email = document.getElementById('supporterEmail').value;
             const proofInput = document.getElementById('paymentProofInput');
 
@@ -298,16 +242,13 @@
                 const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
                 const upData = await upRes.json();
                 
-                await fetch(`${API_URL}/support`, {
+                await fetch(`${API_URL}/donations`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username: name,
-                        query: `[CERTIFICATE REQUEST / DONATION]: ₹${amount} donated by ${name} (${email}). Proof: ${upData.url}`
-                    })
+                    body: JSON.stringify({ donorName, email, amount, proofUrl: upData.url })
                 });
 
-                showProModal('Donation Submitted! 🎉', 'Thank you! Please wait for owner verification. Once verified, you can download your certificate from the certificate portal using your name & email.');
+                showProModal('Donation Submitted! 🎉', 'Please wait for verification. Once approved by the owner, your download link will appear in the certificate portal.');
                 document.getElementById('supporterName').value = '';
                 document.getElementById('supporterEmail').value = '';
                 document.getElementById('paymentProofInput').value = '';
@@ -349,30 +290,18 @@
             resBox.innerHTML = `<span style="color:#FFFBEB;">⏳ Please wait for verification... Once verified by the owner, your download link will appear here.</span>`;
             
             try {
-                const res = await fetch(`${API_URL}/support`);
-                const tickets = await res.json();
-                const verified = tickets.find(t => t.description.includes(name) && t.description.includes(email) && t.status === 'Resolved' && t.reply);
+                const res = await fetch(`${API_URL}/donations`);
+                const donations = await res.json();
+                const verified = donations.find(d => d.donorName.toLowerCase() === name.toLowerCase() && d.email.toLowerCase() === email.toLowerCase() && d.certificateUrl);
 
                 if (verified) {
-                    resBox.innerHTML = `<div style="background:#10B981; padding:12px; border-radius:8px; margin-top:10px;">✅ Verification Complete! <a href="${verified.reply}" target="_blank" style="color:#fff; text-decoration:underline; font-weight:900; margin-left:8px;">Download Certificate 📄</a></div>`;
+                    resBox.innerHTML = `<div style="background:#10B981; padding:12px; border-radius:8px; margin-top:10px;">✅ Verification Complete! <a href="${verified.certificateUrl}" target="_blank" style="color:#fff; text-decoration:underline; font-weight:900; margin-left:8px;">Download Certificate 📄</a></div>`;
                 } else {
-                    resBox.innerHTML = `<span style="color:#FDE68A;">⏳ Status: Pending Owner Verification. Please check back later.</span>`;
+                    resBox.innerHTML = `<span style="color:#FDE68A;">⏳ Status: Please wait for verification. Once approved, you get your download link here only.</span>`;
                 }
             } catch(e) {
                 resBox.innerHTML = `<span style="color:#F59E0B;">Could not check verification status.</span>`;
             }
-        }
-
-        async function submitNewsletterEmail() {
-            const email = document.getElementById('newsletterEmailInput').value.trim();
-            if(!email) return;
-            await fetch(`${API_URL}/store/subscribers`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, date: new Date().toLocaleString() })
-            });
-            showProModal('Subscribed', 'Registered successfully!');
-            document.getElementById('newsletterEmailInput').value = '';
         }
     </script>
 </body>
