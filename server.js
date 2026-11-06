@@ -117,6 +117,8 @@ const Product = mongoose.models.Product || mongoose.model('Product', ProductSche
 const ArticleSchema = new mongoose.Schema({
     title: String,
     category: String,
+    type: { type: String, default: 'text' },
+    mediaUrl: String,
     icon: String,
     author: String,
     time: String,
@@ -169,6 +171,44 @@ const CampaignSchema = new mongoose.Schema({
     image: String
 });
 const Campaign = mongoose.models.Campaign || mongoose.model('Campaign', CampaignSchema);
+
+// --- NEW: Dedicated Donation & Certificate Schema & API Routes ---
+const DonationSchema = new mongoose.Schema({
+    donorName: String,
+    email: String,
+    amount: Number,
+    proofUrl: String,
+    status: { type: String, default: 'Pending Verification ⏳' },
+    certificateUrl: { type: String, default: '' },
+    date: { type: Date, default: Date.now }
+});
+const Donation = mongoose.models.Donation || mongoose.model('Donation', DonationSchema);
+
+app.get('/api/donations', async (req, res) => {
+    try { const donations = await Donation.find().sort({ date: -1 }); res.json(donations); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/donations', async (req, res) => {
+    try { const d = new Donation(req.body); await d.save(); res.json({ success: true, d }); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/donations/:id/verify', async (req, res) => {
+    try {
+        const { certificateUrl } = req.body;
+        await Donation.findByIdAndUpdate(req.params.id, {
+            status: 'Verified & Certificate Issued 🎓',
+            certificateUrl: certificateUrl
+        });
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/donations/:id', async (req, res) => {
+    try { await Donation.findByIdAndDelete(req.params.id); res.json({ success: true }); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
 
 // --- Store Products Endpoints ---
 app.get('/api/store/products', async (req, res) => {
