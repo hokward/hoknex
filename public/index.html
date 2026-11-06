@@ -4,50 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hoknex — Connect Every Campus in the World</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
         /* Mobile-First Responsive & Ultra-Premium Enhancements */
         @media (max-width: 968px) {
-            .hoknex-navbar {
-                padding: 1rem 1.5rem !important;
-            }
-            .nav-links {
-                display: none;
-            }
-            .hoknex-hero {
-                flex-direction: column !important;
-                padding: 2.5rem 1.5rem !important;
-                gap: 2rem !important;
-            }
-            .hero-left h1 {
-                font-size: 2.6rem !important;
-            }
-            .hero-right {
-                max-width: 100% !important;
-                padding: 2rem 1.5rem !important;
-            }
-            .hoknex-showcase, .hoknex-founder-section, .hoknex-footer-multi {
-                padding: 3rem 1.5rem !important;
-            }
-            .founder-card-box {
-                flex-direction: column !important;
-                padding: 2rem !important;
-                gap: 2rem !important;
-                text-align: center;
-            }
-            .founder-image-wrapper {
-                margin: 0 auto;
-            }
-            .footer-grid {
-                grid-template-columns: 1fr !important;
-                gap: 2.5rem !important;
-            }
-            .footer-bottom {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
+            .hoknex-navbar { padding: 1rem 1.5rem !important; }
+            .nav-links { display: none; }
+            .hoknex-hero { flex-direction: column !important; padding: 2.5rem 1.5rem !important; gap: 2rem !important; }
+            .hero-left h1 { font-size: 2.6rem !important; }
+            .hero-right { max-width: 100% !important; padding: 2rem 1.5rem !important; }
+            .hoknex-showcase, .hoknex-founder-section, .hoknex-footer-multi { padding: 3rem 1.5rem !important; }
+            .founder-card-box { flex-direction: column !important; padding: 2rem !important; gap: 2rem !important; text-align: center; }
+            .founder-image-wrapper { margin: 0 auto; }
+            .footer-grid { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
+            .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
         }
 
         /* Upgraded Login / Create Account Theme (Neo-Glass Fusion) */
@@ -57,29 +28,69 @@
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.15) !important;
         }
 
-        .auth-tabs {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        }
+        .auth-tabs { background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; }
+        .form-group input { background: rgba(255, 255, 255, 0.06) !important; border: 1.5px solid rgba(255, 255, 255, 0.12) !important; color: #fff !important; }
+        .form-group input:focus { border-color: var(--accent-cyan) !important; background: rgba(255, 255, 255, 0.1) !important; }
 
-        .form-group input {
-            background: rgba(255, 255, 255, 0.06) !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
-            color: #fff !important;
+        /* --- Custom Hoknex Hacker Critter Footer Banner --- */
+        .hoknex-footer-critter-wrap {
+            background-color: #0b0f19;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            border-top: 3px solid #1E3A8A;
+            padding: 3rem 4rem 1rem 4rem;
+            position: relative;
+            overflow: hidden;
+            font-family: 'JetBrains Mono', monospace;
+            color: #E2E8F0;
         }
-
-        .form-group input:focus {
-            border-color: var(--accent-cyan) !important;
-            background: rgba(255, 255, 255, 0.1) !important;
+        .critter-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+        .critter-ascii-terminal {
+            font-size: 0.75rem;
+            line-height: 1.25;
+            color: #94A3B8;
+            background: rgba(0,0,0,0.4);
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .hoknex-signpost {
+            background: #1e293b;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 1.1rem;
+            border: 2px dashed rgba(255,255,255,0.3);
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
+        }
+        .critter-mascot-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            margin-bottom: 2rem;
         }
 
         /* Store-Style Movement & Multi-Column Footer */
         .hoknex-footer-multi {
             background: #111827;
             color: #F5F2EB;
-            padding: 5rem 4rem 3rem 4rem;
-            margin-top: 4rem;
-            border-top: 3px solid #1E3A8A;
+            padding: 3rem 4rem 3rem 4rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
             position: relative;
             overflow: hidden;
             text-align: left;
@@ -92,8 +103,8 @@
             position: relative;
             z-index: 2;
         }
-        .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; }
-        .footer-newsletter p { color: #CCBEB1; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .footer-newsletter p { color: #CCBEB1; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; font-family: 'Plus Jakarta Sans', sans-serif; }
         .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; }
         .newsletter-input-group input {
             flex: 1;
@@ -104,6 +115,7 @@
             color: #fff;
             font-weight: 800;
             outline: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .btn-newsletter {
             background: #D9822B;
@@ -114,6 +126,7 @@
             font-weight: 900;
             cursor: pointer;
             transition: transform 0.15s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .btn-newsletter:hover { transform: translateY(-2px); }
 
@@ -124,6 +137,7 @@
             font-size: 0.88rem;
             position: relative;
             z-index: 2;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FAF9F6; text-transform: uppercase; letter-spacing: 1px; }
         .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
@@ -204,7 +218,7 @@
             <h1>Where students and creators <span>shape the world.</span></h1>
             <p class="hero-subtitle">Hoknex is the ultimate global student network. Bringing together colleges, schools, and campus communities from every corner of the planet into one powerful platform.</p>
             
-            <!-- Cartoon Animal Mascot Widget (Raccoon Hacker Theme) -->
+            <!-- Cartoon Animal Mascot Widget -->
             <div class="mascot-container" style="display:flex; align-items:center; gap:14px; background:var(--paper); border:3px solid var(--border); padding:14px 18px; border-radius:16px; box-shadow:var(--shadow-art-sm); width:fit-content; margin-bottom:2rem;">
                 <div class="mascot-avatar" style="font-size:2.2rem;">🦝</div>
                 <div class="mascot-text">
@@ -329,6 +343,18 @@
             </div>
         </div>
     </section>
+
+    <!-- Custom Hoknex Hacker Critter Banner Graphic -->
+    <div class="hoknex-footer-critter-wrap">
+        <div class="critter-top-bar">
+            <div class="critter-ascii-terminal">
+                <span style="color:#38bdf8;">hoknex@global-node:~$</span> ./connect_campuses.sh<br>
+                <span style="color:#22c55e;">[OK]</span> Encrypted peer-to-peer student mesh active.<br>
+                <span style="color:#fbbf24;">[INFO]</span> Raccoon mascot online & watching over codebases. 🦝
+            </div>
+            <div class="hoknex-signpost">🦝 HOKNEX GLOBAL NETWORK</div>
+        </div>
+    </div>
 
     <!-- Multi-Column Footer with Join Movement -->
     <footer class="hoknex-footer-multi">
