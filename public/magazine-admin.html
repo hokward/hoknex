@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoknex — Global Zine Magazine Owner Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #F4F4F6;
+            --bg-card: #FFFFFF;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --border-color: #111827;
+            --accent-terracotta: #C27D65;
+            --shadow-brand: 4px 4px 0px #111827;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 2.5rem 2rem; }
+
+        /* Password Protection Gate */
+        #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 99999; padding: 1rem; }
+        #authBox { background: #FAF9F6; border: 4px solid var(--border-color); border-radius: 24px; padding: 3rem; max-width: 440px; width: 100%; text-align: center; box-shadow: 10px 10px 0px var(--border-color); }
+
+        .admin-container { max-width: 1200px; margin: 0 auto; display: none; }
+        .admin-header {
+            display: flex; justify-content: space-between; align-items: center; background: var(--bg-card);
+            border: 3.5px solid var(--border-color); padding: 1.8rem 2.5rem; border-radius: 20px; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
+        }
+        .admin-section {
+            background: var(--bg-card); border: 3.5px solid var(--border-color);
+            border-radius: 20px; padding: 2.5rem; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
+        }
+        h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color: var(--text-main); border-bottom: 2px solid #F3F4F6; padding-bottom: 8px; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
+        .form-group label { font-size: 0.8rem; font-weight: 900; text-transform: uppercase; }
+        .form-group input, .form-group textarea, .form-group select {
+            background: #FAF9F6; border: 2.5px solid var(--border-color); padding: 12px; border-radius: 12px; font-weight: 800; outline: none; width: 100%; color: var(--text-main);
+        }
+        .btn-action {
+            background: var(--accent-terracotta); color: #fff; border: 2.5px solid var(--border-color);
+            padding: 0.85rem 1.6rem; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color);
+            transition: transform 0.15s, box-shadow 0.15s; text-decoration: none; display: inline-block;
+        }
+        .btn-action:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0px var(--border-color); }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.88rem; }
+        th, td { border: 2.5px solid var(--border-color); padding: 12px; text-align: left; font-weight: 800; }
+        th { background: #FAF9F6; font-weight: 900; }
+
+        #proModalOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px);
+            display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem;
+        }
+        #proModalBox {
+            background: #FAF9F6; border: 3.5px solid var(--border-color); border-radius: 20px;
+            padding: 2rem; max-width: 420px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Password Protection Modal Gate (25-Min Session Persistence) -->
+    <div id="authOverlay">
+        <div id="authBox">
+            <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem; border:none;">🔐 Zine Admin Access</h2>
+            <p style="font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 1.5rem;">Enter your owner password to manage Global Zine articles.</p>
+            <input type="password" id="adminPasswordInput" placeholder="Enter owner password..." style="background:#fff; border:2.5px solid var(--border-color); padding:12px; border-radius:10px; font-weight:800; width:100%; margin-bottom:1rem; outline:none; text-align:center;">
+            <button onclick="verifyAdminPassword()" class="btn-action" style="width:100%;">Unlock Zine Dashboard 🔓</button>
+        </div>
+    </div>
+
+    <!-- Modern Notification Modal -->
+    <div id="proModalOverlay">
+        <div id="proModalBox">
+            <h3 id="proModalTitle" style="font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem;">Hoknex Zine Admin</h3>
+            <p id="proModalMessage" style="font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1.5rem;"></p>
+            <button onclick="closeProModal()" class="btn-action" style="padding: 0.6rem 1.5rem;">Okay 👍</button>
+        </div>
+    </div>
+
+    <div class="admin-container" id="adminMainContent">
+        <div class="admin-header">
+            <div>
+                <h1 style="font-size: 1.8rem; font-weight: 900;">📰 Hoknex Global Zine Magazine Command Center</h1>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Publish and manage global news, picture features, video dispatches, and book reviews.</p>
+            </div>
+            <div>
+                <a href="magazine.html" class="btn-action" style="background:#232D2F;">View Public Zine 📰</a>
+            </div>
+        </div>
+
+        <!-- Zine Magazine Article Manager Section -->
+        <div class="admin-section">
+            <h2>📰 Global Zine Magazine & News Publisher</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Create new editions, photo features, and articles instantly.</p>
+            <form onsubmit="handleMagazineUpload(event)">
+                <div class="form-grid">
+                    <div class="form-group"><label>Article Title</label><input type="text" id="magTitle" placeholder="Title" required></div>
+                    <div class="form-group"><label>Category</label><select id="magCategory"><option value="World News">World News</option><option value="Picture">Picture Feature</option><option value="Video">Video Dispatch</option><option value="Book">Book Review</option><option value="Culture">Culture & Arts</option></select></div>
+                    <div class="form-group"><label>Type</label><select id="magType"><option value="text">Text Article</option><option value="image">Picture Based</option><option value="video">Video Based</option><option value="book">Book Based</option></select></div>
+                    <div class="form-group"><label>Media File</label><input type="file" id="magMediaFile" accept="image/*,video/*" style="background:#fff;"></div>
+                    <div class="form-group"><label>Author & Read Time</label><input type="text" id="magAuthor" value="International Bureau • 4 min read" required></div>
+                    <div class="form-group"><label>Summary</label><textarea id="magExcerpt" rows="2" placeholder="Summary..." required></textarea></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Full Body</label><textarea id="magBody" rows="3" placeholder="Full body..." required></textarea></div>
+                </div>
+                <button type="submit" class="btn-action">Publish Article ⚡</button>
+            </form>
+            <div id="magazineTableWrap" style="overflow-x:auto; margin-top:1.5rem;"><p>Loading articles...</p></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+        const OWNER_PASSWORD = 'hoknex2026';
+
+        // 25-Minute Session Persistence Check
+        function verifyAdminPassword() {
+            const val = document.getElementById('adminPasswordInput').value;
+            if (val === OWNER_PASSWORD) {
+                localStorage.setItem('hoknex_zine_login_time', Date.now());
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('adminMainContent').style.display = 'block';
+                renderMagazineTable();
+            } else {
+                alert('Incorrect owner password! Please try again.');
+            }
+        }
+
+        window.onload = function() {
+            const loginTime = localStorage.getItem('hoknex_zine_login_time');
+            if (loginTime && (Date.now() - Number(loginTime) < 25 * 60 * 1000)) {
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('adminMainContent').style.display = 'block';
+                renderMagazineTable();
+            }
+        };
+
+        function showProModal(title, message) {
+            document.getElementById('proModalTitle').innerText = title;
+            document.getElementById('proModalMessage').innerText = message;
+            document.getElementById('proModalOverlay').style.display = 'flex';
+        }
+        function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
+
+        async function renderMagazineTable() {
+            try {
+                const res = await fetch(`${API_URL}/magazine/articles`);
+                const articles = await res.json();
+                const wrap = document.getElementById('magazineTableWrap');
+                if(!articles || articles.length === 0) { wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No articles published yet.</p>`; return; }
+                wrap.innerHTML = `
+                    <table>
+                        <thead><tr><th>Title</th><th>Category</th><th>Type</th><th>Author</th><th>Action</th></tr></thead>
+                        <tbody>
+                            ${articles.map(a => `
+                                <tr>
+                                    <td><b>${a.title}</b></td><td>${a.category}</td><td>${a.type || 'text'}</td><td>${a.author}</td>
+                                    <td><button onclick="deleteArticle('${a._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch(e) { console.error(e); }
+        }
+
+        async function handleMagazineUpload(e) {
+            e.preventDefault();
+            const title = document.getElementById('magTitle').value;
+            const category = document.getElementById('magCategory').value;
+            const type = document.getElementById('magType').value;
+            const authorInfo = document.getElementById('magAuthor').value;
+            const excerpt = document.getElementById('magExcerpt').value;
+            const body = document.getElementById('magBody').value;
+            const fileInput = document.getElementById('magMediaFile');
+
+            let mediaUrl = '';
+            if (fileInput.files && fileInput.files[0]) {
+                const formData = new FormData();
+                formData.append('image', fileInput.files[0]);
+                const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                const upData = await upRes.json();
+                mediaUrl = upData.url;
+            }
+
+            let author = authorInfo.split('•')[0].trim();
+            let time = authorInfo.split('•')[1] ? authorInfo.split('•')[1].trim() : '4 min read';
+
+            await fetch(`${API_URL}/magazine/articles`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, category, type, mediaUrl, icon: '📰', author, time, excerpt, body })
+            });
+            showProModal('Success', 'Article published successfully!');
+            renderMagazineTable();
+            document.getElementById('magTitle').value = '';
+            document.getElementById('magExcerpt').value = '';
+            document.getElementById('magBody').value = '';
+            fileInput.value = '';
+        }
+
+        function deleteArticle(id) {
+            showProModal('Confirm Delete', 'Delete this article?', async () => {
+                await fetch(`${API_URL}/magazine/articles/${id}`, { method: 'DELETE' });
+                renderMagazineTable();
+                showProModal('Deleted', 'Article removed.');
+            });
+        }
+    </script>
+</body>
+</html>
