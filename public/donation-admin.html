@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoknex — Global Fund & Certificate Owner Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Hoknex — Global Fund, Help Desk & Certificate Owner Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-body: #F5F2EB;
@@ -34,6 +34,10 @@
         th, td { border: 2.5px solid var(--border-color); padding: 12px; text-align: left; font-weight: 800; }
         th { background: #FAF9F6; font-weight: 900; }
 
+        /* Certificate Preview Modal */
+        #certModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 10000; padding: 1rem; }
+        .certificate-preview-card { background: #fff; border: 8px double #1E3A8A; width: 100%; max-width: 750px; padding: 3rem; text-align: center; position: relative; box-shadow: 15px 15px 0px rgba(0,0,0,0.2); }
+
         #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
         #proModalBox { background: #FAF9F6; border: 3.5px solid var(--border-color); border-radius: 20px; padding: 2rem; max-width: 420px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--border-color); }
     </style>
@@ -42,10 +46,10 @@
 
     <div id="authOverlay">
         <div id="authBox">
-            <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem; border:none;">🔐 Fund Admin Access</h2>
-            <p style="font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 1.5rem;">Enter password to manage donations & issue certificates.</p>
+            <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem; border:none;">🔐 Fund & Support Admin Access</h2>
+            <p style="font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 1.5rem;">Enter password to manage donations, help desk tickets & certificates.</p>
             <input type="password" id="adminPasswordInput" placeholder="Password..." style="background:#fff; border:2.5px solid var(--border-color); padding:12px; border-radius:10px; font-weight:800; width:100%; margin-bottom:1rem; outline:none; text-align:center;">
-            <button onclick="verifyAdminPassword()" class="btn-action" style="width:100%;">Unlock Fund Admin 🔓</button>
+            <button onclick="verifyAdminPassword()" class="btn-action" style="width:100%; background:#1E3A8A;">Unlock Fund Admin 🔓</button>
         </div>
     </div>
 
@@ -57,19 +61,68 @@
         </div>
     </div>
 
+    <!-- Certificate Layout Preview Modal -->
+    <div id="certModalOverlay" onclick="if(event.target === this) closeCertModal()">
+        <div class="certificate-preview-card">
+            <button onclick="closeCertModal()" style="position:absolute; top:15px; right:15px; background:#C27D65; color:#fff; border:none; width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <h3 style="font-family:'Playfair Display', serif; font-size:2rem; color:#1E3A8A; margin-bottom:5px;">HOKNEX GLOBAL FOUNDATION</h3>
+            <p style="font-size:0.75rem; font-weight:900; letter-spacing:2px; text-transform:uppercase; color:#64748B; margin-bottom:2rem;">Official Certificate of Recognition & Appreciation</p>
+            
+            <p style="font-size:0.9rem; font-weight:700; color:#475569; margin-bottom:1rem;">This legally verified certificate is proudly presented to</p>
+            <h2 id="previewDonorName" style="font-family:'Playfair Display', serif; font-size:2.2rem; color:#1E3A8A; border-bottom:2px solid #1E3A8A; display:inline-block; padding-bottom:4px; margin-bottom:1.5rem;">[Donor Name]</h2>
+            
+            <p style="font-size:0.88rem; font-weight:700; color:#475569; max-width:520px; margin:0 auto 2rem auto; line-height:1.6;">
+                For your generous philanthropic contribution of <b id="previewAmount">₹500</b> toward empowering global teenagers, student hackathons, and open-source creator grants worldwide.
+            </p>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:3rem; border-top:2px solid #E2E8F0; padding-top:1.5rem;">
+                <div style="text-align:left;">
+                    <p style="font-size:0.75rem; font-weight:900; color:#64748B;">VERIFICATION ID</p>
+                    <b id="previewId" style="font-size:0.85rem; color:#1E3A8A;">HOKNEX-CERT-2026</b>
+                </div>
+                <div style="text-align:right;">
+                    <p style="font-family:'Playfair Display', serif; font-size:1.1rem; color:#1E3A8A;">Hoknex Executive Board</p>
+                    <p style="font-size:0.75rem; font-weight:900; color:#64748B;">Authorized Signature</p>
+                </div>
+            </div>
+            <button onclick="window.print()" class="btn-action" style="margin-top:2rem;">Print / Save as PDF 📄</button>
+        </div>
+    </div>
+
     <div class="admin-container" id="adminMainContent">
         <div class="admin-header">
             <div>
-                <h1 style="font-size: 1.8rem; font-weight: 900;">💚 Hoknex Global Fund & Certificate Manager</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Verify donor payments and generate recognition certificates.</p>
+                <h1 style="font-size: 1.8rem; font-weight: 900;">💚 Hoknex Fund, Help Desk & Certificate Command Center</h1>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Separate dedicated dashboard for managing global donations, help desk tickets, and generating certificates.</p>
             </div>
-            <a href="donation.html" class="btn-action" style="background:#1E3A8A;">View Public Fund Page 🌐</a>
+            <div style="display:flex; gap:10px;">
+                <a href="donation.html" class="btn-action" style="background:#1E3A8A;">View Public Fund Page 🌐</a>
+                <a href="store-admin.html" class="btn-action" style="background:#232D2F;">Store Admin 🛍️</a>
+            </div>
         </div>
 
+        <!-- Section 1: Donor Verification & Certificate Generator -->
         <div class="admin-section">
-            <h2>🏆 Donor Verification & Certificate Generator Dashboard</h2>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Inspect payment proof screenshots, click verify, and assign certificate PDF links.</p>
+            <h2>🏆 1. Donor Verification & Certificate Generator Dashboard</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Inspect payment proofs, preview the official certificate layout, and dispatch secure PDF download links to donors.</p>
             <div id="donationsTableWrap" style="overflow-x:auto;"><p>Loading donations...</p></div>
+        </div>
+
+        <!-- Section 2: Help Desk & Grant Support Inquiries -->
+        <div class="admin-section">
+            <h2>🤝 2. Help Desk & Grant Support Inquiries</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Review inquiries, mentorship requests, and student hackathon sponsorships submitted by creators.</p>
+            <div id="supportTicketsTableWrap" style="overflow-x:auto;"><p>Loading help desk tickets...</p></div>
+        </div>
+
+        <!-- Section 3: Data Export & Record Hub -->
+        <div class="admin-section">
+            <h2>📊 3. Fund Data Export & Record Hub</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Download complete records of all donations and support inquiries in CSV/PDF format for auditing.</p>
+            <div style="display:flex; gap:1rem;">
+                <button onclick="exportTableToCSV('donations_report.csv', 'donationsTableWrap')" class="btn-action" style="background:#1E3A8A;">Download All Donations (CSV) 📥</button>
+                <button onclick="exportTableToCSV('helpdesk_report.csv', 'supportTicketsTableWrap')" class="btn-action" style="background:#232D2F;">Download All Help Tickets (CSV) 📥</button>
+            </div>
         </div>
     </div>
 
@@ -81,7 +134,7 @@
             if (document.getElementById('adminPasswordInput').value === OWNER_PASSWORD) {
                 document.getElementById('authOverlay').style.display = 'none';
                 document.getElementById('adminMainContent').style.display = 'block';
-                renderDonationsTable();
+                loadFundAdminData();
             } else {
                 alert('Incorrect password!');
             }
@@ -94,6 +147,7 @@
         }
         function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
 
+        // --- 1. Donations & Certificate Generator Table ---
         async function renderDonationsTable() {
             try {
                 const res = await fetch(`${API_URL}/donations`);
@@ -105,18 +159,19 @@
                 }
                 wrap.innerHTML = `
                     <table>
-                        <thead><tr><th>Donor Name & Email</th><th>Amount</th><th>Payment Proof Screenshot</th><th>Status</th><th>Actions & Certificate Generator</th></tr></thead>
+                        <thead><tr><th>Donor Name & Email</th><th>Amount</th><th>Proof</th><th>Status</th><th>Actions & Certificate Generator</th></tr></thead>
                         <tbody>
                             ${donations.map((d, idx) => `
                                 <tr>
                                     <td><b>${d.donorName}</b><br><small>${d.email}</small></td>
                                     <td>₹${d.amount}</td>
-                                    <td><a href="${d.proofUrl}" target="_blank" style="color:#1E3A8A; font-weight:900; text-decoration:underline;">🔍 View Screenshot Proof</a></td>
+                                    <td><a href="${d.proofUrl}" target="_blank" style="color:#1E3A8A; font-weight:900; text-decoration:underline;">🔍 View Proof</a></td>
                                     <td><span style="background:${d.status.includes('Verified')?'#ECFDF5':'#FFFBEB'}; color:${d.status.includes('Verified')?'#059669':'#D97706'}; padding:4px 8px; border-radius:6px; font-size:0.75rem;">${d.status}</span></td>
                                     <td>
                                         <div style="display:flex; flex-direction:column; gap:6px;">
-                                            <input type="text" id="cert-url-${idx}" placeholder="Certificate URL or PDF link..." value="${d.certificateUrl || ''}" style="padding:6px; font-size:0.8rem; border:2px solid #1E3A8A; border-radius:6px; font-weight:800; outline:none;">
-                                            <button onclick="verifyDonation('${d._id}', ${idx})" class="btn-action">Verify & Send Certificate 🎓</button>
+                                            <button onclick="previewCertificate('${d.donorName}', '${d.amount}', '${d._id}')" class="btn-action" style="background:#3B82F6; padding:4px 8px; font-size:0.75rem;">👁️ View Certificate Layout</button>
+                                            <input type="text" id="cert-url-${idx}" placeholder="Certificate download link..." value="${d.certificateUrl || ''}" style="padding:6px; font-size:0.8rem; border:2px solid #1E3A8A; border-radius:6px; font-weight:800; outline:none;">
+                                            <button onclick="verifyDonation('${d._id}', ${idx})" class="btn-action" style="background:#10B981; padding:4px 8px; font-size:0.75rem;">Verify & Send to User 🎓</button>
                                             <button onclick="deleteDonation('${d._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete Record ✕</button>
                                         </div>
                                     </td>
@@ -128,10 +183,18 @@
             } catch(e) { console.error(e); }
         }
 
+        function previewCertificate(name, amount, id) {
+            document.getElementById('previewDonorName').innerText = name;
+            document.getElementById('previewAmount').innerText = '₹' + amount;
+            document.getElementById('previewId').innerText = 'HOKNEX-CERT-' + id.substring(id.length - 6).toUpperCase();
+            document.getElementById('certModalOverlay').style.display = 'flex';
+        }
+        function closeCertModal() { document.getElementById('certModalOverlay').style.display = 'none'; }
+
         async function verifyDonation(id, idx) {
             const certUrl = document.getElementById(`cert-url-${idx}`).value.trim();
             if(!certUrl) {
-                showProModal('Link Required', 'Please enter a certificate URL or PDF download link.');
+                showProModal('Link Required', 'Please enter a certificate PDF or download link before verifying.');
                 return;
             }
             try {
@@ -140,7 +203,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ certificateUrl: certUrl })
                 });
-                showProModal('Success!', 'Certificate verified and sent to user portal.');
+                showProModal('Verified & Sent! 🎉', 'Certificate link has been successfully dispatched to the user portal!');
                 renderDonationsTable();
             } catch(e) { showProModal('Error', 'Failed to verify donation.'); }
         }
@@ -151,6 +214,71 @@
                 renderDonationsTable();
                 showProModal('Deleted', 'Record removed.');
             });
+        }
+
+        // --- 2. Help Desk & Support Inquiries Table ---
+        async function renderSupportTicketsTable() {
+            try {
+                const res = await fetch(`${API_URL}/support`);
+                const tickets = await res.json();
+                const wrap = document.getElementById('supportTicketsTableWrap');
+                if(!tickets || tickets.length === 0) {
+                    wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No help desk tickets submitted yet.</p>`;
+                    return;
+                }
+                wrap.innerHTML = `
+                    <table>
+                        <thead><tr><th>User / Creator</th><th>Inquiry Details</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            ${tickets.map((t) => `
+                                <tr>
+                                    <td><b>@${t.username}</b><br><small>${new Date(t.createdAt).toLocaleString()}</small></td>
+                                    <td>${t.description}</td>
+                                    <td><span style="background:${t.status==='Resolved'?'#ECFDF5':'#FFFBEB'}; color:${t.status==='Resolved'?'#059669':'#D97706'}; padding:4px 8px; border-radius:6px; font-size:0.75rem;">${t.status}</span></td>
+                                    <td><button onclick="deleteTicket('${t._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete Ticket ✕</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch(e) { console.error(e); }
+        }
+
+        async function deleteTicket(id) {
+            showProModal('Confirm Delete', 'Delete this ticket?', async () => {
+                await fetch(`${API_URL}/support/${id}`, { method: 'DELETE' });
+                renderSupportTicketsTable();
+                showProModal('Deleted', 'Ticket removed.');
+            });
+        }
+
+        // --- 3. CSV Data Export Utility ---
+        function exportTableToCSV(filename, wrapperId) {
+            const wrap = document.getElementById(wrapperId);
+            const table = wrap.querySelector('table');
+            if(!table) { alert('No data to export.'); return; }
+            let csv = [];
+            const rows = table.querySelectorAll('tr');
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll('td, th');
+                for (let j = 0; j < cols.length - 1; j++) {
+                    row.push('"' + cols[j].innerText.replace(/"/g, '""').replace(/\n/g, ' ') + '"');
+                }
+                csv.push(row.join(','));
+            }
+            const csvFile = new Blob([csv.join('\n')], { type: 'text/csv' });
+            const downloadLink = document.createElement('a');
+            downloadLink.download = filename;
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.style.display = 'none';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+
+        function loadFundAdminData() {
+            renderDonationsTable();
+            renderSupportTicketsTable();
         }
     </script>
 </body>
