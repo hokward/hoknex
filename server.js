@@ -95,7 +95,7 @@ app.use(async (req, res, next) => {
 });
 
 // ==========================================
-// --- STORE, ADMIN, MAGAZINE & CAMPAIGNS SCHEMAS & API ROUTES ---
+// --- STORE, ADMIN & CAMPAIGNS SCHEMAS & API ROUTES ---
 // ==========================================
 
 const ProductSchema = new mongoose.Schema({
@@ -113,20 +113,6 @@ const ProductSchema = new mongoose.Schema({
     badge: { type: String, default: 'New Arrival' }
 });
 const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
-
-const ArticleSchema = new mongoose.Schema({
-    title: String,
-    category: String,
-    type: { type: String, default: 'text' },
-    mediaUrl: String,
-    icon: String,
-    author: String,
-    time: String,
-    excerpt: String,
-    body: String,
-    date: { type: Date, default: Date.now }
-});
-const Article = mongoose.models.Article || mongoose.model('Article', ArticleSchema);
 
 const StoreOrderSchema = new mongoose.Schema({
     orderId: String,
@@ -172,68 +158,96 @@ const CampaignSchema = new mongoose.Schema({
 });
 const Campaign = mongoose.models.Campaign || mongoose.model('Campaign', CampaignSchema);
 
-// --- Dedicated Donation & Certificate Schema & API Routes ---
-const DonationSchema = new mongoose.Schema({
-    donorName: String,
-    email: String,
-    amount: Number,
-    proofUrl: String,
-    status: { type: String, default: 'Pending Verification ⏳' },
-    certificateUrl: { type: String, default: '' },
+// ==========================================
+// --- ZINE MAGAZINE, BOOKS & TRENDING SCHEMAS & ROUTES ---
+// ==========================================
+
+const MagazineArticleSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    category: { type: String, required: true },
+    type: { type: String, default: 'text' },
+    mediaUrl: String,
+    author: String,
+    time: String,
+    excerpt: String,
+    body: String,
+    views: { type: Number, default: 0 },
+    likes: { type: Number, default: 0 },
     date: { type: Date, default: Date.now }
 });
-const Donation = mongoose.models.Donation || mongoose.model('Donation', DonationSchema);
+const MagazineArticle = mongoose.models.MagazineArticle || mongoose.model('MagazineArticle', MagazineArticleSchema);
 
-app.get('/api/donations', async (req, res) => {
-    try { const donations = await Donation.find().sort({ date: -1 }); res.json(donations); }
+const DigitalBookSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    author: { type: String, required: true },
+    coverUrl: { type: String, required: true },
+    pages: [String],
+    createdAt: { type: Date, default: Date.now }
+});
+const DigitalBook = mongoose.models.DigitalBook || mongoose.model('DigitalBook', DigitalBookSchema);
+
+const TrendingConfigSchema = new mongoose.Schema({
+    headlines: [String]
+});
+const TrendingConfig = mongoose.models.TrendingConfig || mongoose.model('TrendingConfig', TrendingConfigSchema);
+
+// --- Magazine Article Endpoints ---
+app.get('/api/magazine/articles', async (req, res) => {
+    try { const articles = await MagazineArticle.find().sort({ date: -1 }); res.json(articles); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.post('/api/donations', async (req, res) => {
-    try { const d = new Donation(req.body); await d.save(); res.json({ success: true, d }); }
+app.post('/api/magazine/articles', async (req, res) => {
+    try { const a = new MagazineArticle(req.body); await a.save(); res.json({ success: true, a }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.put('/api/donations/:id/verify', async (req, res) => {
+app.put('/api/magazine/articles/:id/visit', async (req, res) => {
     try {
-        const { certificateUrl } = req.body;
-        await Donation.findByIdAndUpdate(req.params.id, {
-            status: 'Verified & Certificate Issued 🎓',
-            certificateUrl: certificateUrl
-        });
+        const art = await MagazineArticle.findById(req.params.id);
+        if(art) { art.views = (art.views || 0) + 1; await art.save(); }
         res.json({ success: true });
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-app.delete('/api/donations/:id', async (req, res) => {
-    try { await Donation.findByIdAndDelete(req.params.id); res.json({ success: true }); }
+app.delete('/api/magazine/articles/:id', async (req, res) => {
+    try { await MagazineArticle.findByIdAndDelete(req.params.id); res.json({ success: true }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// --- Dedicated Fund Help Desk Schema & API Routes ---
-const FundHelpDeskSchema = new mongoose.Schema({
-    fullName: String,
-    email: String,
-    category: String,
-    message: String,
-    status: { type: String, default: 'Pending ⏳' },
-    date: { type: Date, default: Date.now }
-});
-const FundHelpDesk = mongoose.models.FundHelpDesk || mongoose.model('FundHelpDesk', FundHelpDeskSchema);
-
-app.get('/api/fund-helpdesk', async (req, res) => {
-    try { const tickets = await FundHelpDesk.find().sort({ date: -1 }); res.json(tickets); }
+// --- Digital Books Endpoints ---
+app.get('/api/magazine/books', async (req, res) => {
+    try { const books = await DigitalBook.find().sort({ createdAt: -1 }); res.json(books); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.post('/api/fund-helpdesk', async (req, res) => {
-    try { const t = new FundHelpDesk(req.body); await t.save(); res.json({ success: true, t }); }
+app.post('/api/magazine/books', async (req, res) => {
+    try { const b = new DigitalBook(req.body); await b.save(); res.json({ success: true, b }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.delete('/api/fund-helpdesk/:id', async (req, res) => {
-    try { await FundHelpDesk.findByIdAndDelete(req.params.id); res.json({ success: true }); }
+app.delete('/api/magazine/books/:id', async (req, res) => {
+    try { await DigitalBook.findByIdAndDelete(req.params.id); res.json({ success: true }); }
     catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// --- Trending Config Endpoints ---
+app.get('/api/magazine/trending', async (req, res) => {
+    try {
+        let config = await TrendingConfig.findOne();
+        if(!config) { config = await TrendingConfig.create({ headlines: [] }); }
+        res.json(config.headlines);
+    } catch(e) { res.json([]); }
+});
+
+app.post('/api/magazine/trending', async (req, res) => {
+    try {
+        const { headlines } = req.body;
+        let config = await TrendingConfig.findOne();
+        if(config) { config.headlines = headlines; await config.save(); }
+        else { config = await TrendingConfig.create({ headlines }); }
+        res.json({ success: true, config });
+    } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
 // --- Store Products Endpoints ---
@@ -279,22 +293,6 @@ app.put('/api/store/products/:id/rate', async (req, res) => {
         await prod.save();
         res.json({ success: true, ratings: prod.ratings });
     } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// --- Magazine (Articles) Endpoints ---
-app.get('/api/magazine/articles', async (req, res) => {
-    try { const articles = await Article.find(); res.json(articles); } 
-    catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.post('/api/magazine/articles', async (req, res) => {
-    try { const a = new Article(req.body); await a.save(); res.json({ success: true, a }); } 
-    catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.delete('/api/magazine/articles/:id', async (req, res) => {
-    try { await Article.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
-    catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // --- Store Orders Endpoints ---
