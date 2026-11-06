@@ -47,7 +47,7 @@
     <div id="authOverlay">
         <div id="authBox">
             <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem; border:none;">🔐 Fund Admin Access</h2>
-            <p style="font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 1.5rem;">Enter password to manage donations, help desk tickets & issue legal certificates.</p>
+            <p style="font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 1.5rem;">Enter password to manage donations, scanners & certificates.</p>
             <input type="password" id="adminPasswordInput" placeholder="Password..." style="background:#fff; border:2.5px solid var(--border-color); padding:12px; border-radius:10px; font-weight:800; width:100%; margin-bottom:1rem; outline:none; text-align:center;">
             <button onclick="verifyAdminPassword()" class="btn-action" style="width:100%; background:#1E3A8A;">Unlock Dashboard 🔓</button>
         </div>
@@ -103,14 +103,25 @@
         <div class="admin-header">
             <div>
                 <h1 style="font-size: 1.8rem; font-weight: 900;">💚 Hoknex Fund & Certificate Command Center</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Dedicated management panel for donations, payment proofs, certificates, and help desk support.</p>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage donations, scanners, certificates, and help desk queries.</p>
             </div>
             <a href="donation.html" class="btn-action" style="background:#1E3A8A;">View Public Fund Page 🌐</a>
         </div>
 
-        <!-- Signature Setup Box -->
+        <!-- 1. UPI QR Scanner Manager -->
+        <div class="admin-section">
+            <h2>📷 1. Founder UPI QR Code Scanner Manager</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Upload or remove payment QR scanners used for global fund checkouts.</p>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1.5rem;">
+                <input type="file" id="newQrFile" accept="image/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800;">
+                <button onclick="uploadNewQrCode()" class="btn-action">Upload Scanner QR ➕</button>
+            </div>
+            <div id="qrListContainer" style="display:flex; gap:1rem; flex-wrap:wrap;"></div>
+        </div>
+
+        <!-- 2. Signature Setup -->
         <div class="admin-section" style="background:#FAF9F6; border-color:#1E3A8A;">
-            <h2>✍️ Owner Signature Setup for Certificates</h2>
+            <h2>✍️ 2. Owner Signature Setup for Certificates</h2>
             <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1rem;">Upload your signature image once here. It will automatically appear on all generated certificates.</p>
             <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
                 <input type="file" id="sigFileInput" accept="image/*" style="background:#fff; border:2px solid #1E3A8A; padding:8px; border-radius:8px; font-weight:800;">
@@ -119,9 +130,9 @@
             </div>
         </div>
 
-        <!-- Section 1: Donations & Certificate Generator -->
+        <!-- 3. Donations & Certificate Generator -->
         <div class="admin-section">
-            <h2>🏆 1. Donor Verification & Certificate Generator Dashboard</h2>
+            <h2>🏆 3. Donor Verification & Certificate Generator Dashboard</h2>
             <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">View full donor details in A4 format, review payment proofs, and auto-generate verified certificate links.</p>
             <div style="margin-bottom: 1rem;">
                 <button onclick="exportTableToCSV('donations_report.csv', 'donationsTableWrap')" class="btn-action" style="background:#1E3A8A;">Download Donations Excel/CSV 📥</button>
@@ -129,9 +140,9 @@
             <div id="donationsTableWrap" style="overflow-x:auto;"><p>Loading donations...</p></div>
         </div>
 
-        <!-- Section 2: Help Desk Inquiries -->
+        <!-- 4. Help Desk Inquiries -->
         <div class="admin-section">
-            <h2>🤝 2. Help Desk & Grant Support Inquiries</h2>
+            <h2>🤝 4. Help Desk & Grant Support Inquiries</h2>
             <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Separate table for inquiries, mentorship requests, and student hackathon sponsorships.</p>
             <div style="margin-bottom: 1rem;">
                 <button onclick="exportTableToCSV('helpdesk_report.csv', 'helpdeskTableWrap')" class="btn-action" style="background:#232D2F;">Download Help Desk Excel/CSV 📥</button>
@@ -144,8 +155,10 @@
         const API_URL = '/api';
         const OWNER_PASSWORD = 'hoknex2026';
 
+        // Check 25-minute session persistence
         function verifyAdminPassword() {
             if (document.getElementById('adminPasswordInput').value === OWNER_PASSWORD) {
+                localStorage.setItem('hoknex_admin_login', Date.now());
                 document.getElementById('authOverlay').style.display = 'none';
                 document.getElementById('adminMainContent').style.display = 'block';
                 loadFundAdminData();
@@ -154,12 +167,65 @@
             }
         }
 
+        window.onload = function() {
+            const loginTime = localStorage.getItem('hoknex_admin_login');
+            if (loginTime && (Date.now() - Number(loginTime) < 25 * 60 * 1000)) {
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('adminMainContent').style.display = 'block';
+                loadFundAdminData();
+            }
+        };
+
         function showProModal(title, message) {
             document.getElementById('proModalTitle').innerText = title;
             document.getElementById('proModalMessage').innerText = message;
             document.getElementById('proModalOverlay').style.display = 'flex';
         }
         function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
+
+        // --- QR Scanner Manager ---
+        async function renderQrManager() {
+            try {
+                const res = await fetch(`${API_URL}/store/qrs`);
+                const qrs = await res.json();
+                const container = document.getElementById('qrListContainer');
+                if (!qrs || qrs.length === 0) { container.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No payment scanner QRs uploaded yet.</p>`; return; }
+                container.innerHTML = qrs.map((qr) => `
+                    <div style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:12px; text-align:center;">
+                        <img src="${qr.imageUrl}" style="width:100px; height:100px; object-fit:cover; border-radius:8px; display:block; margin-bottom:8px;">
+                        <button onclick="deleteQr('${qr._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Remove Scanner</button>
+                    </div>
+                `).join('');
+            } catch(e) { console.error(e); }
+        }
+
+        async function uploadNewQrCode() {
+            const fileInput = document.getElementById('newQrFile');
+            if (fileInput.files && fileInput.files[0]) {
+                const formData = new FormData();
+                formData.append('image', fileInput.files[0]);
+                try {
+                    const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                    const upData = await upRes.json();
+                    await fetch(`${API_URL}/store/qrs`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ imageUrl: upData.url })
+                    });
+                    renderQrManager();
+                    showProModal('Success', 'Payment Scanner QR added successfully!');
+                    fileInput.value = '';
+                } catch(e) { showProModal('Error', 'QR upload failed'); }
+            }
+        }
+
+        function deleteQr(id) {
+            showProModal('Confirm Delete', 'Remove this payment scanner?', async () => {
+                await fetch(`${API_URL}/store/qrs/${id}`, { method: 'DELETE' });
+                renderQrManager();
+                showProModal('Deleted', 'Scanner removed.');
+            });
+        }
 
         async function uploadOwnerSignature() {
             const fileInput = document.getElementById('sigFileInput');
@@ -242,7 +308,6 @@
         function closeDetailModal() { document.getElementById('detailModalOverlay').style.display = 'none'; }
 
         async function verifyAndAutoFill(id, idx, name, amount) {
-            // Real unique certificate URL generated for this specific donor
             const generatedCertLink = window.location.origin + `/donation.html?download_cert=true&donor=${encodeURIComponent(name)}&amount=${amount}`;
             document.getElementById(`cert-url-${idx}`).value = generatedCertLink;
 
@@ -341,6 +406,7 @@
         function loadFundAdminData() {
             renderDonationsTable();
             renderHelpDeskTable();
+            renderQrManager();
             if(localStorage.getItem('hoknex_owner_sig')) {
                 document.getElementById('currentSigPreview').innerText = '✅ Signature loaded!';
             }
