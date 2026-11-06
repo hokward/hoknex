@@ -50,15 +50,33 @@
         .form-field label { display: block; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
         .form-field input, .form-field textarea, .form-field select { width: 100%; background: #F8FAFC; border: 2px solid var(--border-color); border-radius: 10px; padding: 10px 14px; font-size: 0.9rem; font-weight: 800; outline: none; }
 
-        /* Scanner Box */
         .scanner-box { background: #FAF9F6; border: 2.5px dashed var(--primary-trust); padding: 1.2rem; border-radius: 14px; text-align: center; margin-bottom: 1.2rem; }
 
-        /* Certificate Download Section */
         .cert-section { max-width: 1200px; margin: 0 auto 5rem auto; padding: 0 2rem; }
         .cert-card { background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); color: #fff; border-radius: 24px; padding: 3rem; text-align: center; box-shadow: var(--shadow-card); }
 
-        .store-footer { background: #111827; color: #F5F2EB; padding: 4rem 2rem 2rem 2rem; margin-top: 4rem; border-top: 3px solid #4C5844; text-align: center; position: relative; }
-        
+        /* Fixed Store Footer Styling */
+        .store-footer { background: #111827; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 3px solid #4C5844; position: relative; overflow: hidden; text-align: left; }
+        .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.15); position: relative; z-index: 2; }
+        .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; }
+        .footer-newsletter p { color: #CCBEB1; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; }
+        .newsletter-input-group input { flex: 1; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.2); padding: 12px 16px; border-radius: 10px; color: #fff; font-weight: 800; outline: none; }
+        .btn-newsletter { background: #D9822B; color: #fff; border: none; padding: 0 2rem; border-radius: 10px; font-weight: 900; cursor: pointer; }
+
+        .footer-links-grid { display: grid; grid-template-columns: repeat(5, 1fr) 1.5fr; gap: 2rem; font-size: 0.88rem; position: relative; z-index: 2; }
+        .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FAF9F6; }
+        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+        .footer-col a { color: #CCBEB1; text-decoration: none; font-weight: 700; cursor: pointer; }
+        .footer-col a:hover { color: #fff; }
+
+        .footer-watermark { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.04); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; }
+
+        @media (max-width: 968px) {
+            .footer-links-grid { grid-template-columns: 1fr; }
+            .store-footer { padding: 3rem 1.5rem; }
+        }
+
         #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
         #proModalBox { background: #FAF9F6; border: 3.5px solid var(--primary-trust); border-radius: 20px; padding: 2rem; max-width: 400px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--primary-trust); }
     </style>
@@ -91,7 +109,6 @@
     </section>
 
     <div class="portal-grid">
-        <!-- 1. Donate & Verification Portal -->
         <div class="portal-box" id="donateBox">
             <h2>Support Global Creators 💚</h2>
             <p>Scan UPI QR, pay securely, and upload your payment screenshot proof to finish your donation.</p>
@@ -129,7 +146,6 @@
             </form>
         </div>
 
-        <!-- 2. Help Desk & Support Ticket Form -->
         <div class="portal-box">
             <h2>Help Desk & Grant Support 🤝</h2>
             <p>Submit your inquiries, request technical mentorship, or apply for student hackathon sponsorships.</p>
@@ -161,7 +177,6 @@
         </div>
     </div>
 
-    <!-- 3. Get Certificate & Download Portal -->
     <section class="cert-section">
         <div class="cert-card">
             <h2 style="font-size:2rem; font-weight:900; margin-bottom:0.5rem;">Download Donor Recognition Certificate 🎓</h2>
@@ -176,7 +191,7 @@
         </div>
     </section>
 
-    <!-- Signature Footer -->
+    <!-- Footer matching store page -->
     <footer class="store-footer">
         <div class="footer-newsletter">
             <h3>Join the Hoknex movement</h3>
@@ -187,14 +202,45 @@
             </div>
         </div>
         <div class="footer-links-grid">
-            <div class="footer-col"><h4>Shop</h4><ul><li><a href="store.html">Apparel</a></li></ul></div>
-            <div class="footer-col"><h4>Hoknex</h4><ul><li><a href="index.html">About</a></li></ul></div>
-            <div class="footer-col"><h4>Support</h4><ul><li><a href="donation.html">Help Desk</a></li></ul></div>
-            <div class="footer-col"><h4>Account</h4><ul><li><a href="index.html">Sign In</a></li></ul></div>
-            <div class="footer-col"><h4>Legal</h4><ul><a>Privacy</a></ul></div>
-            <div class="footer-col"><h4>Global</h4><p style="color: #CCBEB1; font-size: 0.8rem;">World Network</p></div>
+            <div class="footer-col">
+                <h4>Shop</h4>
+                <ul>
+                    <li><a href="store.html">Apparel & Hoodies</a></li>
+                    <li><a href="store.html">Footwear & Gear</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Hoknex</h4>
+                <ul>
+                    <li><a href="index.html">About Hoknex</a></li>
+                    <li><a href="index.html">The Hoknex Promise</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Customer Support</h4>
+                <ul>
+                    <li><a href="store.html">Track Order</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="index.html">Student Sign In</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a>Privacy Policy</a></li>
+                    <li><a>Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Follow</h4>
+                <p style="color: #CCBEB1; font-size: 0.8rem; margin-top: 8px;">Connect with us on social channels for student spotlights.</p>
+            </div>
         </div>
-        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #CCBEB1;">
+        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #CCBEB1; position: relative; z-index: 2;">
             <span>&copy; Hoknex 2026. All rights reserved.</span>
             <span>Secure Global Fund Checkout</span>
         </div>
