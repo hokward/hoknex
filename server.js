@@ -172,7 +172,7 @@ const CampaignSchema = new mongoose.Schema({
 });
 const Campaign = mongoose.models.Campaign || mongoose.model('Campaign', CampaignSchema);
 
-// --- NEW: Dedicated Donation & Certificate Schema & API Routes ---
+// --- Dedicated Donation & Certificate Schema & API Routes ---
 const DonationSchema = new mongoose.Schema({
     donorName: String,
     email: String,
@@ -207,6 +207,32 @@ app.put('/api/donations/:id/verify', async (req, res) => {
 
 app.delete('/api/donations/:id', async (req, res) => {
     try { await Donation.findByIdAndDelete(req.params.id); res.json({ success: true }); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// --- Dedicated Fund Help Desk Schema & API Routes ---
+const FundHelpDeskSchema = new mongoose.Schema({
+    fullName: String,
+    email: String,
+    category: String,
+    message: String,
+    status: { type: String, default: 'Pending ⏳' },
+    date: { type: Date, default: Date.now }
+});
+const FundHelpDesk = mongoose.models.FundHelpDesk || mongoose.model('FundHelpDesk', FundHelpDeskSchema);
+
+app.get('/api/fund-helpdesk', async (req, res) => {
+    try { const tickets = await FundHelpDesk.find().sort({ date: -1 }); res.json(tickets); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/fund-helpdesk', async (req, res) => {
+    try { const t = new FundHelpDesk(req.body); await t.save(); res.json({ success: true, t }); }
+    catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/fund-helpdesk/:id', async (req, res) => {
+    try { await FundHelpDesk.findByIdAndDelete(req.params.id); res.json({ success: true }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -1792,28 +1818,11 @@ app.post('/api/verify-otp', async (req, res) => {
     }
 });
 
-app.post('/api/support/:id/reply', async (req, res) => {
-    try {
-        const { reply } = req.body; 
-        const ticket = await Support.findByIdAndUpdate(
-            req.params.id, 
-            { reply: reply, status: 'Resolved' }, 
-            { new: true }
-        );
-        
-        if (!ticket) return res.status(404).json({ error: 'Ticket not found' });
-        res.json({ success: true, message: 'Reply sent successfully', ticket });
-    } catch (err) {
-        console.error('Support reply error:', err);
-        res.status(500).json({ error: 'Failed to send reply' });
-    }
-});
-
 const PORT = process.env.PORT || 5000;
 
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT} 🚀`);
+        console.log(`Server running on port ${PORT} 🚀`, process.env.PORT);
     });
 }
 
