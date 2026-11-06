@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoknex — Professional Owner Dashboard</title>
+    <title>Hoknex — Store Owner Command Center</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -64,13 +64,13 @@
 </head>
 <body>
 
-    <!-- Password Protection Modal Gate -->
+    <!-- Password Protection Gate (25-Min Session Persistence) -->
     <div id="authOverlay">
         <div id="authBox">
-            <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem; border:none;">🔐 Owner Access</h2>
-            <p style="font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 1.5rem;">Enter your owner password to access the Hoknex Command Center.</p>
+            <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem; border:none;">🔐 Store Admin Access</h2>
+            <p style="font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 1.5rem;">Enter your owner password to access the Hoknex Store Command Center.</p>
             <input type="password" id="adminPasswordInput" placeholder="Enter owner password..." style="background:#fff; border:2.5px solid var(--border-color); padding:12px; border-radius:10px; font-weight:800; width:100%; margin-bottom:1rem; outline:none; text-align:center;">
-            <button onclick="verifyAdminPassword()" class="btn-action" style="width:100%;">Unlock Dashboard 🔓</button>
+            <button onclick="verifyAdminPassword()" class="btn-action" style="width:100%;">Unlock Store Dashboard 🔓</button>
         </div>
     </div>
 
@@ -88,13 +88,12 @@
     <div class="admin-container" id="adminMainContent">
         <div class="admin-header">
             <div>
-                <h1 style="font-size: 1.8rem; font-weight: 900;">⚡ Hoknex Professional Owner Command Center</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage fund donations, help tickets, Zine magazine articles, campaigns, products, and orders.</p>
+                <h1 style="font-size: 1.8rem; font-weight: 900;">⚡ Hoknex Professional Store Command Center</h1>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage store announcements, campaigns, upcoming drops, store QR codes, products, orders, and leads.</p>
             </div>
             <div style="display:flex; gap:10px;">
                 <a href="store.html" class="btn-action" style="background:var(--accent-ochre);">View Store 🛍️</a>
-                <a href="magazine.html" class="btn-action" style="background:#232D2F;">View Zine 📰</a>
-                <a href="donation.html" class="btn-action" style="background:#1E3A8A;">View Fund 💚</a>
+                <a href="magazine-admin.html" class="btn-action" style="background:#232D2F;">Zine Admin 📰</a>
             </div>
         </div>
 
@@ -107,35 +106,9 @@
             </div>
         </div>
 
-        <!-- 2. NEW: Fund & Support Help Desk & Certificate Verification Dashboard -->
+        <!-- 2. Visual Campaign Showcase Manager -->
         <div class="admin-section">
-            <h2>💚 2. Fund & Support Help Desk & Certificate Verification Dashboard</h2>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Review incoming help tickets and donation payment screenshot proofs. Click verify and send certificate links to donors.</p>
-            <div id="supportTicketsTableWrap" style="overflow-x:auto;"><p>Loading support tickets...</p></div>
-        </div>
-
-        <!-- 3. Zine Magazine Article Manager -->
-        <div class="admin-section">
-            <h2>📰 3. Global Zine Magazine & News Manager</h2>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Publish and manage global news, picture-based, video-based, and book-based magazine articles.</p>
-            <form onsubmit="handleMagazineUpload(event)">
-                <div class="form-grid">
-                    <div class="form-group"><label>Article Title</label><input type="text" id="magTitle" placeholder="Title" required></div>
-                    <div class="form-group"><label>Category</label><select id="magCategory"><option value="World News">World News</option><option value="Picture">Picture Feature</option><option value="Video">Video Dispatch</option><option value="Book">Book Review</option><option value="Culture">Culture & Arts</option></select></div>
-                    <div class="form-group"><label>Type</label><select id="magType"><option value="text">Text Article</option><option value="image">Picture Based</option><option value="video">Video Based</option><option value="book">Book Based</option></select></div>
-                    <div class="form-group"><label>Media File</label><input type="file" id="magMediaFile" accept="image/*,video/*" style="background:#fff;"></div>
-                    <div class="form-group"><label>Author & Read Time</label><input type="text" id="magAuthor" value="International Bureau • 4 min read" required></div>
-                    <div class="form-group"><label>Summary</label><textarea id="magExcerpt" rows="2" placeholder="Summary..." required></textarea></div>
-                    <div class="form-group" style="grid-column: span 2;"><label>Full Body</label><textarea id="magBody" rows="3" placeholder="Full body..." required></textarea></div>
-                </div>
-                <button type="submit" class="btn-action">Publish Article ⚡</button>
-            </form>
-            <div id="magazineTableWrap" style="overflow-x:auto; margin-top:1.5rem;"><p>Loading articles...</p></div>
-        </div>
-
-        <!-- 4. Visual Campaign Showcase Manager -->
-        <div class="admin-section">
-            <h2>🖼️ 4. Visual Campaign & Banner Showcase Manager</h2>
+            <h2>🖼️ 2. Visual Campaign & Banner Showcase Manager</h2>
             <form onsubmit="handleCampaignUpload(event)">
                 <div class="form-grid">
                     <div class="form-group"><label>Title</label><input type="text" id="campTitle" placeholder="Title" required></div>
@@ -147,9 +120,9 @@
             <div id="campaignListContainer" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 5. Upcoming Drops -->
+        <!-- 3. Upcoming Drops -->
         <div class="admin-section">
-            <h2>🚀 5. Upcoming Drops ("Coming Soon")</h2>
+            <h2>🚀 3. Upcoming Drops ("Coming Soon")</h2>
             <form onsubmit="handleComingSoonUpload(event)">
                 <div class="form-grid">
                     <div class="form-group"><label>Title</label><input type="text" id="dropTitle" placeholder="Title" required></div>
@@ -161,9 +134,9 @@
             <div id="comingSoonListContainer" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 6. QR Code Manager -->
+        <!-- 4. QR Code Manager -->
         <div class="admin-section">
-            <h2>📷 6. Founder UPI QR Code Manager</h2>
+            <h2>📷 4. Store QR Code Manager</h2>
             <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1.5rem;">
                 <input type="file" id="newQrFile" accept="image/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800;">
                 <button onclick="uploadNewQrCode()" class="btn-action">Upload QR Code ➕</button>
@@ -171,9 +144,9 @@
             <div id="qrListContainer" style="display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 7. Launch Product -->
+        <!-- 5. Launch Product -->
         <div class="admin-section">
-            <h2>📦 7. Launch Product</h2>
+            <h2>📦 5. Launch Product</h2>
             <form onsubmit="handleNewProduct(event)">
                 <div class="form-grid">
                     <div class="form-group"><label>Product Name</label><input type="text" id="prodName" placeholder="Name" required></div>
@@ -187,32 +160,34 @@
             </form>
         </div>
 
-        <!-- 8. Catalog Manager -->
+        <!-- 6. Catalog Manager -->
         <div class="admin-section">
-            <h2>🗂️ 8. Catalog Stock & Sizes Manager</h2>
+            <h2>🗂️ 6. Catalog Stock, Sizes & Demand Voting Manager</h2>
             <div id="productsTableWrap" style="overflow-x:auto;"><p>Loading catalog...</p></div>
         </div>
 
-        <!-- 9. Customer Orders -->
+        <!-- 7. Customer Orders -->
         <div class="admin-section">
-            <h2>🚚 9. Customer Orders & Invoices</h2>
+            <h2>🚚 7. Customer Orders & Invoices</h2>
             <div id="ordersTableWrap" style="overflow-x:auto;"><p>Loading orders...</p></div>
         </div>
 
-        <!-- 10. Newsletter Subscribers -->
+        <!-- 8. Newsletter Subscribers -->
         <div class="admin-section">
-            <h2>💌 10. Newsletter Subscribers</h2>
+            <h2>💌 8. Newsletter Subscribers</h2>
             <div id="leadsTableWrap" style="overflow-x:auto;"><p>Loading leads...</p></div>
         </div>
     </div>
 
     <script>
         const API_URL = '/api';
-        const OWNER_PASSWORD = 'hoknex2026'; // You can change this password anytime
+        const OWNER_PASSWORD = 'hoknex2026';
 
+        // 25-Minute Session Persistence Check
         function verifyAdminPassword() {
             const val = document.getElementById('adminPasswordInput').value;
             if (val === OWNER_PASSWORD) {
+                localStorage.setItem('hoknex_store_login_time', Date.now());
                 document.getElementById('authOverlay').style.display = 'none';
                 document.getElementById('adminMainContent').style.display = 'block';
                 loadAllAdminData();
@@ -220,6 +195,15 @@
                 alert('Incorrect owner password! Please try again.');
             }
         }
+
+        window.onload = function() {
+            const loginTime = localStorage.getItem('hoknex_store_login_time');
+            if (loginTime && (Date.now() - Number(loginTime) < 25 * 60 * 1000)) {
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('adminMainContent').style.display = 'block';
+                loadAllAdminData();
+            }
+        };
 
         function showProModal(title, message, callback = null) {
             document.getElementById('proModalTitle').innerText = title;
@@ -245,138 +229,6 @@
         function updateAnnouncement() {
             localStorage.setItem('hoknex_announcement', document.getElementById('announcementInput').value);
             showProModal('Success', 'Announcement banner updated successfully!');
-        }
-
-        // --- Support / Help Desk & Certificate Verification Dashboard ---
-        async function renderSupportTicketsTable() {
-            try {
-                const res = await fetch(`${API_URL}/support`);
-                const tickets = await res.json();
-                const wrap = document.getElementById('supportTicketsTableWrap');
-                if(!tickets || tickets.length === 0) {
-                    wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No support or donation tickets submitted yet.</p>`;
-                    return;
-                }
-                wrap.innerHTML = `
-                    <table>
-                        <thead><tr><th>User / Donor</th><th>Query / Inquiry / Proof</th><th>Status</th><th>Actions & Certificate Generator</th></tr></thead>
-                        <tbody>
-                            ${tickets.map((t, idx) => {
-                                const hasProof = t.description.includes('Proof:');
-                                let proofUrl = '';
-                                if (hasProof) {
-                                    const match = t.description.match(/Proof:\s*(https?:\/\/[^\s]+)/);
-                                    if (match) proofUrl = match[1];
-                                }
-                                return `
-                                    <tr>
-                                        <td><b>@${t.username}</b><br><small>${new Date(t.createdAt).toLocaleString()}</small></td>
-                                        <td>
-                                            ${t.description}
-                                            ${proofUrl ? `<br><a href="${proofUrl}" target="_blank" style="color:var(--primary-trust); font-weight:900; text-decoration:underline;">🔍 View Payment Proof Screenshot</a>` : ''}
-                                        </td>
-                                        <td><span style="background:${t.status==='Resolved'?'#ECFDF5':'#FFFBEB'}; color:${t.status==='Resolved'?'#059669':'#D97706'}; padding:4px 8px; border-radius:6px; font-size:0.75rem;">${t.status}</span></td>
-                                        <td>
-                                            <div style="display:flex; flex-direction:column; gap:6px;">
-                                                <input type="text" id="cert-link-${idx}" placeholder="Certificate URL or PDF link..." value="${t.reply || ''}" style="padding:6px; font-size:0.8rem;">
-                                                <button onclick="verifyAndSendCertificate('${t._id}', ${idx})" class="btn-action" style="background:#10B981; padding:4px 8px; font-size:0.75rem;">Verify & Send Certificate 🎓</button>
-                                                <button onclick="deleteTicket('${t._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete Ticket ✕</button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
-                `;
-            } catch(e) { console.error(e); }
-        }
-
-        async function verifyAndSendCertificate(ticketId, idx) {
-            const certUrl = document.getElementById(`cert-link-${idx}`).value.trim();
-            if(!certUrl) {
-                showProModal('Link Required', 'Please enter a certificate download link or URL before verifying.');
-                return;
-            }
-            try {
-                await fetch(`${API_URL}/support/${ticketId}/reply`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reply: certUrl })
-                });
-                showProModal('Verified & Sent! 🎉', 'Certificate link successfully dispatched to the user portal!');
-                renderSupportTicketsTable();
-            } catch(e) { showProModal('Error', 'Could not verify ticket.'); }
-        }
-
-        async function deleteTicket(ticketId) {
-            showProModal('Confirm Delete', 'Delete this ticket?', async () => {
-                await fetch(`${API_URL}/support/${ticketId}`, { method: 'DELETE' });
-                renderSupportTicketsTable();
-                showProModal('Deleted', 'Ticket removed.');
-            });
-        }
-
-        // --- Magazine Manager ---
-        async function renderMagazineTable() {
-            try {
-                const res = await fetch(`${API_URL}/magazine/articles`);
-                const articles = await res.json();
-                const wrap = document.getElementById('magazineTableWrap');
-                if(!articles || articles.length === 0) { wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No articles published yet.</p>`; return; }
-                wrap.innerHTML = `
-                    <table>
-                        <thead><tr><th>Title</th><th>Category</th><th>Type</th><th>Author</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${articles.map(a => `
-                                <tr>
-                                    <td><b>${a.title}</b></td><td>${a.category}</td><td>${a.type || 'text'}</td><td>${a.author}</td>
-                                    <td><button onclick="deleteArticle('${a._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-            } catch(e) { console.error(e); }
-        }
-
-        async function handleMagazineUpload(e) {
-            e.preventDefault();
-            const title = document.getElementById('magTitle').value;
-            const category = document.getElementById('magCategory').value;
-            const type = document.getElementById('magType').value;
-            const authorInfo = document.getElementById('magAuthor').value;
-            const excerpt = document.getElementById('magExcerpt').value;
-            const body = document.getElementById('magBody').value;
-            const fileInput = document.getElementById('magMediaFile');
-
-            let mediaUrl = '';
-            if (fileInput.files && fileInput.files[0]) {
-                const formData = new FormData();
-                formData.append('image', fileInput.files[0]);
-                const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
-                const upData = await upRes.json();
-                mediaUrl = upData.url;
-            }
-
-            let author = authorInfo.split('•')[0].trim();
-            let time = authorInfo.split('•')[1] ? authorInfo.split('•')[1].trim() : '4 min read';
-
-            await fetch(`${API_URL}/magazine/articles`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, category, type, mediaUrl, icon: '📰', author, time, excerpt, body })
-            });
-            showProModal('Success', 'Article published!');
-            renderMagazineTable();
-        }
-
-        function deleteArticle(id) {
-            showProModal('Confirm Delete', 'Delete article?', async () => {
-                await fetch(`${API_URL}/magazine/articles/${id}`, { method: 'DELETE' });
-                renderMagazineTable();
-                showProModal('Deleted', 'Article removed.');
-            });
         }
 
         // Campaigns
@@ -700,8 +552,6 @@
         }
 
         function loadAllAdminData() {
-            renderSupportTicketsTable();
-            renderMagazineTable();
             renderCampaignManager();
             renderComingSoonManager();
             renderQrManager();
