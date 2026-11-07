@@ -1,4 +1,24 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Fetch and display live stats on page load
+    try {
+        const statsResponse = await fetch('https://hoknex-backend.mr-motivationfamily.workers.dev/api/stats');
+        if (statsResponse.ok) {
+            const stats = await statsResponse.json();
+            
+            // Update the stats boxes on your homepage if the elements exist
+            const globalStudentsEl = document.getElementById('globalStudents');
+            const campusPostsEl = document.getElementById('campusPosts');
+            const activeClubsEl = document.getElementById('activeClubs');
+
+            if (globalStudentsEl) globalStudentsEl.textContent = stats.globalStudents;
+            if (campusPostsEl) campusPostsEl.textContent = stats.campusPosts;
+            if (activeClubsEl) activeClubsEl.textContent = stats.activeClubs;
+        }
+    } catch (err) {
+        console.error('Stats error:', err);
+    }
+
+    // 2. Handle publishing posts
     const publishBtn = document.getElementById('publishBtn');
     const postContent = document.getElementById('postContent');
 
