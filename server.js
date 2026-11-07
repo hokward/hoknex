@@ -569,10 +569,11 @@ app.put('/api/users/:username', upload.fields([{ name: 'dp', maxCount: 1 }, { na
       updateData.skills = skills.split(',').map(s => s.trim()).filter(Boolean);
     }
 
-  if (req.files) {
-  if (req.files['dp'] && req.files['dp'][0]) updateData.dpUrl = req.files['dp'][0].path;
-  if (req.files['banner'] && req.files['banner'][0]) updateData.bannerUrl = req.files['banner'][0].path;
-}
+    if (req.files) {
+      if (req.files['dp'] && req.files['dp'][0]) updateData.dpUrl = req.files['dp'][0].path;
+      if (req.files['banner'] && req.files['banner'][0]) updateData.bannerUrl = req.files['banner'][0].path;
+    }
+
     const updatedUser = await User.findOneAndUpdate({ username: targetUsername }, updateData, { new: true }).select('-password');
     res.json(updatedUser);
   } catch (err) {
@@ -580,12 +581,20 @@ app.put('/api/users/:username', upload.fields([{ name: 'dp', maxCount: 1 }, { na
   }
 });
 
+// ✅ Fixed stats route to support both frontend formats smoothly
 app.get('/api/stats', async (req, res) => {
   try {
     const peopleCount = await User.countDocuments();
     const postsCount = await Post.countDocuments();
     const clubsCount = await Club.countDocuments();
-    res.json({ people: peopleCount || 1, posts: postsCount, clubs: clubsCount });
+    res.json({ 
+      globalStudents: peopleCount || 1, 
+      campusPosts: postsCount, 
+      activeClubs: clubsCount,
+      people: peopleCount || 1, 
+      posts: postsCount, 
+      clubs: clubsCount 
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
