@@ -8,10 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!content) return alert('Please write something before publishing.');
 
             try {
-                const response = await fetch('https://hoknex-backend.mr-motivationfamily.workers.dev/api/stats');
+                const response = await fetch('https://hoknex-backend.mr-motivationfamily.workers.dev/api/posts', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content })
+                    body: JSON.stringify({ 
+                        title: 'Campus Update', 
+                        content: content, 
+                        author: 'Hoknex Student' 
+                    })
                 });
 
                 if (response.ok) {
