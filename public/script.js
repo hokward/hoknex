@@ -1,51 +1,43 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Fetch and display live stats on page load
-    try {
-        const statsResponse = await fetch('https://hoknex-backend.mr-motivationfamily.workers.dev/api/stats');
-        if (statsResponse.ok) {
-            const stats = await statsResponse.json();
-            
-            // Update the stats boxes on your homepage if the elements exist
-            const globalStudentsEl = document.getElementById('globalStudents');
-            const campusPostsEl = document.getElementById('campusPosts');
-            const activeClubsEl = document.getElementById('activeClubs');
-
-            if (globalStudentsEl) globalStudentsEl.textContent = stats.globalStudents;
-            if (campusPostsEl) campusPostsEl.textContent = stats.campusPosts;
-            if (activeClubsEl) activeClubsEl.textContent = stats.activeClubs;
+document.addEventListener('DOMContentLoaded', () => {
+    // Fetch Live Database Stats
+    async function fetchLiveStats() {
+        try {
+            const res = await fetch('https://hoknex-backend.mr-motivationfamily.workers.dev/api/stats');
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('globalStudents').innerText = data.globalStudents || data.people || 0;
+                document.getElementById('campusPosts').innerText = data.campusPosts || data.posts || 0;
+                document.getElementById('activeClubs').innerText = data.activeClubs || data.clubs || 0;
+            }
+        } catch (e) {
+            console.error('Stats error:', e);
         }
-    } catch (err) {
-        console.error('Stats error:', err);
     }
+    fetchLiveStats();
 
-    // 2. Handle publishing posts
-    const publishBtn = document.getElementById('publishBtn');
-    const postContent = document.getElementById('postContent');
-
-    if (publishBtn) {
-        publishBtn.addEventListener('click', async () => {
-            const content = postContent.value.trim();
-            if (!content) return alert('Please write something before publishing.');
+    // Handle Login API
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const identifier = document.getElementById('loginIdentifier').value;
+            const password = document.getElementById('loginPassword').value;
 
             try {
-                const response = await fetch('https://hoknex-backend.mr-motivationfamily.workers.dev/api/posts', {
+                const res = await fetch('https://hoknex-backend.mr-motivationfamily.workers.dev/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        title: 'Campus Update', 
-                        content: content, 
-                        author: 'Hoknex Student' 
-                    })
+                    body: JSON.stringify({ identifier, password })
                 });
-
-                if (response.ok) {
-                    postContent.value = '';
-                    alert('Published successfully to Hoknex!');
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Login successful!');
+                    window.location.href = '/feed.html';
                 } else {
-                    alert('Failed to publish post.');
+                    alert(data.error || 'Login failed');
                 }
             } catch (err) {
-                console.error('Error posting:', err);
+                console.error('Login error:', err);
             }
         });
     }
