@@ -61,19 +61,19 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 // 1. Configure Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'wnnotcmw',
-  api_key: process.env.CLOUDINARY_API_KEY || '316289158118826',
-  api_secret: process.env.CLOUDINARY_API_SECRET || 'l9kGKimUME38BQhYcCC6NMm5LhY'
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'wnnotcmw',
+    api_key: process.env.CLOUDINARY_API_KEY || '316289158118826',
+    api_secret: process.env.CLOUDINARY_API_SECRET || 'l9kGKimUME38BQhYcCC6NMm5LhY'
 });
 
 // 2. Set up the Cloudinary Storage Engine
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'hoknex_uploads', 
-    resource_type: 'auto',
-    allowedFormats: ['jpeg', 'png', 'jpg', 'webp', 'webm', 'mp3', 'wav', 'mov', 'mp4'] 
-  }
+    cloudinary: cloudinary,
+    params: {
+        folder: 'hoknex_uploads', 
+        resource_type: 'auto',
+        allowedFormats: ['jpeg', 'png', 'jpg', 'webp', 'webm', 'mp3', 'wav', 'mov', 'mp4'] 
+    }
 });
 
 // 3. Initialize Multer
@@ -82,22 +82,30 @@ const upload = multer({ storage: storage });
 let isConnected = false;
 
 const connectDB = async () => {
-  if (isConnected) return;
-  try {
-    const db = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000
-    });
-    isConnected = db.connections[0].readyState === 1;
-    console.log('MongoDB Connected Successfully to Hoknex DB');
-  } catch (err) {
-    console.error('MongoDB connection error:', err);
-  }
+    if (isConnected) return;
+    try {
+        // 🔒 FORCED FIX: Explicitly intercept MONGO_URI and force it to use the 'test' database
+        let uri = process.env.MONGO_URI || '';
+        if (uri.includes('.net/') && !uri.includes('.net/test')) {
+            uri = uri.replace(/\.net\/[^?]*(\?|$)/, '.net/test$1');
+        } else if (!uri.includes('.net/')) {
+            uri = uri.replace(/\/?(\?|$)/, '/test$1');
+        }
+
+        const db = await mongoose.connect(uri, {
+            serverSelectionTimeoutMS: 5000
+        });
+        isConnected = db.connections[0].readyState === 1;
+        console.log('MongoDB Connected Successfully to test DB');
+    } catch (err) {
+        console.error('MongoDB connection error:', err);
+    }
 };
 
 // Force database connection before running any routes
 app.use(async (req, res, next) => {
-  await connectDB();
-  next();
+    await connectDB();
+    next();
 });
 
 // ==========================================
