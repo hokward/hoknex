@@ -457,7 +457,8 @@
 
     <!-- Script to Handle Modern Custom Popups, Modals, & Auth Logic -->
     <script>
-        const API_URL = 'https://hoknex-backend.mr-motivationfamily.workers.dev/api';
+        // FIXED: Removed the trailing /api to prevent duplication during fetch calls
+        const API_URL = 'https://hoknex-backend.mr-motivationfamily.workers.dev';
 
         // Premium Toast Notification System
         function showHoknexToast(message, emoji = '✨') {
@@ -519,7 +520,7 @@
             const username = localStorage.getItem('hoknex_user') || 'Student';
 
             try {
-                const res = await fetch(`${API_URL}/support`, {
+                const res = await fetch(`${API_URL}/api/support`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -547,7 +548,7 @@
         // Fetch Real Database Stats
         async function fetchLiveStats() {
             try {
-                const res = await fetch(`${API_URL}/stats`);
+                const res = await fetch(`${API_URL}/api/stats`);
                 const data = await res.json();
                 document.getElementById('statPeople').innerText = data.globalStudents || data.people || 1;
                 document.getElementById('statPosts').innerText = data.campusPosts || data.posts || 0;
@@ -565,7 +566,7 @@
             err.innerText = '';
 
             try {
-                const res = await fetch(`${API_URL}/login`, {
+                const res = await fetch(`${API_URL}/api/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ identifier, password })
@@ -603,7 +604,7 @@
                 btn.innerText = "Sending Code...";
 
                 try {
-                    const res = await fetch(`${API_URL}/send-otp`, {
+                    const res = await fetch(`${API_URL}/api/send-otp`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ fullName, username, email, password })
@@ -640,7 +641,7 @@
                 btn.innerText = "Verifying...";
 
                 try {
-                    const res = await fetch(`${API_URL}/verify-otp`, {
+                    const res = await fetch(`${API_URL}/api/verify-otp`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email: pendingVerificationEmail, otp })
@@ -669,7 +670,7 @@
             const email = document.getElementById('newsletterEmailInput').value.trim();
             if(!email) { showHoknexToast('Please enter a valid email address!', '⚠️'); return; }
             try {
-                await fetch(`${API_URL}/store/subscribers`, {
+                await fetch(`${API_URL}/api/store/subscribers`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, date: new Date().toLocaleString() })
