@@ -118,7 +118,7 @@
     </div>
 
     <script>
-        const API_URL = '/api';
+        const API_URL = 'https://hoknex-backend.onrender.com';
         const OWNER_PASSWORD = 'hoknex2026';
 
         function verifyAdminPassword() {
@@ -160,7 +160,7 @@
             let mediaUrl = '';
             if (fileInput.files && fileInput.files[0]) {
                 const formData = new FormData(); formData.append('image', fileInput.files[0]);
-                const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
                 const upData = await upRes.json();
                 mediaUrl = upData.url;
             }
@@ -168,7 +168,7 @@
             let author = authorInfo.split('•')[0].trim();
             let readTime = authorInfo.split('•')[1] ? authorInfo.split('•')[1].trim() : '5 min read';
 
-            await fetch(`${API_URL}/magazine/spotlight`, {
+            await fetch(`${API_URL}/api/magazine/spotlight`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, tag, excerpt, body, mediaUrl, mediaType, author, readTime })
             });
@@ -177,7 +177,7 @@
 
         async function renderTrendingInputs() {
             try {
-                const res = await fetch(`${API_URL}/magazine/trending`);
+                const res = await fetch(`${API_URL}/api/magazine/trending`);
                 let trends = await res.json();
                 const wrap = document.getElementById('trendingInputsWrap');
                 wrap.innerHTML = '';
@@ -191,7 +191,7 @@
             const inputs = document.querySelectorAll('.trending-input-field');
             let headlines = [];
             inputs.forEach(i => { if(i.value.trim()) headlines.push(i.value.trim()); });
-            await fetch(`${API_URL}/magazine/trending`, {
+            await fetch(`${API_URL}/api/magazine/trending`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ headlines })
             });
@@ -199,7 +199,7 @@
         }
 
         async function renderMagazineTable() {
-            const res = await fetch(`${API_URL}/magazine/articles`);
+            const res = await fetch(`${API_URL}/api/magazine/articles`);
             const articles = await res.json();
             document.getElementById('magazineTableWrap').innerHTML = `
                 <table>
@@ -229,7 +229,7 @@
             let mediaUrl = '';
             if (fileInput.files && fileInput.files[0]) {
                 const formData = new FormData(); formData.append('image', fileInput.files[0]);
-                const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
                 const upData = await upRes.json();
                 mediaUrl = upData.url;
             }
@@ -237,7 +237,7 @@
             let author = authorInfo.split('•')[0].trim();
             let time = authorInfo.split('•')[1] ? authorInfo.split('•')[1].trim() : '4 min read';
 
-            await fetch(`${API_URL}/magazine/articles`, {
+            await fetch(`${API_URL}/api/magazine/articles`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, category, type, mediaUrl, author, time, excerpt, body })
             });
@@ -246,12 +246,12 @@
         }
 
         async function deleteArticle(id) {
-            await fetch(`${API_URL}/magazine/articles/${id}`, { method: 'DELETE' });
+            await fetch(`${API_URL}/api/magazine/articles/${id}`, { method: 'DELETE' });
             renderMagazineTable();
         }
 
         async function renderBooksTable() {
-            const res = await fetch(`${API_URL}/magazine/books`);
+            const res = await fetch(`${API_URL}/api/magazine/books`);
             const books = await res.json();
             document.getElementById('booksTableWrap').innerHTML = `
                 <table>
@@ -278,10 +278,10 @@
             const pages = rawPages.split('---NEWPAGE---').map(p => p.trim());
 
             const formData = new FormData(); formData.append('image', coverFile);
-            const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+            const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
             const upData = await upRes.json();
 
-            await fetch(`${API_URL}/magazine/books`, {
+            await fetch(`${API_URL}/api/magazine/books`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, author, coverUrl: upData.url, pages })
             });
@@ -290,7 +290,7 @@
         }
 
         async function deleteBook(id) {
-            await fetch(`${API_URL}/magazine/books/${id}`, { method: 'DELETE' });
+            await fetch(`${API_URL}/api/magazine/books/${id}`, { method: 'DELETE' });
             renderBooksTable();
         }
         
