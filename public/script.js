@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Fetch Live Database Stats
+    // Fetch Live Database Stats from Render Backend
     async function fetchLiveStats() {
         try {
-            const res = await fetch('https://hoknex-backend.mr-motivationfamily.workers.dev/api/stats');
+            const res = await fetch('https://hoknex-backend.onrender.com/api/stats');
             if (res.ok) {
                 const data = await res.json();
                 document.getElementById('globalStudents').innerText = data.globalStudents || data.people || 0;
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fetchLiveStats();
 
-    // Handle Login API
+    // Handle Login API via Render Backend
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('loginPassword').value;
 
             try {
-                const res = await fetch('https://hoknex-backend.mr-motivationfamily.workers.dev/api/login', {
+                const res = await fetch('https://hoknex-backend.onrender.com/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ identifier, password })
