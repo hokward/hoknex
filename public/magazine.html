@@ -252,7 +252,7 @@
     </footer>
 
     <script>
-        const API_URL = '/api';
+        const API_URL = 'https://hoknex-backend.onrender.com';
         let allArticles = [];
         let currentSpotlight = null;
         let currentBooks = [];
@@ -262,7 +262,7 @@
         async function loadMagazineData() {
             try {
                 // Fetch Spotlight Banner
-                const spotRes = await fetch(`${API_URL}/magazine/spotlight`);
+                const spotRes = await fetch(`${API_URL}/api/magazine/spotlight`);
                 currentSpotlight = await spotRes.json();
                 if (currentSpotlight && currentSpotlight.title) {
                     document.getElementById('spotlightTag').innerText = currentSpotlight.tag || 'WORLD NEWS • SPOTLIGHT';
@@ -282,7 +282,7 @@
                 }
 
                 // Fetch Articles
-                const res = await fetch(`${API_URL}/magazine/articles`);
+                const res = await fetch(`${API_URL}/api/magazine/articles`);
                 allArticles = await res.json();
                 renderZineGrid(allArticles);
                 loadTrendingHeadlines();
@@ -308,7 +308,7 @@
 
         async function loadTrendingHeadlines() {
             try {
-                const res = await fetch(`${API_URL}/magazine/trending`);
+                const res = await fetch(`${API_URL}/api/magazine/trending`);
                 let trends = await res.json();
                 if (!trends || trends.length === 0) {
                     const sortedByViews = [...allArticles].sort((a,b) => (b.views || 0) - (a.views || 0)).slice(0,3);
@@ -326,7 +326,7 @@
 
         async function loadDigitalBooks() {
             try {
-                const res = await fetch(`${API_URL}/magazine/books`);
+                const res = await fetch(`${API_URL}/api/magazine/books`);
                 currentBooks = await res.json();
                 const grid = document.getElementById('booksGrid');
                 if(!currentBooks || currentBooks.length === 0) {
@@ -377,7 +377,7 @@
         async function openArticle(id) {
             const article = allArticles.find(a => a._id === id || a.id === id);
             if(!article) return;
-            if (article._id) { await fetch(`${API_URL}/magazine/articles/${article._id}/visit`, { method: 'PUT' }); }
+            if (article._id) { await fetch(`${API_URL}/api/magazine/articles/${article._id}/visit`, { method: 'PUT' }); }
 
             document.getElementById('modalTag').innerText = article.category;
             document.getElementById('modalTitle').innerText = article.title;
@@ -448,7 +448,7 @@
         async function submitNewsletterEmail() {
             const email = document.getElementById('newsletterEmailInput').value.trim();
             if(!email) return;
-            await fetch(`${API_URL}/store/subscribers`, {
+            await fetch(`${API_URL}/api/store/subscribers`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, date: new Date().toLocaleString() })
