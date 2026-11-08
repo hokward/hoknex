@@ -90,36 +90,29 @@
 
     <!-- ALL JAVASCRIPT LOGIC -->
     <script>
+        const API_URL = 'https://hoknex-backend.onrender.com';
+
         // --- 1. STANDALONE ADMIN SECURITY LOCK (Runs Immediately) ---
-        // Set your master admin password here (do not share this!)
-        const MASTER_ADMIN_PASSWORD = "HoknexAdmin2026!"; 
-        
-        // We use sessionStorage so you don't have to re-enter it every time you refresh,
-        // but it strictly locks again as soon as the browser tab is closed.
         let isAdminUnlocked = sessionStorage.getItem('hoknex_admin_unlocked');
 
         if (!isAdminUnlocked) {
-            // Prompt for the standalone password
             const enteredPass = prompt("🔒 SECURE HOKNEX ADMIN PORTAL\n\nEnter the Master Admin Password:");
 
             if (enteredPass === "kluhoknex") {
                 sessionStorage.setItem('hoknex_admin_unlocked', 'true');
             } else {
                 alert("⛔ ACCESS DENIED: Incorrect Master Password.");
-                window.location.href = 'index.html'; // Kicks unauthorized users away
+                window.location.href = 'index.html'; 
             }
         }
 
         // --- 2. UI TAB SWITCHER ---
         function switchTab(tabName) {
-            // Hide all contents
             document.getElementById('tab-tickets').classList.remove('active');
             document.getElementById('tab-apps').classList.remove('active');
-            // Remove active state from all buttons
             document.getElementById('btn-tickets').classList.remove('active');
             document.getElementById('btn-apps').classList.remove('active');
 
-            // Show selected
             document.getElementById(`tab-${tabName}`).classList.add('active');
             document.getElementById(`btn-${tabName}`).classList.add('active');
         }
@@ -127,7 +120,7 @@
         // --- 3. SUPPORT TICKETS LOGIC ---
         async function loadTickets() {
             try {
-                const res = await fetch('/api/support');
+                const res = await fetch(`${API_URL}/api/support`);
                 const tickets = await res.json();
                 const container = document.getElementById('ticketsContainer');
 
@@ -178,7 +171,7 @@
         async function executeSupportServerDeletion(ticketId) {
             if (!confirm('Are you sure you want to approve this request and permanently delete this server?')) return;
             try {
-                const res = await fetch(`/api/support/delete-server-by-ticket/${ticketId}`, { method: 'DELETE' });
+                const res = await fetch(`${API_URL}/api/support/delete-server-by-ticket/${ticketId}`, { method: 'DELETE' });
                 if (res.ok) {
                     alert('Server successfully deleted by support team!');
                     loadTickets(); 
@@ -192,7 +185,7 @@
             const reply = document.getElementById(`replyText_${id}`).value.trim();
             if(!reply) return alert('Please type a reply first!');
             try {
-                const res = await fetch(`/api/support/${id}/reply`, {
+                const res = await fetch(`${API_URL}/api/support/${id}/reply`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ reply })
@@ -208,7 +201,7 @@
         async function loadApplications() {
             const container = document.getElementById('adminAppList');
             try {
-                const res = await fetch('/api/applications');
+                const res = await fetch(`${API_URL}/api/applications`);
                 const apps = await res.json();
                 
                 if (apps.length === 0) {
@@ -239,17 +232,16 @@
         async function approveApp(appId) {
             if (!confirm('Approve this user to host events on Hoknex?')) return;
             try {
-                const res = await fetch(`/api/applications/${appId}/approve`, { method: 'PUT' });
+                const res = await fetch(`${API_URL}/api/applications/${appId}/approve`, { method: 'PUT' });
                 if (res.ok) {
                     alert("✅ Organizer Approved! They can now host events.");
-                    loadApplications(); // Refresh the list
+                    loadApplications(); 
                 } else { alert("Failed to approve application."); }
             } catch (err) { alert("Network error."); }
         }
 
         // --- 5. INITIALIZE DASHBOARD ---
         window.addEventListener('DOMContentLoaded', () => {
-            // Only load data if the vault is unlocked!
             if (sessionStorage.getItem('hoknex_admin_unlocked')) {
                 loadTickets();
                 loadApplications();
