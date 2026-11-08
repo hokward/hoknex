@@ -452,13 +452,13 @@ body.is-organizer #applyOrganizerBtn {
 
         async function acceptFollowRequest(requesterId) {
             const currentUid = await getCurrentUserId();
-            const res = await fetch(`${API_URL}/api/users/accept-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentUserId: currentUid, requesterId }) });
+            const res = await fetch(`${API_URL}/api/users/accept-request`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentUserId: currentUid, requesterId }) });
             if (res.ok) { alert('Request accepted!'); fetchNotifications(); }
         }
 
         async function rejectFollowRequest(requesterId) {
             const currentUid = await getCurrentUserId();
-            const res = await fetch(`${API_URL}/api/users/reject-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentUserId: currentUid, requesterId }) });
+            const res = await fetch(`${API_URL}/api/users/reject-request`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentUserId: currentUid, requesterId }) });
             if (res.ok) { fetchNotifications(); }
         }
 
@@ -521,7 +521,7 @@ body.is-organizer #applyOrganizerBtn {
 
         async function fetchStats() {
             try {
-                const res = await fetch(`${API_URL}/api/`stats');
+                const res = await fetch(`${API_URL}/api/stats`);
                 const data = await res.json();
                 document.getElementById('pulsePeople').innerText = data.people || 0;
                 document.getElementById('pulsePosts').innerText = data.posts || 0;
@@ -647,7 +647,7 @@ mainView.innerHTML = `
     }
 
     try {
-        const res = await fetch(`${API_URL}/api/projects');
+        const res = await fetch(`${API_URL}/api/projects`);
         const projs = await res.json();
 
         if (!projs || projs.length === 0) {
@@ -789,7 +789,7 @@ mainView.innerHTML = `
         async function loadUserSupportTickets() {
     try {
         const username = localStorage.getItem('hoknex_user');
-        const res = await fetch(`${API_URL}/api/support');
+        const res = await fetch(`${API_URL}/api/support`);
         const tickets = await res.json();
         const container = document.getElementById('userTicketsList');
         if (!container) return;
@@ -818,14 +818,14 @@ mainView.innerHTML = `
     if (!description) return alert('Please enter your query description.');
     
     // Send the data as JSON instead of FormData
-    const res = await fetch(`${API_URL}/api/support', { 
-        method: 'POST', 
+    const res = await fetch(`${API_URL}/api/support`, {
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             username: username,
-            query: description // Naming it 'query' so your backend easily catches it
+            query: description
         })
     });
     
@@ -1184,7 +1184,7 @@ window.submitChatReport = async function() {
     if (imgInput.files[0]) fd.append('image', imgInput.files[0]);
 
     try {
-        await fetch(`${API_URL}/api/reports', { method: 'POST', body: fd });
+        await fetch(`${API_URL}/api/reports`, { method: 'POST', body: fd });
         alert('Report submitted successfully to Hoknex Support Team!');
         closeReportModal();
     } catch (e) { console.error('Report error:', e); }
@@ -1212,79 +1212,138 @@ window.checkBlockStatus = async function(recipientId) {
 window.toggleBlockUser = async function(recipientId) {
     const currentUserId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
     const blockBtn = document.getElementById('blockMenuBtn');
-    const isCurrentlyBlocked = blockBtn.innerText.includes('Unblock');
+
+    if (!currentUserId || !recipientId) {
+        console.error('Missing user or recipient id for block toggle.');
+        return;
+    }
+
+    const isCurrentlyBlocked = !!(blockBtn && blockBtn.innerText && blockBtn.innerText.includes('Unblock'));
     const action = isCurrentlyBlocked ? 'unblock' : 'block';
 
     try {
-        await fetch(`${API_URL}/api/blocks', {
+        const response = await fetch(`${API_URL}/api/blocks`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ blocker: currentUserId, blocked: recipientId, action })
+            body: JSON.stringify({
+                blocker: currentUserId,
+                blocked: recipientId,
+                action: action
+            })
         });
 
+        if (!response.ok) {
+            throw new Error('Block toggle request failed with status ' + response.status);
+        }
+
         if (action === 'block') {
-            await fetch(`${API_URL}/api/messages', {
+            const systemNoticePayload = {
+                sender: currentUserId,
+                recipient: recipientId,
+                text: '🔒 [System Notice]: You have been blocked by this user.',
+                mediaType: 'text'
+            };
+
+            const noticeResponse = await fetch(`${API_URL}/api/messages`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sender: currentUserId, recipient: recipientId, text: '🔒 [System Notice]: You have been blocked by this user.', mediaType: 'text' })
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(systemNoticePayload)
             });
+
+            if (!noticeResponse.ok) {
+                throw new Error('System notice request failed with status ' + noticeResponse.status);
+            }
+
             alert('User blocked successfully.');
         } else {
             alert('User unblocked successfully.');
         }
+
         location.reload();
-    } catch (e) { console.error('Block toggle error:', e); }
+    } catch (e) {
+        console.error('Block toggle error:', e);
+    }
 };
 
 // 🌟 World-Class Inbox UI with 6 Advanced Features
 window.loadChatConnections = async function() {
     try {
         const username = localStorage.getItem('hoknex_user');
+        if (!username) return;
+
         const res = await fetch(`/api/users/${encodeURIComponent(username)}`);
         if (!res.ok) return;
+
         const user = await res.json();
-        
-        const followers = (user.followers || []).map(f => f._id ? f._id.toString() : f.toString());
-        const following = (user.following || []).map(f => f._id ? f._id.toString() : f.toString());
+        const followers = (user.followers || []).map(f => (f && f._id ? String(f._id) : String(f || '')));
+        const following = (user.following || []).map(f => (f && f._id ? String(f._id) : String(f || '')));
         const connectedIds = [...new Set([...followers, ...following])];
-        
+
         const container = document.getElementById('chatConnectionsList');
         if (!container) return;
-        
-        if (!connectedIds.length) { 
-            container.innerHTML = `<p style="font-size:0.85rem; color:var(--ink-light); font-weight:600; padding:10px;">No connections yet!</p>`; 
-            return; 
+
+        if (!connectedIds.length) {
+            container.innerHTML = '<p style="font-size:0.85rem; color:var(--ink-light); font-weight:600; padding:10px;">No connections yet!</p>';
+            return;
         }
-        
-        const userRes = await fetch(`${API_URL}/api/users');
+
+        const userRes = await fetch(`${API_URL}/api/users`);
+        if (!userRes.ok) return;
+
         const allUsers = await userRes.json();
-        const connections = allUsers.filter(u => connectedIds.includes(u._id.toString()));
-        
+        const connections = Array.isArray(allUsers)
+            ? allUsers.filter(u => connectedIds.includes(String(u && u._id ? u._id : '')))
+            : [];
+
+        const connectionCards = connections.map(conn => {
+            const connId = String(conn && conn._id ? conn._id : '');
+            const connName = String(conn && conn.name ? conn.name : 'User');
+            const connUsername = String(conn && conn.username ? conn.username : 'user');
+            const safeConnId = JSON.stringify(connId);
+            const safeConnName = JSON.stringify(connName);
+            const safeConnUsername = JSON.stringify(connUsername);
+            const avatarInitial = String(connName || 'User').charAt(0).toUpperCase();
+            const avatarMarkup = conn && conn.dpUrl
+                ? `<img src="${String(conn.dpUrl)}" style="width:100%; height:100%; object-fit:cover;" alt="${connName} avatar" />`
+                : `<span style="display:flex; align-items:center; justify-content:center; width:100%; height:100%;">${avatarInitial}</span>`;
+
+            return `
+                <div class="inbox-connection" style="margin-bottom: 6px;">
+                    <div onclick="openFullScreenMessages(${safeConnId}, ${safeConnName}, ${safeConnUsername})" style="display:flex; align-items:center; justify-content:space-between; padding:10px; border-radius:8px; cursor:pointer; background:var(--canvas); border:1px solid var(--border);">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <input type="checkbox" class="inbox-select-checkbox" value="${connId}" onclick="event.stopPropagation()" style="cursor: pointer;" />
+                            <div class="avatar-circle" style="width:36px; height:36px; font-size:0.9rem; overflow:hidden;">
+                                ${avatarMarkup}
+                            </div>
+                            <div>
+                                <h4 style="font-weight:800; font-size:0.9rem; color: var(--ink); margin:0;">${connName}</h4>
+                                <p style="font-size:0.75rem; color:var(--ink-light); margin:0;">@${connUsername}</p>
+                            </div>
+                        </div>
+                        <span style="font-size: 0.7rem; color: #10b981; font-weight: 700;">● Active</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
         container.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; margin-bottom: 5px; background: rgba(0,0,0,0.1); border-radius: 6px;">
-                <span style="font-size: 0.75rem; color: var(--ink-light); font-weight: 700;">INBOX (${connections.length})</span>
-                <div style="display: flex; gap: 8px;">
-                    <button onclick="pinSelectedChats()" title="Pin Selected" style="background:transparent; border:none; cursor:pointer; font-size:0.8rem;">📌</button>
-                    <button onclick="archiveSelectedChats()" title="Archive Selected" style="background:transparent; border:none; cursor:pointer; font-size:0.8rem;">📦</button>
-                    <button onclick="deleteSelectedInboxChats()" title="Delete Selected" style="background:transparent; border:none; color:#ef4444; font-size:0.75rem; font-weight:700; cursor:pointer;">Delete 🗑️</button>
-                </div>
-            </div>
-        ` + connections.map(conn => `
-           <div onclick="openFullScreenMessages('${conn._id}', '${conn.name}', '${conn.username}')" style="display:flex; align-items:center; justify-content:space-between; padding:10px; border-radius:8px; cursor:pointer; background:var(--canvas); border:1px solid var(--border); margin-bottom: 6px;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <input type="checkbox" class="inbox-select-checkbox" value="${conn._id}" onclick="event.stopPropagation()" style="cursor: pointer;" />
-                    <div class="avatar-circle" style="width:36px; height:36px; font-size:0.9rem; overflow:hidden;">
-                        ${conn.dpUrl ? `<img src="${conn.dpUrl}" style="width:100%; height:100%; object-fit:cover;" />` : conn.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                        <h4 style="font-weight:800; font-size:0.9rem; color: var(--ink); margin:0;">${conn.name}</h4>
-                        <p style="font-size:0.75rem; color:var(--ink-light); margin:0;">@${conn.username}</p>
+            <div class="inbox-list">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; margin-bottom: 5px; background: rgba(0,0,0,0.1); border-radius: 6px;">
+                    <span style="font-size: 0.75rem; color: var(--ink-light); font-weight: 700;">INBOX (${connections.length})</span>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="pinSelectedChats()" title="Pin Selected" style="background:transparent; border:none; cursor:pointer; font-size:0.8rem;">📌</button>
+                        <button onclick="archiveSelectedChats()" title="Archive Selected" style="background:transparent; border:none; cursor:pointer; font-size:0.8rem;">📦</button>
+                        <button onclick="deleteSelectedInboxChats()" title="Delete Selected" style="background:transparent; border:none; color:#ef4444; font-size:0.75rem; font-weight:700; cursor:pointer;">Delete 🗑️</button>
                     </div>
                 </div>
-                <span style="font-size: 0.7rem; color: #10b981; font-weight: 700;">● Active</span>
+                ${connectionCards}
             </div>
-        `).join('');
-    } catch (e) { console.error('Inbox error:', e); }
+        `;
+    } catch (e) {
+        console.error('Inbox error:', e);
+    }
 };
 
 window.deleteSelectedInboxChats = function() {
@@ -1300,7 +1359,7 @@ window.archiveSelectedChats = function() { alert('Selected chats archived succes
 // 🌟 Profile Avatar and Status
 window.fetchRecipientAvatarAndStatus = async function(userId) {
     try {
-        const res = await fetch(`${API_URL}/api/users');
+        const res = await fetch(`${API_URL}/api/users`);
         if (!res.ok) return;
         const users = await res.json();
         const user = users.find(u => u._id.toString() === userId.toString());
@@ -1344,7 +1403,7 @@ window.deleteCurrentChat = async function(recipientId) {
 window.sendReplyMessage = async function(originalText, replyText) {
     const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
     const text = `↩️ Replying to "${originalText}": ${replyText}`;
-    await fetch(`${API_URL}/api/messages', {
+    await fetch(`${API_URL}/api/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sender, recipient: activeRecipientId, text, mediaType: 'text', isRead: false })
@@ -1488,7 +1547,7 @@ window.showLeaderboard = function() {
 window.shareScoreToChat = async function(text) {
     const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
     if (!sender || !activeRecipientId) return;
-    await fetch(`${API_URL}/api/messages', {
+    await fetch(`${API_URL}/api/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sender, recipient: activeRecipientId, text, mediaType: 'text' })
@@ -1514,11 +1573,11 @@ window.toggleVoiceRecording = async function() {
                 fd.append('image', blob, 'voice.webm');
                 micBtn.style.background = 'rgba(255,255,255,0.15)';
                 micBtn.innerText = '🎤';
-                const res = await fetch(`${API_URL}/api/upload', { method: 'POST', body: fd });
+                const res = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: fd });
                 if (res.ok) {
                     const data = await res.json();
                     const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
-                    await fetch(`${API_URL}/api/messages', {
+                    await fetch(`${API_URL}/api/messages`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ sender, recipient: activeRecipientId, text: `[Audio]: ${data.url}`, mediaType: 'audio' })
@@ -1537,12 +1596,12 @@ window.sendMediaMessage = async function(input) {
     if (!input.files || !input.files[0]) return;
     const fd = new FormData();
     fd.append('image', input.files[0]);
-    const res = await fetch(`${API_URL}/api/upload', { method: 'POST', body: fd });
+    const res = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: fd });
     if (res.ok) {
         const data = await res.json();
         const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
         const isVid = input.files[0].type.startsWith('video/');
-        await fetch(`${API_URL}/api/messages', {
+        await fetch(`${API_URL}/api/messages`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sender, recipient: activeRecipientId, text: isVid ? `[Video]: ${data.url}` : `[Media]: ${data.url}`, mediaType: isVid ? 'video' : 'image' })
@@ -1552,11 +1611,11 @@ window.sendMediaMessage = async function(input) {
 };
 
 window.uploadAndSendMedia = async function(fd, type) {
-    const res = await fetch(`${API_URL}/api/upload', { method: 'POST', body: fd });
+    const res = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: fd });
     if (res.ok) {
         const data = await res.json();
         const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
-        await fetch(`${API_URL}/api/messages', {
+        await fetch(`${API_URL}/api/messages`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sender, recipient: activeRecipientId, text: `[Media]: ${data.url}`, mediaType: type })
@@ -1633,7 +1692,7 @@ window.sendFullScreenMessage = async function() {
     const text = input.value.trim();
     input.value = ''; 
     const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
-    await fetch(`${API_URL}/api/messages', {
+    await fetch(`${API_URL}/api/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sender, recipient: activeRecipientId, text, mediaType: 'text', isRead: false })
@@ -1644,7 +1703,7 @@ window.sendFullScreenMessage = async function() {
 window.sendSticker = async function(symbol) {
     toggleStickerPicker();
     const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
-    await fetch(`${API_URL}/api/messages', {
+    await fetch(`${API_URL}/api/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sender, recipient: activeRecipientId, text: `[Media]: ${symbol}`, mediaType: 'sticker', isRead: false })
@@ -1663,7 +1722,7 @@ window.viewUserProfile = function(usernameOrId) {
         // Clubs & Servers Logic
         async function loadDiscordClubs() {
             try {
-                const res = await fetch(`${API_URL}/api/clubs');
+                const res = await fetch(`${API_URL}/api/clubs`);
                 const clubs = await res.json();
                 const list = document.getElementById('clubServersList');
                 if (!list) return;
@@ -1684,7 +1743,7 @@ window.viewUserProfile = function(usernameOrId) {
             const description = descInput.value.trim();
             const username = localStorage.getItem('hoknex_user');
             if (!name) return alert('Enter a server name');
-            const res = await fetch(`${API_URL}/api/clubs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, description, username }) });
+            const res = await fetch(`${API_URL}/api/clubs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, description, username }) });
             if (res.ok) { nameInput.value = ''; descInput.value = ''; loadDiscordClubs(); fetchStats(); }
         }
 
@@ -1723,7 +1782,7 @@ window.viewUserProfile = function(usernameOrId) {
                 const currentUserId = meData._id.toString();
                 localStorage.setItem('hoknex_uid', currentUserId);
 
-                const res = await fetch(`${API_URL}/api/clubs');
+                const res = await fetch(`${API_URL}/api/clubs`);
                 const clubs = await res.json();
                 const club = clubs.find(c => c._id.toString() === clubId.toString());
                 if (!club) return;
@@ -1748,7 +1807,7 @@ window.viewUserProfile = function(usernameOrId) {
                         <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:15px; padding:2rem; text-align:center;">
                             <h2 style="font-size:1.6rem; font-weight:800;">🔥 ${club.name}</h2>
                             <p style="font-weight:600; color:var(--ink-light); max-width:400px; font-size:0.95rem;">${club.description || 'Private campus server. Requires admin approval to join.'}</p>
-                            ${hasRequested ? `<button class="action-btn" style="background:var(--paper); color:var(--ink); cursor:default;" disabled>Join Request Pending Approval ⏳</button>` : `<button class="btn-create" onclick="requestJoinClub('${club._id}')">🔒 Request to Join Server</button>`}
+                            ${hasRequested ? '<button class="action-btn" style="background:var(--paper); color:var(--ink); cursor:default;" disabled>Join Request Pending Approval ⏳</button>' : '<button class="btn-create" onclick="requestJoinClub(\'' + club._id + '\')">🔒 Request to Join Server</button>'}
                         </div>
                     `;
                     return;
@@ -1928,7 +1987,7 @@ window.viewUserProfile = function(usernameOrId) {
         }
 
         async function openRequestsModal(clubId) {
-            const res = await fetch(`${API_URL}/api/clubs');
+            const res = await fetch(`${API_URL}/api/clubs`);
             const clubs = await res.json();
             const club = clubs.find(c => c._id.toString() === clubId.toString());
             if (!club || !club.joinRequests || club.joinRequests.length === 0) return alert('No pending requests.');
@@ -1962,7 +2021,7 @@ window.viewUserProfile = function(usernameOrId) {
 
         async function openDiscordChannel(channelId) {
             activeChannelId = channelId.toString();
-            const res = await fetch(`${API_URL}/api/clubs');
+            const res = await fetch(`${API_URL}/api/clubs`);
             const clubs = await res.json();
             const club = clubs.find(c => c._id.toString() === activeClubId.toString());
             if (club) openDiscordClub(club._id);
@@ -1995,7 +2054,7 @@ window.viewUserProfile = function(usernameOrId) {
                 input.value = '';
                 if (mediaInput) mediaInput.value = '';
                 document.getElementById('discordMediaName').innerText = '';
-                const clubsRes = await fetch(`${API_URL}/api/clubs');
+                const clubsRes = await fetch(`${API_URL}/api/clubs`);
                 const clubs = await clubsRes.json();
                 loadDiscordMessages(clubs.find(c => c._id.toString() === activeClubId.toString()), activeChannelId);
             }
@@ -2080,7 +2139,7 @@ async function loadAndRenderProjects() {
     container.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--ink-light); font-weight: 700;">Loading projects...</div>`;
     
     try {
-        const res = await fetch(`${API_URL}/api/projects');
+        const res = await fetch(`${API_URL}/api/projects`);
         if (!res.ok) throw new Error('Failed to fetch projects');
         const allProjects = await res.json();
 
@@ -2128,7 +2187,7 @@ async function loadAndRenderProjects() {
     const title = document.getElementById('projTitle').value;
     const pitch = document.getElementById('projPitch').value;
     if(!title || !pitch) return alert('Fill fields');
-    await fetch(`${API_URL}/api/projects', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({title, pitch}) });
+    await fetch(`${API_URL}/api/projects`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({title, pitch}) });
     loadAndRenderProjects(); // <-- Fixed here
 }
 
@@ -2142,7 +2201,7 @@ async function loadAndRenderProjects() {
     const inviteId = urlParams.get('invite');
     
     try {
-        const res = await fetch(`${API_URL}/api/events');
+        const res = await fetch(`${API_URL}/api/events`);
         let evs = await res.json();
         
         if (inviteId) {
@@ -2246,7 +2305,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
             const title = document.getElementById('eventTitle').value;
             const location = document.getElementById('eventLoc').value;
             if(!title) return alert('Enter title');
-            await fetch(`${API_URL}/api/events', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({title, location, date: new Date()}) });
+            await fetch(`${API_URL}/api/events`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({title, location, date: new Date()}) });
             loadEvents();
         }
 
@@ -2330,7 +2389,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
         }
         async function openFollowModal(type, userId) {
             try {
-                const res = await fetch(`${API_URL}/api/users');
+                const res = await fetch(`${API_URL}/api/users`);
                 const allUsers = await res.json();
                 const targetUser = allUsers.find(u => u._id === userId);
                 if (!targetUser) return;
@@ -2383,7 +2442,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
         async function unfollowUser(targetUserId) {
             if (!confirm('Are you sure you want to unfollow this user? Their profile content will become private.')) return;
             const currentUserId = await getCurrentUserId();
-            const res = await fetch(`${API_URL}/api/users/unfollow', {
+            const res = await fetch(`${API_URL}/api/users/unfollow`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ currentUserId, targetUserId })
@@ -2396,7 +2455,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
 
         async function cancelFollowRequest(targetUserId) {
             const currentUserId = await getCurrentUserId();
-            const res = await fetch(`${API_URL}/api/users/cancel-request', {
+            const res = await fetch(`${API_URL}/api/users/cancel-request`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ currentUserId, targetUserId })
@@ -2409,7 +2468,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
 
         async function sendProfileFollowRequest(targetUserId) {
             const currentUserId = await getCurrentUserId();
-            const res = await fetch(`${API_URL}/api/users/follow', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentUserId, targetUserId }) });
+            const res = await fetch(`${API_URL}/api/users/follow`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentUserId, targetUserId }) });
             if(res.ok) {
                 const btn = document.getElementById(`followBtn-${targetUserId}`);
                 if (btn) { btn.innerText = "Requested ⏳"; btn.disabled = true; btn.style.opacity = "0.7"; }
@@ -2586,17 +2645,18 @@ if (rawImg) {
 
     async function handlePostSubmit(e) {
     e.preventDefault();
+
     let content = document.getElementById('postContent').value.trim();
-    
+
     // Safer file input lookup fallback
     const fileInput = document.getElementById('postImageFile') || document.querySelector('input[type="file"]');
     const imageFile = fileInput && fileInput.files ? fileInput.files[0] : null;
     const username = localStorage.getItem('hoknex_user');
-    
+
     let pollData = null;
     const qInput = document.getElementById('pollQuestion');
     if (qInput && qInput.value.trim()) {
-        let options = [];
+        const options = [];
         const val1 = document.getElementById('pollOpt1')?.value.trim();
         const val2 = document.getElementById('pollOpt2')?.value.trim();
         const val3 = document.getElementById('pollOpt3')?.value.trim();
@@ -2614,48 +2674,53 @@ if (rawImg) {
         content = `📊 Poll: ${pollData.question}`;
     }
 
-    if (!content && !imageFile && !pollData) return alert('Please write something, attach an image, or create a poll!');
+    if (!content && !imageFile && !pollData) {
+        return alert('Please write something, attach an image, or create a poll!');
+    }
 
     const formData = new FormData();
     formData.append('content', content);
     formData.append('username', username || 'Student');
     if (imageFile) formData.append('image', imageFile);
-    
+
     // FIX: This line was missing, so polls weren't being sent to the server!
     if (pollData) formData.append('poll', JSON.stringify(pollData));
 
-    const res = await fetch(`${API_URL}/api/posts', { method: 'POST', body: formData });
-    if (res.ok) { 
+    const res = await fetch(`${API_URL}/api/posts`, { method: 'POST', body: formData });
+    if (res.ok) {
         const newPost = await res.json();
-        
+
         if (pollData) {
             let allPolls = {};
             try {
                 allPolls = JSON.parse(localStorage.getItem('hoknex_client_polls')) || {};
-            } catch(e) {}
-            
+            } catch (e) {
+                allPolls = {};
+            }
+
             const postObj = newPost.post || newPost;
             if (postObj._id) allPolls[postObj._id] = pollData;
             if (postObj.id) allPolls[postObj.id] = pollData;
             allPolls[content] = pollData;
-            
+
             localStorage.setItem('hoknex_client_polls', JSON.stringify(allPolls));
         }
 
-        document.getElementById('postContent').value = ''; 
+        document.getElementById('postContent').value = '';
         if (fileInput) fileInput.value = '';
         const pollWrapper = document.getElementById('pollCreatorWrapper');
         if (pollWrapper) pollWrapper.innerHTML = '';
-        
+
         alert('🚀 Published successfully for everyone!');
-        loadPosts(); 
-        if (typeof fetchStats === 'function') fetchStats(); 
+        loadPosts();
+        if (typeof fetchStats === 'function') fetchStats();
     } else {
         alert('Failed to publish post.');
     }
 }
+
 async function loadPosts() {
-    const res = await fetch(`${API_URL}/api/posts');
+    const res = await fetch(`${API_URL}/api/posts`);
     const posts = await res.json();
     
     let allPolls = {};
@@ -2751,23 +2816,52 @@ async function loadPosts() {
         function sharePost() { navigator.clipboard.writeText(window.location.href); alert('Link copied!'); }
 
         async function searchUsers() {
-            const query = document.getElementById('userSearchInput')?.value || '';
-            const res = await fetch(`/api/users?search=${query}`);
-            const users = await res.json();
-            const currentUid = localStorage.getItem('hoknex_uid');
-            const currentUsername = localStorage.getItem('hoknex_user');
-            document.getElementById('usersList').innerHTML = users.map(u => {
-                if (u.username === currentUsername) return '';
-                return `
-                    <div class="post-card">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <h4 style="cursor:pointer; font-weight:800;" onclick="viewUserProfile('${u.username}')">🔍 ${u.name} (@${u.username})</h4>
-                            <button class="action-btn" onclick="viewUserProfile('${u.username}')">View Profile</button>
+            const userSearchInput = document.getElementById('userSearchInput');
+            const usersList = document.getElementById('usersList');
+            if (!usersList) return;
+
+            const query = userSearchInput ? userSearchInput.value.trim() : '';
+            try {
+                const res = await fetch(`/api/users?search=${encodeURIComponent(query)}`);
+                if (!res.ok) {
+                    usersList.innerHTML = '<div class="post-card"><p style="font-weight:600;">Unable to load users right now.</p></div>';
+                    return;
+                }
+
+                const users = await res.json();
+                const currentUsername = localStorage.getItem('hoknex_user');
+                const validUsers = Array.isArray(users) ? users.filter(u => u && u.username && u.username !== currentUsername) : [];
+
+                usersList.innerHTML = validUsers.map(u => {
+                    const safeName = String(u.name || 'Hoknex User')
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;');
+                    const safeUsername = String(u.username || '')
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;');
+                    const safeUsernameForJs = String(u.username || '')
+                        .replace(/\\/g, '\\\\')
+                        .replace(/'/g, "\\'");
+                    return `
+                        <div class="post-card">
+                            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                                <h4 style="cursor:pointer; font-weight:800; margin:0;" onclick="viewUserProfile('${safeUsernameForJs}')">🔍 ${safeName} (@${safeUsername})</h4>
+                                <button class="action-btn" onclick="viewUserProfile('${safeUsernameForJs}')">View Profile</button>
+                            </div>
+                            <p style="margin-top:6px; font-weight:600; color:var(--ink-light);">Department: ${String(u.department || 'Not specified').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}</p>
                         </div>
-                        <p style="margin-top:6px; font-weight:600; color:var(--ink-light);">Department: ${u.department || 'Not specified'}</p>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('') || '<div class="post-card"><p style="font-weight:600;">No matches found.</p></div>';
+            } catch (err) {
+                console.error('User search error:', err);
+                usersList.innerHTML = '<div class="post-card"><p style="font-weight:600;">Unable to load users right now.</p></div>';
+            }
         }
 
         function handleLogout() { localStorage.removeItem('hoknex_user'); localStorage.removeItem('hoknex_uid'); window.location.href = 'index.html'; }
@@ -2807,7 +2901,7 @@ async function loadPosts() {
     <script>
         async function fetchAllPins() {
             try {
-                const res = await fetch(`${API_URL}/api/pins');
+                const res = await fetch(`${API_URL}/api/pins`);
                 if (res.ok) {
                     const data = await res.json();
                     if (Array.isArray(data)) return data;
@@ -2916,7 +3010,7 @@ async function loadPosts() {
 
             if(!title || !imgData) return alert('Please enter a title and select an image file from your device!');
 
-            const res = await fetch(`${API_URL}/api/pins', {
+            const res = await fetch(`${API_URL}/api/pins`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, desc, img: imgData, author })
@@ -3076,7 +3170,7 @@ async function submitNewProject() {
     // Function to send data to the server once image is processed (or if no image)
     const sendData = async (imgBase64 = '') => {
         try {
-            const res = await fetch(`${API_URL}/api/projects', {
+            const res = await fetch(`${API_URL}/api/projects`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -3144,7 +3238,7 @@ function openMessageRequestModal(targetUser, actionType) {
     }
 
     try {
-        const res = await fetch(`${API_URL}/api/send-request-note', {
+        const res = await fetch(`${API_URL}/api/send-request-note`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -3281,7 +3375,7 @@ async function submitEnhancedEvent() {
     };
 
     try {
-        const res = await fetch(`${API_URL}/api/events', {
+        const res = await fetch(`${API_URL}/api/events`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -3453,7 +3547,7 @@ async function submitOrganizerApp() {
 
     try {
         // Send the data to your MongoDB backend
-        const res = await fetch(`${API_URL}/api/applications', {
+        const res = await fetch(`${API_URL}/api/applications`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -3488,7 +3582,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     let approvedOrganizers = ['admin', 'aditya', 'bittu_lal']; 
 
     try {
-        const res = await fetch(`${API_URL}/api/organizers');
+        const res = await fetch(`${API_URL}/api/organizers`);
         if (res.ok) {
             const dynamicOrganizers = await res.json();
             approvedOrganizers = [...approvedOrganizers, ...dynamicOrganizers.map(u => u.toLowerCase().trim())];
@@ -3597,7 +3691,7 @@ async function verifyTicketCode(scannedData) {
 
         console.log("Scan successful, verifying ticket:", ticketId);
 
-        const response = await fetch(`${API_URL}/api/events/verify-ticket', {
+        const response = await fetch(`${API_URL}/api/events/verify-ticket`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ticketId })
@@ -3666,7 +3760,7 @@ async function submitLostFoundItem() {
 
     // 1. Send to backend so ALL users can see it
     try {
-        await fetch(`${API_URL}/api/lostfound', {
+        await fetch(`${API_URL}/api/lostfound`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newItem)
@@ -3742,7 +3836,7 @@ async function loadLostFoundItems() {
 
     let allItems = [];
     try {
-        const res = await fetch(`${API_URL}/api/lostfound');
+        const res = await fetch(`${API_URL}/api/lostfound`);
         if (res.ok) allItems = await res.json();
     } catch (e) {}
 
@@ -3909,7 +4003,7 @@ async function loadLnfMessages(itemId, itemName, itemDesc, finderName, forceScro
             text: `Hello! Before I connect you with **@${finderName || 'the finder'}**, please type out a specific distinguishing feature or upload a photo 📎 so I can verify you are the owner.`,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
-        try { await fetch(`${API_URL}/api/lnf-chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(initMsg) }); } catch(e) {}
+        try { await fetch(`${API_URL}/api/lnf-chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(initMsg) }); } catch(e) {}
         messages.push(initMsg);
     }
 
@@ -3964,7 +4058,7 @@ async function sendLnfMessage(itemId, encodedItemDesc, finderName) {
     clearLnfImage(); // Clear preview UI
 
     try {
-        await fetch(`${API_URL}/api/lnf-chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newMsg) });
+        await fetch(`${API_URL}/api/lnf-chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newMsg) });
     } catch (e) {
         let local = JSON.parse(localStorage.getItem(`hoknex_lnf_chat_${itemId}`)) || [];
         local.push(newMsg);
@@ -3994,7 +4088,7 @@ async function sendLnfMessage(itemId, encodedItemDesc, finderName) {
             }
 
             const aiMsg = { itemId: itemId, sender: 'AI Copilot', text: aiReplyText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-            try { await fetch(`${API_URL}/api/lnf-chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(aiMsg) }); } catch(e) {}
+            try { await fetch(`${API_URL}/api/lnf-chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(aiMsg) }); } catch(e) {}
             
             loadLnfMessages(itemId, '', encodedItemDesc, finderName, true);
         }, 800);
@@ -4131,7 +4225,7 @@ async function submitProject() {
 
     try {
         // 1. Save to backend database so it stays permanently
-        const res = await fetch(`${API_URL}/api/projects', {
+        const res = await fetch(`${API_URL}/api/projects`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(projectData)
@@ -4213,7 +4307,7 @@ async function loadLostFoundItems() {
 
     let allItems = [];
     try {
-        const res = await fetch(`${API_URL}/api/lostfound');
+        const res = await fetch(`${API_URL}/api/lostfound`);
         if (res.ok) allItems = await res.json();
     } catch (e) {}
 
@@ -4531,7 +4625,7 @@ async function submitMarketItem() {
 
     if (!title || !price) return alert('Please provide an item name and price!');
 
-    await fetch(`${API_URL}/api/market', {
+    await fetch(`${API_URL}/api/market`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, price, contact, author })
@@ -4546,7 +4640,7 @@ async function loadMarketplaceItems() {
     if (!container) return;
 
     try {
-        const res = await fetch(`${API_URL}/api/market');
+        const res = await fetch(`${API_URL}/api/market`);
         const items = await res.json();
 
         if (items.length === 0) {
@@ -4572,7 +4666,7 @@ async function submitWhisper() {
     const content = document.getElementById('whisperContent').value.trim();
     if (!content) return alert('Whisper cannot be empty!');
 
-    await fetch(`${API_URL}/api/whispers', {
+    await fetch(`${API_URL}/api/whispers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content })
@@ -4588,7 +4682,7 @@ async function loadWhispers() {
     if (!container) return;
 
     try {
-        const res = await fetch(`${API_URL}/api/whispers');
+        const res = await fetch(`${API_URL}/api/whispers`);
         const whispers = await res.json();
 
         if (whispers.length === 0) {
@@ -4615,7 +4709,7 @@ async function logStudyHours() {
 
     const username = localStorage.getItem('hoknex_user') || 'Student';
 
-    await fetch(`${API_URL}/api/study', {
+    await fetch(`${API_URL}/api/study`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, hours })
@@ -4631,7 +4725,7 @@ async function loadStudyLeaderboard() {
     if (!container) return;
 
     try {
-        const res = await fetch(`${API_URL}/api/study');
+        const res = await fetch(`${API_URL}/api/study`);
         const board = await res.json();
 
         if (board.length === 0) {
@@ -4889,7 +4983,7 @@ window.publishPostWithPoll = async function(e) {
     if (pollData) formData.append('poll', JSON.stringify(pollData));
 
     try {
-        const res = await fetch(`${API_URL}/api/posts', { method: 'POST', body: formData });
+        const res = await fetch(`${API_URL}/api/posts`, { method: 'POST', body: formData });
         if (!res.ok) throw new Error('Failed to publish post');
         const newPost = await res.json();
 
@@ -4920,203 +5014,6 @@ window.publishPostWithPoll = async function(e) {
     }
 };
 
-// --- GLOBAL CAMPUS HUB ENGINE ---
-
-window.switchNoticeTab = function(tab) {
-    // Update active tab styling
-    ['Official', 'Market', 'Whispers', 'Study'].forEach(t => {
-        const btn = document.getElementById('noticeTab' + t);
-        if (btn) btn.classList.remove('active');
-    });
-    
-    const activeBtn = document.getElementById('noticeTab' + tab.charAt(0).toUpperCase() + tab.slice(1));
-    if (activeBtn) activeBtn.classList.add('active');
-
-    const container = document.getElementById('noticesMainContainer');
-    if (!container) return;
-
-    if (tab === 'official') {
-        container.innerHTML = `
-            <div class="post-card">
-                <h4 style="font-weight: 800; margin-bottom: 6px;">📢 Official Server Notice</h4>
-                <p style="color: var(--ink-light); font-weight: 600; line-height: 1.5;">All campus systems are live and connected to MongoDB Atlas databases. Make sure to check your events and support tickets regularly!</p>
-            </div>
-        `;
-    } 
-    else if (tab === 'marketplace') {
-        container.innerHTML = `
-            <div class="post-box" style="margin-bottom: 1.5rem;">
-                <h3 style="font-weight: 800; font-size: 1.1rem; margin-bottom: 10px;">🛍️ List an Item for Swap or Sale</h3>
-                <input type="text" id="marketTitle" placeholder="Item Name (e.g., Drawing Board)" style="width:100%; padding:10px; margin-bottom:8px; border-radius:6px; border:1px solid var(--border); background:var(--canvas); color:var(--ink); font-weight:600; outline:none;">
-                <div style="display:flex; gap:8px; margin-bottom:8px;">
-                    <input type="text" id="marketPrice" placeholder="Price (e.g., ₹300)" style="flex:1; padding:10px; border-radius:6px; border:1px solid var(--border); background:var(--canvas); color:var(--ink); font-weight:600; outline:none;">
-                    <input type="text" id="marketContact" placeholder="Hostel/Contact Room No." style="flex:1; padding:10px; border-radius:6px; border:1px solid var(--border); background:var(--canvas); color:var(--ink); font-weight:600; outline:none;">
-                </div>
-                <button class="btn-create" onclick="submitMarketItem()">Post Listing 🚀</button>
-            </div>
-            <div id="marketplaceList" class="posts-stream"></div>
-        `;
-        loadMarketplaceItems();
-    } 
-    else if (tab === 'whispers') {
-        container.innerHTML = `
-            <div class="post-box" style="margin-bottom: 1.5rem;">
-                <h3 style="font-weight: 800; font-size: 1.1rem; margin-bottom: 10px;">🤫 Anonymous Campus Whispers Wall</h3>
-                <textarea id="whisperContent" placeholder="Drop an anonymous thought, confession, or hype note..." style="width:100%; height:80px; padding:10px; margin-bottom:10px; border-radius:6px; border:1px solid var(--border); background:var(--canvas); color:var(--ink); font-weight:600; outline:none; resize:vertical;"></textarea>
-                <button class="btn-create" style="background:var(--accent-purple);" onclick="submitWhisper()">Post Anonymously 🕶️</button>
-            </div>
-            <div id="whispersList" class="posts-stream"></div>
-        `;
-        loadWhispers();
-    } 
-    else if (tab === 'study') {
-        container.innerHTML = `
-            <div class="post-card" style="background:linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color:#fff; border:none; margin-bottom:1.5rem;">
-                <h3 style="font-weight:800; font-size:1.3rem; margin-bottom:6px;">⏱ Study Jam & Focus Leaderboard</h3>
-                <p style="font-size:0.9rem; opacity:0.9; font-weight:600;">Log your library or hostel study hours and compete on the campus hustle ranking!</p>
-                <div style="margin-top:15px; display:flex; gap:10px; align-items:center;">
-                    <input type="number" id="studyHoursInput" placeholder="Hours studied" style="width:160px; padding:10px; border-radius:8px; border:none; font-weight:700; outline:none;">
-                    <button onclick="logStudyHours()" class="btn-create" style="background:#ffffff; color:var(--accent-purple); font-weight:800;">Log Hours 🚀</button>
-                </div>
-            </div>
-            <h4 style="font-weight:800; font-size:1.1rem; margin-bottom:10px;">🏆 Campus Hustle Leaderboard</h4>
-            <div id="studyLeaderboardList" class="posts-stream"></div>
-        `;
-        loadStudyLeaderboard();
-    }
-};
-
-// --- MARKETPLACE FUNCTIONS ---
-window.submitMarketItem = async function() {
-    const title = document.getElementById('marketTitle').value.trim();
-    const price = document.getElementById('marketPrice').value.trim();
-    const contact = document.getElementById('marketContact').value.trim();
-    const author = localStorage.getItem('hoknex_user') || 'Student';
-
-    if (!title || !price) return alert('Please provide an item name and price!');
-
-    await fetch(`${API_URL}/api/market', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, price, contact, author })
-    });
-
-    loadMarketplaceItems();
-    alert('Listing published to server marketplace! 🛍️');
-};
-
-window.loadMarketplaceItems = async function() {
-    const container = document.getElementById('marketplaceList');
-    if (!container) return;
-
-    try {
-        const res = await fetch(`${API_URL}/api/market');
-        const items = await res.json();
-
-        if (items.length === 0) {
-            container.innerHTML = `<div class="post-card"><p style="font-weight:600; color:var(--ink-light);">No marketplace items listed yet.</p></div>`;
-            return;
-        }
-
-        container.innerHTML = items.map(i => `
-            <div class="post-card" style="margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span style="background:rgba(59,130,246,0.1); color:var(--accent-blue); padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:800;">🛍️ ${i.price}</span>
-                    <span style="font-size:0.75rem; color:var(--ink-light);">By @${i.author}</span>
-                </div>
-                <h4 style="font-weight:800; font-size:1.1rem; margin-bottom:4px;">${i.title}</h4>
-                <p style="font-size:0.85rem; color:var(--ink-light); font-weight:600; margin-bottom:10px;">📍 Location / Contact: ${i.contact || 'Direct Message'}</p>
-            </div>
-        `).join('');
-    } catch(e) {}
-};
-
-// --- WHISPERS FUNCTIONS ---
-window.submitWhisper = async function() {
-    const content = document.getElementById('whisperContent').value.trim();
-    if (!content) return alert('Whisper cannot be empty!');
-
-    await fetch(`${API_URL}/api/whispers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content })
-    });
-
-    document.getElementById('whisperContent').value = '';
-    loadWhispers();
-    alert('Anonymous whisper posted live to the server wall! 🤫');
-};
-
-window.loadWhispers = async function() {
-    const container = document.getElementById('whispersList');
-    if (!container) return;
-
-    try {
-        const res = await fetch(`${API_URL}/api/whispers');
-        const whispers = await res.json();
-
-        if (whispers.length === 0) {
-            container.innerHTML = `<div class="post-card"><p style="font-weight:600; color:var(--ink-light);">No whispers yet. Be the first to drop one anonymously!</p></div>`;
-            return;
-        }
-
-        container.innerHTML = whispers.map(w => `
-            <div class="post-card" style="margin-bottom:12px; background:var(--canvas);">
-                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                    <span style="font-size:0.75rem; font-weight:800; color:var(--accent-purple);">🕶️ Anonymous Student</span>
-                    <span style="font-size:0.75rem; color:var(--ink-light);">${w.time}</span>
-                </div>
-                <p style="font-weight:600; font-size:0.95rem; line-height:1.4;">${w.content}</p>
-            </div>
-        `).join('');
-    } catch(e) {}
-};
-
-// --- STUDY JAM FUNCTIONS ---
-window.logStudyHours = async function() {
-    const hours = parseFloat(document.getElementById('studyHoursInput').value);
-    if (isNaN(hours) || hours <= 0) return alert('Please enter valid study hours.');
-
-    const username = localStorage.getItem('hoknex_user') || 'Student';
-
-    await fetch(`${API_URL}/api/study', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, hours })
-    });
-
-    document.getElementById('studyHoursInput').value = '';
-    loadStudyLeaderboard();
-    alert(`Logged ${hours} focus hours to server database! 🚀`);
-};
-
-window.loadStudyLeaderboard = async function() {
-    const container = document.getElementById('studyLeaderboardList');
-    if (!container) return;
-
-    try {
-        const res = await fetch(`${API_URL}/api/study');
-        const board = await res.json();
-
-        if (board.length === 0) {
-            container.innerHTML = `<div class="post-card"><p style="font-weight:600; color:var(--ink-light);">No study hours logged this week yet. Be a pioneer!</p></div>`;
-            return;
-        }
-
-        container.innerHTML = board.map((entry, idx) => `
-            <div class="post-card" style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; gap:12px; align-items:center;">
-                    <span style="font-weight:800; font-size:1.1rem; color:${idx === 0 ? 'var(--accent-yellow)' : 'var(--ink-light)'};">#${idx + 1}</span>
-                    <span style="font-weight:800;">@${entry.username}</span>
-                </div>
-                <span style="background:rgba(16,185,129,0.1); color:#10b981; padding:4px 10px; border-radius:6px; font-weight:800; font-size:0.85rem;">⚡ ${entry.hours} Hours</span>
-            </div>
-        `).join('');
-    } catch(e) {}
-};
-</script>
-
-<script>
 // --- COMPLETE CAMPUS HUB & TIMER ENGINE ---
 
 window.switchNoticeTab = function(tab) {
@@ -5200,7 +5097,7 @@ window.submitMarketItem = async function() {
 
     if (!title || !price) return alert('Please provide an item name and price!');
 
-    await fetch(`${API_URL}/api/market', {
+    await fetch(`${API_URL}/api/market`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, price, contact, author })
@@ -5214,7 +5111,7 @@ window.loadMarketplaceItems = async function() {
     const container = document.getElementById('marketplaceList');
     if (!container) return;
     try {
-        const res = await fetch(`${API_URL}/api/market');
+        const res = await fetch(`${API_URL}/api/market`);
         const items = await res.json();
         if (items.length === 0) {
             container.innerHTML = `<div class="post-card"><p style="font-weight:600; color:var(--ink-light);">No items listed yet.</p></div>`;
@@ -5244,7 +5141,7 @@ window.buyMarketItem = function(title, author) {
 window.submitWhisper = async function() {
     const content = document.getElementById('whisperContent').value.trim();
     if (!content) return alert('Whisper cannot be empty!');
-    await fetch(`${API_URL}/api/whispers', {
+    await fetch(`${API_URL}/api/whispers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content })
@@ -5258,7 +5155,7 @@ window.loadWhispers = async function() {
     const container = document.getElementById('whispersList');
     if (!container) return;
     try {
-        const res = await fetch(`${API_URL}/api/whispers');
+        const res = await fetch(`${API_URL}/api/whispers`);
         const whispers = await res.json();
         if (whispers.length === 0) {
             container.innerHTML = `<div class="post-card"><p style="font-weight:600; color:var(--ink-light);">No whispers yet.</p></div>`;
@@ -5312,7 +5209,7 @@ window.logStudyHours = async function() {
     const hours = parseFloat(document.getElementById('studyHoursInput').value);
     if (isNaN(hours) || hours <= 0) return alert('Please enter valid study hours.');
     const username = localStorage.getItem('hoknex_user') || 'Student';
-    await fetch(`${API_URL}/api/study', {
+    await fetch(`${API_URL}/api/study`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, hours })
@@ -5326,7 +5223,7 @@ window.loadStudyLeaderboard = async function() {
     const container = document.getElementById('studyLeaderboardList');
     if (!container) return;
     try {
-        const res = await fetch(`${API_URL}/api/study');
+        const res = await fetch(`${API_URL}/api/study`);
         const board = await res.json();
         if (board.length === 0) {
             container.innerHTML = `<div class="post-card"><p style="font-weight:600; color:var(--ink-light);">No study hours logged yet.</p></div>`;
@@ -5395,7 +5292,7 @@ async function submitNewProject() {
     }
 
     try {
-        const res = await fetch(`${API_URL}/api/projects', {
+        const res = await fetch(`${API_URL}/api/projects`, {
             method: 'POST',
             body: formData
         });
@@ -5429,7 +5326,7 @@ async function loadAndRenderProjects() {
     container.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--ink-light);">Loading projects...</div>`;
 
     try {
-        const res = await fetch(`${API_URL}/api/projects');
+        const res = await fetch(`${API_URL}/api/projects`);
         const allProjects = await res.json();
 
         if (!Array.isArray(allProjects) || allProjects.length === 0) {
@@ -5621,10 +5518,10 @@ function downloadProjectPDF(encTitle, encDesc, encTech, encClass, imgUrl) {
                 <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
                 <p><b>Description & Details:</b><br>${desc.replace(/\n/g, '<br>')}</p>
                 ${imgUrl ? `<img src="${imgUrl}" />` : ''}
-                <script>
-                    window.onload = function() { window.print(); }
-             
+            </body>
+        </html>
     `);
+    win.onload = function() { win.print(); };
     win.document.close();
 }
 function toggleReplies(postId) {
@@ -5643,42 +5540,38 @@ window.openEditProfile = function() {
     }
 };
 
-    // Place it right here with your other scripts or at the bottom
-// --- BLITZ FAST SINGLE-PAGE PROJECTS BOOT ---
-(function() {
-    // Lock storage permanently to projects
-    localStorage.setItem('hoknex_active_tab', 'projects');
-    
-    // Intercept the window load to kill any default feed rendering instantly
-    window.addEventListener('DOMContentLoaded', () => {
-        localStorage.setItem('hoknex_active_tab', 'projects');
-        
-        // Force direct render without waiting
-        if (typeof renderView === 'function') {
-            renderView('projects');
-        }
-        if (typeof loadAndRenderProjects === 'function') {
-            loadAndRenderProjects();
-        }
-    }, true); // Use capture phase to run before other listeners
-})();
-
-// Ensure clicking Projects is instant and smooth
-document.addEventListener('click', (e) => {
-    const link = e.target.closest('a, button, li, div');
-    if (!link) return;
-    const text = link.innerText ? link.innerText.trim().toLowerCase() : '';
-    
-    if (text.includes('projects')) {
+    // Force the app to stay on Projects immediately on load and on navigation clicks.
+    (function() {
+        const forceProjectsView = function() {
             localStorage.setItem('hoknex_active_tab', 'projects');
-            if (typeof renderView === 'function') renderView('projects');
-            if (typeof loadAndRenderProjects === 'function') loadAndRenderProjects();
-        } else if (text.includes('feed')) {
-            localStorage.setItem('hoknex_active_tab', 'feed');
-            if (typeof renderView === 'function') renderView('feed');
-        }
-    });
-    
+            if (typeof renderView === 'function') {
+                renderView('projects');
+            }
+            if (typeof loadAndRenderProjects === 'function') {
+                loadAndRenderProjects();
+            }
+        };
+
+        localStorage.setItem('hoknex_active_tab', 'projects');
+        forceProjectsView();
+
+        window.addEventListener('DOMContentLoaded', forceProjectsView, true);
+
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a, button, li, div');
+            if (!link) return;
+
+            const text = link.innerText ? link.innerText.trim().toLowerCase() : '';
+            if (text.includes('projects')) {
+                localStorage.setItem('hoknex_active_tab', 'projects');
+                if (typeof renderView === 'function') renderView('projects');
+                if (typeof loadAndRenderProjects === 'function') loadAndRenderProjects();
+            } else if (text.includes('feed')) {
+                localStorage.setItem('hoknex_active_tab', 'feed');
+                if (typeof renderView === 'function') renderView('feed');
+            }
+        });
+    })();
 </script>
 
 </body>
