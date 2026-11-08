@@ -406,7 +406,7 @@ body.is-organizer #applyOrganizerBtn {
             const username = localStorage.getItem('hoknex_user');
             if (!username) return;
             try {
-                const res = await fetch(`/api/notifications/${encodeURIComponent(username)}`);
+                const res = await fetch(`${API_URL}/api/notifications/${encodeURIComponent(username)}`);
                 if (!res.ok) return;
                 const notifs = await res.json();
                 const badge = document.getElementById('topNotifBadge');
@@ -481,7 +481,7 @@ body.is-organizer #applyOrganizerBtn {
 
         async function loadLoggedInUserBanner(username) {
             try {
-                const res = await fetch(`/api/users/${encodeURIComponent(username)}`);
+                const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(username)}`);
                 if (res.ok) {
                     const user = await res.json();
                     const widget = document.getElementById('loggedInUserWidget');
