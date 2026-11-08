@@ -155,7 +155,7 @@
     </div>
 
     <script>
-        const API_URL = '/api';
+        const API_URL = 'https://hoknex-backend.onrender.com';
         const OWNER_PASSWORD = 'hoknex2026';
 
         // Check 25-minute session persistence
@@ -203,7 +203,7 @@
         // --- QR Scanner Manager ---
         async function renderQrManager() {
             try {
-                const res = await fetch(`${API_URL}/store/qrs`);
+                const res = await fetch(`${API_URL}/api/store/qrs`);
                 const qrs = await res.json();
                 const container = document.getElementById('qrListContainer');
                 if (!qrs || qrs.length === 0) { container.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No payment scanner QRs uploaded yet.</p>`; return; }
@@ -222,9 +222,9 @@
                 const formData = new FormData();
                 formData.append('image', fileInput.files[0]);
                 try {
-                    const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                    const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
                     const upData = await upRes.json();
-                    await fetch(`${API_URL}/store/qrs`, {
+                    await fetch(`${API_URL}/api/store/qrs`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ imageUrl: upData.url })
@@ -238,7 +238,7 @@
 
         function deleteQr(id) {
             showProModal('Confirm Delete', 'Remove this payment scanner?', async () => {
-                await fetch(`${API_URL}/store/qrs/${id}`, { method: 'DELETE' });
+                await fetch(`${API_URL}/api/store/qrs/${id}`, { method: 'DELETE' });
                 renderQrManager();
                 showProModal('Deleted', 'Scanner removed successfully.');
             });
@@ -253,7 +253,7 @@
             const formData = new FormData();
             formData.append('image', fileInput.files[0]);
             try {
-                const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
                 const upData = await upRes.json();
                 localStorage.setItem('hoknex_owner_sig', upData.url);
                 document.getElementById('currentSigPreview').innerText = '✅ Signature saved successfully!';
@@ -263,7 +263,7 @@
 
         async function renderDonationsTable() {
             try {
-                const res = await fetch(`${API_URL}/donations`);
+                const res = await fetch(`${API_URL}/api/donations`);
                 const donations = await res.json();
                 const wrap = document.getElementById('donationsTableWrap');
                 if(!donations || donations.length === 0) {
@@ -329,7 +329,7 @@
             document.getElementById(`cert-url-${idx}`).value = generatedCertLink;
 
             try {
-                await fetch(`${API_URL}/donations/${id}/verify`, {
+                await fetch(`${API_URL}/api/donations/${id}/verify`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ certificateUrl: generatedCertLink })
@@ -341,7 +341,7 @@
 
         async function deleteDonation(id) {
             showProModal('Confirm Delete', 'Delete this donation record?', async () => {
-                await fetch(`${API_URL}/donations/${id}`, { method: 'DELETE' });
+                await fetch(`${API_URL}/api/donations/${id}`, { method: 'DELETE' });
                 renderDonationsTable();
                 showProModal('Deleted', 'Record removed.');
             });
@@ -349,7 +349,7 @@
 
         async function renderHelpDeskTable() {
             try {
-                const res = await fetch(`${API_URL}/fund-helpdesk`);
+                const res = await fetch(`${API_URL}/api/fund-helpdesk`);
                 const tickets = await res.json();
                 const wrap = document.getElementById('helpdeskTableWrap');
                 if(!tickets || tickets.length === 0) {
@@ -391,7 +391,7 @@
 
         async function deleteTicket(id) {
             showProModal('Confirm Delete', 'Delete this help ticket?', async () => {
-                await fetch(`${API_URL}/fund-helpdesk/${id}`, { method: 'DELETE' });
+                await fetch(`${API_URL}/api/fund-helpdesk/${id}`, { method: 'DELETE' });
                 renderHelpDeskTable();
                 showProModal('Deleted', 'Ticket removed.');
             });
