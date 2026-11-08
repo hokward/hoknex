@@ -18,7 +18,7 @@ const Message = require('./models/Message');
 const app = express();
 app.set('trust proxy', 1);
 
-// ✅ Explicit Global CORS configuration to fix connection & 404 blocks
+// ✅ Explicit Global CORS configuration to fix connection & blocks
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -87,7 +87,6 @@ const connectDB = async () => {
         // 🔒 BULLETPROOF FIX: Forcefully target the 'test' database regardless of dashboard strings
         let uri = process.env.MONGO_URI || '';
         
-        // If no MONGO_URI is found in environment variables, fallback directly to your Atlas cluster URI with 'test'
         if (!uri) {
             uri = 'mongodb+srv://hoknexadmin:hoknexadmin@cluster0.qzerkk4.mongodb.net/test?retryWrites=true&w=majority';
         } else if (uri.includes('.net/')) {
@@ -1963,10 +1962,7 @@ app.post('/api/verify-otp', async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT} 🚀`, process.env.PORT);
-    });
-}
-
-module.exports = app:
+// ✅ Render Standalone Server Listener (Replaced serverless/vercel exports)
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT} 🚀`);
+});
