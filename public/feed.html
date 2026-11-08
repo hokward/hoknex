@@ -1776,7 +1776,7 @@ window.viewUserProfile = function(usernameOrId) {
             try {
                 const currentUsername = localStorage.getItem('hoknex_user');
                 if (!currentUsername) return;
-                const meRes = await fetch(`/api/users/${encodeURIComponent(currentUsername)}`);
+                const meRes = await fetch(`${API_URL}/api/users/${encodeURIComponent(currentUsername)}`);
                 if (!meRes.ok) return;
                 const meData = await meRes.json();
                 const currentUserId = meData._id.toString();
@@ -2488,7 +2488,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
                 if (!userPostsContainer) return;
                 userPostsContainer.innerHTML = `<div class="post-card"><p style="font-weight:600;">Loading activity...</p></div>`;
                 const viewer = localStorage.getItem('hoknex_user');
-                const endpoint = type === 'reposts' ? `/api/user-reposts/${encodeURIComponent(username)}?viewer=${encodeURIComponent(viewer)}` : `/api/user-posts/${encodeURIComponent(username)}?viewer=${encodeURIComponent(viewer)}`;
+                const endpoint = type === 'reposts' ? `${API_URL}/api/user-reposts/${encodeURIComponent(username)}?viewer=${encodeURIComponent(viewer)}` : `${API_URL}/api/user-posts/${encodeURIComponent(username)}?viewer=${encodeURIComponent(viewer)}`;
                 const res = await fetch(endpoint);
                 if (res.status === 403) { userPostsContainer.innerHTML = `<div class="post-card"><p style="color:var(--accent-coral); font-weight:700;">🔒 Profile is private. You must follow this user to view content.</p></div>`; return; }
                 const posts = await res.json();
@@ -2822,7 +2822,7 @@ async function loadPosts() {
 
             const query = userSearchInput ? userSearchInput.value.trim() : '';
             try {
-                const res = await fetch(`/api/users?search=${encodeURIComponent(query)}`);
+              const res = await fetch(`${API_URL}/api/users?search=${encodeURIComponent(query)}`);
                 if (!res.ok) {
                     usersList.innerHTML = '<div class="post-card"><p style="font-weight:600;">Unable to load users right now.</p></div>';
                     return;
