@@ -1273,7 +1273,7 @@ window.loadChatConnections = async function() {
         const username = localStorage.getItem('hoknex_user');
         if (!username) return;
 
-        const res = await fetch(`/api/users/${encodeURIComponent(username)}`);
+        const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(username)}`);
         if (!res.ok) return;
 
         const user = await res.json();
@@ -2316,7 +2316,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
         async function loadUserProfile(username) {
             try {
                 if (!username || username === 'undefined') username = localStorage.getItem('hoknex_user');
-                const res = await fetch(`/api/users/${encodeURIComponent(username)}`);
+                const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(username)}`);
                 const user = await res.json();
                 if (res.ok) {
                     currentUserData = user;
@@ -2795,7 +2795,7 @@ async function loadPosts() {
     }
 
     try {
-        const res = await fetch(`/api/posts/${id}/reply`, { 
+        const res = await fetch(`${API_URL}/api/posts/${id}/reply`, {
             method: 'POST', 
             headers: { 'Content-Type': 'application/json' }, 
             body: JSON.stringify({ text: replyText.trim(), username }) 
