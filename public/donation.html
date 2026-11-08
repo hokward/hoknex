@@ -280,7 +280,7 @@
     </footer>
 
     <script>
-        const API_URL = '/api';
+        const API_URL = 'https://hoknex-backend.onrender.com';
 
         function showProModal(title, message) {
             document.getElementById('proModalTitle').innerText = title;
@@ -303,7 +303,7 @@
 
         async function loadPublicQrCode() {
             try {
-                const res = await fetch(`${API_URL}/store/qrs`);
+                const res = await fetch(`${API_URL}/api/store/qrs`);
                 const qrs = await res.json();
                 const container = document.getElementById('dynamicScannerContainer');
                 if (qrs && qrs.length > 0) {
@@ -311,7 +311,7 @@
                 } else {
                     container.innerHTML = `📱 Default UPI QR`;
                 }
-            } catch(e) { container.innerHTML = `📱 QR Error`; }
+            } catch(e) { document.getElementById('dynamicScannerContainer').innerHTML = `📱 QR Error`; }
         }
         loadPublicQrCode();
 
@@ -331,10 +331,10 @@
             formData.append('image', proofInput.files[0]);
 
             try {
-                const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
                 const upData = await upRes.json();
                 
-                await fetch(`${API_URL}/donations`, {
+                await fetch(`${API_URL}/api/donations`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ donorName, email, amount, proofUrl: upData.url })
@@ -357,7 +357,7 @@
             const message = document.getElementById('helpMessage').value;
 
             try {
-                await fetch(`${API_URL}/fund-helpdesk`, {
+                await fetch(`${API_URL}/api/fund-helpdesk`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ fullName, email, category, message })
@@ -382,7 +382,7 @@
             resBox.innerHTML = `<span style="color:#FFFBEB;">⏳ Please wait for verification... Once verified by the owner, your download link will appear here.</span>`;
             
             try {
-                const res = await fetch(`${API_URL}/donations`);
+                const res = await fetch(`${API_URL}/api/donations`);
                 const donations = await res.json();
                 const verified = donations.find(d => d.donorName.toLowerCase() === name.toLowerCase() && d.email.toLowerCase() === email.toLowerCase() && d.certificateUrl);
 
@@ -399,7 +399,7 @@
         async function submitNewsletterEmail() {
             const email = document.getElementById('newsletterEmailInput').value.trim();
             if(!email) return;
-            await fetch(`${API_URL}/store/subscribers`, {
+            await fetch(`${API_URL}/api/store/subscribers`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, date: new Date().toLocaleString() })
