@@ -322,7 +322,7 @@
     </div>
 
     <script>
-        const API_URL = '/api';
+        const API_URL = 'https://hoknex-backend.onrender.com';
 
         function showProModal(title, message) {
             document.getElementById('proModalTitle').innerText = title;
@@ -348,9 +348,9 @@
         async function fetchStoreData() {
             try {
                 const [prodRes, dropRes, campRes] = await Promise.all([
-                    fetch(`${API_URL}/store/products`),
-                    fetch(`${API_URL}/store/drops`),
-                    fetch(`${API_URL}/store/campaigns`)
+                    fetch(`${API_URL}/api/store/products`),
+                    fetch(`${API_URL}/api/store/drops`),
+                    fetch(`${API_URL}/api/store/campaigns`)
                 ]);
                 const dbProducts = await prodRes.json();
                 catalog = (dbProducts && dbProducts.length > 0) ? dbProducts : defaultCatalog;
@@ -585,7 +585,7 @@
         async function voteForStock() {
             const itemId = currentPdpItem._id || currentPdpItem.id;
             try {
-                const res = await fetch(`${API_URL}/store/products/${itemId}/vote`, { method: 'PUT' });
+                const res = await fetch(`${API_URL}/api/store/products/${itemId}/vote`, { method: 'PUT' });
                 const data = await res.json();
                 if(data.success) {
                     currentPdpItem.votes = data.votes;
@@ -599,7 +599,7 @@
             const itemId = currentPdpItem._id || currentPdpItem.id;
             const ratingVal = Number(document.getElementById('userRatingSelect').value);
             try {
-                const res = await fetch(`${API_URL}/store/products/${itemId}/rate`, {
+                const res = await fetch(`${API_URL}/api/store/products/${itemId}/rate`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ rating: ratingVal })
@@ -705,7 +705,7 @@
             if (mode === 'DirectUPI') {
                 section.style.display = 'block';
                 try {
-                    const res = await fetch(`${API_URL}/store/qrs`);
+                    const res = await fetch(`${API_URL}/api/store/qrs`);
                     const qrs = await res.json();
                     if (qrs.length > 0) {
                         const randomQr = qrs[Math.floor(Math.random() * qrs.length)];
@@ -742,7 +742,7 @@
                 const formData = new FormData();
                 formData.append('image', proofInput.files[0]);
                 try {
-                    const upRes = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+                    const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
                     const upData = await upRes.json();
                     proofUrl = upData.url;
                 } catch(err) {
@@ -770,7 +770,7 @@
             };
 
             try {
-                const res = await fetch(`${API_URL}/store/orders`, {
+                const res = await fetch(`${API_URL}/api/store/orders`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
@@ -790,7 +790,7 @@
             resultBox.style.display = 'block';
 
             try {
-                const res = await fetch(`${API_URL}/store/orders`);
+                const res = await fetch(`${API_URL}/api/store/orders`);
                 const allOrders = await res.json();
                 const found = allOrders.find(o => o.orderId === queryId);
 
@@ -824,7 +824,7 @@
             const email = document.getElementById('newsletterEmailInput').value.trim();
             if(!email) { showProModal('Invalid Email', 'Please enter a valid email address.'); return; }
             try {
-                await fetch(`${API_URL}/store/subscribers`, {
+                await fetch(`${API_URL}/api/store/subscribers`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString() })
