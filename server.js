@@ -84,9 +84,13 @@ let isConnected = false;
 const connectDB = async () => {
     if (isConnected) return;
     try {
-        // 🔒 FORCED FIX: Explicitly intercept MONGO_URI and force it to use the 'test' database
+        // 🔒 BULLETPROOF FIX: Forcefully target the 'test' database regardless of dashboard strings
         let uri = process.env.MONGO_URI || '';
-        if (uri.includes('.net/') && !uri.includes('.net/test')) {
+        
+        // If no MONGO_URI is found in environment variables, fallback directly to your Atlas cluster URI with 'test'
+        if (!uri) {
+            uri = 'mongodb+srv://hoknexadmin:hoknexadmin@cluster0.qzerkk4.mongodb.net/test?retryWrites=true&w=majority';
+        } else if (uri.includes('.net/')) {
             uri = uri.replace(/\.net\/[^?]*(\?|$)/, '.net/test$1');
         } else if (!uri.includes('.net/')) {
             uri = uri.replace(/\/?(\?|$)/, '/test$1');
@@ -96,7 +100,7 @@ const connectDB = async () => {
             serverSelectionTimeoutMS: 5000
         });
         isConnected = db.connections[0].readyState === 1;
-        console.log('MongoDB Connected Successfully to test DB');
+        console.log('MongoDB Connected Successfully to test DB:', mongoose.connection.name);
     } catch (err) {
         console.error('MongoDB connection error:', err);
     }
@@ -106,6 +110,25 @@ const connectDB = async () => {
 app.use(async (req, res, next) => {
     await connectDB();
     next();
+});
+
+// ==========================================
+// --- DIAGNOSTIC DEBUG ROUTE ---
+// ==========================================
+app.get('/api/debug-db', async (req, res) => {
+    try {
+        await connectDB();
+        const userCount = await User.countDocuments();
+        const postCount = await Post.countDocuments();
+        res.json({
+            status: 'Connected',
+            databaseName: mongoose.connection.name,
+            usersInDb: userCount,
+            postsInDb: postCount
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // ==========================================
@@ -361,7 +384,7 @@ app.post('/api/magazine/trending', async (req, res) => {
         if(config) { config.headlines = headlines; await config.save(); }
         else { config = await TrendingConfig.create({ headlines }); }
         res.json({ success: true, config });
-    } catch(e) { res.status(500).json({ error: e.message }); }
+    } catch(e) { res.status(500).json({ error: err.message }); }
 });
 
 // --- Store Products Endpoints ---
