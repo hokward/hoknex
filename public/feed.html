@@ -2625,7 +2625,7 @@ if (rawImg) {
             if (dpFile) formData.append('dp', dpFile);
             if (bannerFile) formData.append('banner', bannerFile);
 
-            const res = await fetch(`/api/users/${encodeURIComponent(username)}`, { method: 'PUT', headers: { 'x-username': tokenUser }, body: formData });
+            const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(username)}`, { method: 'PUT', headers: { 'x-username': tokenUser }, body: formData });
             if(res.ok) { alert('Profile updated!'); loadUserProfile(username); loadLoggedInUserBanner(username); document.getElementById('editProfileBox').style.display = 'none'; }
         }
 
@@ -2634,7 +2634,7 @@ if (rawImg) {
             if (!uid || uid === 'undefined') {
                 const currentUsername = localStorage.getItem('hoknex_user');
                 if (currentUsername) {
-                    const res = await fetch(`/api/users/${encodeURIComponent(currentUsername)}`);
+                   const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(currentUsername)}`);
                     if (res.ok) { uid = (await res.json())._id; localStorage.setItem('hoknex_uid', uid); }
                 }
             }
@@ -2744,7 +2744,7 @@ async function loadPosts() {
         async function deletePost(id) {
     if(!confirm('Delete this post?')) return;
     try {
-        const res = await fetch(`/api/posts/${id}`, { method: 'DELETE' });
+        const res = await fetch(`${API_URL}/api/posts/${id}`, { method: 'DELETE' });
         if(res.ok) { 
             if(typeof loadPosts === 'function') loadPosts();
             if(typeof fetchStats === 'function') fetchStats();
@@ -2759,7 +2759,7 @@ async function loadPosts() {
        async function likePost(id) {
             const userId = await getCurrentUserId();
             if (!userId) return alert('Sign in required');
-            await fetch(`/api/posts/${id}/like`, { 
+            await fetch(`${API_URL}/api/posts/${id}/like`, {
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' }, 
                 body: JSON.stringify({ userId }) 
@@ -2770,7 +2770,7 @@ async function loadPosts() {
         async function repostPost(id) {
             const userId = await getCurrentUserId();
             if (!userId) return alert('Sign in required');
-            const res = await fetch(`/api/posts/${id}/repost`, { 
+           const res = await fetch(`${API_URL}/api/posts/${id}/repost`, {
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' }, 
                 body: JSON.stringify({ userId }) 
