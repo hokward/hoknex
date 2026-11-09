@@ -121,6 +121,27 @@
         const API_URL = 'https://hoknex-backend.onrender.com';
         const OWNER_PASSWORD = 'hoknex2026';
 
+        // --- DIRECT CLOUDINARY CONFIGURATION (Bypasses Render Bandwidth 100%) ---
+        const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
+        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_unsigned';
+
+        async function uploadDirectToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.secure_url) {
+                return data.secure_url;
+            } else {
+                throw new Error('Cloudinary direct upload failed');
+            }
+        }
+
         function verifyAdminPassword() {
             const val = document.getElementById('adminPasswordInput').value;
             if (val === OWNER_PASSWORD) {
@@ -159,10 +180,8 @@
 
             let mediaUrl = '';
             if (fileInput.files && fileInput.files[0]) {
-                const formData = new FormData(); formData.append('image', fileInput.files[0]);
-                const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
-                const upData = await upRes.json();
-                mediaUrl = upData.url;
+                // Upload straight to Cloudinary (bypassing Render)
+                mediaUrl = await uploadDirectToCloudinary(fileInput.files[0]);
             }
 
             let author = authorInfo.split('•')[0].trim();
@@ -228,10 +247,8 @@
 
             let mediaUrl = '';
             if (fileInput.files && fileInput.files[0]) {
-                const formData = new FormData(); formData.append('image', fileInput.files[0]);
-                const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
-                const upData = await upRes.json();
-                mediaUrl = upData.url;
+                // Upload straight to Cloudinary (bypassing Render)
+                mediaUrl = await uploadDirectToCloudinary(fileInput.files[0]);
             }
 
             let author = authorInfo.split('•')[0].trim();
@@ -277,13 +294,12 @@
             const rawPages = document.getElementById('bookPagesText').value;
             const pages = rawPages.split('---NEWPAGE---').map(p => p.trim());
 
-            const formData = new FormData(); formData.append('image', coverFile);
-            const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
-            const upData = await upRes.json();
+            // Upload book cover straight to Cloudinary (bypassing Render)
+            const coverUrl = await uploadDirectToCloudinary(coverFile);
 
             await fetch(`${API_URL}/api/magazine/books`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, author, coverUrl: upData.url, pages })
+                body: JSON.stringify({ title, author, coverUrl, pages })
             });
             alert('Digital book published successfully!');
             renderBooksTable();
