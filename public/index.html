@@ -457,8 +457,28 @@
 
     <!-- Script to Handle Modern Custom Popups, Modals, & Auth Logic -->
     <script>
-        // Updated to your Render Backend URL
         const API_URL = 'https://hoknex-backend.onrender.com';
+
+        // --- DIRECT CLOUDINARY CONFIGURATION (Bypasses Render Bandwidth 100%) ---
+        const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
+        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_unsigned';
+
+        async function uploadDirectToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.secure_url) {
+                return data.secure_url;
+            } else {
+                throw new Error('Cloudinary direct upload failed');
+            }
+        }
 
         // Premium Toast Notification System
         function showHoknexToast(message, emoji = '✨') {
@@ -519,13 +539,25 @@
             
             const username = localStorage.getItem('hoknex_user') || 'Student';
 
+            let screenshotUrl = '';
+            if (screenshotInput.files && screenshotInput.files[0]) {
+                try {
+                    // Upload screenshot directly to Cloudinary (bypassing Render backend)
+                    screenshotUrl = await uploadDirectToCloudinary(screenshotInput.files[0]);
+                } catch (err) {
+                    showHoknexPopup('Upload Error', 'Failed to upload screenshot image directly to Cloudinary.', '❌');
+                    return;
+                }
+            }
+
             try {
                 const res = await fetch(`${API_URL}/api/support`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         username: username,
-                        query: description 
+                        query: description,
+                        screenshotUrl: screenshotUrl 
                     })
                 });
 
