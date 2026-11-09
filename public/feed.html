@@ -2612,22 +2612,77 @@ if (rawImg) {
         </div>
     `;
 }
-        async function saveProfileChanges() {
-            const username = currentUserData.username;
-            const tokenUser = localStorage.getItem('hoknex_user');
-            const formData = new FormData();
-            formData.append('name', document.getElementById('editName').value);
-            formData.append('bio', document.getElementById('editBio').value);
-            formData.append('department', document.getElementById('editDept').value);
-            formData.append('skills', document.getElementById('editSkills').value);
-            const dpFile = document.getElementById('editDpFile').files[0];
-            const bannerFile = document.getElementById('editBannerFile').files[0];
-            if (dpFile) formData.append('dp', dpFile);
-            if (bannerFile) formData.append('banner', bannerFile);
+       async function saveProfileChanges() {
+    const username = currentUserData.username;
+    const tokenUser = localStorage.getItem('hoknex_user');
+    
+    // --- DIRECT CLOUDINARY CONFIGURATION ---
+    const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
+    const CLOUDINARY_UPLOAD_PRESET = 'hoknex_unsigned';
 
-            const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(username)}`, { method: 'PUT', headers: { 'x-username': tokenUser }, body: formData });
-            if(res.ok) { alert('Profile updated!'); loadUserProfile(username); loadLoggedInUserBanner(username); document.getElementById('editProfileBox').style.display = 'none'; }
+    async function uploadToCloudinary(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (data.secure_url) return data.secure_url;
+        throw new Error('Cloudinary upload failed');
+    }
+
+    try {
+        let dpUrl = null;
+        let bannerUrl = null;
+
+        const dpFile = document.getElementById('editDpFile').files[0];
+        const bannerFile = document.getElementById('editBannerFile').files[0];
+
+        // 1. Upload images directly to Cloudinary (Bypasses Render Bandwidth 100%)
+        if (dpFile) {
+            dpUrl = await uploadToCloudinary(dpFile);
         }
+        if (bannerFile) {
+            bannerUrl = await uploadToCloudinary(bannerFile);
+        }
+
+        // 2. Prepare lightweight JSON payload with text values and image URLs
+        const payload = {
+            name: document.getElementById('editName').value,
+            bio: document.getElementById('editBio').value,
+            department: document.getElementById('editDept').value,
+            skills: document.getElementById('editSkills').value
+        };
+
+        if (dpUrl) payload.dp = dpUrl;
+        if (bannerUrl) payload.banner = bannerUrl;
+
+        // 3. Send lightweight JSON to Render backend
+        const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(username)}`, { 
+            method: 'PUT', 
+            headers: { 
+                'Content-Type': 'application/json',
+                'x-username': tokenUser 
+            }, 
+            body: JSON.stringify(payload) 
+        });
+
+        if (res.ok) {
+            alert('Profile updated successfully!');
+            loadUserProfile(username);
+            loadLoggedInUserBanner(username);
+            document.getElementById('editProfileBox').style.display = 'none';
+        } else {
+            const errData = await res.json().catch(() => ({}));
+            alert(errData.error || 'Failed to update profile.');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('An error occurred while saving profile changes.');
+    }
+}
 
         async function getCurrentUserId() {
             let uid = localStorage.getItem('hoknex_uid');
