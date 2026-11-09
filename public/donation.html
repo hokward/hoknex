@@ -282,6 +282,27 @@
     <script>
         const API_URL = 'https://hoknex-backend.onrender.com';
 
+        // --- DIRECT CLOUDINARY CONFIGURATION (Bypasses Render Bandwidth 100%) ---
+        const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
+        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_unsigned';
+
+        async function uploadDirectToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.secure_url) {
+                return data.secure_url;
+            } else {
+                throw new Error('Cloudinary direct upload failed');
+            }
+        }
+
         function showProModal(title, message) {
             document.getElementById('proModalTitle').innerText = title;
             document.getElementById('proModalMessage').innerText = message;
@@ -327,17 +348,14 @@
                 return;
             }
 
-            const formData = new FormData();
-            formData.append('image', proofInput.files[0]);
-
             try {
-                const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
-                const upData = await upRes.json();
+                // Upload payment proof straight to Cloudinary (bypassing Render)
+                const proofUrl = await uploadDirectToCloudinary(proofInput.files[0]);
                 
                 await fetch(`${API_URL}/api/donations`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ donorName, email, amount, proofUrl: upData.url })
+                    body: JSON.stringify({ donorName, email, amount, proofUrl })
                 });
 
                 showProModal('Donation Submitted! 🎉', 'Please wait for verification. Once approved by the owner, your download link will appear in the certificate portal.');
