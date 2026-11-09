@@ -183,6 +183,27 @@
         const API_URL = 'https://hoknex-backend.onrender.com';
         const OWNER_PASSWORD = 'hoknex2026';
 
+        // --- DIRECT CLOUDINARY CONFIGURATION (Bypasses Render Bandwidth 100%) ---
+        const CLOUDINARY_CLOUD_NAME = 'wnnotcmw'; // Updated with your cloud name from screenshot
+        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_unsigned'; // Replace with your Cloudinary unsigned preset name
+
+        async function uploadDirectToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.secure_url) {
+                return data.secure_url;
+            } else {
+                throw new Error('Cloudinary direct upload failed');
+            }
+        }
+
         // 25-Minute Session Persistence Check
         function verifyAdminPassword() {
             const val = document.getElementById('adminPasswordInput').value;
@@ -248,10 +269,11 @@
             const title = document.getElementById('campTitle').value;
             const desc = document.getElementById('campDesc').value;
             const fileInput = document.getElementById('campFile');
-            const formData = new FormData(); formData.append('image', fileInput.files[0]);
-            const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
-            const upData = await upRes.json();
-            await fetch(`${API_URL}/api/store/campaigns`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, desc, image: upData.url }) });
+            
+            // Upload straight to Cloudinary (bypassing Render)
+            const imageUrl = await uploadDirectToCloudinary(fileInput.files[0]);
+
+            await fetch(`${API_URL}/api/store/campaigns`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, desc, image: imageUrl }) });
             renderCampaignManager();
             showProModal('Success', 'Campaign added!');
         }
@@ -277,10 +299,11 @@
             const title = document.getElementById('dropTitle').value;
             const desc = document.getElementById('dropDesc').value;
             const fileInput = document.getElementById('dropFile');
-            const formData = new FormData(); formData.append('image', fileInput.files[0]);
-            const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
-            const upData = await upRes.json();
-            await fetch(`${API_URL}/api/store/drops`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, desc, image: upData.url }) });
+            
+            // Upload straight to Cloudinary (bypassing Render)
+            const mediaUrl = await uploadDirectToCloudinary(fileInput.files[0]);
+
+            await fetch(`${API_URL}/api/store/drops`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, desc, image: mediaUrl }) });
             renderComingSoonManager();
             showProModal('Success', 'Drop added!');
         }
@@ -308,15 +331,14 @@
         async function uploadNewQrCode() {
             const fileInput = document.getElementById('newQrFile');
             if (fileInput.files && fileInput.files[0]) {
-                const formData = new FormData();
-                formData.append('image', fileInput.files[0]);
                 try {
-                    const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
-                    const upData = await upRes.json();
+                    // Upload straight to Cloudinary (bypassing Render)
+                    const qrUrl = await uploadDirectToCloudinary(fileInput.files[0]);
+
                     await fetch(`${API_URL}/api/store/qrs`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ imageUrl: upData.url })
+                        body: JSON.stringify({ imageUrl: qrUrl })
                     });
                     renderQrManager();
                     showProModal('Success', 'QR Code uploaded!');
@@ -345,11 +367,9 @@
             if (fileInput.files && fileInput.files.length > 0) {
                 let uploadedUrls = [];
                 for(let i=0; i<fileInput.files.length; i++) {
-                    const formData = new FormData();
-                    formData.append('image', fileInput.files[i]);
-                    const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
-                    const upData = await upRes.json();
-                    uploadedUrls.push(upData.url);
+                    // Upload gallery files straight to Cloudinary (bypassing Render)
+                    const fileUrl = await uploadDirectToCloudinary(fileInput.files[i]);
+                    uploadedUrls.push(fileUrl);
                 }
 
                 const newProd = {
