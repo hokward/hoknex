@@ -158,6 +158,27 @@
         const API_URL = 'https://hoknex-backend.onrender.com';
         const OWNER_PASSWORD = 'hoknex2026';
 
+        // --- DIRECT CLOUDINARY CONFIGURATION (Bypasses Render Bandwidth 100%) ---
+        const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
+        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_unsigned';
+
+        async function uploadDirectToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.secure_url) {
+                return data.secure_url;
+            } else {
+                throw new Error('Cloudinary direct upload failed');
+            }
+        }
+
         // Check 25-minute session persistence
         function verifyAdminPassword() {
             if (document.getElementById('adminPasswordInput').value === OWNER_PASSWORD) {
@@ -219,15 +240,14 @@
         async function uploadNewQrCode() {
             const fileInput = document.getElementById('newQrFile');
             if (fileInput.files && fileInput.files[0]) {
-                const formData = new FormData();
-                formData.append('image', fileInput.files[0]);
                 try {
-                    const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
-                    const upData = await upRes.json();
+                    // Upload straight to Cloudinary (bypassing Render)
+                    const qrUrl = await uploadDirectToCloudinary(fileInput.files[0]);
+
                     await fetch(`${API_URL}/api/store/qrs`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ imageUrl: upData.url })
+                        body: JSON.stringify({ imageUrl: qrUrl })
                     });
                     renderQrManager();
                     showProModal('Success', 'Payment Scanner QR added successfully!');
@@ -250,12 +270,11 @@
                 showProModal('Select File', 'Please choose your signature image file first.');
                 return;
             }
-            const formData = new FormData();
-            formData.append('image', fileInput.files[0]);
             try {
-                const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: formData });
-                const upData = await upRes.json();
-                localStorage.setItem('hoknex_owner_sig', upData.url);
+                // Upload signature straight to Cloudinary (bypassing Render)
+                const sigUrl = await uploadDirectToCloudinary(fileInput.files[0]);
+
+                localStorage.setItem('hoknex_owner_sig', sigUrl);
                 document.getElementById('currentSigPreview').innerText = '✅ Signature saved successfully!';
                 showProModal('Success! ✍️', 'Owner signature uploaded and saved.');
             } catch(e) { showProModal('Error', 'Failed to upload signature.'); }
