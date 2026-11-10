@@ -2839,24 +2839,20 @@ async function saveProfileChanges() {
             alert('Profile updated successfully!');
             document.getElementById('editProfileBox').style.display = 'none';
 
-            // Instantly update the profile image element if it exists
+            // Safely update ONLY the main profile display picture element
             if (dpUrl) {
-                // Find any image element inside the profile area and update it
-                const avatars = document.querySelectorAll('img');
-                avatars.forEach(img => {
-                    if (img.src && (img.alt === 'Profile' || img.className.includes('avatar') || img.closest('.profile-card') || img.closest('#myProfileSection'))) {
-                        img.src = dpUrl;
-                    }
-                });
+                // Target the specific profile header/avatar image by its ID or wrapper class
+                const mainAvatar = document.querySelector('.profile-card img, #userAvatarImg, .profile-avatar');
+                if (mainAvatar) {
+                    mainAvatar.src = dpUrl;
+                }
             }
 
-            // Force a clean reload of the profile data from the server
-            if (typeof loadUserProfile === 'function' && typeof loggedInUser !== 'undefined') {
+            // Reload user profile data cleanly from server
+            setTimeout(() => {
                 loadUserProfile(loggedInUser);
                 loadLoggedInUserBanner(loggedInUser);
-            } else {
-                window.location.reload(); // Guaranteed fresh data straight from MongoDB!
-            }
+            }, 300);
         }
         else {
             const errData = await res.json().catch(() => ({}));
