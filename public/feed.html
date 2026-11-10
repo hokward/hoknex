@@ -2839,24 +2839,24 @@ async function saveProfileChanges() {
             alert('Profile updated successfully!');
             document.getElementById('editProfileBox').style.display = 'none';
 
-            // Instantly force-update every image on the profile card and sidebar
-           // Instantly update the profile image on screen
+            // Instantly update the profile image element if it exists
             if (dpUrl) {
-                // Find the profile avatar image directly inside your profile section
-                const profileAvatars = document.querySelectorAll('.profile-card img, .profile-container img, img');
-                profileAvatars.forEach(img => {
-                    // Update any image that looks like the user's avatar (small/circular or currently showing the old pic)
-                    if (img.src && (img.width <= 120 || img.height <= 120 || img.alt === 'Profile' || img.className.includes('avatar') || img.className.includes('profile') || img.src.includes('cloudinary'))) {
+                // Find any image element inside the profile area and update it
+                const avatars = document.querySelectorAll('img');
+                avatars.forEach(img => {
+                    if (img.src && (img.alt === 'Profile' || img.className.includes('avatar') || img.closest('.profile-card') || img.closest('#myProfileSection'))) {
                         img.src = dpUrl;
                     }
                 });
             }
 
-            // Reload data from server after a short delay
-            setTimeout(() => {
+            // Force a clean reload of the profile data from the server
+            if (typeof loadUserProfile === 'function' && typeof loggedInUser !== 'undefined') {
                 loadUserProfile(loggedInUser);
                 loadLoggedInUserBanner(loggedInUser);
-            }, 300);
+            } else {
+                window.location.reload(); // Guaranteed fresh data straight from MongoDB!
+            }
         }
         else {
             const errData = await res.json().catch(() => ({}));
