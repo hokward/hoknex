@@ -2822,16 +2822,16 @@ async function saveProfileChanges() {
         if (dpUrl) payload.dp = dpUrl;
         if (bannerUrl) payload.banner = bannerUrl;
 
-        // 3. Send lightweight JSON to Render backend
-       // Change this line in saveProfileChanges:
-const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(tokenUser)}`, { 
-    method: 'PUT', 
-    headers: { 
-        'Content-Type': 'application/json',
-        'x-username': tokenUser 
-    }, 
-    body: JSON.stringify(payload) 
-});
+// 3. Send lightweight JSON to Render backend
+        const loggedInUser = localStorage.getItem('hoknex_user') || username;
+        const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(username || loggedInUser)}`, { 
+            method: 'PUT', 
+            headers: { 
+                'Content-Type': 'application/json',
+                'x-username': loggedInUser 
+            }, 
+            body: JSON.stringify(payload) 
+        });
 
         if (res.ok) {
             alert('Profile updated successfully!');
