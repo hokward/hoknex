@@ -2840,12 +2840,13 @@ async function saveProfileChanges() {
             document.getElementById('editProfileBox').style.display = 'none';
 
             // Instantly force-update every image on the profile card and sidebar
+           // Instantly update the profile image on screen
             if (dpUrl) {
-                // Targets the circular profile picture and any other profile avatars on the page
-                const profileImages = document.querySelectorAll('img');
-                profileImages.forEach(img => {
-                    // If the image is small, circular, or inside the profile section, update its src
-                    if (img.closest('#myProfileSection') || img.closest('.profile') || img.classList.toString().includes('rounded-full') || img.width <= 150) {
+                // Find the profile avatar image directly inside your profile section
+                const profileAvatars = document.querySelectorAll('.profile-card img, .profile-container img, img');
+                profileAvatars.forEach(img => {
+                    // Update any image that looks like the user's avatar (small/circular or currently showing the old pic)
+                    if (img.src && (img.width <= 120 || img.height <= 120 || img.alt === 'Profile' || img.className.includes('avatar') || img.className.includes('profile') || img.src.includes('cloudinary'))) {
                         img.src = dpUrl;
                     }
                 });
