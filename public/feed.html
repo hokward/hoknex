@@ -2822,9 +2822,9 @@ async function saveProfileChanges() {
         if (dpUrl) payload.dp = dpUrl;
         if (bannerUrl) payload.banner = bannerUrl;
 
-// 3. Send lightweight JSON to Render backend
-        const loggedInUser = localStorage.getItem('hoknex_user') || username;
-        const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(username || loggedInUser)}`, { 
+    // 3. Send lightweight JSON to Render backend
+        const loggedInUser = localStorage.getItem('hoknex_user');
+        const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(loggedInUser)}`, {
             method: 'PUT', 
             headers: { 
                 'Content-Type': 'application/json',
