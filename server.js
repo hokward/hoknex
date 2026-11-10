@@ -131,6 +131,257 @@ app.get('/api/debug-db', async (req, res) => {
 });
 
 // ==========================================
+// --- REELS SCHEMA & API ROUTER INTEGRATION ---
+// ==========================================
+
+const reelCommentSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    text: { type: String, required: true, maxlength: 300 },
+    createdAt: { type: Date, default: Date.now }
+});
+
+const reelSchema = new mongoose.Schema({
+    creatorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    cloudinaryPublicId: { type: String, required: true },
+    hlsUrl: { type: String, required: true },
+    fallbackMp4Url: { type: String, required: true },
+    thumbnailUrl: { type: String, required: true },
+    duration: { type: Number, default: 0 },
+    caption: { type: String, maxlength: 300, default: '' },
+    tags: [{ type: String, index: true }],
+    audioTrack: {
+        name: { type: String, default: 'Original Audio' },
+        artist: { type: String, default: 'Hoknex Creator' },
+        externalLink: { type: String, default: '' }
+    },
+    views: { type: Number, default: 0 },
+    likesCount: { type: Number, default: 0 },
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    commentsCount: { type: Number, default: 0 },
+    comments: [reelCommentSchema],
+    sharesCount: { type: Number, default: 0 },
+    engagementScore: { type: Number, default: 100, index: true }
+}, { timestamps: true });
+
+reelSchema.index({ engagementScore: -1, _id: -1 });
+const Reel = mongoose.models.Reel || mongoose.model('Reel', reelSchema);
+
+const reelsRouter = express.Router();
+
+// 1. Generate Direct-to-Cloudinary Upload Signature
+reelsRouter.get('/upload-signature', async (req, res) => {
+    try {
+        const timestamp = Math.round(new Date().getTime() / 1000);
+        const folder = 'hoknex_reels';
+        const eagerTransform = 'sp_auto/m3u8|w_480,c_scale,f_jpg';
+
+        const signature = cloudinary.utils.api_sign_request({
+            timestamp: timestamp,
+            folder: folder,
+            resource_type: 'video',
+            eager: eagerTransform,
+            eager_async: true,
+            notification_url: `${process.env.RENDER_EXTERNAL_URL || 'https://hoknex-backend.onrender.com'}/api/reels/cloudinary-webhook`
+        }, process.env.CLOUDINARY_API_SECRET);
+
+        res.status(200).json({
+            signature,
+            timestamp,
+            cloudName: process.env.CLOUDINARY_CLOUD_NAME || 'wnnotcmw',
+            apiKey: process.env.CLOUDINARY_API_KEY || '316289158118826',
+            folder,
+            eager: eagerTransform
+        });
+    } catch (error) {
+        console.error('Error generating signature:', error);
+        res.status(500).json({ error: 'Failed to generate upload signature' });
+    }
+});
+
+// 2. Cloudinary Eager Webhook
+reelsRouter.post('/cloudinary-webhook', async (req, res) => {
+    try {
+        const event = req.body;
+        if (event.notification_type === 'eager' && event.success) {
+            const publicId = event.public_id;
+            const eagerResults = event.eager || [];
+            
+            let hlsUrl = '';
+            let thumbnailUrl = '';
+            let fallbackMp4Url = event.secure_url || '';
+
+            eagerResults.forEach(item => {
+                if (item.format === 'm3u8' || item.url.includes('.m3u8')) {
+                    hlsUrl = item.secure_url;
+                }
+                if (item.format === 'jpg' || item.format === 'jpeg' || item.url.includes('.jpg')) {
+                    thumbnailUrl = item.secure_url;
+                }
+            });
+
+            if (!thumbnailUrl && event.secure_url) {
+                thumbnailUrl = event.secure_url.replace(/\.[^/.]+$/, '.jpg');
+            }
+
+            let reel = await Reel.findOne({ cloudinaryPublicId: publicId });
+            if (reel) {
+                if (hlsUrl) reel.hlsUrl = hlsUrl;
+                if (thumbnailUrl) reel.thumbnailUrl = thumbnailUrl;
+                if (fallbackMp4Url) reel.fallbackMp4Url = fallbackMp4Url;
+                await reel.save();
+            }
+        }
+        res.status(200).send('Webhook received successfully');
+    } catch (error) {
+        console.error('Webhook processing error:', error);
+        res.status(500).json({ error: 'Webhook processing failed' });
+    }
+});
+
+// 3. Create Reel Meta Record
+reelsRouter.post('/create', async (req, res) => {
+    try {
+        const { creatorId, publicId, secureUrl, duration, caption, tags, audioTrack } = req.body;
+        
+        const hlsUrl = secureUrl.replace(/\.[^/.]+$/, '.m3u8');
+        const thumbnailUrl = secureUrl.replace(/\.[^/.]+$/, '.jpg');
+
+        const newReel = new Reel({
+            creatorId,
+            cloudinaryPublicId: publicId,
+            hlsUrl,
+            fallbackMp4Url: secureUrl,
+            thumbnailUrl,
+            duration: duration || 0,
+            caption: caption || '',
+            tags: tags || [],
+            audioTrack: audioTrack || {}
+        });
+
+        await newReel.save();
+        res.status(201).json({ success: true, reel: newReel });
+    } catch (error) {
+        console.error('Create reel error:', error);
+        res.status(500).json({ error: 'Failed to create reel record' });
+    }
+});
+
+// 4. Cursor-Based Feed API
+reelsRouter.get('/feed', async (req, res) => {
+    try {
+        const { filter = 'trending', cursor, limit = 5 } = req.query;
+        let query = {};
+        let sort = { engagementScore: -1, _id: -1 };
+
+        if (filter === 'fresh') {
+            sort = { createdAt: -1, _id: -1 };
+        }
+
+        if (cursor) {
+            const [scoreOrDate, lastId] = cursor.split('_');
+            if (filter === 'fresh') {
+                query = {
+                    $or: [
+                        { createdAt: { $lt: new Date(scoreOrDate) } },
+                        { createdAt: new Date(scoreOrDate), _id: { $lt: lastId } }
+                    ]
+                };
+            } else {
+                query = {
+                    $or: [
+                        { engagementScore: { $lt: Number(scoreOrDate) } },
+                        { engagementScore: Number(scoreOrDate), _id: { $lt: lastId } }
+                    ]
+                };
+            }
+        }
+
+        const reels = await Reel.find(query)
+            .sort(sort)
+            .limit(Number(limit) + 1)
+            .populate('creatorId', 'name username dpUrl isVip');
+
+        let nextCursor = null;
+        if (reels.length > limit) {
+            const nextItem = reels.pop();
+            const paginationKey = filter === 'fresh' ? nextItem.createdAt.toISOString() : nextItem.engagementScore;
+            nextCursor = `${paginationKey}_${nextItem._id}`;
+        }
+
+        res.status(200).json({ reels, nextCursor });
+    } catch (error) {
+        console.error('Feed fetch error:', error);
+        res.status(500).json({ error: 'Failed to fetch reels feed' });
+    }
+});
+
+// 5. Engagement APIs (Like, Unlike, Comments, Metrics)
+reelsRouter.post('/:id/like', async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const reel = await Reel.findById(req.params.id);
+        if (!reel) return res.status(404).json({ error: 'Reel not found' });
+
+        const likedIndex = reel.likes.indexOf(userId);
+        if (likedIndex > -1) {
+            reel.likes.splice(likedIndex, 1);
+            reel.likesCount = Math.max(0, reel.likesCount - 1);
+            reel.engagementScore -= 5;
+        } else {
+            reel.likes.push(userId);
+            reel.likesCount += 1;
+            reel.engagementScore += 10;
+        }
+        await reel.save();
+        res.status(200).json({ success: true, likesCount: reel.likesCount, liked: likedIndex === -1 });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update like' });
+    }
+});
+
+reelsRouter.post('/:id/comment', async (req, res) => {
+    try {
+        const { userId, text } = req.body;
+        const reel = await Reel.findById(req.params.id);
+        if (!reel) return res.status(404).json({ error: 'Reel not found' });
+
+        reel.comments.push({ userId, text });
+        reel.commentsCount += 1;
+        reel.engagementScore += 15;
+        await reel.save();
+
+        const populatedReel = await Reel.findById(req.params.id).populate('comments.userId', 'name username dpUrl');
+        const newComment = populatedReel.comments[populatedReel.comments.length - 1];
+
+        res.status(201).json({ success: true, comment: newComment, commentsCount: reel.commentsCount });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to add comment' });
+    }
+});
+
+reelsRouter.post('/:id/metric', async (req, res) => {
+    try {
+        const { type } = req.body;
+        const reel = await Reel.findById(req.params.id);
+        if (!reel) return res.status(404).json({ error: 'Reel not found' });
+
+        if (type === 'view') {
+            reel.views += 1;
+            reel.engagementScore += 1;
+        } else if (type === 'share') {
+            reel.sharesCount += 1;
+            reel.engagementScore += 20;
+        }
+        await reel.save();
+        res.status(200).json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update metric' });
+    }
+});
+
+app.use('/api/reels', reelsRouter);
+
+// ==========================================
 // --- STORE, ADMIN & CAMPAIGNS SCHEMAS & API ROUTES ---
 // ==========================================
 
@@ -1962,7 +2213,7 @@ app.post('/api/verify-otp', async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-// ✅ Render Standalone Server Listener (Replaced serverless/vercel exports)
+// ✅ Render Standalone Server Listener
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT} 🚀`);
 });
