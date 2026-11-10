@@ -2833,23 +2833,26 @@ async function saveProfileChanges() {
             body: JSON.stringify(payload) 
         });
 
-      if (res.ok) {
+     if (res.ok) {
             alert('Profile updated successfully!');
             document.getElementById('editProfileBox').style.display = 'none';
-            
-            // Force reload profile data
+
+            // 1. Instantly update the profile image on screen if a new one was uploaded
+            if (dpUrl) {
+                // Try updating common profile picture element IDs or tags
+                const dpImg = document.getElementById('profilePic') || document.getElementById('userDp') || document.querySelector('.profile-avatar img') || document.querySelector('#myProfileSection img');
+                if (dpImg) dpImg.src = dpUrl;
+            }
+
+            // 2. Instantly update the banner on screen if a new one was uploaded
+            if (bannerUrl) {
+                const bannerDiv = document.getElementById('profileBanner') || document.getElementById('userBanner') || document.querySelector('.profile-banner');
+                if (bannerDiv) bannerDiv.style.backgroundImage = `url(${bannerUrl})`;
+            }
+
+            // 3. Reload full profile data from server
             loadUserProfile(loggedInUser);
             loadLoggedInUserBanner(loggedInUser);
-
-            // Directly force the images on the page to update using the Cloudinary URLs we just got!
-            if (dpUrl) {
-                // Find all profile image tags on the page and update them
-                document.querySelectorAll('img').forEach(img => {
-                    if (img.src && (img.src.includes('avatar') || img.alt === 'Profile' || img.classList.contains('profile-pic') || img.id.toLowerCase().includes('dp') || img.id.toLowerCase().includes('avatar'))) {
-                        img.src = dpUrl;
-                    }
-                });
-            }
         }
         else {
             const errData = await res.json().catch(() => ({}));
