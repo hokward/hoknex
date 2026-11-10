@@ -2833,12 +2833,13 @@ async function saveProfileChanges() {
             body: JSON.stringify(payload) 
         });
 
-        if (res.ok) {
+       if (res.ok) {
             alert('Profile updated successfully!');
-            loadUserProfile(username);
-            loadLoggedInUserBanner(username);
+            loadUserProfile(loggedInUser);
+            loadLoggedInUserBanner(loggedInUser);
             document.getElementById('editProfileBox').style.display = 'none';
-        } else {
+        }
+        else {
             const errData = await res.json().catch(() => ({}));
             alert(errData.error || 'Failed to update profile.');
         }
