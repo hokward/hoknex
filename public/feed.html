@@ -2489,13 +2489,13 @@ async function handleMentionInput(e) {
             const initial = authorName.charAt(0).toUpperCase();
             const isAuthor = authorUsername === localStorage.getItem('hoknex_user');
             const postId = post._id || post.id;
-            
+
             let poll = post.poll;
             if (!poll || !poll.question) {
                 try {
                     const allPolls = JSON.parse(localStorage.getItem('hoknex_client_polls')) || {};
                     poll = allPolls[postId] || allPolls[post.content];
-                } catch(e) {}
+                } catch (e) {}
             }
 
             let pollHtml = '';
@@ -2505,9 +2505,9 @@ async function handleMentionInput(e) {
                 let pollsState = {};
                 try {
                     pollsState = JSON.parse(localStorage.getItem(`hoknex_poll_votes_${postId}`)) || {};
-                } catch(e) {}
-                
-                const hasVoted = pollsState.hasOwnProperty(currentUser);
+                } catch (e) {}
+
+                const hasVoted = Object.prototype.hasOwnProperty.call(pollsState, currentUser);
 
                 pollHtml = `
                     <div style="margin-top:12px; background:var(--canvas); border:1px solid var(--border); border-radius:10px; padding:14px;">
@@ -2531,73 +2531,70 @@ async function handleMentionInput(e) {
                     </div>
                 `;
             }
-            return pollHtml;
-        }
-   // Render image with path fix and download button
-// Render campus post image safely with a download button overlay
-let imageHtml = '';
-const rawImg = post.imageUrl || post.img || post.image || '';
-if (rawImg) {
-    let imgSource = rawImg;
-    if (!rawImg.startsWith('http') && !rawImg.startsWith('data:') && !rawImg.startsWith('/')) {
-        imgSource = '/' + rawImg;
-    }
-    
-    imageHtml = `
-    <div style="margin-top: 1rem; position: relative;">
-        <a href="${imgSource}" target="_blank">
-            <img src="${imgSource}" style="width: 100%; max-height: 350px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); display: block;" onerror="this.style.display='none';" />
-        </a>
-        <a href="${imgSource}" download="hoknex_image.jpg" target="_blank" style="position: absolute; bottom: 12px; right: 12px; background: rgba(9, 9, 11, 0.85); color: white; padding: 7px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 4px; backdrop-filter: blur(8px);">
-            📥 Download
-        </a>
-    </div>`;
-}
-    // Render hidden comments/replies with a toggle button
-    let commentsHtml = '';
-    const commentsList = post.comments || post.replies || [];
-    if (commentsList.length > 0) {
-        commentsHtml = `
-            <div style="margin-top: 14px;">
-                <button onclick="toggleReplies('${postId}')" style="background: none; border: none; color: #405DE6; font-weight: 700; font-size: 0.88rem; cursor: pointer; padding: 0;">
-                    💬 View ${commentsList.length} reply${commentsList.length > 1 ? 's' : ''}
-                </button>
-                <div id="replies-container-${postId}" style="display: none; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; flex-direction: column; gap: 8px;">
-                    ${commentsList.map(c => `
-                        <div style="background: var(--canvas); padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; border: 1px solid var(--border);">
-                          <strong style="color: #405DE6; font-weight:800;">@${c.author?.username || c.user?.username || c.username || c.authorName || 'Student'}:</strong>
-                            <span style="font-weight: 600; color: var(--ink);">${c.text || c}</span>
+
+            let imageHtml = '';
+            const rawImg = post.imageUrl || post.img || post.image || '';
+            if (rawImg) {
+                let imgSource = rawImg;
+                if (!rawImg.startsWith('http') && !rawImg.startsWith('data:') && !rawImg.startsWith('/')) {
+                    imgSource = '/' + rawImg;
+                }
+
+                imageHtml = `
+                <div style="margin-top: 1rem; position: relative;">
+                    <a href="${imgSource}" target="_blank">
+                        <img src="${imgSource}" style="width: 100%; max-height: 350px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); display: block;" onerror="this.style.display='none';" />
+                    </a>
+                    <a href="${imgSource}" download="hoknex_image.jpg" target="_blank" style="position: absolute; bottom: 12px; right: 12px; background: rgba(9, 9, 11, 0.85); color: white; padding: 7px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 4px; backdrop-filter: blur(8px);">
+                        📥 Download
+                    </a>
+                </div>`;
+            }
+
+            let commentsHtml = '';
+            const commentsList = post.comments || post.replies || [];
+            if (commentsList.length > 0) {
+                commentsHtml = `
+                    <div style="margin-top: 14px;">
+                        <button onclick="toggleReplies('${postId}')" style="background: none; border: none; color: #405DE6; font-weight: 700; font-size: 0.88rem; cursor: pointer; padding: 0;">
+                            💬 View ${commentsList.length} reply${commentsList.length > 1 ? 's' : ''}
+                        </button>
+                        <div id="replies-container-${postId}" style="display: none; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; flex-direction: column; gap: 8px;">
+                            ${commentsList.map(c => `
+                                <div style="background: var(--canvas); padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; border: 1px solid var(--border);">
+                                  <strong style="color: #405DE6; font-weight:800;">@${c.author?.username || c.user?.username || c.username || c.authorName || 'Student'}:</strong>
+                                    <span style="font-weight: 600; color: var(--ink);">${c.text || c}</span>
+                                </div>
+                            `).join('')}
                         </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-    }
+                    </div>
+                `;
+            }
 
-    return `
-        <div class="post-card">
-            <div class="post-header">
-                <div class="avatar-circle" style="${authorDp ? 'background-image:url(\''+authorDp+'\'); background-size:cover;' : ''}">${authorDp ? '' : initial}</div>
-                <div style="flex:1;">
-                    <h4 style="cursor:pointer; font-weight:800; font-size:0.95rem; color:var(--ink);" onclick="viewUserProfile('${authorUsername}')">${authorName}</h4>
-                    <span style="font-size:0.75rem; color:var(--ink-light); font-weight:600;">${new Date(post.createdAt || Date.now()).toLocaleDateString()}</span>
-                </div>
-                ${isAuthor ? `<button onclick="deletePost('${postId}')" style="background:rgba(244, 63, 94, 0.1); color:#F43F5E; border:1px solid rgba(244, 63, 94, 0.3); padding:6px 12px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.78rem;">Delete 🗑️</button>` : ''}
-            </div>
-            <p style="font-weight:600; font-size:0.95rem; line-height: 1.6; color:var(--ink);">${post.content}</p>
-            
-            ${imageHtml}
-            ${pollHtml}
-            ${commentsHtml}
+            return `
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="avatar-circle" style="${authorDp ? 'background-image:url(\''+authorDp+'\'); background-size:cover;' : ''}">${authorDp ? '' : initial}</div>
+                        <div style="flex:1;">
+                            <h4 style="cursor:pointer; font-weight:800; font-size:0.95rem; color:var(--ink);" onclick="viewUserProfile('${authorUsername}')">${authorName}</h4>
+                            <span style="font-size:0.75rem; color:var(--ink-light); font-weight:600;">${new Date(post.createdAt || Date.now()).toLocaleDateString()}</span>
+                        </div>
+                        ${isAuthor ? `<button onclick="deletePost('${postId}')" style="background:rgba(244, 63, 94, 0.1); color:#F43F5E; border:1px solid rgba(244, 63, 94, 0.3); padding:6px 12px; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.78rem;">Delete 🗑️</button>` : ''}
+                    </div>
+                    <p style="font-weight:600; font-size:0.95rem; line-height: 1.6; color:var(--ink);">${post.content}</p>
 
-            <div style="display:flex; gap:10px; margin-top: 1.25rem;">
-                <button class="action-btn" onclick="likePost('${postId}')">❤️ ${post.likedBy ? post.likedBy.length : (post.likes || 0)}</button>
-                <button class="action-btn" onclick="promptReply('${postId}')">💬 Reply</button>
-                <button class="action-btn" onclick="repostPost('${postId}')">🔄 Repost</button>
-            </div>
-        </div>
-    `;
-}
+                    ${imageHtml}
+                    ${pollHtml}
+                    ${commentsHtml}
+
+                    <div style="display:flex; gap:10px; margin-top: 1.25rem;">
+                        <button class="action-btn" onclick="likePost('${postId}')">❤️ ${post.likedBy ? post.likedBy.length : (post.likes || 0)}</button>
+                        <button class="action-btn" onclick="promptReply('${postId}')">💬 Reply</button>
+                        <button class="action-btn" onclick="repostPost('${postId}')">🔄 Repost</button>
+                    </div>
+                </div>
+            `;
+        }
 
 async function saveProfileChanges() {
     const username = currentUserData.username;
