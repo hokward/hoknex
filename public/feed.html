@@ -2823,14 +2823,15 @@ async function saveProfileChanges() {
         if (bannerUrl) payload.banner = bannerUrl;
 
         // 3. Send lightweight JSON to Render backend
-        const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(username)}`, { 
-            method: 'PUT', 
-            headers: { 
-                'Content-Type': 'application/json',
-                'x-username': tokenUser 
-            }, 
-            body: JSON.stringify(payload) 
-        });
+       // Change this line in saveProfileChanges:
+const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(tokenUser)}`, { 
+    method: 'PUT', 
+    headers: { 
+        'Content-Type': 'application/json',
+        'x-username': tokenUser 
+    }, 
+    body: JSON.stringify(payload) 
+});
 
         if (res.ok) {
             alert('Profile updated successfully!');
@@ -5814,9 +5815,6 @@ window.openEditProfile = function() {
 </script>
     <script>
 // --- GLOBAL CLOUDINARY HELPER ---
-   
-    const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
-    const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads';
 
     async function uploadToCloudinary(file) {
         if (!file) return null;
