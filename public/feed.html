@@ -2835,39 +2835,27 @@ async function saveProfileChanges() {
 
     if (res.ok) {
             console.log("Cloudinary Upload Success! DP URL:", dpUrl);
-            console.log("Cloudinary Upload Success! Banner URL:", bannerUrl);
             
             alert('Profile updated successfully!');
             document.getElementById('editProfileBox').style.display = 'none';
 
-            // 1. Force update EVERY image on the profile card immediately
+            // Instantly force update all profile images on screen
             if (dpUrl) {
-                // Selects any image inside your profile area
-                const profileImages = document.querySelectorAll('.profile-card img, .profile-container img, img[alt*="Profile"], img[alt*="Avatar"], #myProfileSection img');
-                profileImages.forEach(img => {
-                    img.src = dpUrl;
+                // Find any image tags that act as the profile avatar
+                const avatars = document.querySelectorAll('img');
+                avatars.forEach(img => {
+                    // Check if this image belongs to the profile section or has avatar/dp in its attributes/classes
+                    if (img.src && (img.closest('#myProfileSection') || img.closest('.profile-card') || img.id.toLowerCase().includes('avatar') || img.id.toLowerCase().includes('dp') || img.className.toLowerCase().includes('avatar') || img.className.toLowerCase().includes('profile'))) {
+                        img.src = dpUrl;
+                    }
                 });
-                
-                // Fallback: If there's an image element with a specific class or near the name
-                const avatarEl = document.querySelector('.rounded-full, .avatar, .profile-pic');
-                if (avatarEl && avatarEl.tagName === 'IMG') {
-                    avatarEl.src = dpUrl;
-                }
             }
 
-            // 2. Force update the banner immediately
-            if (bannerUrl) {
-                const bannerEl = document.querySelector('.profile-banner, .banner-bg, header');
-                if (bannerEl) {
-                    bannerEl.style.backgroundImage = `url(${bannerUrl})`;
-                }
-            }
-
-            // 3. Reload profile data from server after a tiny delay to let MongoDB save
+            // Reload data from server
             setTimeout(() => {
                 loadUserProfile(loggedInUser);
                 loadLoggedInUserBanner(loggedInUser);
-            }, 500);
+            }, 300);
         }
         else {
             const errData = await res.json().catch(() => ({}));
