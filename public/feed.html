@@ -352,6 +352,37 @@
         .sheet-indicator { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 1rem; }
         .sheet-close { position: absolute; top: 14px; right: 16px; background: var(--canvas); border: 1px solid var(--border); color: var(--ink); width: 28px; height: 28px; border-radius: 50%; font-weight: 800; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
+        /* Reels App Viewer Container */
+        #reelsAppWrapper {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #09090B;
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+        #reelsPhoneContainer {
+            width: 100%;
+            max-width: 420px;
+            height: 100%;
+            background: #000000;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        }
+        @media (min-width: 768px) {
+            #reelsPhoneContainer {
+                height: 90vh;
+                max-height: 840px;
+                border-radius: 24px;
+                border: 1px solid var(--border);
+            }
+        }
+
         @media (max-width: 900px) {
             .widgets-sidebar { display: none !important; }
         }
@@ -453,7 +484,7 @@
         </div>
     </main>
 
-    <!-- Mobile Bottom Navigation Bar (Clubs replaced with Find People) -->
+    <!-- Mobile Bottom Navigation Bar -->
     <nav class="mobile-bottom-nav" id="mobileBottomNav">
         <a href="#" onclick="renderView('feed'); activateNav('feed')"><div class="menu-icon-shape">❖</div>Feed</a>
         <a href="#" onclick="renderView('discover'); activateNav('discover')"><div class="menu-icon-shape">✴</div>Explore</a>
@@ -462,7 +493,7 @@
         <a href="#" onclick="toggleMobileDrawer()"><div class="menu-icon-shape" style="background:var(--accent-gradient); color:#fff; border:none;">☰</div>All Apps</a>
     </nav>
 
-    <!-- Mobile App Drawer with All 11 Options Accessible -->
+    <!-- Mobile App Drawer with All Options -->
     <div id="mobileAppDrawer" class="mobile-drawer-overlay" onclick="if(event.target === this) toggleMobileDrawer()">
         <div class="mobile-drawer-content">
             <div class="sheet-indicator"></div>
@@ -502,14 +533,31 @@
         </div>
     </div>
 
-    <!-- Reels View Container -->
-    <div id="reelsAppWrapper" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#09090B; z-index:3000; flex-direction:column; overflow:hidden;">
-        <div style="position:absolute; top:12px; left:0; width:100%; display:flex; justify-content:center; gap:20px; z-index:3100; pointer-events:auto;">
-            <button onclick="switchReelsFilter('trending')" class="reels-tab active" data-filter="trending" style="background:none; border:none; color:#FFFFFF; font-weight:800; font-size:0.95rem; cursor:pointer; text-shadow:0 2px 4px rgba(0,0,0,0.8); padding-bottom:4px; border-bottom:3px solid #E1306C;">Trending</button>
-            <button onclick="switchReelsFilter('fresh')" class="reels-tab" data-filter="fresh" style="background:none; border:none; color:#A1A1AA; font-weight:700; font-size:0.95rem; cursor:pointer; text-shadow:0 2px 4px rgba(0,0,0,0.8); padding-bottom:4px; border-bottom:3px solid transparent;">Fresh</button>
-            <button onclick="closeReelsView()" style="position:absolute; right:20px; top:-2px; background:rgba(22,22,34,0.7); border:1px solid #27272A; color:#FFFFFF; width:34px; height:34px; border-radius:50%; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+    <!-- Reels View Container with App Frame -->
+    <div id="reelsAppWrapper">
+        <div id="reelsPhoneContainer">
+            <!-- Top Filter Header -->
+            <div style="position:absolute; top:12px; left:0; width:100%; display:flex; justify-content:center; gap:20px; z-index:3100; pointer-events:auto;">
+                <button onclick="switchReelsFilter('trending')" class="reels-tab active" data-filter="trending" style="background:none; border:none; color:#FFFFFF; font-weight:800; font-size:0.95rem; cursor:pointer; text-shadow:0 2px 4px rgba(0,0,0,0.8); padding-bottom:4px; border-bottom:3px solid #E1306C;">Trending</button>
+                <button onclick="switchReelsFilter('fresh')" class="reels-tab" data-filter="fresh" style="background:none; border:none; color:#A1A1AA; font-weight:700; font-size:0.95rem; cursor:pointer; text-shadow:0 2px 4px rgba(0,0,0,0.8); padding-bottom:4px; border-bottom:3px solid transparent;">Fresh</button>
+                <button onclick="closeReelsView()" style="position:absolute; right:16px; top:-2px; background:rgba(22,22,34,0.7); border:1px solid #27272A; color:#FFFFFF; width:32px; height:32px; border-radius:50%; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+            </div>
+            <!-- Scroller -->
+            <div id="reelsScroller" style="width:100%; height:100%; overflow-y:scroll; scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none;"></div>
         </div>
-        <div id="reelsScroller" style="width:100%; height:100%; overflow-y:scroll; scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none;"></div>
+    </div>
+
+    <!-- Upload Reel Modal -->
+    <div id="reelsUploadModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:4000; align-items:center; justify-content:center;">
+        <div style="background:#161622; border:1px solid #27272A; border-radius:16px; width:90%; max-width:400px; padding:1.5rem; display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="color:#FFFFFF; font-weight:800; font-size:1.1rem;">Upload New Reel 🚀</h3>
+                <button onclick="document.getElementById('reelsUploadModal').style.display='none'" style="background:none; border:none; color:#A1A1AA; font-weight:800; font-size:1.1rem; cursor:pointer;">✕</button>
+            </div>
+            <input type="file" id="reelVideoFile" accept="video/*" style="background:#09090B; border:1px solid #27272A; border-radius:12px; padding:0.75rem; color:#FFFFFF; font-size:0.85rem;">
+            <textarea id="reelCaptionInput" placeholder="Write a catchy caption (max 300 chars)..." maxlength="300" style="background:#09090B; border:1px solid #27272A; border-radius:12px; padding:0.75rem; color:#FFFFFF; font-size:0.85rem; height:80px; resize:none;"></textarea>
+            <button onclick="uploadReelToCloudinary()" style="background:linear-gradient(135deg, #833AB4, #E1306C, #F56040); color:#FFFFFF; border:none; padding:0.85rem; border-radius:12px; font-weight:800; cursor:pointer;">Publish Reel 🎬</button>
+        </div>
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
@@ -708,7 +756,7 @@
             } catch(e) { console.error(e); }
         }
 
-        // Reels Feature Integration
+        // Reels Feature Integration & Empty State Handlers
         async function openReelsView() {
             document.getElementById('reelsAppWrapper').style.display = 'flex';
             await fetchReelsFeed(true);
@@ -742,10 +790,10 @@
                 const data = await res.json();
                 
                 if (reset) {
-                    reelsList = data.reels;
+                    reelsList = data.reels || [];
                     document.getElementById('reelsScroller').innerHTML = '';
                 } else {
-                    reelsList = [...reelsList, ...data.reels];
+                    reelsList = [...reelsList, ...(data.reels || [])];
                 }
                 nextCursorToken = data.nextCursor;
                 renderReelsScroller();
@@ -758,12 +806,31 @@
 
         function renderReelsScroller() {
             const scroller = document.getElementById('reelsScroller');
+            
+            if (reelsList.length === 0) {
+                scroller.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#A1A1AA; text-align:center; padding:2rem;">
+                        <span style="font-size:3rem; margin-bottom:1rem;">🎬</span>
+                        <h3 style="color:#FFFFFF; font-weight:800; margin-bottom:6px;">No Reels Yet!</h3>
+                        <p style="font-size:0.85rem; margin-bottom:1.5rem;">Be the first campus creator to publish a vertical reel on Hoknex.</p>
+                        <button onclick="document.getElementById('reelsUploadModal').style.display='flex'" class="btn-create">+ Upload Reel</button>
+                    </div>
+                `;
+                return;
+            }
+
             reelsList.forEach(reel => {
                 if (document.getElementById(`reel-card-${reel._id}`)) return;
                 const card = document.createElement('div');
                 card.id = `reel-card-${reel._id}`;
                 card.style.cssText = 'width:100%; height:100%; scroll-snap-align:start; position:relative; display:flex; align-items:center; justify-content:center; background:#09090B; flex-shrink:0;';
-                card.innerHTML = `<video id="video-${reel._id}" poster="${reel.thumbnailUrl}" loop playsinline preload="none" style="width:100%; height:100%; object-fit:cover;"></video>`;
+                card.innerHTML = `
+                    <video id="video-${reel._id}" poster="${reel.thumbnailUrl || ''}" loop playsinline preload="none" style="width:100%; height:100%; object-fit:cover;"></video>
+                    <div style="position:absolute; left:16px; bottom:30px; right:70px; z-index:20; pointer-events:none;">
+                        <span style="color:#FFFFFF; font-weight:800; font-size:0.9rem; text-shadow:0 1px 3px rgba(0,0,0,0.8);">@${reel.creatorId?.username || 'creator'}</span>
+                        <p style="color:#FFFFFF; font-size:0.85rem; font-weight:600; text-shadow:0 1px 3px rgba(0,0,0,0.8); margin-top:4px;">${reel.caption || ''}</p>
+                    </div>
+                `;
                 scroller.appendChild(card);
                 
                 const video = document.getElementById(`video-${reel._id}`);
@@ -772,9 +839,78 @@
                     hls.loadSource(reel.hlsUrl);
                     hls.attachMedia(video);
                 } else {
-                    video.src = reel.fallbackMp4Url;
+                    video.src = reel.fallbackMp4Url || reel.hlsUrl;
                 }
             });
+        }
+
+        async function uploadReelToCloudinary() {
+            const fileInput = document.getElementById('reelVideoFile');
+            const captionInput = document.getElementById('reelCaptionInput');
+            if (!fileInput.files[0]) return alert('Please select a video file!');
+
+            const file = fileInput.files[0];
+            const btn = event.target;
+            btn.innerText = 'Uploading... 0%';
+
+            try {
+                const sigRes = await fetch(`${API_URL}/api/reels/upload-signature`);
+                const sigData = await sigRes.json();
+
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('api_key', sigData.apiKey);
+                formData.append('timestamp', sigData.timestamp);
+                formData.append('signature', sigData.signature);
+                formData.append('folder', sigData.folder);
+                formData.append('resource_type', 'video');
+                formData.append('eager', sigData.eager);
+                formData.append('eager_async', 'true');
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', `https://api.cloudinary.com/v1_1/${sigData.cloudName}/video/upload`, true);
+
+                xhr.upload.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        btn.innerText = `Uploading... ${percent}%`;
+                    }
+                };
+
+                xhr.onload = async () => {
+                    if (xhr.status === 200) {
+                        const result = JSON.parse(xhr.responseText);
+                        
+                        await fetch(`${API_URL}/api/reels/create`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                creatorId: localStorage.getItem('hoknex_uid'),
+                                publicId: result.public_id,
+                                secureUrl: result.secure_url,
+                                duration: result.duration || 0,
+                                caption: captionInput.value.trim()
+                            })
+                        });
+
+                        alert('Reel published successfully! 🎉');
+                        document.getElementById('reelsUploadModal').style.display = 'none';
+                        fileInput.value = '';
+                        captionInput.value = '';
+                        btn.innerText = 'Publish Reel 🎬';
+                        fetchReelsFeed(true);
+                    } else {
+                        alert('Cloudinary upload failed.');
+                        btn.innerText = 'Publish Reel 🎬';
+                    }
+                };
+
+                xhr.send(formData);
+            } catch (e) {
+                console.error('Upload error:', e);
+                alert('Upload failed.');
+                btn.innerText = 'Publish Reel 🎬';
+            }
         }
     </script>
 <script>
