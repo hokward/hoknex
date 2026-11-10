@@ -2840,15 +2840,19 @@ async function saveProfileChanges() {
             document.getElementById('editProfileBox').style.display = 'none';
 
             // Instantly force update all profile images on screen
+         // Instantly update the profile image source right on screen
             if (dpUrl) {
-                // Find any image tags that act as the profile avatar
-                const avatars = document.querySelectorAll('img');
-                avatars.forEach(img => {
-                    // Check if this image belongs to the profile section or has avatar/dp in its attributes/classes
-                    if (img.src && (img.closest('#myProfileSection') || img.closest('.profile-card') || img.id.toLowerCase().includes('avatar') || img.id.toLowerCase().includes('dp') || img.className.toLowerCase().includes('avatar') || img.className.toLowerCase().includes('profile'))) {
-                        img.src = dpUrl;
-                    }
-                });
+                const profileImg = document.getElementById('userAvatarImg') || document.querySelector('.profile-card img') || document.querySelector('img[alt*="Akumaa"]') || document.querySelector('#myProfileSection img') || document.querySelector('.rounded-full');
+                if (profileImg) {
+                    profileImg.src = dpUrl;
+                } else {
+                    // Fallback: update all images in the profile view
+                    document.querySelectorAll('img').forEach(img => {
+                        if (img.src.includes('cloudinary') || img.src.includes('avatar') || img.alt === 'Profile') {
+                            img.src = dpUrl;
+                        }
+                    });
+                }
             }
 
             // Reload data from server
