@@ -169,19 +169,13 @@ const Reel = mongoose.models.Reel || mongoose.model('Reel', reelSchema);
 const reelsRouter = express.Router();
 
 // 1. Generate Direct-to-Cloudinary Upload Signature
-// 1. Generate Direct-to-Cloudinary Upload Signature
 reelsRouter.get('/upload-signature', async (req, res) => {
     try {
         const timestamp = Math.round(new Date().getTime() / 1000);
         const folder = 'hoknex_reels';
-        const eager = 'sp_auto/m3u8|w_480,c_scale,f_jpg';
 
-        // Strict alphabetical parameter ordering required by Cloudinary signature verification
         const paramsToSign = {
-            eager: eager,
-            eager_async: 'true',
             folder: folder,
-            resource_type: 'video',
             timestamp: timestamp
         };
 
@@ -192,8 +186,7 @@ reelsRouter.get('/upload-signature', async (req, res) => {
             timestamp,
             cloudName: process.env.CLOUDINARY_CLOUD_NAME || 'wnnotcmw',
             apiKey: process.env.CLOUDINARY_API_KEY || '316289158118826',
-            folder,
-            eager
+            folder
         });
     } catch (error) {
         console.error('Error generating signature:', error);
