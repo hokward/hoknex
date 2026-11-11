@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const commentSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     text: { type: String, required: true, maxlength: 300 },
+    stickerUrl: { type: String, default: '' },
+    isPinned: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
 });
 
@@ -16,6 +18,8 @@ const reelSchema = new mongoose.Schema({
     title: { type: String, maxlength: 100, default: 'Untitled Reel' },
     caption: { type: String, maxlength: 300, default: '' },
     taggedPeople: [{ type: String }],
+    allowComments: { type: Boolean, default: true },
+    hideLikes: { type: Boolean, default: false },
     tags: [{ type: String, index: true }],
     audioTrack: {
         name: { type: String, default: 'Original Audio' },
