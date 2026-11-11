@@ -155,6 +155,27 @@
             .feed-layout { padding: 0.85rem !important; }
             .topbar { padding: 0.6rem 0.85rem; width: 100%; }
         }
+
+        /* 🌟 WhatsApp-Style Mobile Chat Fullscreen & Back Button Support */
+        @media (max-width: 768px) {
+            body.chat-active #chatConnectionsList,
+            body.chat-active .inbox-list {
+                display: none !important;
+            }
+            body.chat-active #chatCanvasArea {
+                display: flex !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                z-index: 2500 !important;
+                border-radius: 0 !important;
+            }
+            body.chat-active #mobileChatBackBtn {
+                display: inline-block !important;
+            }
+        }
     </style>
 </head>
 <body class="dashboard-body">
@@ -1589,6 +1610,7 @@ mainView.innerHTML = `
 }
 
       // Direct Messages & Chat Maximize
+// Direct Messages & Chat Maximize
 window.activeRecipientId = window.activeRecipientId || null;
 window.activeChatUserName = window.activeChatUserName || null;
 window.activeRecipientUsername = window.activeRecipientUsername || '';
@@ -1605,6 +1627,9 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
     activeChatUserName = recipientName;
     activeRecipientUsername = recipientUsername || recipientName;
     
+    // Switch mobile view to full-screen WhatsApp style
+    document.body.classList.add('chat-active');
+    
     // Mark messages as read upon opening chat
     const currentUserId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
     fetch(`/api/messages/read/${recipientId}/${currentUserId}`, { method: 'PUT' }).then(() => {
@@ -1619,25 +1644,30 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
     canvasArea.innerHTML = `
         <div id="fullChatWrapperContainer" style="display: flex; flex-direction: column; height: 100%; width: 100%; background: ${savedWallpaper}; transition: background 0.3s ease; position: relative; overflow: hidden;">
             
-            <!-- 🌟 Active Chat Header with Profile DP & Link -->
-            <div style="padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); z-index: 25;">
-                <div onclick="viewUserProfile('${activeRecipientUsername}')" style="display: flex; align-items: center; gap: 12px; cursor: pointer;" title="View Profile Dashboard">
-                    <div id="activeChatterAvatar" style="width: 38px; height: 38px; font-size: 0.95rem; font-weight: 800; background: #6366f1; color: #fff; display: flex; align-items: center; justify-content: center; border-radius: 50%; overflow: hidden;">
-                        ${recipientName ? recipientName.charAt(0).toUpperCase() : 'C'}
-                    </div>
-                    <div>
-                        <h3 id="activeChatterName" style="font-weight: 800; font-size: 0.95rem; color: #fff; margin: 0; text-decoration: underline dotted;">${recipientName || 'Chat'}</h3>
-                        <span id="activeStatusIndicator" style="font-size: 0.7rem; color: #10b981; font-weight: 600;">● Active now</span>
+            <!-- 🌟 Active Chat Header with Back Button & Profile DP -->
+            <div style="padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index: 25;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <!-- Mobile Back Arrow Button -->
+                    <button onclick="backToInboxView()" id="mobileChatBackBtn" style="background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; display: none; padding-right: 4px;" title="Back to Inbox">←</button>
+                    
+                    <div onclick="viewUserProfile('${activeRecipientUsername}')" style="display: flex; align-items: center; gap: 10px; cursor: pointer;" title="View Profile Dashboard">
+                        <div id="activeChatterAvatar" style="width: 36px; height: 36px; font-size: 0.9rem; font-weight: 800; background: #6366f1; color: #fff; display: flex; align-items: center; justify-content: center; border-radius: 50%; overflow: hidden;">
+                            ${recipientName ? recipientName.charAt(0).toUpperCase() : 'C'}
+                        </div>
+                        <div>
+                            <h3 id="activeChatterName" style="font-weight: 800; font-size: 0.9rem; color: #fff; margin: 0;">${recipientName || 'Chat'}</h3>
+                            <span id="activeStatusIndicator" style="font-size: 0.68rem; color: #10b981; font-weight: 600;">● Active now</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Controls & Working 3-Dot Menu -->
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <button onclick="openPlayTogetherModal()" title="Play Arena 🎮" style="background: rgba(99,102,241,0.4); border: 1px solid #6366f1; border-radius: 20px; padding: 6px 14px; color: #fff; font-size: 0.8rem; font-weight: 700; cursor: pointer;">🎮 Play</button>
-                    <button onclick="openWallpaperModal()" title="Wallpapers" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; color: #fff; cursor: pointer;">🎨</button>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <button onclick="openPlayTogetherModal()" title="Play Arena 🎮" style="background: rgba(99,102,241,0.4); border: 1px solid #6366f1; border-radius: 20px; padding: 5px 12px; color: #fff; font-size: 0.75rem; font-weight: 700; cursor: pointer;">🎮 Play</button>
+                    <button onclick="openWallpaperModal()" title="Wallpapers" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 32px; height: 32px; color: #fff; cursor: pointer;">🎨</button>
                     
                     <div style="position: relative;">
-                        <button onclick="toggleChatOptionsMenu(event)" title="More Options" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; color: #fff; font-weight: 800; cursor: pointer;">⋮</button>
+                        <button onclick="toggleChatOptionsMenu(event)" title="More Options" style="background: rgba(255,255,255,0.15); border: none; border-radius: 50%; width: 32px; height: 32px; color: #fff; font-weight: 800; cursor: pointer;">⋮</button>
                         <div id="chatOptionsMenu" style="display: none; position: absolute; right: 0; top: 40px; background: #1e293b; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; width: 170px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 100; overflow: hidden;">
                             <div onclick="openReportModal()" style="padding: 10px 14px; font-size: 0.85rem; color: #f59e0b; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.08);">⚠️ Report Chat</div>
                             <div onclick="toggleBlockUser('${recipientId}')" id="blockMenuBtn" style="padding: 10px 14px; font-size: 0.85rem; color: #ef4444; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.08);">🚫 Block User</div>
@@ -1809,6 +1839,14 @@ window.openFullScreenChat = function(recipientId, recipientName, recipientUserna
     pollTimer = setInterval(() => {
         if (typeof loadMessages === 'function') loadMessages();
     }, 3000);
+};
+
+// 🌟 Back to Inbox Handler for Mobile WhatsApp Style
+window.backToInboxView = function() {
+    document.body.classList.remove('chat-active');
+    if (typeof window.pollTimer !== 'undefined' && window.pollTimer) {
+        clearInterval(window.pollTimer);
+    }
 };
 
 // 🌟 Global 3-Dot Options Menu Toggle
@@ -2020,7 +2058,6 @@ window.toggleBlockUser = async function(recipientId) {
 };
 
 // 🌟 World-Class Inbox UI with 6 Advanced Features
-// 🌟 World-Class Inbox UI with 6 Advanced Features
 window.loadChatConnections = async function() {
     try {
         const username = localStorage.getItem('hoknex_user');
@@ -2096,9 +2133,8 @@ window.loadChatConnections = async function() {
                 </div>
             `;
 
-            // Safely attach click listener without syntax string breaks
             card.querySelector('.chat-item-clickable').addEventListener('click', (e) => {
-                if (e.target.tagName === 'INPUT') return; // Don't trigger when clicking checkbox
+                if (e.target.tagName === 'INPUT') return;
                 openFullScreenMessages(connId, connName, connUsername);
             });
 
@@ -2137,7 +2173,6 @@ window.fetchRecipientAvatarAndStatus = async function(userId) {
     } catch (e) { console.error('Avatar error:', e); }
 };
 
-// 🌟 Separate Dedicated Message Action Menu (Delete, Reply, React, Copy)
 window.showMsgActionMenu = function(msgId, text) {
     const action = prompt("Choose action:\n1. Delete\n2. Copy Text\n3. React (❤️/🔥/👍/😂)\n4. Reply", "1");
     if (action === "1") deleteSingleMessage(msgId);
@@ -2160,7 +2195,7 @@ window.deleteSingleMessage = async function(msgId) {
 window.deleteCurrentChat = async function(recipientId) {
     if (!confirm('Clear entire conversation?')) return;
     const senderId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
-    await fetch(`/api/messages/${senderId}/${recipientId}`, { method: 'DELETE' });
+    await fetch(`${API_URL}/api/messages/${senderId}/${recipientId}`, { method: 'DELETE' });
     loadMessages();
 };
 
@@ -2175,7 +2210,6 @@ window.sendReplyMessage = async function(originalText, replyText) {
     loadMessages();
 };
 
-// 🌟 10 AI Play Arena Games Suite (Fully Defined)
 window.openPlayTogetherModal = function() { document.getElementById('playTogetherModal').style.display = 'flex'; };
 window.closePlayTogetherModal = function() { document.getElementById('playTogetherModal').style.display = 'none'; };
 
@@ -2320,7 +2354,6 @@ window.shareScoreToChat = async function(text) {
     closePlayTogetherModal();
 };
 
-// 🌟 Voice Notes & Media Messages
 let mediaRecorder = null;
 let audioChunks = [];
 window.toggleVoiceRecording = async function() {
@@ -2388,7 +2421,6 @@ window.uploadAndSendMedia = async function(fd, type) {
     }
 };
 
-// 🌟 Load Messages with Auto-Scroll & Read Receipts
 window.loadMessages = async function() {
     const sender = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
     if (!sender || !activeRecipientId) return;
