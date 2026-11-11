@@ -854,9 +854,12 @@
             btn.innerText = 'Uploading... 0%';
 
             try {
+                // 1. Fetch signature from Render backend
                 const sigRes = await fetch(`${API_URL}/api/reels/upload-signature`);
+                if (!sigRes.ok) throw new Error('Failed to generate upload signature');
                 const sigData = await sigRes.json();
 
+                // 2. Build FormData with all required authentication parameters
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('api_key', sigData.apiKey);
@@ -881,7 +884,8 @@
                     if (xhr.status === 200) {
                         const result = JSON.parse(xhr.responseText);
                         
-                        await fetch(`${API_URL}/api/reels/create`, {
+                        // 3. Save to MongoDB via Render
+                        const saveRes = await fetch(`${API_URL}/api/reels/create`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -893,22 +897,33 @@
                             })
                         });
 
-                        alert('Reel published successfully! 🎉');
-                        document.getElementById('reelsUploadModal').style.display = 'none';
-                        fileInput.value = '';
-                        captionInput.value = '';
-                        btn.innerText = 'Publish Reel 🎬';
-                        fetchReelsFeed(true);
+                        if (saveRes.ok) {
+                            alert('Reel published successfully! 🎉');
+                            document.getElementById('reelsUploadModal').style.display = 'none';
+                            fileInput.value = '';
+                            captionInput.value = '';
+                            btn.innerText = 'Publish Reel 🎬';
+                            fetchReelsFeed(true);
+                        } else {
+                            alert('Failed to save reel metadata to database.');
+                            btn.innerText = 'Publish Reel 🎬';
+                        }
                     } else {
-                        alert('Cloudinary upload failed.');
+                        console.error('Cloudinary Error Response:', xhr.responseText);
+                        alert('Cloudinary upload failed. Check console for details.');
                         btn.innerText = 'Publish Reel 🎬';
                     }
+                };
+
+                xhr.onerror = () => {
+                    alert('Network error during upload.');
+                    btn.innerText = 'Publish Reel 🎬';
                 };
 
                 xhr.send(formData);
             } catch (e) {
                 console.error('Upload error:', e);
-                alert('Upload failed.');
+                alert('Upload failed: ' + e.message);
                 btn.innerText = 'Publish Reel 🎬';
             }
         }
