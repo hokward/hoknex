@@ -14,6 +14,7 @@ const Club = require('./models/Club');
 const Event = require('./models/Event');
 const Support = require('./models/Support');
 const Message = require('./models/Message');
+const Reel = require('./models/Reel');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -132,42 +133,6 @@ app.get('/api/debug-db', async (req, res) => {
 // ==========================================
 // --- REELS SCHEMA & API ROUTER INTEGRATION ---
 // ==========================================
-
-const reelCommentSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    text: { type: String, required: true, maxlength: 300 },
-    createdAt: { type: Date, default: Date.now }
-});
-
-const reelSchema = new mongoose.Schema({
-    creatorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-    cloudinaryPublicId: { type: String, required: true },
-    hlsUrl: { type: String, required: true },
-    fallbackMp4Url: { type: String, required: true },
-    thumbnailUrl: { type: String, required: true },
-    duration: { type: Number, default: 0 },
-    title: { type: String, maxlength: 100, default: 'Untitled Reel' },
-    caption: { type: String, maxlength: 300, default: '' },
-    taggedPeople: [{ type: String }],
-    allowComments: { type: Boolean, default: true },
-    hideLikes: { type: Boolean, default: false },
-    tags: [{ type: String, index: true }],
-    audioTrack: {
-        name: { type: String, default: 'Original Audio' },
-        artist: { type: String, default: 'Hoknex Creator' },
-        externalLink: { type: String, default: '' }
-    },
-    views: { type: Number, default: 0 },
-    likesCount: { type: Number, default: 0 },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    commentsCount: { type: Number, default: 0 },
-    comments: [reelCommentSchema],
-    sharesCount: { type: Number, default: 0 },
-    engagementScore: { type: Number, default: 100, index: true }
-}, { timestamps: true });
-
-reelSchema.index({ engagementScore: -1, _id: -1 });
-const Reel = mongoose.models.Reel || mongoose.model('Reel', reelSchema);
 
 const reelsRouter = express.Router();
 
@@ -379,7 +344,7 @@ reelsRouter.get('/:id/comments', async (req, res) => {
     try {
         const reel = await Reel.findById(req.params.id).populate('comments.userId', 'name username dpUrl');
         if (!reel) return res.status(404).json({ error: 'Reel not found' });
-        res.json({ comments: reel.comments });
+        res.json({ comments: reel.comments, reelOwnerId: reel.creatorId.toString() });
     } catch (e) {
         res.status(500).json({ error: 'Failed to fetch comments' });
     }
@@ -387,11 +352,11 @@ reelsRouter.get('/:id/comments', async (req, res) => {
 
 reelsRouter.post('/:id/comment', async (req, res) => {
     try {
-        const { userId, text } = req.body;
+        const { userId, text, stickerUrl } = req.body;
         const reel = await Reel.findById(req.params.id);
         if (!reel) return res.status(404).json({ error: 'Reel not found' });
 
-        reel.comments.push({ userId, text });
+        reel.comments.push({ userId, text, stickerUrl: stickerUrl || '' });
         reel.commentsCount += 1;
         reel.engagementScore += 15;
         await reel.save();
@@ -402,6 +367,31 @@ reelsRouter.post('/:id/comment', async (req, res) => {
         res.status(201).json({ success: true, comment: newComment, commentsCount: reel.commentsCount });
     } catch (error) {
         res.status(500).json({ error: 'Failed to add comment' });
+    }
+});
+
+reelsRouter.put('/:id/comment/:commentId/pin', async (req, res) => {
+    try {
+        const reel = await Reel.findById(req.params.id);
+        if (!reel) return res.status(404).json({ error: 'Reel not found' });
+        reel.comments.forEach(c => { c.isPinned = c._id.toString() === req.params.commentId; });
+        await reel.save();
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: 'Failed to pin comment' });
+    }
+});
+
+reelsRouter.delete('/:id/comment/:commentId', async (req, res) => {
+    try {
+        const reel = await Reel.findById(req.params.id);
+        if (!reel) return res.status(404).json({ error: 'Reel not found' });
+        reel.comments = reel.comments.filter(c => c._id.toString() !== req.params.commentId);
+        reel.commentsCount = Math.max(0, reel.commentsCount - 1);
+        await reel.save();
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: 'Failed to delete comment' });
     }
 });
 
