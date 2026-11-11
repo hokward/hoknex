@@ -156,6 +156,41 @@
             .topbar { padding: 0.6rem 0.85rem; width: 100%; }
         }
 
+        /* 🌟 Pinterest-Style Masonry Pinboard Grid Layout (Web & Mobile) */
+        .pinboard-masonry-grid {
+            column-count: 3;
+            column-gap: 16px;
+            width: 100%;
+        }
+        .pin-card-item {
+            break-inside: avoid;
+            margin-bottom: 16px;
+            background: var(--paper);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            display: inline-block;
+            width: 100%;
+        }
+
+        @media (max-width: 1024px) {
+            .pinboard-masonry-grid {
+                column-count: 2;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .pinboard-masonry-grid {
+                column-count: 2; /* 2 columns on mobile phones for classic Pinterest feel */
+                column-gap: 10px;
+            }
+            .pin-card-item {
+                margin-bottom: 10px;
+                border-radius: 12px;
+            }
+        }
+
         /* 🌟 WhatsApp-Style Mobile Chat Fullscreen & Keyboard-Adaptive Support */
         @media (max-width: 768px) {
             body.chat-active #chatConnectionsList,
@@ -168,7 +203,7 @@
                 top: 0 !important;
                 left: 0 !important;
                 width: 100vw !important;
-                height: 100dvh !important; /* Adapts dynamically when mobile virtual keyboard pops up */
+                height: 100dvh !important; /* Keyboard-adaptive height */
                 z-index: 2500 !important;
                 border-radius: 0 !important;
             }
