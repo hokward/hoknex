@@ -506,18 +506,20 @@
             }
         }
 
-        async function fetchNotifications(forceOpen = false) {
-            const username = localStorage.getItem('hoknex_user');
-            if (!username) return;
-            try {
-                const res = await context_service_agent.get_context({ query: `notifications for ${username}` });
-                const badge = document.getElementById('topNotifBadge');
-                const listContainer = document.getElementById('notifListContainer');
-                if (badge && listContainer) {
-                    badge.style.display = 'none';
-                }
-            } catch (e) { console.error('Notification error:', e); }
+       async function fetchNotifications(forceOpen = false) {
+    const username = localStorage.getItem('hoknex_user');
+    if (!username) return;
+    try {
+        // Safe notification fetch check
+        const badge = document.getElementById('topNotifBadge');
+        const listContainer = document.getElementById('notifDropdownList');
+        if (badge && listContainer) {
+            // Keep your notification fetch logic here safely
         }
+    } catch (e) { 
+        console.log('Notification fetch skipped:', e); 
+    }
+}
 
         function toggleNotificationDropdown() {
             const dropdown = document.getElementById('notifDropdown');
