@@ -1979,6 +1979,7 @@ window.toggleBlockUser = async function(recipientId) {
 };
 
 // 🌟 World-Class Inbox UI with 6 Advanced Features
+// 🌟 World-Class Inbox UI with 6 Advanced Features
 window.loadChatConnections = async function() {
     try {
         const username = localStorage.getItem('hoknex_user');
@@ -2008,37 +2009,6 @@ window.loadChatConnections = async function() {
             ? allUsers.filter(u => connectedIds.includes(String(u && u._id ? u._id : '')))
             : [];
 
-        const connectionCards = connections.map(conn => {
-            const connId = String(conn && conn._id ? conn._id : '');
-            const connName = String(conn && conn.name ? conn.name : 'User');
-            const connUsername = String(conn && conn.username ? conn.username : 'user');
-            const safeConnId = JSON.stringify(connId);
-            const safeConnName = JSON.stringify(connName);
-            const safeConnUsername = JSON.stringify(connUsername);
-            const avatarInitial = String(connName || 'User').charAt(0).toUpperCase();
-            const avatarMarkup = conn && conn.dpUrl
-                ? `<img src="${String(conn.dpUrl)}" style="width:100%; height:100%; object-fit:cover;" alt="${connName} avatar" />`
-                : `<span style="display:flex; align-items:center; justify-content:center; width:100%; height:100%;">${avatarInitial}</span>`;
-
-            return `
-                <div class="inbox-connection" style="margin-bottom: 6px;">
-                    <div onclick="openFullScreenMessages(${safeConnId}, ${safeConnName}, ${safeConnUsername})" style="display:flex; align-items:center; justify-content:space-between; padding:10px; border-radius:8px; cursor:pointer; background:var(--canvas); border:1px solid var(--border);">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <input type="checkbox" class="inbox-select-checkbox" value="${connId}" onclick="event.stopPropagation()" style="cursor: pointer;" />
-                            <div class="avatar-circle" style="width:36px; height:36px; font-size:0.9rem; overflow:hidden;">
-                                ${avatarMarkup}
-                            </div>
-                            <div>
-                                <h4 style="font-weight:800; font-size:0.9rem; color: var(--ink); margin:0;">${connName}</h4>
-                                <p style="font-size:0.75rem; color:var(--ink-light); margin:0;">@${connUsername}</p>
-                            </div>
-                        </div>
-                        <span style="font-size: 0.7rem; color: #10b981; font-weight: 700;">● Active</span>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
         container.innerHTML = `
             <div class="inbox-list">
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; margin-bottom: 5px; background: rgba(0,0,0,0.1); border-radius: 6px;">
@@ -2049,9 +2019,51 @@ window.loadChatConnections = async function() {
                         <button onclick="deleteSelectedInboxChats()" title="Delete Selected" style="background:transparent; border:none; color:#ef4444; font-size:0.75rem; font-weight:700; cursor:pointer;">Delete 🗑️</button>
                     </div>
                 </div>
-                ${connectionCards}
+                <div id="inboxItemsWrapper" style="display:flex; flex-direction:column; gap:6px;"></div>
             </div>
         `;
+
+        const listWrapper = document.getElementById('inboxItemsWrapper');
+        if (!listWrapper) return;
+
+        connections.forEach(conn => {
+            const connId = String(conn && conn._id ? conn._id : '');
+            const connName = String(conn && conn.name ? conn.name : 'User');
+            const connUsername = String(conn && conn.username ? conn.username : 'user');
+            const avatarInitial = String(connName || 'User').charAt(0).toUpperCase();
+            
+            const avatarMarkup = conn && conn.dpUrl
+                ? `<img src="${String(conn.dpUrl)}" style="width:100%; height:100%; object-fit:cover;" alt="${connName} avatar" />`
+                : `<span style="display:flex; align-items:center; justify-content:center; width:100%; height:100%;">${avatarInitial}</span>`;
+
+            const card = document.createElement('div');
+            card.className = 'inbox-connection';
+            card.style.cssText = 'margin-bottom: 6px;';
+            card.innerHTML = `
+                <div class="chat-item-clickable" style="display:flex; align-items:center; justify-content:space-between; padding:10px; border-radius:8px; cursor:pointer; background:var(--canvas); border:1px solid var(--border);">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <input type="checkbox" class="inbox-select-checkbox" value="${connId}" style="cursor: pointer;" />
+                        <div class="avatar-circle" style="width:36px; height:36px; font-size:0.9rem; overflow:hidden; border-radius:50%;">
+                            ${avatarMarkup}
+                        </div>
+                        <div>
+                            <h4 style="font-weight:800; font-size:0.9rem; color: var(--ink); margin:0;">${connName}</h4>
+                            <p style="font-size:0.75rem; color:var(--ink-light); margin:0;">@${connUsername}</p>
+                        </div>
+                    </div>
+                    <span style="font-size: 0.7rem; color: #10b981; font-weight: 700;">● Active</span>
+                </div>
+            `;
+
+            // Safely attach click listener without syntax string breaks
+            card.querySelector('.chat-item-clickable').addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT') return; // Don't trigger when clicking checkbox
+                openFullScreenMessages(connId, connName, connUsername);
+            });
+
+            listWrapper.appendChild(card);
+        });
+
     } catch (e) {
         console.error('Inbox error:', e);
     }
@@ -2061,7 +2073,7 @@ window.deleteSelectedInboxChats = function() {
     const checkboxes = document.querySelectorAll('.inbox-select-checkbox:checked');
     if (!checkboxes.length) { alert('Please select at least one chat to delete.'); return; }
     if (!confirm('Remove selected chats from inbox?')) return;
-    checkboxes.forEach(cb => cb.closest('div[onclick]').remove());
+    checkboxes.forEach(cb => cb.closest('.inbox-connection').remove());
 };
 
 window.pinSelectedChats = function() { alert('Selected chats pinned to top of inbox 📌'); };
