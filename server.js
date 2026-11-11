@@ -169,20 +169,23 @@ const Reel = mongoose.models.Reel || mongoose.model('Reel', reelSchema);
 const reelsRouter = express.Router();
 
 // 1. Generate Direct-to-Cloudinary Upload Signature
+// 1. Generate Direct-to-Cloudinary Upload Signature
 reelsRouter.get('/upload-signature', async (req, res) => {
     try {
         const timestamp = Math.round(new Date().getTime() / 1000);
         const folder = 'hoknex_reels';
-        const eagerTransform = 'sp_auto/m3u8|w_480,c_scale,f_jpg';
+        const eager = 'sp_auto/m3u8|w_480,c_scale,f_jpg';
 
-        const signature = cloudinary.utils.api_sign_request({
-            timestamp: timestamp,
+        // Strict alphabetical parameter ordering required by Cloudinary signature verification
+        const paramsToSign = {
+            eager: eager,
+            eager_async: 'true',
             folder: folder,
             resource_type: 'video',
-            eager: eagerTransform,
-            eager_async: true,
-            notification_url: `${process.env.RENDER_EXTERNAL_URL || 'https://hoknex-backend.onrender.com'}/api/reels/cloudinary-webhook`
-        }, process.env.CLOUDINARY_API_SECRET);
+            timestamp: timestamp
+        };
+
+        const signature = cloudinary.utils.api_sign_request(paramsToSign, process.env.CLOUDINARY_API_SECRET);
 
         res.status(200).json({
             signature,
@@ -190,14 +193,13 @@ reelsRouter.get('/upload-signature', async (req, res) => {
             cloudName: process.env.CLOUDINARY_CLOUD_NAME || 'wnnotcmw',
             apiKey: process.env.CLOUDINARY_API_KEY || '316289158118826',
             folder,
-            eager: eagerTransform
+            eager
         });
     } catch (error) {
         console.error('Error generating signature:', error);
         res.status(500).json({ error: 'Failed to generate upload signature' });
     }
 });
-
 // 2. Cloudinary Eager Webhook
 reelsRouter.post('/cloudinary-webhook', async (req, res) => {
     try {
