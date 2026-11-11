@@ -99,7 +99,12 @@
 
         .feed-layout { display: flex; gap: 1.5rem; padding: 1.25rem; max-width: 1280px; margin: 0 auto; width: 100%; }
         .feed-container { flex: 1; display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
-        .post-box, .post-card, .widget-card { background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); }
+        
+        /* Beautified Feed Post Box */
+        .post-box { background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 12px; }
+        .post-box textarea { width: 100%; background: var(--canvas); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem; color: var(--ink); font-size: 0.9rem; outline: none; font-weight: 600; resize: none; min-height: 90px; }
+        .post-box textarea:focus { border-color: var(--accent-coral); box-shadow: 0 0 0 3px rgba(225,48,108,0.15); }
+        .post-card, .widget-card { background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); }
         
         .widgets-sidebar { width: 280px; display: flex; flex-direction: column; gap: 1.25rem; flex-shrink: 0; }
         .user-widget-profile { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; padding-bottom: 0.85rem; border-bottom: 1px solid var(--border); cursor: pointer; }
@@ -314,7 +319,7 @@
         </div>
     </div>
 
-    <!-- Enhanced Instagram-Style Upload Reel Modal -->
+    <!-- Enhanced Instagram-Style Upload Reel Modal with Tag People Autocomplete -->
     <div id="reelsUploadModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:4000; align-items:center; justify-content:center;">
         <div style="background:#161622; border:1px solid #27272A; border-radius:16px; width:90%; max-width:420px; padding:1.5rem; display:flex; flex-direction:column; gap:12px; max-height:90vh; overflow-y:auto;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -331,17 +336,15 @@
             <label style="font-size:0.75rem; color:#A1A1AA; font-weight:700;">Reel Title</label>
             <input type="text" id="reelTitleInput" placeholder="Give your reel a catch title..." style="background:#09090B; border:1px solid #27272A; border-radius:12px; padding:0.7rem; color:#FFFFFF; font-size:0.85rem; outline:none;">
 
-            <label style="font-size:0.75rem; color:#A1A1AA; font-weight:700;">Caption & Hashtags</label>
-            <textarea id="reelCaptionInput" placeholder="Write a caption... #campus #tech" maxlength="300" style="background:#09090B; border:1px solid #27272A; border-radius:12px; padding:0.7rem; color:#FFFFFF; font-size:0.85rem; height:70px; resize:none; outline:none;"></textarea>
-
-            <label style="font-size:0.75rem; color:#A1A1AA; font-weight:700;">Tag People (@username)</label>
-            <input type="text" id="reelTagPeopleInput" placeholder="e.g. @chitra, @akash" style="background:#09090B; border:1px solid #27272A; border-radius:12px; padding:0.7rem; color:#FFFFFF; font-size:0.85rem; outline:none;">
+            <label style="font-size:0.75rem; color:#A1A1AA; font-weight:700;">Caption & Hashtags (Type @ to mention)</label>
+            <textarea id="reelCaptionInput" placeholder="Write a caption... #campus @username" maxlength="300" oninput="handleCaptionInput(this)" style="background:#09090B; border:1px solid #27272A; border-radius:12px; padding:0.7rem; color:#FFFFFF; font-size:0.85rem; height:70px; resize:none; outline:none;"></textarea>
+            <div id="mentionAutocompleteBox" style="display:none; background:#09090B; border:1px solid #27272A; border-radius:10px; max-height:120px; overflow-y:auto; padding:4px;"></div>
 
             <button onclick="uploadReelToCloudinary()" style="background:linear-gradient(135deg, #833AB4, #E1306C, #F56040); color:#FFFFFF; border:none; padding:0.85rem; border-radius:12px; font-weight:800; cursor:pointer; margin-top:6px;">Publish Reel 🚀</button>
         </div>
     </div>
 
-    <!-- Creator Dashboard / Insights Modal -->
+    <!-- Creator Dashboard & Insights Modal (Manage Comments & Likes) -->
     <div id="reelsDashboardModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:4000; align-items:center; justify-content:center;">
         <div style="background:#161622; border:1px solid #27272A; border-radius:16px; width:92%; max-width:480px; padding:1.5rem; display:flex; flex-direction:column; gap:14px; max-height:85vh; overflow-y:auto;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -354,6 +357,21 @@
         </div>
     </div>
 
+    <!-- Comments Drawer Modal -->
+    <div id="reelsCommentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:4500; align-items:flex-end; justify-content:center;">
+        <div style="background:#161622; border-top:1px solid #27272A; border-top-left-radius:24px; border-top-right-radius:24px; width:100%; max-width:420px; height:60vh; display:flex; flex-direction:column; padding:1rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #27272A; padding-bottom:8px;">
+                <h4 style="color:#FFFFFF; font-weight:800; font-size:0.95rem;">Comments (<span id="commentCountSpan">0</span>)</h4>
+                <button onclick="document.getElementById('reelsCommentModal').style.display='none'" style="background:none; border:none; color:#A1A1AA; font-weight:800; cursor:pointer;">✕</button>
+            </div>
+            <div id="reelsCommentsList" style="flex:1; overflow-y:auto; padding:10px 0; display:flex; flex-direction:column; gap:10px;"></div>
+            <div style="display:flex; gap:8px; padding-top:8px; border-top:1px solid #27272A;">
+                <input type="text" id="newCommentInput" placeholder="Add a comment..." style="flex:1; background:#09090B; border:1px solid #27272A; border-radius:10px; padding:0.6rem; color:#FFFFFF; font-size:0.8rem; outline:none;">
+                <button onclick="postReelComment()" style="background:var(--accent-gradient); border:none; color:#FFFFFF; padding:6px 14px; border-radius:10px; font-weight:800; font-size:0.8rem; cursor:pointer;">Post</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Send to DM Friend Modal -->
     <div id="reelsShareModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:4500; align-items:center; justify-content:center;">
         <div style="background:#161622; border:1px solid #27272A; border-radius:16px; width:90%; max-width:360px; padding:1.5rem; display:flex; flex-direction:column; gap:12px;">
@@ -361,8 +379,9 @@
                 <h3 style="color:#FFFFFF; font-weight:800; font-size:1rem;">Share to Hoknex DM 💬</h3>
                 <button onclick="document.getElementById('reelsShareModal').style.display='none'" style="background:none; border:none; color:#A1A1AA; font-weight:800; cursor:pointer;">✕</button>
             </div>
-            <input type="text" id="dmSearchFriend" placeholder="Search campus friend..." style="background:#09090B; border:1px solid #27272A; border-radius:10px; padding:0.6rem; color:#FFFFFF; font-size:0.8rem; outline:none;">
+            <input type="text" id="dmSearchFriend" oninput="filterFriendsList(this.value)" placeholder="Search campus friend..." style="background:#09090B; border:1px solid #27272A; border-radius:10px; padding:0.6rem; color:#FFFFFF; font-size:0.8rem; outline:none;">
             <div id="dmFriendsList" style="max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
+            <button onclick="shareViaExternalApp()" style="background:rgba(255,255,255,0.08); border:1px solid #27272A; color:#FFFFFF; padding:8px; border-radius:10px; font-weight:700; font-size:0.8rem; cursor:pointer; margin-top:4px;">🌐 Share to WhatsApp / Other Apps</button>
         </div>
     </div>
 
@@ -382,6 +401,8 @@
         let nextCursorToken = null;
         let isFetchingReels = false;
         let activeShareReelId = null;
+        let activeCommentReelId = null;
+        let allCampusUsers = [];
 
         document.addEventListener("DOMContentLoaded", () => {
             const currentUsername = localStorage.getItem('hoknex_user');
@@ -403,6 +424,7 @@
             fetchStats();
             loadLoggedInUserBanner(currentUsername);
             fetchNotifications();
+            loadAllUsersForMention();
         });
 
         navLinks.forEach(link => {
@@ -541,6 +563,53 @@
             } catch (e) { console.error(e); }
         }
 
+        async function loadAllUsersForMention() {
+            try {
+                const res = await fetch(`${API_URL}/api/users`);
+                allCampusUsers = await res.json();
+            } catch(e) {}
+        }
+
+        // Live @Mention Autocomplete inside Caption
+        function handleCaptionInput(textarea) {
+            const val = textarea.value;
+            const caretPos = textarea.selectionStart;
+            const textBeforeCaret = val.slice(0, caretPos);
+            const match = textBeforeCaret.match(/@(\w*)$/);
+            const box = document.getElementById('mentionAutocompleteBox');
+
+            if (match) {
+                const query = match[1].toLowerCase();
+                const filtered = allCampusUsers.filter(u => u.username.toLowerCase().includes(query) || u.name.toLowerCase().includes(query)).slice(0, 5);
+                
+                if (filtered.length > 0) {
+                    box.style.display = 'block';
+                    box.innerHTML = filtered.map(u => `
+                        <div onclick="insertMention('${u.username}')" style="padding:6px 10px; cursor:pointer; font-size:0.8rem; color:#FFFFFF; border-bottom:1px solid #27272A; display:flex; justify-content:space-between;">
+                            <span>@${u.username}</span> <span style="color:#A1A1AA; font-size:0.7rem;">${u.name}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    box.style.display = 'none';
+                }
+            } else {
+                box.style.display = 'none';
+            }
+        }
+
+        function insertMention(username) {
+            const textarea = document.getElementById('reelCaptionInput');
+            const val = textarea.value;
+            const caretPos = textarea.selectionStart;
+            const textBeforeCaret = val.slice(0, caretPos);
+            const textAfterCaret = val.slice(caretPos);
+            
+            const updatedBefore = textBeforeCaret.replace(/@\w*$/, `@${username} `);
+            textarea.value = updatedBefore + textAfterCaret;
+            document.getElementById('mentionAutocompleteBox').style.display = 'none';
+            textarea.focus();
+        }
+
         async function fetchStats() {
             try {
                 const res = await fetch(`${API_URL}/api/stats`);
@@ -623,6 +692,13 @@
                 
                 const isLiked = reel.likes?.includes(localStorage.getItem('hoknex_uid'));
                 const creatorUsername = reel.creatorId?.username || 'creator';
+                const showLikes = reel.hideLikes ? '' : (reel.likesCount || 0);
+
+                let formattedCaption = reel.caption || '';
+                (reel.taggedPeople || []).forEach(tp => {
+                    const mentionTag = `@${tp}`;
+                    formattedCaption = formattedCaption.replace(mentionTag, `<span style="color:#FCAF45; font-weight:700;">${mentionTag}</span>`);
+                });
 
                 card.innerHTML = `
                     <video id="video-${reel._id}" poster="${reel.thumbnailUrl || ''}" loop playsinline preload="none" style="width:100%; height:100%; object-fit:cover;"></video>
@@ -631,8 +707,13 @@
                     <div style="position:absolute; right:16px; bottom:80px; display:flex; flex-direction:column; align-items:center; gap:18px; z-index:20;">
                         <div onclick="toggleReelLike('${reel._id}')" style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
                             <div id="like-btn-${reel._id}" style="width:42px; height:42px; background:rgba(22,22,34,0.7); backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">${isLiked ? '❤️' : '🤍'}</div>
-                            <span id="likes-count-${reel._id}" style="color:#FFFFFF; font-size:0.7rem; font-weight:700; margin-top:3px;">${reel.likesCount || 0}</span>
+                            <span id="likes-count-${reel._id}" style="color:#FFFFFF; font-size:0.7rem; font-weight:700; margin-top:3px;">${showLikes}</span>
                         </div>
+                        ${reel.allowComments !== false ? `
+                        <div onclick="openReelsComments('${reel._id}')" style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
+                            <div style="width:42px; height:42px; background:rgba(22,22,34,0.7); backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">💬</div>
+                            <span id="comments-count-${reel._id}" style="color:#FFFFFF; font-size:0.7rem; font-weight:700; margin-top:3px;">${reel.commentsCount || 0}</span>
+                        </div>` : ''}
                         <div onclick="repostReel('${reel._id}')" style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
                             <div style="width:42px; height:42px; background:rgba(22,22,34,0.7); backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">🔁</div>
                             <span style="color:#FFFFFF; font-size:0.7rem; font-weight:700; margin-top:3px;">Repost</span>
@@ -643,16 +724,16 @@
                         </div>
                     </div>
 
-                    <!-- Bottom Metadata -->
-                    <div style="position:absolute; left:16px; bottom:30px; right:70px; z-index:20; pointer-events:none;">
-                        <div onclick="redirectToUserProfile('${creatorUsername}')" style="display:flex; align-items:center; gap:10px; margin-bottom:8px; pointer-events:auto; cursor:pointer;">
-                            <div style="width:36px; height:36px; border-radius:50%; padding:2px; background:linear-gradient(135deg, #833AB4, #E1306C, #F56040);">
+                    <!-- Bottom Metadata & Responsive Text Scaling -->
+                    <div style="position:absolute; left:16px; bottom:25px; right:75px; z-index:20; pointer-events:none;">
+                        <div onclick="redirectToUserProfile('${creatorUsername}')" style="display:flex; align-items:center; gap:10px; margin-bottom:6px; pointer-events:auto; cursor:pointer;">
+                            <div style="width:34px; height:34px; border-radius:50%; padding:2px; background:linear-gradient(135deg, #833AB4, #E1306C, #F56040);">
                                 <div style="width:100%; height:100%; border-radius:50%; background-image:url('${reel.creatorId?.dpUrl || ''}'); background-size:cover; background-position:center; background-color:#161622;"></div>
                             </div>
                             <span style="color:#FFFFFF; font-weight:800; font-size:0.85rem; text-shadow:0 1px 3px rgba(0,0,0,0.8);">@${creatorUsername}</span>
                         </div>
-                        <h4 style="color:#FFFFFF; font-size:0.9rem; font-weight:800; margin-bottom:3px;">${reel.title || ''}</h4>
-                        <p style="color:#FFFFFF; font-size:0.8rem; font-weight:600; text-shadow:0 1px 3px rgba(0,0,0,0.8);">${reel.caption || ''}</p>
+                        <h4 style="color:#FFFFFF; font-size:0.88rem; font-weight:800; margin-bottom:2px; text-shadow:0 1px 2px rgba(0,0,0,0.8);">${reel.title || ''}</h4>
+                        <p style="color:#FFFFFF; font-size:0.78rem; font-weight:600; text-shadow:0 1px 3px rgba(0,0,0,0.8); line-height:1.3; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${formattedCaption}</p>
                     </div>
 
                     <!-- Scrubber Progress Bar -->
@@ -690,7 +771,7 @@
             setupVideoAutoplayObserver();
         }
 
-        // Instagram-style auto-play/pause intersection observer
+        // Instagram-style IntersectionObserver Auto-Play / Pause
         function setupVideoAutoplayObserver() {
             const observerOptions = { root: document.getElementById('reelsScroller'), threshold: 0.6 };
             const observer = new IntersectionObserver((entries) => {
@@ -699,6 +780,12 @@
                     if (!video) return;
                     if (entry.isIntersecting) {
                         video.play().catch(() => {});
+                        const reelId = entry.target.id.replace('reel-card-', '');
+                        fetch(`${API_URL}/api/reels/${reelId}/metric`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ type: 'view' })
+                        }).catch(() => {});
                     } else {
                         video.pause();
                         video.currentTime = 0;
@@ -719,17 +806,16 @@
             }
         }
 
-        // Creator Insights Dashboard Modal
+        // Creator Insights Dashboard & Settings Modal
         async function openReelsDashboard() {
             const modal = document.getElementById('reelsDashboardModal');
             const container = document.getElementById('myReelsStatsContainer');
             modal.style.display = 'flex';
-            container.innerHTML = `<p style="color:#A1A1AA; text-align:center; padding:1rem;">Loading metrics...</p>`;
+            container.innerHTML = `<p style="color:#A1A1AA; text-align:center; padding:1rem;">Loading dashboard...</p>`;
 
             try {
                 const uid = localStorage.getItem('hoknex_uid');
                 const res = await fetch(`${API_URL}/api/reels/my-reels/${uid}`);
-                if (!res.ok) throw new Error('Failed to load insights');
                 const myReels = await res.json();
 
                 if (myReels.length === 0) {
@@ -738,15 +824,21 @@
                 }
 
                 container.innerHTML = myReels.map(r => `
-                    <div style="background:#09090B; border:1px solid #27272A; border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
-                        <div style="overflow:hidden; display:flex; gap:10px; align-items:center;">
-                            <img src="${r.thumbnailUrl}" style="width:45px; height:55px; object-fit:cover; border-radius:8px;">
-                            <div>
-                                <h4 style="color:#FFFFFF; font-size:0.85rem; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px;">${r.title || 'Untitled Reel'}</h4>
-                                <span style="font-size:0.7rem; color:#A1A1AA;">👀 ${r.views || 0} views • ❤️ ${r.likesCount || 0} likes • 💬 ${r.commentsCount || 0}</span>
+                    <div style="background:#09090B; border:1px solid #27272A; border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <img src="${r.thumbnailUrl}" style="width:40px; height:50px; object-fit:cover; border-radius:6px;">
+                                <div>
+                                    <h4 style="color:#FFFFFF; font-size:0.85rem; font-weight:800; max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r.title || 'Untitled'}</h4>
+                                    <span style="font-size:0.7rem; color:#A1A1AA;">👀 ${r.views || 0} • ❤️ ${r.likesCount || 0} • 💬 ${r.commentsCount || 0}</span>
+                                </div>
                             </div>
+                            <button onclick="deleteReel('${r._id}')" style="background:rgba(225,48,108,0.15); border:1px solid #E1306C; color:#E1306C; padding:5px 10px; border-radius:8px; font-weight:700; font-size:0.7rem; cursor:pointer;">Delete</button>
                         </div>
-                        <button onclick="deleteReel('${r._id}')" style="background:rgba(225,48,108,0.15); border:1px solid #E1306C; color:#E1306C; padding:6px 10px; border-radius:8px; font-weight:700; font-size:0.75rem; cursor:pointer;">Delete</button>
+                        <div style="display:flex; gap:15px; border-top:1px solid #27272A; padding-top:6px; font-size:0.75rem; color:#A1A1AA;">
+                            <label style="cursor:pointer;"><input type="checkbox" ${r.allowComments !== false ? 'checked' : ''} onchange="toggleReelSetting('${r._id}', 'allowComments', this.checked)"> Allow Comments</label>
+                            <label style="cursor:pointer;"><input type="checkbox" ${r.hideLikes ? 'checked' : ''} onchange="toggleReelSetting('${r._id}', 'hideLikes', this.checked)"> Hide Like Count</label>
+                        </div>
                     </div>
                 `).join('');
             } catch (e) {
@@ -754,16 +846,75 @@
             }
         }
 
+        async function toggleReelSetting(reelId, field, value) {
+            await fetch(`${API_URL}/api/reels/${reelId}/settings`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ field, value })
+            });
+        }
+
         async function deleteReel(reelId) {
             if (!confirm('Are you sure you want to delete this reel?')) return;
+            const res = await fetch(`${API_URL}/api/reels/${reelId}`, { method: 'DELETE' });
+            if (res.ok) {
+                alert('Reel deleted successfully.');
+                openReelsDashboard();
+                fetchReelsFeed(true);
+            }
+        }
+
+        // Comments Drawer Functions
+        async function openReelsComments(reelId) {
+            activeCommentReelId = reelId;
+            document.getElementById('reelsCommentModal').style.display = 'flex';
+            await loadReelComments(reelId);
+        }
+
+        async function loadReelComments(reelId) {
+            const list = document.getElementById('reelsCommentsList');
+            list.innerHTML = `<p style="color:#A1A1AA; font-size:0.8rem; text-align:center;">Loading comments...</p>`;
             try {
-                const res = await fetch(`${API_URL}/api/reels/${reelId}`, { method: 'DELETE' });
+                const res = await fetch(`${API_URL}/api/reels/${reelId}/comments`);
+                const data = await res.json();
+                document.getElementById('commentCountSpan').innerText = data.comments.length;
+
+                if (data.comments.length === 0) {
+                    list.innerHTML = `<p style="color:#A1A1AA; font-size:0.8rem; text-align:center; padding:1rem;">No comments yet. Say something nice! 💬</p>`;
+                    return;
+                }
+
+                list.innerHTML = data.comments.map(c => `
+                    <div style="display:flex; gap:10px; align-items:flex-start;">
+                        <div style="width:28px; height:28px; border-radius:50%; background-image:url('${c.userId?.dpUrl || ''}'); background-size:cover; background-position:center; background-color:#27272A; flex-shrink:0;"></div>
+                        <div>
+                            <span style="color:#FFFFFF; font-weight:800; font-size:0.75rem;">@${c.userId?.username || 'user'}</span>
+                            <p style="color:#A1A1AA; font-size:0.8rem; margin-top:2px;">${c.text}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                list.innerHTML = `<p style="color:#E1306C; font-size:0.8rem; text-align:center;">Failed to load comments.</p>`;
+            }
+        }
+
+        async function postReelComment() {
+            const input = document.getElementById('newCommentInput');
+            const text = input.value.trim();
+            if (!text || !activeCommentReelId) return;
+
+            try {
+                const res = await fetch(`${API_URL}/api/reels/${activeCommentReelId}/comment`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: localStorage.getItem('hoknex_uid'), text })
+                });
                 if (res.ok) {
-                    alert('Reel deleted successfully.');
-                    openReelsDashboard();
+                    input.value = '';
+                    loadReelComments(activeCommentReelId);
                     fetchReelsFeed(true);
                 }
-            } catch (e) { alert('Failed to delete reel.'); }
+            } catch (e) { alert('Failed to post comment.'); }
         }
 
         async function uploadReelToCloudinary() {
@@ -771,7 +922,6 @@
             const thumbInput = document.getElementById('reelThumbnailFile');
             const titleInput = document.getElementById('reelTitleInput');
             const captionInput = document.getElementById('reelCaptionInput');
-            const tagPeopleInput = document.getElementById('reelTagPeopleInput');
 
             if (!fileInput.files[0]) return alert('Please select a video file!');
 
@@ -810,11 +960,15 @@
                             btn.innerText = 'Uploading thumbnail...';
                             const thumbForm = new FormData();
                             thumbForm.append('file', thumbInput.files[0]);
-                            thumbForm.append('upload_preset', 'hoknex_unsigned'); // or signed signature
+                            thumbForm.append('upload_preset', 'hoknex_unsigned');
                             const thumbRes = await fetch(`https://api.cloudinary.com/v1_1/${sigData.cloudName}/image/upload`, { method: 'POST', body: thumbForm });
                             const thumbJson = await thumbRes.json();
                             customThumbUrl = thumbJson.secure_url || '';
                         }
+
+                        const rawCaption = captionInput.value.trim();
+                        const taggedMatches = rawCaption.match(/@(\w+)/g) || [];
+                        const taggedPeople = taggedMatches.map(t => t.replace('@', ''));
 
                         btn.innerText = 'Saving record...';
                         const saveRes = await fetch(`${API_URL}/api/reels/create`, {
@@ -827,8 +981,8 @@
                                 thumbnailOverride: customThumbUrl,
                                 duration: result.duration || 0,
                                 title: titleInput.value.trim() || 'Untitled Reel',
-                                caption: captionInput.value.trim(),
-                                taggedPeople: tagPeopleInput.value.split(',').map(s => s.trim()).filter(Boolean)
+                                caption: rawCaption,
+                                taggedPeople
                             })
                         });
 
@@ -839,7 +993,6 @@
                             thumbInput.value = '';
                             titleInput.value = '';
                             captionInput.value = '';
-                            tagPeopleInput.value = '';
                             btn.innerText = 'Publish Reel 🚀';
                             fetchReelsFeed(true);
                         } else {
@@ -878,23 +1031,28 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ type: 'share', userId: currentUid })
             });
-            if (res.ok) alert('Reel reposted to your feed successfully! 🔁');
+            if (res.ok) alert('Reel reposted to your profile dashboard successfully! 🔁');
         }
 
         function openShareModal(reelId) {
             activeShareReelId = reelId;
             document.getElementById('reelsShareModal').style.display = 'flex';
-            fetchDMConnections();
+            filterFriendsList('');
         }
 
-        async function fetchDMConnections() {
+        async function filterFriendsList(query) {
             const list = document.getElementById('dmFriendsList');
             list.innerHTML = `<p style="color:#A1A1AA; font-size:0.75rem; text-align:center;">Loading friends...</p>`;
             try {
-                const res = await fetch(`${API_URL}/api/users/all`);
+                const res = await fetch(`${API_URL}/api/users`);
                 const users = await res.json();
                 const myId = localStorage.getItem('hoknex_uid');
-                const friends = users.filter(u => u._id !== myId);
+                const friends = users.filter(u => u._id !== myId && (u.username.toLowerCase().includes(query.toLowerCase()) || u.name.toLowerCase().includes(query.toLowerCase())));
+
+                if (friends.length === 0) {
+                    list.innerHTML = `<p style="color:#A1A1AA; font-size:0.75rem; text-align:center;">No campus friends found.</p>`;
+                    return;
+                }
 
                 list.innerHTML = friends.map(f => `
                     <div style="display:flex; justify-content:space-between; align-items:center; background:#09090B; padding:8px 12px; border-radius:10px;">
@@ -909,12 +1067,12 @@
 
         async function sendReelToDM(friendId) {
             try {
-                await fetch(`${API_URL}/api/messages/send`, {
+                await fetch(`${API_URL}/api/messages`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        senderId: localStorage.getItem('hoknex_uid'),
-                        receiverId: friendId,
+                        sender: localStorage.getItem('hoknex_uid'),
+                        recipient: friendId,
                         text: `Check out this reel on Hoknex: ${window.location.origin}/reel/${activeShareReelId}`
                     })
                 });
@@ -922,6 +1080,14 @@
                 document.getElementById('reelsShareModal').style.display = 'none';
             } catch (e) {
                 alert('Failed to send DM.');
+            }
+        }
+
+        function shareViaExternalApp() {
+            if (navigator.share) {
+                navigator.share({ title: 'Check out this Reel on Hoknex', url: window.location.href }).catch(() => {});
+            } else {
+                alert('Link copied to clipboard!');
             }
         }
     </script>
