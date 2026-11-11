@@ -1273,26 +1273,26 @@ mainView.innerHTML = `
     <div id="postsList" class="posts-stream"></div>
 `;
                 loadPosts();
-           } else if (view === 'messages') {
-        viewTitle.innerText = 'Direct Messages 💬';
-        mainView.innerHTML = `
-            <div style="display:flex; gap:20px; height: calc(100vh - 130px); width: 100%;">
-                <div style="width: 300px; min-width: 300px; background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-subtle); height: 100%;">
-                    <h3 style="font-size:0.95rem; font-weight:800; color:var(--ink);">Chats</h3>
-                    <div id="chatConnectionsList" style="display:flex; flex-direction:column; gap:6px; overflow-y:auto; flex:1;">
-                        <p style="font-size:0.85rem; color:var(--ink-light); font-weight:600;">Loading conversations...</p>
-                    </div>
-                </div>
-                <div id="chatCanvasArea" style="flex:1; background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; box-shadow: var(--shadow-card); height: 100%; overflow: hidden; position: relative;">
-                    <div style="text-align:center; padding:4rem 2rem; margin:auto;">
-                        <span style="font-size:3.5rem;">💬</span>
-                        <h3 style="font-weight:800; margin-top:12px; font-size:1.2rem;">Your Messages</h3>
-                        <p style="font-size:0.9rem; color:var(--ink-light); font-weight:600; margin-top:6px;">Select a conversation from the left sidebar to start chatting.</p>
-                    </div>
+          } else if (view === 'messages') {
+    viewTitle.innerText = 'Direct Messages 💬';
+    mainView.innerHTML = `
+        <div style="display:flex; gap:20px; height: calc(100vh - 130px); width: 100%;">
+            <div style="width: 300px; min-width: 300px; background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column;">
+                <h3 style="font-size:0.95rem; font-weight:800; color:var(--ink);">Chats</h3>
+                <div id="chatConnectionsList" style="display:flex; flex-direction:column; gap:6px; overflow-y:auto; flex:1;">
+                    <p style="font-size:0.85rem; color:var(--ink-light); font-weight:600;">Loading conversations...</p>
                 </div>
             </div>
-        `;
-        loadChatConnections();
+            <div id="chatCanvasArea" style="flex:1; background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; position: relative;">
+                <div style="text-align:center; padding:4rem 2rem; margin:auto;">
+                    <span style="font-size:3.5rem;">💬</span>
+                    <h3 style="font-weight:800; margin-top:12px; font-size:1.2rem;">Your Messages</h3>
+                    <p style="font-size:0.9rem; color:var(--ink-light); font-weight:600; margin-top:6px;">Select a conversation from the left sidebar to start chatting.</p>
+                </div>
+            </div>
+        </div>
+    `;
+    loadChatConnections();
             } else if (view === 'mystickets') {
                 viewTitle.innerText = 'My Support Tickets 🎫';
                 mainView.innerHTML = `
