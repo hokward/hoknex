@@ -156,13 +156,18 @@
             .topbar { padding: 0.6rem 0.85rem; width: 100%; }
         }
 
-        /* 🌟 Pinterest-Style Masonry Pinboard Grid Layout (Web & Mobile) */
-        .pinboard-masonry-grid {
+        /* 🌟 Pinterest-Style Masonry Pinboard Grid Layout (Universal Fallback for Discover/Pins) */
+        .pinboard-masonry-grid, 
+        #discoverPinsContainer, 
+        #pinsGridContainer, 
+        .discover-grid {
             column-count: 3;
             column-gap: 16px;
             width: 100%;
         }
-        .pin-card-item {
+        .pin-card-item, 
+        .discover-pin-card, 
+        .pin-card {
             break-inside: avoid;
             margin-bottom: 16px;
             background: var(--paper);
@@ -175,17 +180,25 @@
         }
 
         @media (max-width: 1024px) {
-            .pinboard-masonry-grid {
+            .pinboard-masonry-grid, 
+            #discoverPinsContainer, 
+            #pinsGridContainer, 
+            .discover-grid {
                 column-count: 2;
             }
         }
 
         @media (max-width: 600px) {
-            .pinboard-masonry-grid {
-                column-count: 2; /* 2 columns on mobile phones for classic Pinterest feel */
+            .pinboard-masonry-grid, 
+            #discoverPinsContainer, 
+            #pinsGridContainer, 
+            .discover-grid {
+                column-count: 2; /* True 2-column Pinterest masonry layout on mobile phones */
                 column-gap: 10px;
             }
-            .pin-card-item {
+            .pin-card-item, 
+            .discover-pin-card, 
+            .pin-card {
                 margin-bottom: 10px;
                 border-radius: 12px;
             }
