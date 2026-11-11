@@ -14,6 +14,7 @@ const Club = require('./models/Club');
 const Event = require('./models/Event');
 const Support = require('./models/Support');
 const Message = require('./models/Message');
+const Reel = require('./models/Reel');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -84,7 +85,6 @@ let isConnected = false;
 const connectDB = async () => {
     if (isConnected) return;
     try {
-        // 🔒 BULLETPROOF FIX: Forcefully target the 'test' database regardless of dashboard strings
         let uri = process.env.MONGO_URI || '';
         
         if (!uri) {
@@ -134,38 +134,6 @@ app.get('/api/debug-db', async (req, res) => {
 // --- REELS SCHEMA & API ROUTER INTEGRATION ---
 // ==========================================
 
-const reelCommentSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    text: { type: String, required: true, maxlength: 300 },
-    createdAt: { type: Date, default: Date.now }
-});
-
-const reelSchema = new mongoose.Schema({
-    creatorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-    cloudinaryPublicId: { type: String, required: true },
-    hlsUrl: { type: String, required: true },
-    fallbackMp4Url: { type: String, required: true },
-    thumbnailUrl: { type: String, required: true },
-    duration: { type: Number, default: 0 },
-    caption: { type: String, maxlength: 300, default: '' },
-    tags: [{ type: String, index: true }],
-    audioTrack: {
-        name: { type: String, default: 'Original Audio' },
-        artist: { type: String, default: 'Hoknex Creator' },
-        externalLink: { type: String, default: '' }
-    },
-    views: { type: Number, default: 0 },
-    likesCount: { type: Number, default: 0 },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    commentsCount: { type: Number, default: 0 },
-    comments: [reelCommentSchema],
-    sharesCount: { type: Number, default: 0 },
-    engagementScore: { type: Number, default: 100, index: true }
-}, { timestamps: true });
-
-reelSchema.index({ engagementScore: -1, _id: -1 });
-const Reel = mongoose.models.Reel || mongoose.model('Reel', reelSchema);
-
 const reelsRouter = express.Router();
 
 // 1. Generate Direct-to-Cloudinary Upload Signature
@@ -193,6 +161,7 @@ reelsRouter.get('/upload-signature', async (req, res) => {
         res.status(500).json({ error: 'Failed to generate upload signature' });
     }
 });
+
 // 2. Cloudinary Eager Webhook
 reelsRouter.post('/cloudinary-webhook', async (req, res) => {
     try {
@@ -233,13 +202,13 @@ reelsRouter.post('/cloudinary-webhook', async (req, res) => {
     }
 });
 
-// 3. Create Reel Meta Record
+// 3. Create Reel Meta Record (With Title, Custom Thumbnail & Tags Support)
 reelsRouter.post('/create', async (req, res) => {
     try {
-        const { creatorId, publicId, secureUrl, duration, caption, tags, audioTrack } = req.body;
+        const { creatorId, publicId, secureUrl, thumbnailOverride, duration, title, caption, taggedPeople, tags, audioTrack } = req.body;
         
         const hlsUrl = secureUrl.replace(/\.[^/.]+$/, '.m3u8');
-        const thumbnailUrl = secureUrl.replace(/\.[^/.]+$/, '.jpg');
+        const thumbnailUrl = thumbnailOverride || secureUrl.replace(/\.[^/.]+$/, '.jpg');
 
         const newReel = new Reel({
             creatorId,
@@ -248,7 +217,9 @@ reelsRouter.post('/create', async (req, res) => {
             fallbackMp4Url: secureUrl,
             thumbnailUrl,
             duration: duration || 0,
+            title: title || 'Untitled Reel',
             caption: caption || '',
+            taggedPeople: taggedPeople || [],
             tags: tags || [],
             audioTrack: audioTrack || {}
         });
@@ -258,6 +229,28 @@ reelsRouter.post('/create', async (req, res) => {
     } catch (error) {
         console.error('Create reel error:', error);
         res.status(500).json({ error: 'Failed to create reel record' });
+    }
+});
+
+// 3.1. Fetch Reels Created by a Specific User (For Creator Insights Dashboard)
+reelsRouter.get('/my-reels/:userId', async (req, res) => {
+    try {
+        const reels = await Reel.find({ creatorId: req.params.userId }).sort({ createdAt: -1 });
+        res.status(200).json(reels);
+    } catch (error) {
+        console.error('Fetch my-reels error:', error);
+        res.status(500).json({ error: 'Failed to fetch user reels' });
+    }
+});
+
+// 3.2. Delete Reel Endpoint
+reelsRouter.delete('/:id', async (req, res) => {
+    try {
+        await Reel.findByIdAndDelete(req.params.id);
+        res.status(200).json({ success: true, message: 'Reel deleted successfully' });
+    } catch (error) {
+        console.error('Delete reel error:', error);
+        res.status(500).json({ error: 'Failed to delete reel' });
     }
 });
 
