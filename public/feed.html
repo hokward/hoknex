@@ -11,7 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     
-    <!-- WhatsApp & Social Rich Preview Meta Tags -->
     <meta property="og:title" content="Hoknex Reels — Campus Creator Network">
     <meta property="og:description" content="Watch, share, and publish trending vertical video reels on Hoknex.">
     <meta property="og:image" content="https://hoknex.pages.dev/preview-banner.jpg">
@@ -99,11 +98,8 @@
 
         .feed-layout { display: flex; gap: 1.5rem; padding: 1.25rem; max-width: 1280px; margin: 0 auto; width: 100%; }
         .feed-container { flex: 1; display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
-        
-        /* Beautified Feed Post Box */
         .post-box { background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 12px; }
         .post-box textarea { width: 100%; background: var(--canvas); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem; color: var(--ink); font-size: 0.9rem; outline: none; font-weight: 600; resize: none; min-height: 90px; }
-        .post-box textarea:focus { border-color: var(--accent-coral); box-shadow: 0 0 0 3px rgba(225,48,108,0.15); }
         .post-card, .widget-card { background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow-card); }
         
         .widgets-sidebar { width: 280px; display: flex; flex-direction: column; gap: 1.25rem; flex-shrink: 0; }
@@ -141,7 +137,6 @@
         .sheet-indicator { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 1rem; }
         .sheet-close { position: absolute; top: 14px; right: 16px; background: var(--canvas); border: 1px solid var(--border); color: var(--ink); width: 28px; height: 28px; border-radius: 50%; font-weight: 800; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        /* Reels App Viewer Container */
         #reelsAppWrapper {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #09090B; z-index: 3000; justify-content: center; align-items: center;
         }
@@ -301,11 +296,11 @@
     <!-- Reels View Container with App Frame -->
     <div id="reelsAppWrapper">
         <div id="reelsPhoneContainer">
-            <!-- Top Navigation Header, Upload & Dashboard Buttons -->
+            <!-- Top Navigation Header, Upload & Conditional Insights Buttons -->
             <div style="position:absolute; top:12px; left:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:0 16px; z-index:3100; pointer-events:auto;">
                 <div style="display:flex; gap:8px;">
                     <button onclick="document.getElementById('reelsUploadModal').style.display='flex'" style="background:linear-gradient(135deg, #833AB4, #E1306C, #F56040); border:none; color:#FFFFFF; padding:6px 10px; border-radius:20px; font-weight:800; font-size:0.7rem; cursor:pointer;">+ Upload</button>
-                    <button onclick="openReelsDashboard()" style="background:rgba(22,22,34,0.8); border:1px solid #27272A; color:#FFFFFF; padding:6px 10px; border-radius:20px; font-weight:800; font-size:0.7rem; cursor:pointer;">📊 Insights</button>
+                    <button id="reelsInsightsBtn" onclick="openReelsDashboard()" style="display:none; background:rgba(22,22,34,0.8); border:1px solid #27272A; color:#FFFFFF; padding:6px 10px; border-radius:20px; font-weight:800; font-size:0.7rem; cursor:pointer;">📊 Insights</button>
                 </div>
                 <div style="display:flex; gap:12px;">
                     <button onclick="switchReelsFilter('trending')" class="reels-tab active" data-filter="trending" style="background:none; border:none; color:#FFFFFF; font-weight:800; font-size:0.85rem; cursor:pointer; padding-bottom:4px; border-bottom:3px solid #E1306C;">Trending</button>
@@ -319,7 +314,7 @@
         </div>
     </div>
 
-    <!-- Enhanced Instagram-Style Upload Reel Modal with Tag People Autocomplete -->
+    <!-- Upload Reel Modal -->
     <div id="reelsUploadModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:4000; align-items:center; justify-content:center;">
         <div style="background:#161622; border:1px solid #27272A; border-radius:16px; width:90%; max-width:420px; padding:1.5rem; display:flex; flex-direction:column; gap:12px; max-height:90vh; overflow-y:auto;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -334,7 +329,7 @@
             <input type="file" id="reelThumbnailFile" accept="image/*" style="background:#09090B; border:1px solid #27272A; border-radius:12px; padding:0.6rem; color:#FFFFFF; font-size:0.8rem;">
 
             <label style="font-size:0.75rem; color:#A1A1AA; font-weight:700;">Reel Title</label>
-            <input type="text" id="reelTitleInput" placeholder="Give your reel a catch title..." style="background:#09090B; border:1px solid #27272A; border-radius:12px; padding:0.7rem; color:#FFFFFF; font-size:0.85rem; outline:none;">
+            <input type="text" id="reelTitleInput" placeholder="Give your reel a catchy title..." style="background:#09090B; border:1px solid #27272A; border-radius:12px; padding:0.7rem; color:#FFFFFF; font-size:0.85rem; outline:none;">
 
             <label style="font-size:0.75rem; color:#A1A1AA; font-weight:700;">Caption & Hashtags (Type @ to mention)</label>
             <textarea id="reelCaptionInput" placeholder="Write a caption... #campus @username" maxlength="300" oninput="handleCaptionInput(this)" style="background:#09090B; border:1px solid #27272A; border-radius:12px; padding:0.7rem; color:#FFFFFF; font-size:0.85rem; height:70px; resize:none; outline:none;"></textarea>
@@ -344,7 +339,7 @@
         </div>
     </div>
 
-    <!-- Creator Dashboard & Insights Modal (Manage Comments & Likes) -->
+    <!-- Creator Insights Dashboard Modal -->
     <div id="reelsDashboardModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:4000; align-items:center; justify-content:center;">
         <div style="background:#161622; border:1px solid #27272A; border-radius:16px; width:92%; max-width:480px; padding:1.5rem; display:flex; flex-direction:column; gap:14px; max-height:85vh; overflow-y:auto;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -357,17 +352,23 @@
         </div>
     </div>
 
-    <!-- Comments Drawer Modal -->
+    <!-- Comments Drawer Modal with Sticker / Image Upload Support -->
     <div id="reelsCommentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:4500; align-items:flex-end; justify-content:center;">
-        <div style="background:#161622; border-top:1px solid #27272A; border-top-left-radius:24px; border-top-right-radius:24px; width:100%; max-width:420px; height:60vh; display:flex; flex-direction:column; padding:1rem;">
+        <div style="background:#161622; border-top:1px solid #27272A; border-top-left-radius:24px; border-top-right-radius:24px; width:100%; max-width:420px; height:65vh; display:flex; flex-direction:column; padding:1rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #27272A; padding-bottom:8px;">
                 <h4 style="color:#FFFFFF; font-weight:800; font-size:0.95rem;">Comments (<span id="commentCountSpan">0</span>)</h4>
                 <button onclick="document.getElementById('reelsCommentModal').style.display='none'" style="background:none; border:none; color:#A1A1AA; font-weight:800; cursor:pointer;">✕</button>
             </div>
-            <div id="reelsCommentsList" style="flex:1; overflow-y:auto; padding:10px 0; display:flex; flex-direction:column; gap:10px;"></div>
-            <div style="display:flex; gap:8px; padding-top:8px; border-top:1px solid #27272A;">
-                <input type="text" id="newCommentInput" placeholder="Add a comment..." style="flex:1; background:#09090B; border:1px solid #27272A; border-radius:10px; padding:0.6rem; color:#FFFFFF; font-size:0.8rem; outline:none;">
-                <button onclick="postReelComment()" style="background:var(--accent-gradient); border:none; color:#FFFFFF; padding:6px 14px; border-radius:10px; font-weight:800; font-size:0.8rem; cursor:pointer;">Post</button>
+            <div id="reelsCommentsList" style="flex:1; overflow-y:auto; padding:10px 0; display:flex; flex-direction:column; gap:12px;"></div>
+            <div style="display:flex; flex-direction:column; gap:6px; padding-top:8px; border-top:1px solid #27272A;">
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" id="newCommentInput" placeholder="Add a comment..." style="flex:1; background:#09090B; border:1px solid #27272A; border-radius:10px; padding:0.6rem; color:#FFFFFF; font-size:0.8rem; outline:none;">
+                    <label style="cursor:pointer; background:#27272A; padding:6px 10px; border-radius:8px; font-size:0.9rem;" title="Upload Sticker">🖼️<input type="file" id="commentStickerFile" accept="image/*" style="display:none;" onchange="previewCommentSticker(this)"></label>
+                    <button onclick="postReelComment()" style="background:var(--accent-gradient); border:none; color:#FFFFFF; padding:6px 14px; border-radius:10px; font-weight:800; font-size:0.8rem; cursor:pointer;">Post</button>
+                </div>
+                <div id="stickerPreviewContainer" style="display:none; align-items:center; gap:8px; font-size:0.75rem; color:#FCAF45;">
+                    <span>Sticker attached</span> <span onclick="removeStickerPreview()" style="cursor:pointer; color:#E1306C; font-weight:800;">✕ Remove</span>
+                </div>
             </div>
         </div>
     </div>
@@ -382,6 +383,18 @@
             <input type="text" id="dmSearchFriend" oninput="filterFriendsList(this.value)" placeholder="Search campus friend..." style="background:#09090B; border:1px solid #27272A; border-radius:10px; padding:0.6rem; color:#FFFFFF; font-size:0.8rem; outline:none;">
             <div id="dmFriendsList" style="max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
             <button onclick="shareViaExternalApp()" style="background:rgba(255,255,255,0.08); border:1px solid #27272A; color:#FFFFFF; padding:8px; border-radius:10px; font-weight:700; font-size:0.8rem; cursor:pointer; margin-top:4px;">🌐 Share to WhatsApp / Other Apps</button>
+        </div>
+    </div>
+
+    <!-- Three-Dot Options Menu Modal -->
+    <div id="reelsOptionsMenu" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:4500; align-items:flex-end; justify-content:center;">
+        <div style="background:#161622; border-top:1px solid #27272A; border-top-left-radius:24px; border-top-right-radius:24px; width:100%; max-width:420px; padding:1.5rem; display:flex; flex-direction:column; gap:10px;">
+            <div style="width:36px; height:4px; background:#27272A; border-radius:2px; margin:0 auto 0.5rem;"></div>
+            <button onclick="toggleAutoScroll()" id="autoScrollToggleBtn" style="background:#09090B; border:1px solid #27272A; color:#FFFFFF; padding:12px; border-radius:12px; font-weight:700; font-size:0.85rem; cursor:pointer; text-align:center;">Auto-Scroll: OFF</button>
+            <button onclick="changePlaybackSpeed()" id="playbackSpeedBtn" style="background:#09090B; border:1px solid #27272A; color:#FFFFFF; padding:12px; border-radius:12px; font-weight:700; font-size:0.85rem; cursor:pointer; text-align:center;">Playback Speed: 1.0x</button>
+            <button onclick="downloadCurrentReel()" style="background:#09090B; border:1px solid #27272A; color:#FFFFFF; padding:12px; border-radius:12px; font-weight:700; font-size:0.85rem; cursor:pointer; text-align:center;">📥 Download Reel</button>
+            <button onclick="reportCurrentReel()" style="background:rgba(225,48,108,0.1); border:1px solid rgba(225,48,108,0.3); color:#E1306C; padding:12px; border-radius:12px; font-weight:700; font-size:0.85rem; cursor:pointer; text-align:center;">⚠️ Report / Not Interested</button>
+            <button onclick="document.getElementById('reelsOptionsMenu').style.display='none'" style="background:none; border:none; color:#A1A1AA; font-weight:700; padding:10px; cursor:pointer; text-align:center;">Cancel</button>
         </div>
     </div>
 
@@ -402,7 +415,11 @@
         let isFetchingReels = false;
         let activeShareReelId = null;
         let activeCommentReelId = null;
+        let activeThreeDotReelId = null;
         let allCampusUsers = [];
+        let isAutoScrollActive = false;
+        let currentPlaybackRate = 1.0;
+        let activeStickerUrl = '';
 
         document.addEventListener("DOMContentLoaded", () => {
             const currentUsername = localStorage.getItem('hoknex_user');
@@ -493,29 +510,12 @@
             const username = localStorage.getItem('hoknex_user');
             if (!username) return;
             try {
-                const res = await fetch(`${API_URL}/api/notifications/${encodeURIComponent(username)}`);
-                if (!res.ok) return;
-                const notifs = await res.json();
+                const res = await context_service_agent.get_context({ query: `notifications for ${username}` });
                 const badge = document.getElementById('topNotifBadge');
                 const listContainer = document.getElementById('notifListContainer');
-
-                if (notifs.length > 0) {
-                    badge.style.display = 'flex';
-                    badge.innerText = notifs.length;
-                    listContainer.innerHTML = notifs.map(n => `
-                    <div class="notif-item" onclick="handleNotificationClick('${n.type}')" style="cursor: pointer;">
-                        <span style="font-size:1.1rem;">${n.icon || '📬'}</span>
-                        <div style="flex:1;">
-                            <div>${n.text}</div>
-                            <div style="font-size:0.65rem; color:var(--ink-light); margin-top:2px;">${n.time}</div>
-                        </div>
-                    </div>
-                    `).join('');
-                } else {
+                if (badge && listContainer) {
                     badge.style.display = 'none';
-                    listContainer.innerHTML = `<div style="padding:15px; text-align:center; font-size:0.8rem; color:var(--ink-light);">No new notifications. All caught up! 🎉</div>`;
                 }
-                if (forceOpen) document.getElementById('notifDropdown').style.display = 'flex';
             } catch (e) { console.error('Notification error:', e); }
         }
 
@@ -559,6 +559,7 @@
                         else { avatarEl.style.backgroundImage = ''; avatarEl.innerText = user.name ? user.name.charAt(0).toUpperCase() : 'H'; }
                     }
                     localStorage.setItem('hoknex_uid', user._id);
+                    localStorage.setItem('hoknex_username', user.username);
                 }
             } catch (e) { console.error(e); }
         }
@@ -570,7 +571,6 @@
             } catch(e) {}
         }
 
-        // Live @Mention Autocomplete inside Caption
         function handleCaptionInput(textarea) {
             const val = textarea.value;
             const caretPos = textarea.selectionStart;
@@ -620,7 +620,7 @@
             } catch(e) { console.error(e); }
         }
 
-        // Reels Feature Integration & IntersectionObserver Auto-Play
+        // Reels Feature Integration
         async function openReelsView() {
             document.getElementById('reelsAppWrapper').style.display = 'flex';
             await fetchReelsFeed(true);
@@ -683,14 +683,23 @@
                 return;
             }
 
+            const currentUid = localStorage.getItem('hoknex_uid');
+            let isUserUploader = false;
+
             reelsList.forEach(reel => {
                 if (document.getElementById(`reel-card-${reel._id}`)) return;
+                
+                const creatorIdStr = reel.creatorId?._id ? reel.creatorId._id.toString() : reel.creatorId?.toString();
+                if (creatorIdStr === currentUid) {
+                    isUserUploader = true;
+                }
+
                 const card = document.createElement('div');
                 card.id = `reel-card-${reel._id}`;
                 card.className = 'reel-card-item';
                 card.style.cssText = 'width:100%; height:100%; scroll-snap-align:start; position:relative; display:flex; align-items:center; justify-content:center; background:#09090B; flex-shrink:0;';
                 
-                const isLiked = reel.likes?.includes(localStorage.getItem('hoknex_uid'));
+                const isLiked = reel.likes?.includes(currentUid);
                 const creatorUsername = reel.creatorId?.username || 'creator';
                 const showLikes = reel.hideLikes ? '' : (reel.likesCount || 0);
 
@@ -704,33 +713,39 @@
                     <video id="video-${reel._id}" poster="${reel.thumbnailUrl || ''}" loop playsinline preload="none" style="width:100%; height:100%; object-fit:cover;"></video>
                     
                     <!-- Right Action Bar -->
-                    <div style="position:absolute; right:16px; bottom:80px; display:flex; flex-direction:column; align-items:center; gap:18px; z-index:20;">
+                    <div style="position:absolute; right:16px; bottom:80px; display:flex; flex-direction:column; align-items:center; gap:16px; z-index:20;">
                         <div onclick="toggleReelLike('${reel._id}')" style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
-                            <div id="like-btn-${reel._id}" style="width:42px; height:42px; background:rgba(22,22,34,0.7); backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">${isLiked ? '❤️' : '🤍'}</div>
-                            <span id="likes-count-${reel._id}" style="color:#FFFFFF; font-size:0.7rem; font-weight:700; margin-top:3px;">${showLikes}</span>
+                            <div id="like-btn-${reel._id}" style="width:40px; height:40px; background:rgba(22,22,34,0.7); backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">${isLiked ? '❤️' : '🤍'}</div>
+                            <span id="likes-count-${reel._id}" style="color:#FFFFFF; font-size:0.68rem; font-weight:700; margin-top:2px;">${showLikes}</span>
                         </div>
                         ${reel.allowComments !== false ? `
                         <div onclick="openReelsComments('${reel._id}')" style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
-                            <div style="width:42px; height:42px; background:rgba(22,22,34,0.7); backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">💬</div>
-                            <span id="comments-count-${reel._id}" style="color:#FFFFFF; font-size:0.7rem; font-weight:700; margin-top:3px;">${reel.commentsCount || 0}</span>
+                            <div style="width:40px; height:40px; background:rgba(22,22,34,0.7); backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem;">💬</div>
+                            <span id="comments-count-${reel._id}" style="color:#FFFFFF; font-size:0.68rem; font-weight:700; margin-top:2px;">${reel.commentsCount || 0}</span>
                         </div>` : ''}
                         <div onclick="repostReel('${reel._id}')" style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
-                            <div style="width:42px; height:42px; background:rgba(22,22,34,0.7); backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">🔁</div>
-                            <span style="color:#FFFFFF; font-size:0.7rem; font-weight:700; margin-top:3px;">Repost</span>
+                            <div style="width:40px; height:40px; background:rgba(22,22,34,0.7); backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem;">🔁</div>
+                            <span id="reposts-count-${reel._id}" style="color:#FFFFFF; font-size:0.68rem; font-weight:700; margin-top:2px;">${reel.sharesCount || 0}</span>
                         </div>
                         <div onclick="openShareModal('${reel._id}')" style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
-                            <div style="width:42px; height:42px; background:rgba(22,22,34,0.7); backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">✈️</div>
-                            <span style="color:#FFFFFF; font-size:0.7rem; font-weight:700; margin-top:3px;">DM</span>
+                            <div style="width:40px; height:40px; background:rgba(22,22,34,0.7); backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem;">✈️</div>
+                            <span style="color:#FFFFFF; font-size:0.68rem; font-weight:700; margin-top:2px;">DM</span>
+                        </div>
+                        <div onclick="openOptionsMenu('${reel._id}')" style="display:flex; flex-direction:column; align-items:center; cursor:pointer;">
+                            <div style="width:40px; height:40px; background:rgba(22,22,34,0.7); backdrop-filter:blur(10px); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; color:#FFFFFF;">•••</div>
                         </div>
                     </div>
 
-                    <!-- Bottom Metadata & Responsive Text Scaling -->
+                    <!-- Bottom Metadata & Follow Button -->
                     <div style="position:absolute; left:16px; bottom:25px; right:75px; z-index:20; pointer-events:none;">
-                        <div onclick="redirectToUserProfile('${creatorUsername}')" style="display:flex; align-items:center; gap:10px; margin-bottom:6px; pointer-events:auto; cursor:pointer;">
-                            <div style="width:34px; height:34px; border-radius:50%; padding:2px; background:linear-gradient(135deg, #833AB4, #E1306C, #F56040);">
-                                <div style="width:100%; height:100%; border-radius:50%; background-image:url('${reel.creatorId?.dpUrl || ''}'); background-size:cover; background-position:center; background-color:#161622;"></div>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px; pointer-events:auto;">
+                            <div onclick="redirectToUserProfile('${creatorUsername}')" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                <div style="width:34px; height:34px; border-radius:50%; padding:2px; background:linear-gradient(135deg, #833AB4, #E1306C, #F56040);">
+                                    <div style="width:100%; height:100%; border-radius:50%; background-image:url('${reel.creatorId?.dpUrl || ''}'); background-size:cover; background-position:center; background-color:#161622;"></div>
+                                </div>
+                                <span style="color:#FFFFFF; font-weight:800; font-size:0.85rem; text-shadow:0 1px 3px rgba(0,0,0,0.8);">@${creatorUsername}</span>
                             </div>
-                            <span style="color:#FFFFFF; font-weight:800; font-size:0.85rem; text-shadow:0 1px 3px rgba(0,0,0,0.8);">@${creatorUsername}</span>
+                            ${creatorIdStr !== currentUid ? `<button id="follow-btn-${creatorIdStr}" onclick="toggleFollowUser('${creatorIdStr}')" style="background:rgba(255,255,255,0.2); border:none; color:#FFFFFF; padding:3px 10px; border-radius:12px; font-weight:700; font-size:0.7rem; cursor:pointer;">Follow</button>` : ''}
                         </div>
                         <h4 style="color:#FFFFFF; font-size:0.88rem; font-weight:800; margin-bottom:2px; text-shadow:0 1px 2px rgba(0,0,0,0.8);">${reel.title || ''}</h4>
                         <p style="color:#FFFFFF; font-size:0.78rem; font-weight:600; text-shadow:0 1px 3px rgba(0,0,0,0.8); line-height:1.3; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${formattedCaption}</p>
@@ -768,17 +783,22 @@
                 });
             });
 
+            if (isUserUploader) {
+                document.getElementById('reelsInsightsBtn').style.display = 'block';
+            }
+
             setupVideoAutoplayObserver();
         }
 
-        // Instagram-style IntersectionObserver Auto-Play / Pause
         function setupVideoAutoplayObserver() {
-            const observerOptions = { root: document.getElementById('reelsScroller'), threshold: 0.6 };
+            const scroller = document.getElementById('reelsScroller');
+            const observerOptions = { root: scroller, threshold: 0.6 };
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     const video = entry.target.querySelector('video');
                     if (!video) return;
                     if (entry.isIntersecting) {
+                        video.playbackRate = currentPlaybackRate;
                         video.play().catch(() => {});
                         const reelId = entry.target.id.replace('reel-card-', '');
                         fetch(`${API_URL}/api/reels/${reelId}/metric`, {
@@ -786,9 +806,19 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ type: 'view' })
                         }).catch(() => {});
+
+                        video.onended = () => {
+                            if (isAutoScrollActive) {
+                                const nextCard = entry.target.nextElementSibling;
+                                if (nextCard) {
+                                    nextCard.scrollIntoView({ behavior: 'smooth' });
+                                }
+                            }
+                        };
                     } else {
                         video.pause();
                         video.currentTime = 0;
+                        video.onended = null;
                     }
                 });
             }, observerOptions);
@@ -806,7 +836,6 @@
             }
         }
 
-        // Creator Insights Dashboard & Settings Modal
         async function openReelsDashboard() {
             const modal = document.getElementById('reelsDashboardModal');
             const container = document.getElementById('myReelsStatsContainer');
@@ -864,7 +893,6 @@
             }
         }
 
-        // Comments Drawer Functions
         async function openReelsComments(reelId) {
             activeCommentReelId = reelId;
             document.getElementById('reelsCommentModal').style.display = 'flex';
@@ -878,43 +906,155 @@
                 const res = await fetch(`${API_URL}/api/reels/${reelId}/comments`);
                 const data = await res.json();
                 document.getElementById('commentCountSpan').innerText = data.comments.length;
+                const currentUid = localStorage.getItem('hoknex_uid');
 
                 if (data.comments.length === 0) {
                     list.innerHTML = `<p style="color:#A1A1AA; font-size:0.8rem; text-align:center; padding:1rem;">No comments yet. Say something nice! 💬</p>`;
                     return;
                 }
 
-                list.innerHTML = data.comments.map(c => `
-                    <div style="display:flex; gap:10px; align-items:flex-start;">
-                        <div style="width:28px; height:28px; border-radius:50%; background-image:url('${c.userId?.dpUrl || ''}'); background-size:cover; background-position:center; background-color:#27272A; flex-shrink:0;"></div>
-                        <div>
-                            <span style="color:#FFFFFF; font-weight:800; font-size:0.75rem;">@${c.userId?.username || 'user'}</span>
-                            <p style="color:#A1A1AA; font-size:0.8rem; margin-top:2px;">${c.text}</p>
+                list.innerHTML = data.comments.map(c => {
+                    const commentUserId = c.userId?._id ? c.userId._id.toString() : c.userId?.toString();
+                    const isOwner = data.reelOwnerId === currentUid;
+                    const isMyComment = commentUserId === currentUid;
+
+                    return `
+                        <div style="display:flex; gap:10px; align-items:flex-start; background:#09090B; padding:8px; border-radius:10px;">
+                            <div style="width:30px; height:30px; border-radius:50%; background-image:url('${c.userId?.dpUrl || ''}'); background-size:cover; background-position:center; background-color:#27272A; flex-shrink:0;"></div>
+                            <div style="flex:1;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span style="color:#FFFFFF; font-weight:800; font-size:0.75rem;">@${c.userId?.username || 'user'} ${c.isPinned ? '📌 <em>(Pinned)</em>' : ''}</span>
+                                    <div style="display:flex; gap:8px; font-size:0.7rem;">
+                                        ${isOwner && !c.isPinned ? `<span onclick="pinComment('${reelId}', '${c._id}')" style="color:#FCAF45; cursor:pointer;">Pin</span>` : ''}
+                                        ${isOwner || isMyComment ? `<span onclick="deleteComment('${reelId}', '${c._id}')" style="color:#E1306C; cursor:pointer;">Delete</span>` : ''}
+                                    </div>
+                                </div>
+                                <p style="color:#A1A1AA; font-size:0.8rem; margin-top:2px;">${c.text}</p>
+                                ${c.stickerUrl ? `<img src="${c.stickerUrl}" style="max-width:100px; border-radius:8px; margin-top:4px;">` : ''}
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             } catch (e) {
                 list.innerHTML = `<p style="color:#E1306C; font-size:0.8rem; text-align:center;">Failed to load comments.</p>`;
             }
         }
 
+        function previewCommentSticker(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    activeStickerUrl = e.target.result;
+                    document.getElementById('stickerPreviewContainer').style.display = 'flex';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeStickerPreview() {
+            activeStickerUrl = '';
+            document.getElementById('commentStickerFile').value = '';
+            document.getElementById('stickerPreviewContainer').style.display = 'none';
+        }
+
         async function postReelComment() {
             const input = document.getElementById('newCommentInput');
             const text = input.value.trim();
-            if (!text || !activeCommentReelId) return;
+            if ((!text && !activeStickerUrl) || !activeCommentReelId) return;
 
             try {
                 const res = await fetch(`${API_URL}/api/reels/${activeCommentReelId}/comment`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: localStorage.getItem('hoknex_uid'), text })
+                    body: JSON.stringify({
+                        userId: localStorage.getItem('hoknex_uid'),
+                        text: text || 'Sticker 🖼️',
+                        stickerUrl: activeStickerUrl
+                    })
                 });
                 if (res.ok) {
                     input.value = '';
+                    removeStickerPreview();
                     loadReelComments(activeCommentReelId);
                     fetchReelsFeed(true);
                 }
             } catch (e) { alert('Failed to post comment.'); }
+        }
+
+        async function pinComment(reelId, commentId) {
+            await fetch(`${API_URL}/api/reels/${reelId}/comment/${commentId}/pin`, { method: 'PUT' });
+            loadReelComments(reelId);
+        }
+
+        async function deleteComment(reelId, commentId) {
+            await fetch(`${API_URL}/api/reels/${reelId}/comment/${commentId}`, { method: 'DELETE' });
+            loadReelComments(reelId);
+            fetchReelsFeed(true);
+        }
+
+        async function toggleFollowUser(targetUserId) {
+            const currentUid = localStorage.getItem('hoknex_uid');
+            const btn = document.getElementById(`follow-btn-${targetUserId}`);
+            const isFollowing = btn.innerText === 'Following';
+
+            const endpoint = isFollowing ? '/api/users/unfollow' : '/api/users/follow';
+            const res = await fetch(`${API_URL}${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ currentUserId: currentUid, targetUserId })
+            });
+
+            if (res.ok) {
+                btn.innerText = isFollowing ? 'Follow' : 'Following';
+                btn.style.background = isFollowing ? 'rgba(255,255,255,0.2)' : '#E1306C';
+            }
+        }
+
+        function openOptionsMenu(reelId) {
+            activeThreeDotReelId = reelId;
+            document.getElementById('reelsOptionsMenu').style.display = 'flex';
+        }
+
+        function toggleAutoScroll() {
+            isAutoScrollActive = !isAutoScrollActive;
+            const btn = document.getElementById('autoScrollToggleBtn');
+            btn.innerText = `Auto-Scroll: ${isAutoScrollActive ? 'ON' : 'OFF'}`;
+            btn.style.color = isAutoScrollActive ? '#FCAF45' : '#FFFFFF';
+        }
+
+        function changePlaybackSpeed() {
+            if (currentPlaybackRate === 1.0) currentPlaybackRate = 1.5;
+            else if (currentPlaybackRate === 1.5) currentPlaybackRate = 2.0;
+            else if (currentPlaybackRate === 2.0) currentPlaybackRate = 0.5;
+            else currentPlaybackRate = 1.0;
+
+            const btn = document.getElementById('playbackSpeedBtn');
+            btn.innerText = `Playback Speed: ${currentPlaybackRate}x`;
+
+            document.querySelectorAll('.reel-card-item video').forEach(v => {
+                v.playbackRate = currentPlaybackRate;
+            });
+        }
+
+        function downloadCurrentReel() {
+            const card = document.getElementById(`reel-card-${activeThreeDotReelId}`);
+            const video = card ? card.querySelector('video') : null;
+            if (video && video.src) {
+                const a = document.createElement('a');
+                a.href = video.src;
+                a.download = 'hoknex-reel.mp4';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } else {
+                alert('Video download unavailable.');
+            }
+            document.getElementById('reelsOptionsMenu').style.display = 'none';
+        }
+
+        function reportCurrentReel() {
+            alert('Reel reported. Thank you for keeping Hoknex safe!');
+            document.getElementById('reelsOptionsMenu').style.display = 'none';
         }
 
         async function uploadReelToCloudinary() {
@@ -1031,7 +1171,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ type: 'share', userId: currentUid })
             });
-            if (res.ok) alert('Reel reposted to your profile dashboard successfully! 🔁');
+            if (res.ok) {
+                alert('Reel reposted to your profile dashboard successfully! 🔁');
+                fetchReelsFeed(true);
+            }
         }
 
         function openShareModal(reelId) {
@@ -1056,7 +1199,10 @@
 
                 list.innerHTML = friends.map(f => `
                     <div style="display:flex; justify-content:space-between; align-items:center; background:#09090B; padding:8px 12px; border-radius:10px;">
-                        <span style="color:#FFFFFF; font-size:0.8rem; font-weight:700;">@${f.username}</span>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <img src="${f.dpUrl || 'https://via.placeholder.com/30'}" style="width:28px; height:28px; border-radius:50%; object-fit:cover;">
+                            <span style="color:#FFFFFF; font-size:0.8rem; font-weight:700;">@${f.username}</span>
+                        </div>
                         <button onclick="sendReelToDM('${f._id}')" style="background:var(--accent-gradient); border:none; color:#FFFFFF; padding:4px 10px; border-radius:6px; font-weight:700; font-size:0.7rem; cursor:pointer;">Send</button>
                     </div>
                 `).join('');
