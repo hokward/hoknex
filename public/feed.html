@@ -506,41 +506,55 @@
             }
         }
 
-     window.fetchNotifications = async function(forceOpen = false) {
+    window.fetchNotifications = async function(forceOpen = false) {
     const username = localStorage.getItem('hoknex_user');
-    if (!username) return;
+    const listContainer = document.getElementById('notifDropdownList');
+    
+    if (!username) {
+        if (listContainer) listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">Please log in</p>`;
+        return;
+    }
+
+    if (listContainer) {
+        listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">Loading...</p>`;
+    }
+
     try {
         const res = await fetch(`${API_URL}/api/notifications/${encodeURIComponent(username)}`);
-        if (!res.ok) return;
+        
+        if (!res.ok) {
+            if (listContainer) {
+                listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">No new notifications</p>`;
+            }
+            return;
+        }
+
         const data = await res.json();
-        
         const badge = document.getElementById('topNotifBadge');
-        const listContainer = document.getElementById('notifDropdownList');
-        
+        const notifications = data.notifications || data || [];
+
         if (badge) {
-            const unreadCount = (data.notifications || []).filter(n => !n.isRead).length;
+            const unreadCount = notifications.filter(n => !n.isRead).length;
             badge.innerText = unreadCount;
             badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
         }
 
         if (listContainer) {
-            const notifications = data.notifications || [];
             if (notifications.length === 0) {
                 listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">No notifications yet</p>`;
             } else {
                 listContainer.innerHTML = notifications.map(n => `
                     <div style="padding: 10px 14px; border-bottom: 1px solid var(--border); background: ${n.isRead ? 'var(--paper)' : 'rgba(99, 102, 241, 0.1)'}; font-size: 0.85rem; color: var(--ink);">
-                        <p style="margin: 0; font-weight: 600;">${n.text || n.message || 'New notification'}</p>
+                        <p style="margin: 0; font-weight: 600;">${n.text || n.message || 'Notification'}</p>
                         <span style="font-size: 0.7rem; color: var(--ink-light);">${n.createdAt ? new Date(n.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</span>
                     </div>
                 `).join('');
             }
         }
     } catch (e) {
-        console.log('Notification fetch handled silently:', e);
-        const listContainer = document.getElementById('notifDropdownList');
+        console.error('Notification error:', e);
         if (listContainer) {
-            listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">Failed to load notifications</p>`;
+            listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">No notifications available</p>`;
         }
     }
 };
@@ -550,13 +564,12 @@ window.toggleNotificationDropdown = function() {
     if (dropdown) {
         if (dropdown.style.display !== 'flex') {
             dropdown.style.display = 'flex';
-            fetchNotifications(true);
+            window.fetchNotifications(true);
         } else {
             dropdown.style.display = 'none';
         }
     }
 };
-
         function toggleSidebar() { appSidebar.classList.toggle('collapsed'); }
         function closeCreateModal() { createModal.style.display = 'none'; }
         document.getElementById('openCreateModalBtn').addEventListener('click', () => { createModal.style.display = 'flex'; });
