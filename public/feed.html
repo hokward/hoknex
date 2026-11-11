@@ -844,7 +844,7 @@
             });
         }
 
-        async function uploadReelToCloudinary() {
+       async function uploadReelToCloudinary() {
             const fileInput = document.getElementById('reelVideoFile');
             const captionInput = document.getElementById('reelCaptionInput');
             if (!fileInput.files[0]) return alert('Please select a video file!');
@@ -854,12 +854,10 @@
             btn.innerText = 'Uploading... 0%';
 
             try {
-                // 1. Fetch signature from Render backend
                 const sigRes = await fetch(`${API_URL}/api/reels/upload-signature`);
                 if (!sigRes.ok) throw new Error('Failed to generate upload signature');
                 const sigData = await sigRes.json();
 
-                // 2. Build FormData with all required authentication parameters
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('api_key', sigData.apiKey);
@@ -867,8 +865,6 @@
                 formData.append('signature', sigData.signature);
                 formData.append('folder', sigData.folder);
                 formData.append('resource_type', 'video');
-                formData.append('eager', sigData.eager);
-                formData.append('eager_async', 'true');
 
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', `https://api.cloudinary.com/v1_1/${sigData.cloudName}/video/upload`, true);
@@ -884,7 +880,6 @@
                     if (xhr.status === 200) {
                         const result = JSON.parse(xhr.responseText);
                         
-                        // 3. Save to MongoDB via Render
                         const saveRes = await fetch(`${API_URL}/api/reels/create`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
