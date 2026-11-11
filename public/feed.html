@@ -32,9 +32,9 @@
             --accent-coral: #E1306C;
             --accent-purple: #833AB4;
             --shadow-subtle: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
-            --shadow-card: 0 10px 30px -4px rgba(0, 0, 0, 0.6);
+            --shadow-card: 0 4px 15px -2px rgba(0, 0, 0, 0.4);
             --shadow-float: 0 20px 40px -10px rgba(225, 48, 108, 0.3);
-            --radius: 16px;
+            --radius: 14px;
         }
 
         body.light-mode {
@@ -44,7 +44,7 @@
             --ink-light: #64748B;
             --border: #E2E8F0;
             --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
-            --shadow-card: 0 10px 30px -4px rgba(15, 23, 42, 0.08);
+            --shadow-card: 0 4px 15px -2px rgba(15, 23, 42, 0.06);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease; }
@@ -156,51 +156,77 @@
             .topbar { padding: 0.6rem 0.85rem; width: 100%; }
         }
 
-        /* 🌟 Pinterest-Style Masonry Pinboard Grid Layout (Universal Fallback for Discover/Pins) */
+        /* 🌟 Authentic Real Pinterest-Style Compact Masonry Pinboard Grid Layout */
         .pinboard-masonry-grid, 
         #discoverPinsContainer, 
         #pinsGridContainer, 
         .discover-grid {
-            column-count: 3;
-            column-gap: 16px;
+            column-count: 4;
+            column-gap: 12px;
             width: 100%;
         }
         .pin-card-item, 
         .discover-pin-card, 
         .pin-card {
             break-inside: avoid;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             background: var(--paper);
             border: 1px solid var(--border);
-            border-radius: var(--radius);
+            border-radius: 12px;
             overflow: hidden;
             box-shadow: var(--shadow-card);
             display: inline-block;
             width: 100%;
         }
+        /* Ensure images inside pins look compact and clean like Pinterest */
+        .pin-card-item img, 
+        .discover-pin-card img, 
+        .pin-card img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            display: block;
+            border-radius: 12px 12px 0 0;
+        }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
+            .pinboard-masonry-grid, 
+            #discoverPinsContainer, 
+            #pinsGridContainer, 
+            .discover-grid {
+                column-count: 3;
+            }
+        }
+
+        @media (max-width: 900px) {
             .pinboard-masonry-grid, 
             #discoverPinsContainer, 
             #pinsGridContainer, 
             .discover-grid {
                 column-count: 2;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .pinboard-masonry-grid, 
-            #discoverPinsContainer, 
-            #pinsGridContainer, 
-            .discover-grid {
-                column-count: 2; /* True 2-column Pinterest masonry layout on mobile phones */
-                column-gap: 10px;
+                column-gap: 8px;
             }
             .pin-card-item, 
             .discover-pin-card, 
             .pin-card {
-                margin-bottom: 10px;
-                border-radius: 12px;
+                margin-bottom: 8px;
+                border-radius: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .pinboard-masonry-grid, 
+            #discoverPinsContainer, 
+            #pinsGridContainer, 
+            .discover-grid {
+                column-count: 2; /* True 2-column compact Pinterest masonry feel on small mobile screens */
+                column-gap: 6px;
+            }
+            .pin-card-item, 
+            .discover-pin-card, 
+            .pin-card {
+                margin-bottom: 6px;
+                border-radius: 8px;
             }
         }
 
