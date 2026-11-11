@@ -506,30 +506,56 @@
             }
         }
 
-       async function fetchNotifications(forceOpen = false) {
+     window.fetchNotifications = async function(forceOpen = false) {
     const username = localStorage.getItem('hoknex_user');
     if (!username) return;
     try {
-        // Safe notification fetch check
+        const res = await fetch(`${API_URL}/api/notifications/${encodeURIComponent(username)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        
         const badge = document.getElementById('topNotifBadge');
         const listContainer = document.getElementById('notifDropdownList');
-        if (badge && listContainer) {
-            // Keep your notification fetch logic here safely
+        
+        if (badge) {
+            const unreadCount = (data.notifications || []).filter(n => !n.isRead).length;
+            badge.innerText = unreadCount;
+            badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
         }
-    } catch (e) { 
-        console.log('Notification fetch skipped:', e); 
-    }
-}
 
-        function toggleNotificationDropdown() {
-            const dropdown = document.getElementById('notifDropdown');
-            if (dropdown.style.display !== 'flex') {
-                dropdown.style.display = 'flex';
-                fetchNotifications();
+        if (listContainer) {
+            const notifications = data.notifications || [];
+            if (notifications.length === 0) {
+                listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">No notifications yet</p>`;
             } else {
-                dropdown.style.display = 'none';
+                listContainer.innerHTML = notifications.map(n => `
+                    <div style="padding: 10px 14px; border-bottom: 1px solid var(--border); background: ${n.isRead ? 'var(--paper)' : 'rgba(99, 102, 241, 0.1)'}; font-size: 0.85rem; color: var(--ink);">
+                        <p style="margin: 0; font-weight: 600;">${n.text || n.message || 'New notification'}</p>
+                        <span style="font-size: 0.7rem; color: var(--ink-light);">${n.createdAt ? new Date(n.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</span>
+                    </div>
+                `).join('');
             }
         }
+    } catch (e) {
+        console.log('Notification fetch handled silently:', e);
+        const listContainer = document.getElementById('notifDropdownList');
+        if (listContainer) {
+            listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">Failed to load notifications</p>`;
+        }
+    }
+};
+
+window.toggleNotificationDropdown = function() {
+    const dropdown = document.getElementById('notifDropdown');
+    if (dropdown) {
+        if (dropdown.style.display !== 'flex') {
+            dropdown.style.display = 'flex';
+            fetchNotifications(true);
+        } else {
+            dropdown.style.display = 'none';
+        }
+    }
+};
 
         function toggleSidebar() { appSidebar.classList.toggle('collapsed'); }
         function closeCreateModal() { createModal.style.display = 'none'; }
@@ -1905,7 +1931,7 @@ window.submitChatReport = async function() {
 window.checkBlockStatus = async function(recipientId) {
     const currentUserId = localStorage.getItem('hoknex_uid') || localStorage.getItem('hoknex_user');
     try {
-        const res = await fetch(`/api/blocks/${currentUserId}`);
+        const res = await fetch(`${API_URL}/api/blocks/${currentUserId}`);
         const blockedList = await res.json();
         const isBlocked = blockedList.includes(recipientId);
         const blockBtn = document.getElementById('blockMenuBtn');
