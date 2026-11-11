@@ -9,11 +9,13 @@ const commentSchema = new mongoose.Schema({
 const reelSchema = new mongoose.Schema({
     creatorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     cloudinaryPublicId: { type: String, required: true },
-    hlsUrl: { type: String, required: true }, // .m3u8 stream URL from Cloudinary
+    hlsUrl: { type: String, required: true },
     fallbackMp4Url: { type: String, required: true },
     thumbnailUrl: { type: String, required: true },
     duration: { type: Number, default: 0 },
+    title: { type: String, maxlength: 100, default: 'Untitled Reel' },
     caption: { type: String, maxlength: 300, default: '' },
+    taggedPeople: [{ type: String }],
     tags: [{ type: String, index: true }],
     audioTrack: {
         name: { type: String, default: 'Original Audio' },
