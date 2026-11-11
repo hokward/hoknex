@@ -32,4 +32,5 @@ const reelSchema = new mongoose.Schema({
 // High-performance compound index for cursor-based pagination
 reelSchema.index({ engagementScore: -1, _id: -1 });
 
-module.exports = mongoose.model('Reel', reelSchema);
+const Reel = mongoose.models.Reel || mongoose.model('Reel', reelSchema);
+module.exports = Reel;
