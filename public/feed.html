@@ -2353,7 +2353,7 @@ window.loadMessages = async function() {
     if (!sender || !activeRecipientId) return;
 
     try {
-        const res = await fetch(`/api/messages/${sender}/${activeRecipientId}`);
+        const res = await fetch(`${API_URL}/api/messages/${sender}/${activeRecipientId}`);
         if (!res.ok) return;
         const messages = await res.json();
         const container = document.getElementById('chatCanvas') || document.getElementById('fullChatMessages');
