@@ -1511,7 +1511,7 @@ mainView.innerHTML = `
                     <div id="usersList" class="posts-stream"></div>
                 `;
                 searchUsers();
-       } else if (view === 'discover') {
+      } else if (view === 'discover') {
     viewTitle.innerText = 'Discover Pinboard 📌';
     
     // Calculate live statistics from cache and local storage
@@ -1530,7 +1530,7 @@ mainView.innerHTML = `
                 <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 4px;">Hoknex Visual Pinboard 📌✨</h2>
                 <p style="font-size: 0.9rem; font-weight: 600; opacity: 0.9; margin-bottom: 12px;">Explore campus aesthetics, designs, and notes. Pin and share your own!</p>
                 
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; font-size: 0.8rem; font-weight: 700; background: rgba(0,0,0,0.2); padding: 8px 14px; border-radius: 12px; backdrop-filter: blur(4px);">
+                <div id="discoverHeaderStats" style="display: flex; gap: 15px; flex-wrap: wrap; font-size: 0.8rem; font-weight: 700; background: rgba(0,0,0,0.2); padding: 8px 14px; border-radius: 12px; backdrop-filter: blur(4px);">
                     <span>📌 ${totalPinsCount} Pins</span>
                     <span>🪝 ${totalHooksCount} Hooks</span>
                     <span>❤️ ${totalLikesCount} Likes</span>
