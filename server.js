@@ -1932,6 +1932,10 @@ app.get('/api/organizers', async (req, res) => {
     }
 });
 
+// ==========================================
+// --- PINBOARD SCHEMA & API ENDPOINTS ---
+// ==========================================
+
 const pinSchema = new mongoose.Schema({
     title: { type: String, required: true },
     desc: { type: String, default: 'No description provided.' },
@@ -1957,10 +1961,16 @@ app.post('/api/pins', async (req, res) => {
         const { title, desc, img, author } = req.body;
         if (!title || !img) return res.status(400).json({ error: 'Title and image required' });
         
+        // Ensure image url has auto quality parameters if uploaded via Cloudinary
+        let optimizedImg = img;
+        if (optimizedImg.includes('cloudinary.com') && !optimizedImg.includes('q_auto')) {
+            optimizedImg = optimizedImg.replace('/upload/', '/upload/q_auto,f_auto/');
+        }
+
         const newPin = new Pin({
             title,
             desc: desc || 'No description provided.',
-            img,
+            img: optimizedImg,
             author: author || 'Student',
             likes: 0
         });
