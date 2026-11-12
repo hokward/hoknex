@@ -4644,7 +4644,7 @@ function openMessageRequestModal(targetUser, actionType) {
 
       // --- EVENT SECTION LOGIC ---
 
-// 1. Opens the Create Event Modal
+// --- 1. OPEN CREATE EVENT MODAL ---
 function openCreateEventModal() {
     const modal = document.getElementById('createEventModal');
     if (modal) {
@@ -4654,8 +4654,7 @@ function openCreateEventModal() {
     }
 }
 
-// 2. Switches between Explore, Internal, and My Tickets
-// Renamed to match your HTML exactly
+// --- 2. SWITCH EVENTS TAB ---
 function switchEventsTab(tabName, btnElement) {
     document.querySelectorAll('.profile-tab-btn').forEach(btn => btn.classList.remove('active'));
     if (btnElement) btnElement.classList.add('active');
@@ -4664,65 +4663,97 @@ function switchEventsTab(tabName, btnElement) {
         loadEvents(tabName);
     }
 }
-// 3. Placeholder for your new Verify Entry button
-// --- ORGANIZER TICKET SCANNER LOGIC ---
-function openVerifyModal() {
-    document.getElementById('scannerModal').style.display = 'flex';
-    document.getElementById('scanResult').innerHTML = '<span style="color:var(--ink-light);">Awaiting scan...</span>';
-    document.getElementById('scanResult').style.background = 'transparent';
-    
-    // Initialize the camera scanner
-    window.html5QrcodeScanner = new Html5QrcodeScanner(
-        "reader", 
-        { fps: 10, qrbox: {width: 250, height: 250} }, 
-        false
-    );
-        
-    window.html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-}
 
-function onScanSuccess(decodedText, decodedResult) {
-    try {
-        // Stop scanning once we catch a code
-        window.html5QrcodeScanner.clear();
+// --- 3. UNIFIED ORGANIZER TICKET SCANNER LOGIC ---
+let html5QrcodeScanner = null;
+
+function openVerifyModal() {
+    const scannerModal = document.getElementById('scannerModal');
+    const resultDiv = document.getElementById('scanResult');
+    
+    if (scannerModal) {
+        scannerModal.style.display = 'flex';
+        if (resultDiv) {
+            resultDiv.innerHTML = '<span style="color:var(--ink-light);">Awaiting scan...</span>';
+            resultDiv.style.background = 'transparent';
+        }
         
-        // Parse the JSON data hidden in the QR Code
-        const ticketData = JSON.parse(decodedText);
-        
-        // Display the verified data!
-        const resultDiv = document.getElementById('scanResult');
-        resultDiv.style.background = 'rgba(16, 185, 129, 0.1)'; // Light Green
-        resultDiv.innerHTML = `
-            <span style="color:#10b981; font-size:1.5rem;">✅ VERIFIED</span><br>
-            <div style="font-size:0.9rem; color:var(--ink); margin-top:8px;">
-                <strong>Attendee:</strong> @${ticketData.user}<br>
-                <strong>Ticket ID:</strong> ${ticketData.ticketId}
-            </div>
-        `;
-        
-        // Note: In a production app, you would send a fetch() request to your backend here 
-        // to mark this ticket as "used" so they can't scan it twice!
-        
-    } catch(e) {
-        // If they scan a random QR code that isn't from your app
-        const resultDiv = document.getElementById('scanResult');
-        resultDiv.style.background = 'rgba(239, 68, 68, 0.1)'; // Light Red
-        resultDiv.innerHTML = `<span style="color:#ef4444;">❌ INVALID TICKET FORMAT</span>`;
+        if (!html5QrcodeScanner) {
+            html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", 
+                { fps: 10, qrbox: { width: 250, height: 250 } }, 
+                false
+            );
+        }
+
+        html5QrcodeScanner.render(onScanSuccess, (error) => {
+            // Suppress continuous frame scanning errors
+        });
     }
 }
 
-function onScanFailure(error) {
-    // Ignore errors while the camera is hunting for a QR code
+function startScanner() {
+    openVerifyModal();
+}
+
+async function onScanSuccess(decodedText, decodedResult) {
+    console.log(`Scan successful: ${decodedText}`);
+    
+    if (html5QrcodeScanner) {
+        try {
+            await html5QrcodeScanner.clear();
+            html5QrcodeScanner = null;
+        } catch (err) {
+            console.error("Failed to clear scanner", err);
+        }
+    }
+
+    const scannerModal = document.getElementById('scannerModal');
+    if (scannerModal) scannerModal.style.display = 'none';
+
+    let ticketId = decodedText;
+    try {
+        const parsedData = JSON.parse(decodedText);
+        if (parsedData.ticketId) {
+            ticketId = parsedData.ticketId;
+        }
+    } catch (e) {
+        // Fallback for plain text ticket IDs
+    }
+
+    await verifyTicketCode(ticketId);
+}
+
+async function verifyTicketCode(ticketId) {
+    try {
+        const response = await fetch(`${API_URL}/api/events/verify-ticket`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ticketId })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert(`✅ ${result.message}\n\n👤 Attendee: @${result.attendee.username}\n📅 Event: ${result.eventTitle}\n🎫 Ticket ID: ${result.attendee.ticketId}`);
+        } else {
+            alert(`❌ Verification Failed: ${result.error}`);
+        }
+    } catch (err) {
+        console.error("Scanning error:", err);
+        alert("❌ Error processing QR code verification request.");
+    }
 }
 
 function closeScanner() {
-    document.getElementById('scannerModal').style.display = 'none';
-    if (window.html5QrcodeScanner) {
-        window.html5QrcodeScanner.clear(); // Turn off the camera
+    if (html5QrcodeScanner) {
+        html5QrcodeScanner.clear().catch(err => console.error("Scanner clear error", err));
+        html5QrcodeScanner = null;
     }
+    const scannerModal = document.getElementById('scannerModal');
+    if (scannerModal) scannerModal.style.display = 'none';
 }
 
-// Handles publishing the new event to the database
+// --- 4. SUBMIT ENHANCED EVENT ---
 async function submitEnhancedEvent() {
     const title = document.getElementById('evTitle') ? document.getElementById('evTitle').value : '';
     const location = document.getElementById('evLoc') ? document.getElementById('evLoc').value : '';
@@ -4730,7 +4761,6 @@ async function submitEnhancedEvent() {
     const ticketType = document.getElementById('evTicket') ? document.getElementById('evTicket').value : 'free';
     const price = document.getElementById('evPrice') ? document.getElementById('evPrice').value : 0;
     
-    // Grabbing the secure credentials
     const campusUsername = document.getElementById('evCampUser') ? document.getElementById('evCampUser').value : '';
     const campusPassword = document.getElementById('evCampPass') ? document.getElementById('evCampPass').value : '';
     
@@ -4741,7 +4771,6 @@ async function submitEnhancedEvent() {
         return;
     }
 
-    // NEW: We add safe fallbacks for standard required fields like date and description
     const payload = { 
         title, 
         location, 
@@ -4751,9 +4780,9 @@ async function submitEnhancedEvent() {
         campusUsername, 
         campusPassword, 
         author,
-        date: new Date().toISOString(), // Fallback if no date picker exists
-        description: "Campus Event",    // Fallback if no description exists
-        image: ""                       // Fallback if no image uploader exists
+        date: new Date().toISOString(),
+        description: "Campus Event", 
+        image: "" 
     };
 
     try {
@@ -4764,9 +4793,9 @@ async function submitEnhancedEvent() {
         });
         
         if (res.ok) {
-            document.getElementById('createEventModal').style.display = 'none';
+            const createModal = document.getElementById('createEventModal');
+            if (createModal) createModal.style.display = 'none';
             
-            // Clear inputs safely
             if(document.getElementById('evTitle')) document.getElementById('evTitle').value = '';
             if(document.getElementById('evLoc')) document.getElementById('evLoc').value = '';
             if(document.getElementById('evCampUser')) document.getElementById('evCampUser').value = '';
@@ -4774,7 +4803,6 @@ async function submitEnhancedEvent() {
             
             loadEvents('explore');
         } else {
-            // NEW: If the server throws a 400 Bad Request, this will tell you EXACTLY what field is missing!
             const errorData = await res.json();
             alert("Database Error: " + (errorData.error || "Validation Failed. Check terminal."));
             console.error("Server responded with:", errorData);
@@ -4784,23 +4812,20 @@ async function submitEnhancedEvent() {
     }
 }
 
-// Handle Ticket Buying / RSVP
-// --- SECURE RSVP LOGIC ---
+// --- 5. HANDLE RSVP & TICKET GENERATION ---
 async function handleRSVP(eventId, eventTitle, eventLoc, type, price, visibility) {
     const username = localStorage.getItem('hoknex_user') || 'Guest';
     let campusUser = '';
     let campusPass = '';
 
-    // 1. If Internal, challenge for credentials!
     if (visibility === 'internal') {
         campusUser = prompt("🔒 SECURE EVENT\n\nEnter the Event Username:");
-        if (!campusUser) return; // Cancels if they hit cancel
+        if (!campusUser) return;
         
         campusPass = prompt("🔒 SECURE EVENT\n\nEnter the Event Password:");
         if (!campusPass) return;
     }
 
-    // 2. Razorpay Logic for Paid Tickets
     if (type === 'paid') {
         const options = {
             "key": "rzp_test_dummykey123456", 
@@ -4820,11 +4845,9 @@ async function handleRSVP(eventId, eventTitle, eventLoc, type, price, visibility
         return; 
     }
 
-    // 3. Free Tickets
     await processRSVPAndGenerateTicket(eventId, eventTitle, eventLoc, type, username, campusUser, campusPass);
 }
 
-// --- SECURE TICKET GENERATION ---
 async function processRSVPAndGenerateTicket(eventId, eventTitle, eventLoc, type, username, campusUser, campusPass) {
     try {
         const res = await fetch(`${API_URL}/api/events/${eventId}/rsvp`, {
@@ -4840,7 +4863,6 @@ async function processRSVPAndGenerateTicket(eventId, eventTitle, eventLoc, type,
         }
 
         const data = await res.json();
-        // Use the exact ticketId generated and saved by MongoDB
         const serverTicketId = data.ticketId;
 
         generateTicketQR(eventId, eventTitle, eventLoc, type, serverTicketId);
@@ -4850,35 +4872,47 @@ async function processRSVPAndGenerateTicket(eventId, eventTitle, eventLoc, type,
     }
 }
 
-// Update generateTicketQR to accept the passed ticketId parameter
 function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
     const ticketId = passedTicketId || ('TKT-' + Math.random().toString(36).substr(2, 6).toUpperCase());
     
-    document.getElementById('ticketEventName').innerText = eventTitle;
-    document.getElementById('ticketEventLoc').innerText = eventLoc;
-    document.getElementById('ticketIdTxt').innerText = ticketId;
-    
+    const nameEl = document.getElementById('ticketEventName');
+    const locEl = document.getElementById('ticketEventLoc');
+    const idEl = document.getElementById('ticketIdTxt');
     const badge = document.getElementById('ticketTypeBadge');
-    badge.innerText = type.toUpperCase();
-    badge.style.background = type === 'paid' ? 'var(--accent-purple)' : 'var(--accent-blue)';
-
-    const qrContainer = document.getElementById('ticketQRCode');
-    qrContainer.innerHTML = ''; 
     
-    if (typeof QRCode !== 'undefined') {
-        new QRCode(qrContainer, {
-            text: JSON.stringify({ eventId, ticketId, user: localStorage.getItem('hoknex_user') }),
-            width: 160,
-            height: 160,
-            colorDark : "#111827",
-            colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.H
-        });
+    if (nameEl) nameEl.innerText = eventTitle;
+    if (locEl) locEl.innerText = eventLoc;
+    if (idEl) idEl.innerText = ticketId;
+    
+    if (badge) {
+        badge.innerText = type.toUpperCase();
+        badge.style.background = type === 'paid' ? 'var(--accent-purple)' : 'var(--accent-blue)';
     }
 
-    document.getElementById('ticketModal').style.display = 'flex';
+    const qrContainer = document.getElementById('ticketQRCode');
+    if (qrContainer) {
+        qrContainer.innerHTML = ''; 
+        
+        if (typeof QRCode !== 'undefined') {
+            // Render cleanly with guaranteed contrast options
+            new QRCode(qrContainer, {
+                text: JSON.stringify({ eventId, ticketId, user: localStorage.getItem('hoknex_user') }),
+                width: 140,
+                height: 140,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        } else {
+            qrContainer.innerHTML = '<p style="color:red; font-size:12px;">QR Library Missing.</p>';
+        }
+    }
+
+    const ticketModal = document.getElementById('ticketModal');
+    if (ticketModal) ticketModal.style.display = 'flex';
 }
-// Delete Event Function
+
+// --- 6. EVENT MANAGEMENT & UTILITIES ---
 async function deleteEvent(eventId) {
     if(!confirm("Are you sure you want to delete this event?")) return;
     const res = await fetch(`${API_URL}/api/events/${eventId}`, { method: 'DELETE' });
@@ -4888,7 +4922,6 @@ async function deleteEvent(eventId) {
     }
 }
 
-// Copies the secret event link to the user's clipboard
 function copyInviteLink(eventId) {
     const inviteUrl = `${window.location.origin}${window.location.pathname}?invite=${eventId}`;
     navigator.clipboard.writeText(inviteUrl).then(() => {
@@ -4896,29 +4929,24 @@ function copyInviteLink(eventId) {
     });
 }
 
-// Auto-loads the secret event if someone opens the link
-window.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('invite')) {
-        loadEvents(); // This triggers the secret link mode in our updated loadEvents function
-    }
-});
+function downloadAttendance(eventId) {
+    window.location.href = `${API_URL}/api/events/${eventId}/export-attendance`;
+}
 
-// Opens the custom form modal instead of an email
+// --- 7. ORGANIZER STATUS & UI CONTROLS ---
 function applyToHost() {
     const currentUser = localStorage.getItem('hoknex_user') || 'Guest';
     if (currentUser === 'Guest') {
         alert("Please log in first to apply for Organizer status!");
         return;
     }
-    // Show the modal
-    document.getElementById('organizerModal').style.display = 'flex';
+    const organizerModal = document.getElementById('organizerModal');
+    if (organizerModal) organizerModal.style.display = 'flex';
 }
 
-// Handles the form submission
 async function submitOrganizerApp() {
-    const orgName = document.getElementById('appOrg').value;
-    const desc = document.getElementById('appDesc').value;
+    const orgName = document.getElementById('appOrg')?.value;
+    const desc = document.getElementById('appDesc')?.value;
     const currentUser = localStorage.getItem('hoknex_user');
 
     if (!orgName || !desc) {
@@ -4927,7 +4955,6 @@ async function submitOrganizerApp() {
     }
 
     try {
-        // Send the data to your MongoDB backend
         const res = await fetch(`${API_URL}/api/applications`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -4939,13 +4966,13 @@ async function submitOrganizerApp() {
         });
 
         if (res.ok) {
-            document.getElementById('organizerModal').style.display = 'none';
+            const orgModal = document.getElementById('organizerModal');
+            if (orgModal) orgModal.style.display = 'none';
             
-            // Clear the form
-            document.getElementById('appOrg').value = '';
-            document.getElementById('appDesc').value = '';
+            if(document.getElementById('appOrg')) document.getElementById('appOrg').value = '';
+            if(document.getElementById('appDesc')) document.getElementById('appDesc').value = '';
             
-            alert(`🎉 Application Submitted!\n\nThank you, ${currentUser}. The Hoknex team will review your application for ${orgName} shortly. Keep an eye on your account!`);
+            alert(`🎉 Application Submitted!\n\nThank you, ${currentUser}. The Hoknex team will review your application for ${orgName} shortly.`);
         } else {
             const errData = await res.json();
             alert("Database Error: " + (errData.error || "Failed to submit."));
@@ -4955,33 +4982,7 @@ async function submitOrganizerApp() {
         alert("Network error. Please make sure your server is running.");
     }
 }
-window.addEventListener('DOMContentLoaded', async () => {
-    const rawUser = localStorage.getItem('hoknex_user') || 'Guest';
-    const currentUser = rawUser.toLowerCase().trim();
 
-    // Add your organizer usernames here
-    let approvedOrganizers = ['admin', 'aditya', 'bittu_lal']; 
-
-    try {
-        const res = await fetch(`${API_URL}/api/organizers`);
-        if (res.ok) {
-            const dynamicOrganizers = await res.json();
-            approvedOrganizers = [...approvedOrganizers, ...dynamicOrganizers.map(u => u.toLowerCase().trim())];
-        }
-    } catch(e) { 
-        console.error("Could not fetch approved organizers", e); 
-    }
-
-    // If the user is an organizer, add the class AND force-show all organizer sections
-    if (approvedOrganizers.includes(currentUser)) {
-        document.body.classList.add('is-organizer');
-        document.querySelectorAll('.organizer-only-section').forEach(el => {
-            el.style.display = 'block';
-        });
-    }
-});
-    
-// Check if user is approved (admin, aditya, or bittu_lal)
 function forceShowOrganizerButtons() {
     const currentUser = (localStorage.getItem('hoknex_user') || 'Guest').toLowerCase().trim();
     if (['admin', 'aditya', 'bittu_lal'].includes(currentUser)) {
@@ -5003,107 +5004,41 @@ function forceShowOrganizerButtons() {
     }
 }
 
-// Run it immediately, after DOM load, and after any view updates
-window.addEventListener('DOMContentLoaded', forceShowOrganizerButtons);
+window.addEventListener('DOMContentLoaded', async () => {
+    const rawUser = localStorage.getItem('hoknex_user') || 'Guest';
+    const currentUser = rawUser.toLowerCase().trim();
+
+    let approvedOrganizers = ['admin', 'aditya', 'bittu_lal']; 
+
+    try {
+        const res = await fetch(`${API_URL}/api/organizers`);
+        if (res.ok) {
+            const dynamicOrganizers = await res.json();
+            approvedOrganizers = [...approvedOrganizers, ...dynamicOrganizers.map(u => u.toLowerCase().trim())];
+        }
+    } catch(e) { 
+        console.error("Could not fetch approved organizers", e); 
+    }
+
+    if (approvedOrganizers.includes(currentUser)) {
+        document.body.classList.add('is-organizer');
+        document.querySelectorAll('.organizer-only-section').forEach(el => {
+            el.style.display = 'block';
+        });
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('invite')) {
+        loadEvents(); 
+    }
+
+    forceShowOrganizerButtons();
+});
+
 setTimeout(forceShowOrganizerButtons, 500);
 setTimeout(forceShowOrganizerButtons, 1500);
 
-let html5QrcodeScanner = null;
-
-function startScanner() {
-    const scannerModal = document.getElementById('scannerModal');
-    if (scannerModal) {
-        scannerModal.style.display = 'flex';
-        
-        if (!html5QrcodeScanner) {
-            html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader", 
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                false
-            );
-        }
-
-        html5QrcodeScanner.render(onScanSuccess, (error) => {
-            // Ignore scan frame tracking errors
-        });
-    }
-}
-
-async function onScanSuccess(decodedText, decodedResult) {
-    console.log(`Scan successful: ${decodedText}`);
-    
-    if (html5QrcodeScanner) {
-        try {
-            await html5QrcodeScanner.clear();
-            html5QrcodeScanner = null;
-        } catch (err) {
-            console.error("Failed to clear scanner", err);
-        }
-    }
-
-    document.getElementById('scannerModal').style.display = 'none';
-
-    let ticketId = decodedText;
-    try {
-        const parsedData = JSON.parse(decodedText);
-        if (parsedData.ticketId) {
-            ticketId = parsedData.ticketId;
-        }
-    } catch (e) {
-        // Plain string fallback
-    }
-
-    await verifyTicketCode(ticketId);
-}
-
-async function verifyTicketCode(scannedData) {
-    try {
-        let ticketId = scannedData;
-
-        // If the QR code is a JSON string, extract the ticketId property
-        try {
-            const parsed = JSON.parse(scannedData);
-            if (parsed.ticketId) {
-                ticketId = parsed.ticketId;
-            }
-        } catch (e) {
-            // If it's plain text, use it as-is
-        }
-
-        console.log("Scan successful, verifying ticket:", ticketId);
-
-        const response = await fetch(`${API_URL}/api/events/verify-ticket`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ticketId })
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-            // Displays the success message along with the attendee's username and event title!
-            alert(`✅ ${result.message}\n\n👤 Attendee: @${result.attendee.username}\n📅 Event: ${result.eventTitle}\n🎫 Ticket ID: ${result.attendee.ticketId}`);
-        } else {
-            alert(`❌ Verification Failed: ${result.error}`);
-        }
-    } catch (err) {
-        console.error("Scanning error:", err);
-        alert("❌ Error processing QR code.");
-    }
-}
-
-function closeScanner() {
-    if (html5QrcodeScanner) {
-        html5QrcodeScanner.clear().catch(err => console.error(err));
-        html5QrcodeScanner = null;
-    }
-    document.getElementById('scannerModal').style.display = 'none';
-}
-
-function downloadAttendance(eventId) {
-    window.location.href = `/api/events/${eventId}/export-attendance`;
-}
-
-// Automatically trigger project loading whenever the Projects tab is clicked or viewed
+// --- 8. PROJECT TAB LISTENERS ---
 document.addEventListener('click', function(e) {
     const target = e.target.closest('a, div, span');
     if (target && target.textContent && target.textContent.trim() === 'Projects') {
@@ -5111,7 +5046,6 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Also run it on initial page load if the URL or view is already projects
 window.addEventListener('load', () => {
     if (window.location.hash.includes('projects') || document.getElementById('projectcontainer')) {
         loadAndRenderProjects();
