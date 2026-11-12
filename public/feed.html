@@ -1511,17 +1511,20 @@ mainView.innerHTML = `
                     <div id="usersList" class="posts-stream"></div>
                 `;
                 searchUsers();
-      } else if (view === 'discover') {
+     } else if (view === 'discover') {
     viewTitle.innerText = 'Discover Pinboard 📌';
     
-    // Calculate live statistics from cache and local storage
-    const totalPinsCount = (typeof cachedPinsMemory !== 'undefined') ? cachedPinsMemory.length : 0;
-    const totalLikesCount = (typeof cachedPinsMemory !== 'undefined') ? cachedPinsMemory.reduce((sum, p) => sum + (p.likes || 0), 0) : 0;
+    const currentLoggedInUser = localStorage.getItem('hoknex_user');
+    
+    // Calculate personal statistics for the logged-in user
+    const myPins = (typeof cachedPinsMemory !== 'undefined') ? cachedPinsMemory.filter(p => p.author === currentLoggedInUser) : [];
+    const totalPinsCount = myPins.length;
+    const totalLikesCount = myPins.reduce((sum, p) => sum + (p.likes || 0), 0);
     
     let totalHooksCount = 0;
     try {
         let allCounts = JSON.parse(localStorage.getItem('hoknex_real_hook_counts') || '{}');
-        totalHooksCount = Object.values(allCounts).reduce((a, b) => a + b, 0);
+        totalHooksCount = allCounts[currentLoggedInUser] || 0;
     } catch(e) {}
 
     mainView.innerHTML = `
@@ -1552,8 +1555,7 @@ mainView.innerHTML = `
         </div>
     `;
     loadAndRenderDiscoverPins();
-
-           
+       
            } else if (view === 'projects') {
         viewTitle.innerText = 'Build Together - Projects 🚀';
         mainView.innerHTML = `
@@ -3967,13 +3969,20 @@ function showPinterestConfirm(message, onConfirm) {
 
 // --- 2. LIVE HEADER STATS UPDATER HELPER ---
 function updateDiscoverHeaderStats() {
-    const totalPinsCount = (typeof cachedPinsMemory !== 'undefined') ? cachedPinsMemory.length : 0;
-    const totalLikesCount = (typeof cachedPinsMemory !== 'undefined') ? cachedPinsMemory.reduce((sum, p) => sum + (p.likes || 0), 0) : 0;
+    const currentLoggedInUser = localStorage.getItem('hoknex_user');
     
+    // Filter pins strictly authored by the logged-in user
+    const myPins = (typeof cachedPinsMemory !== 'undefined') ? cachedPinsMemory.filter(p => p.author === currentLoggedInUser) : [];
+    const totalPinsCount = myPins.length;
+    
+    // Total likes received across all your uploaded pins
+    const totalLikesCount = myPins.reduce((sum, p) => sum + (p.likes || 0), 0);
+    
+    // Your personal hooks count (from your real hook counts storage)
     let totalHooksCount = 0;
     try {
         let allCounts = JSON.parse(localStorage.getItem('hoknex_real_hook_counts') || '{}');
-        totalHooksCount = Object.values(allCounts).reduce((a, b) => a + b, 0);
+        totalHooksCount = allCounts[currentLoggedInUser] || 0;
     } catch(e) {}
 
     const statsContainer = document.getElementById('discoverHeaderStats');
@@ -3985,7 +3994,6 @@ function updateDiscoverHeaderStats() {
         `;
     }
 }
-
 // --- 3. CLOUDINARY AUTO QUALITY ENHANCEMENT ---
 async function uploadToCloudinary(file) {
     const formData = new FormData();
