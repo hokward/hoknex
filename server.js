@@ -2020,13 +2020,34 @@ app.delete('/api/pins/:id', async (req, res) => {
 
 app.post('/api/events/verify-ticket', async (req, res) => {
     try {
-        const { ticketId, organizerUsername } = req.body;
+        let { ticketId, organizerUsername } = req.body;
+        
+        if (!ticketId) {
+            return res.status(400).json({ error: 'Ticket ID is required.' });
+        }
+
+        // If the scanner passes the full JSON string from the QR code, extract the ticketId safely
+        if (typeof ticketId === 'string' && ticketId.startsWith('{')) {
+            try {
+                const parsed = JSON.parse(ticketId);
+                if (parsed.ticketId) {
+                    ticketId = parsed.ticketId;
+                }
+            } catch (e) {
+                // Keep original string if parsing fails
+            }
+        }
+
         const event = await Event.findOne({ 'attendees.ticketId': ticketId });
         if (!event) {
             return res.status(404).json({ error: 'Invalid Ticket! No matching reservation found.' });
         }
 
         const attendee = event.attendees.find(a => a.ticketId === ticketId);
+        if (!attendee) {
+            return res.status(404).json({ error: 'Attendee record not found for this ticket.' });
+        }
+
         if (attendee.verified) {
             return res.status(400).json({ error: '⚠️ Ticket ALREADY USED!' });
         }
@@ -2041,10 +2062,10 @@ app.post('/api/events/verify-ticket', async (req, res) => {
             eventTitle: event.title
         });
     } catch (err) {
+        console.error("Ticket verification error:", err);
         res.status(500).json({ error: err.message });
     }
 });
-
 app.get('/api/projects', async (req, res) => {
     try {
         const projects = await Project.find().sort({ createdAt: -1 });
