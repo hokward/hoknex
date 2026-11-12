@@ -3170,126 +3170,6 @@ async function loadAndRenderProjects() {
     loadAndRenderProjects(); // <-- Fixed here
 }
 
-      async function loadEvents(tab = 'explore') {
-    const container = document.getElementById('eventsList');
-    if(!container) return;
-    container.innerHTML = `<p style="text-align:center; font-weight:600; padding:2rem; color:var(--ink-light);">Loading events...</p>`;
-    
-    const currentUser = localStorage.getItem('hoknex_user') || 'Guest';
-    const urlParams = new URLSearchParams(window.location.search);
-    const inviteId = urlParams.get('invite');
-    
-    try {
-        const res = await fetch(`${API_URL}/api/events`);
-        let evs = await res.json();
-        
-        if (inviteId) {
-            evs = evs.filter(ev => ev._id === inviteId);
-        } else if (tab === 'internal') {
-            evs = evs.filter(ev => ev.visibility === 'internal');
-        } else if (tab === 'my_tickets') {
-            evs = evs.filter(ev => (ev.attendees && ev.attendees.some(a => a.username === currentUser)) || ev.author === currentUser);
-        } else if (tab === 'explore') {
-            evs = evs.filter(ev => !ev.visibility || ev.visibility === 'public');
-        }
-        
-        if(evs.length === 0) {
-            container.innerHTML = `<div class="post-card"><p style="font-weight:600; text-align:center;">No events found in this category.</p></div>`;
-            return;
-        }
-
-        container.innerHTML = evs.map(e => {
-            const isOwner = (e.author === currentUser);
-
-            const deleteBtnHTML = isOwner 
-                ? `<button onclick="deleteEvent('${e._id}')" style="background:none; border:none; color:var(--accent-coral); cursor:pointer; font-size:1.2rem;" title="Delete Event">🗑️</button>` 
-                : ``;
-
-            const shareBtnHTML = (e.visibility === 'invite' && isOwner)
-                ? `<button onclick="copyInviteLink('${e._id}')" style="background:var(--canvas); border:1px solid var(--accent-blue); color:var(--accent-blue); padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700; font-size:0.85rem; margin-right:10px;" title="Copy Secret Invite Link">🔗 Share Invite Link</button>`
-                : ``;
-
-            // SECURITY: Only render attendance and scanning options if the logged-in user owns this event
-           // SECURITY: Only render Download Attendance if the logged-in user owns this event
-            const ownerActionsHTML = isOwner ? `
-                <button class="btn-create" onclick="downloadAttendance('${e._id}')" style="background: #10b981; padding:10px 15px; font-size:0.9rem;">📊 Download Attendance</button>
-            ` : ``;
-
-            return `
-            <div class="post-card" style="display:flex; justify-content:space-between; align-items:center; gap:15px; flex-wrap:wrap;">
-                <div style="flex:1; min-width:200px;">
-                    <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
-                        <span style="background:var(--canvas); padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:800; border:1px solid var(--border);">${(e.visibility || 'Public').toUpperCase()}</span>
-                        <span style="background:rgba(59, 130, 246, 0.1); color:var(--accent-blue); padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:800;">${e.ticketType === 'paid' ? '💳 ₹' + (e.price||0) : '🆓 FREE'}</span>
-                        <span style="font-size:0.8rem; font-weight:700; color:var(--ink-light);">👥 ${(e.attendees && e.attendees.length) ? e.attendees.length : 0} RSVP'd</span>
-                    </div>
-                    <h4 style="font-weight:800; font-size:1.15rem; margin-bottom:4px; color:var(--ink);">📅 ${e.title}</h4>
-                    <p style="font-weight:600; color:var(--ink-light); font-size:0.9rem;">📍 ${e.location}</p>
-                </div>
-                
-                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                    ${shareBtnHTML}
-                    ${deleteBtnHTML}
-                    <button class="btn-create" style="padding:10px 20px; font-size:0.9rem;" onclick="handleRSVP('${e._id}', '${e.title.replace(/'/g, "\\'")}', '${e.location.replace(/'/g, "\\'")}', '${e.ticketType || 'free'}', ${e.price || 0}, '${e.visibility || 'public'}')">
-                        ${e.ticketType === 'paid' ? 'Buy Ticket 💳' : 'RSVP Now ✅'}
-                    </button>
-                    ${ownerActionsHTML}
-                </div>
-            </div>
-            `;
-        }).join('');
-    } catch (err) {
-        container.innerHTML = `<p style="color:var(--accent-coral); text-align:center; font-weight:700;">Failed to load events.</p>`;
-    }
-}
-
-// --- QR CODE GENERATOR ---
-function generateTicketQR(eventId, eventTitle, eventLoc, type) {
-    // 1. Generate a random ticket ID string (e.g., TKT-A9X2B)
-    const ticketId = 'TKT-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-    
-    // 2. Populate the modal with the event details
-    document.getElementById('ticketEventName').innerText = eventTitle;
-    document.getElementById('ticketEventLoc').innerText = eventLoc;
-    document.getElementById('ticketIdTxt').innerText = ticketId;
-    
-    // 3. Style the badge based on free/paid
-    const badge = document.getElementById('ticketTypeBadge');
-    badge.innerText = type.toUpperCase();
-    badge.style.background = type === 'paid' ? 'var(--accent-purple)' : 'var(--accent-blue)';
-
-    // 4. Render the actual QR Code
-    const qrContainer = document.getElementById('ticketQRCode');
-    qrContainer.innerHTML = ''; // Clear previous code
-    
-    // Check if the QR library loaded correctly
-    if (typeof QRCode !== 'undefined') {
-        new QRCode(qrContainer, {
-            text: JSON.stringify({ eventId, ticketId, user: localStorage.getItem('hoknex_user') }),
-            width: 160,
-            height: 160,
-            colorDark : "#000000", // Dark modules for sharp scanning
-            colorLight : "#ffffff", // White background block for full visibility
-            correctLevel : QRCode.CorrectLevel.H
-        });
-    } else {
-        qrContainer.innerHTML = '<p style="color:red; font-size:12px;">QR Library Missing.</p>';
-    }
-
-    // 5. Show the modal!
-    document.getElementById('ticketModal').style.display = 'flex';
-}
-        async function createEvent() {
-            const title = document.getElementById('eventTitle').value;
-            const location = document.getElementById('eventLoc').value;
-            if(!title) return alert('Enter title');
-            await fetch(`${API_URL}/api/events`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({title, location, date: new Date()}) });
-            loadEvents();
-        }
-
-        function viewUserProfile(username) {
-            loadUserProfile(username);
-        }
 
         async function loadUserProfile(username) {
             try {
@@ -4645,7 +4525,79 @@ function openMessageRequestModal(targetUser, actionType) {
 
       // --- EVENT SECTION LOGIC ---
 
-// --- 1. OPEN CREATE EVENT MODAL ---
+// --- 1. LOAD EVENTS & TICKETS SYSTEM ---
+async function loadEvents(tab = 'explore') {
+    const container = document.getElementById('eventsList');
+    if(!container) return;
+    container.innerHTML = `<p style="text-align:center; font-weight:600; padding:2rem; color:var(--ink-light);">Loading events...</p>`;
+    
+    const currentUser = localStorage.getItem('hoknex_user') || 'Guest';
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteId = urlParams.get('invite');
+    
+    try {
+        const res = await fetch(`${API_URL}/api/events`);
+        let evs = await res.json();
+        
+        if (inviteId) {
+            evs = evs.filter(ev => ev._id === inviteId);
+        } else if (tab === 'internal') {
+            evs = evs.filter(ev => ev.visibility === 'internal');
+        } else if (tab === 'my_tickets') {
+            evs = evs.filter(ev => (ev.attendees && ev.attendees.some(a => a.username === currentUser)) || ev.author === currentUser);
+        } else if (tab === 'explore') {
+            evs = evs.filter(ev => !ev.visibility || ev.visibility === 'public');
+        }
+        
+        if(evs.length === 0) {
+            container.innerHTML = `<div class="post-card"><p style="font-weight:600; text-align:center;">No events found in this category.</p></div>`;
+            return;
+        }
+
+        container.innerHTML = evs.map(e => {
+            const isOwner = (e.author === currentUser);
+
+            const deleteBtnHTML = isOwner 
+                ? `<button onclick="deleteEvent('${e._id}')" style="background:none; border:none; color:var(--accent-coral); cursor:pointer; font-size:1.2rem;" title="Delete Event">🗑️</button>` 
+                : ``;
+
+            const shareBtnHTML = (e.visibility === 'invite' && isOwner)
+                ? `<button onclick="copyInviteLink('${e._id}')" style="background:var(--canvas); border:1px solid var(--accent-blue); color:var(--accent-blue); padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700; font-size:0.85rem; margin-right:10px;" title="Copy Secret Invite Link">🔗 Share Invite Link</button>`
+                : ``;
+
+            const ownerActionsHTML = isOwner ? `
+                <button class="btn-create" onclick="downloadAttendance('${e._id}')" style="background: #10b981; padding:10px 15px; font-size:0.9rem;">📊 Download Attendance</button>
+            ` : ``;
+
+            return `
+            <div class="post-card" style="display:flex; justify-content:space-between; align-items:center; gap:15px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:200px;">
+                    <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
+                        <span style="background:var(--canvas); padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:800; border:1px solid var(--border);">${(e.visibility || 'Public').toUpperCase()}</span>
+                        <span style="background:rgba(59, 130, 246, 0.1); color:var(--accent-blue); padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:800;">${e.ticketType === 'paid' ? '💳 ₹' + (e.price||0) : '🆓 FREE'}</span>
+                        <span style="font-size:0.8rem; font-weight:700; color:var(--ink-light);">👥 ${(e.attendees && e.attendees.length) ? e.attendees.length : 0} RSVP'd</span>
+                    </div>
+                    <h4 style="font-weight:800; font-size:1.15rem; margin-bottom:4px; color:var(--ink);">📅 ${e.title}</h4>
+                    <p style="font-weight:600; color:var(--ink-light); font-size:0.9rem;">📍 ${e.location}</p>
+                </div>
+                
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    ${shareBtnHTML}
+                    ${deleteBtnHTML}
+                    <button class="btn-create" style="padding:10px 20px; font-size:0.9rem;" onclick="handleRSVP('${e._id}', '${e.title.replace(/'/g, "\\'")}', '${e.location.replace(/'/g, "\\'")}', '${e.ticketType || 'free'}', ${e.price || 0}, '${e.visibility || 'public'}')">
+                        ${e.ticketType === 'paid' ? 'Buy Ticket 💳' : 'RSVP Now ✅'}
+                    </button>
+                    ${ownerActionsHTML}
+                </div>
+            </div>
+            `;
+        }).join('');
+    } catch (err) {
+        container.innerHTML = `<p style="color:var(--accent-coral); text-align:center; font-weight:700;">Failed to load events.</p>`;
+    }
+}
+
+// --- 2. OPEN CREATE EVENT MODAL ---
 function openCreateEventModal() {
     const modal = document.getElementById('createEventModal');
     if (modal) {
@@ -4655,7 +4607,7 @@ function openCreateEventModal() {
     }
 }
 
-// --- 2. SWITCH EVENTS TAB ---
+// --- 3. SWITCH EVENTS TAB ---
 function switchEventsTab(tabName, btnElement) {
     document.querySelectorAll('.profile-tab-btn').forEach(btn => btn.classList.remove('active'));
     if (btnElement) btnElement.classList.add('active');
@@ -4665,10 +4617,7 @@ function switchEventsTab(tabName, btnElement) {
     }
 }
 
-// --- 3. UNIFIED ORGANIZER TICKET SCANNER LOGIC ---
-let html5QrcodeScanner = null;
-
-// --- ORGANIZER TICKET SCANNER LOGIC ---
+// --- 4. ORGANIZER TICKET SCANNER LOGIC ---
 let html5QrcodeScanner = null;
 
 function openVerifyModal() {
@@ -4690,11 +4639,10 @@ function openVerifyModal() {
             );
         }
 
-        // Clean callback handler that completely suppresses continuous scanning frame errors
         html5QrcodeScanner.render(
             onScanSuccess, 
             (error) => {
-                // Suppress frame-by-frame warnings/errors silently
+                // Suppress continuous frame scanning errors silently
             }
         );
     }
@@ -4755,7 +4703,6 @@ async function verifyTicketCode(ticketId) {
 function closeScanner() {
     if (html5QrcodeScanner) {
         html5QrcodeScanner.clear().catch(err => {
-            // Safe catch if scanner element is already unmounted
             console.log("Scanner already cleared", err);
         });
         html5QrcodeScanner = null;
@@ -4764,7 +4711,7 @@ function closeScanner() {
     if (scannerModal) scannerModal.style.display = 'none';
 }
 
-// --- 4. SUBMIT ENHANCED EVENT ---
+// --- 5. SUBMIT ENHANCED EVENT & RSVP SYSTEM ---
 async function submitEnhancedEvent() {
     const title = document.getElementById('evTitle') ? document.getElementById('evTitle').value : '';
     const location = document.getElementById('evLoc') ? document.getElementById('evLoc').value : '';
@@ -4823,7 +4770,6 @@ async function submitEnhancedEvent() {
     }
 }
 
-// --- 5. HANDLE RSVP & TICKET GENERATION ---
 async function handleRSVP(eventId, eventTitle, eventLoc, type, price, visibility) {
     const username = localStorage.getItem('hoknex_user') || 'Guest';
     let campusUser = '';
@@ -4905,7 +4851,6 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
         qrContainer.innerHTML = ''; 
         
         if (typeof QRCode !== 'undefined') {
-            // Render cleanly with guaranteed contrast options
             new QRCode(qrContainer, {
                 text: JSON.stringify({ eventId, ticketId, user: localStorage.getItem('hoknex_user') }),
                 width: 140,
@@ -4944,7 +4889,25 @@ function downloadAttendance(eventId) {
     window.location.href = `${API_URL}/api/events/${eventId}/export-attendance`;
 }
 
-// --- 7. ORGANIZER STATUS & UI CONTROLS ---
+async function createEvent() {
+    const title = document.getElementById('eventTitle') ? document.getElementById('eventTitle').value : '';
+    const location = document.getElementById('eventLoc') ? document.getElementById('eventLoc').value : '';
+    if(!title) return alert('Enter title');
+    await fetch(`${API_URL}/api/events`, { 
+        method: 'POST', 
+        headers: {'Content-Type': 'application/json'}, 
+        body: JSON.stringify({title, location, date: new Date(), author: localStorage.getItem('hoknex_user') || 'Guest'}) 
+    });
+    loadEvents();
+}
+
+function viewUserProfile(username) {
+    if (typeof loadUserProfile === 'function') {
+        loadUserProfile(username);
+    }
+}
+
+// --- 7. DYNAMIC ORGANIZER STATUS & UI CONTROLS ---
 function applyToHost() {
     const currentUser = localStorage.getItem('hoknex_user') || 'Guest';
     if (currentUser === 'Guest') {
@@ -4996,11 +4959,13 @@ async function submitOrganizerApp() {
 
 function forceShowOrganizerButtons() {
     const currentUser = (localStorage.getItem('hoknex_user') || 'Guest').toLowerCase().trim();
-    if (['admin', 'aditya', 'bittu_lal'].includes(currentUser)) {
-        const hostBtn = document.getElementById('hostEventBtn');
-        const verifyBtn = document.getElementById('verifyEntryBtn');
-        const applyBtn = document.getElementById('applyOrganizerBtn');
+    const isApproved = window.approvedOrganizersList && window.approvedOrganizersList.includes(currentUser);
 
+    const hostBtn = document.getElementById('hostEventBtn');
+    const verifyBtn = document.getElementById('verifyEntryBtn');
+    const applyBtn = document.getElementById('applyOrganizerBtn');
+
+    if (isApproved || currentUser === 'admin') {
         if (hostBtn) {
             hostBtn.style.setProperty('display', 'inline-block', 'important');
             hostBtn.style.visibility = 'visible';
@@ -5012,26 +4977,35 @@ function forceShowOrganizerButtons() {
         if (applyBtn) {
             applyBtn.style.setProperty('display', 'none', 'important');
         }
+    } else {
+        if (hostBtn) hostBtn.style.display = 'none';
+        if (verifyBtn) verifyBtn.style.display = 'none';
+        if (applyBtn) applyBtn.style.display = 'inline-block';
     }
 }
 
+window.approvedOrganizersList = ['admin', 'aditya', 'bittu_lal'];
+
 window.addEventListener('DOMContentLoaded', async () => {
-    const rawUser = localStorage.getItem('hoknex_user') || 'Guest';
-    const currentUser = rawUser.toLowerCase().trim();
-
-    let approvedOrganizers = ['admin', 'aditya', 'bittu_lal']; 
-
     try {
         const res = await fetch(`${API_URL}/api/organizers`);
         if (res.ok) {
             const dynamicOrganizers = await res.json();
-            approvedOrganizers = [...approvedOrganizers, ...dynamicOrganizers.map(u => u.toLowerCase().trim())];
+            window.approvedOrganizersList = [
+                'admin', 
+                'aditya', 
+                'bittu_lal', 
+                ...dynamicOrganizers.map(u => (typeof u === 'string' ? u : u.username).toLowerCase().trim())
+            ];
         }
     } catch(e) { 
-        console.error("Could not fetch approved organizers", e); 
+        console.error("Could not fetch approved organizers from backend", e); 
     }
 
-    if (approvedOrganizers.includes(currentUser)) {
+    const rawUser = localStorage.getItem('hoknex_user') || 'Guest';
+    const currentUser = rawUser.toLowerCase().trim();
+
+    if (window.approvedOrganizersList.includes(currentUser)) {
         document.body.classList.add('is-organizer');
         document.querySelectorAll('.organizer-only-section').forEach(el => {
             el.style.display = 'block';
@@ -5049,6 +5023,19 @@ window.addEventListener('DOMContentLoaded', async () => {
 setTimeout(forceShowOrganizerButtons, 500);
 setTimeout(forceShowOrganizerButtons, 1500);
 
+// --- 8. PROJECT TAB LISTENERS ---
+document.addEventListener('click', function(e) {
+    const target = e.target.closest('a, div, span');
+    if (target && target.textContent && target.textContent.trim() === 'Projects') {
+        setTimeout(loadAndRenderProjects, 100);
+    }
+});
+
+window.addEventListener('load', () => {
+    if (window.location.hash.includes('projects') || document.getElementById('projectcontainer')) {
+        loadAndRenderProjects();
+    }
+});
 // --- 8. PROJECT TAB LISTENERS ---
 document.addEventListener('click', function(e) {
     const target = e.target.closest('a, div, span');
