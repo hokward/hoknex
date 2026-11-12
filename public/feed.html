@@ -4617,7 +4617,7 @@ function switchEventsTab(tabName, btnElement) {
     }
 }
 
-// --- 4. ORGANIZER TICKET SCANNER LOGIC ---
+// --- 4. ORGANIZER TICKET SCANNER & FILE SCAN LOGIC ---
 let html5QrcodeScanner = null;
 
 function openVerifyModal() {
@@ -4642,7 +4642,7 @@ function openVerifyModal() {
         html5QrcodeScanner.render(
             onScanSuccess, 
             (error) => {
-                // Suppress continuous frame scanning errors silently
+                // Silently suppress continuous camera scan frame errors
             }
         );
     }
@@ -4650,6 +4650,32 @@ function openVerifyModal() {
 
 function startScanner() {
     openVerifyModal();
+}
+
+// 🌟 ROBUST FILE SCANNER HANDLER (Fixes the "No MultiFormat Readers" error on image upload/drop)
+async function scanQRCodeFromFile(inputElement) {
+    const file = inputElement.files ? inputElement.files[0] : null;
+    if (!file) return;
+
+    const resultDiv = document.getElementById('scanResult');
+    if (resultDiv) {
+        resultDiv.innerHTML = '<span style="color:var(--ink-light);">Reading ticket image...</span>';
+        resultDiv.style.background = 'transparent';
+    }
+
+    const html5QrCode = new Html5Qrcode("reader");
+    
+    try {
+        const decodedText = await html5QrCode.scanFile(file, true);
+        console.log(`File scan successful: ${decodedText}`);
+        await onScanSuccess(decodedText, null);
+    } catch (err) {
+        console.error(`Error scanning file: ${err}`);
+        if (resultDiv) {
+            resultDiv.style.background = 'rgba(239, 68, 68, 0.1)';
+            resultDiv.innerHTML = `<span style="color:#ef4444;">❌ Could not read QR from image. Try using live camera scan instead.</span>`;
+        }
+    }
 }
 
 async function onScanSuccess(decodedText, decodedResult) {
@@ -5022,7 +5048,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 setTimeout(forceShowOrganizerButtons, 500);
 setTimeout(forceShowOrganizerButtons, 1500);
-
 // --- 8. PROJECT TAB LISTENERS ---
 document.addEventListener('click', function(e) {
     const target = e.target.closest('a, div, span');
