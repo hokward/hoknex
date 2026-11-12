@@ -4668,6 +4668,9 @@ function switchEventsTab(tabName, btnElement) {
 // --- 3. UNIFIED ORGANIZER TICKET SCANNER LOGIC ---
 let html5QrcodeScanner = null;
 
+// --- ORGANIZER TICKET SCANNER LOGIC ---
+let html5QrcodeScanner = null;
+
 function openVerifyModal() {
     const scannerModal = document.getElementById('scannerModal');
     const resultDiv = document.getElementById('scanResult');
@@ -4687,9 +4690,13 @@ function openVerifyModal() {
             );
         }
 
-        html5QrcodeScanner.render(onScanSuccess, (error) => {
-            // Suppress continuous frame scanning errors
-        });
+        // Clean callback handler that completely suppresses continuous scanning frame errors
+        html5QrcodeScanner.render(
+            onScanSuccess, 
+            (error) => {
+                // Suppress frame-by-frame warnings/errors silently
+            }
+        );
     }
 }
 
@@ -4747,7 +4754,10 @@ async function verifyTicketCode(ticketId) {
 
 function closeScanner() {
     if (html5QrcodeScanner) {
-        html5QrcodeScanner.clear().catch(err => console.error("Scanner clear error", err));
+        html5QrcodeScanner.clear().catch(err => {
+            // Safe catch if scanner element is already unmounted
+            console.log("Scanner already cleared", err);
+        });
         html5QrcodeScanner = null;
     }
     const scannerModal = document.getElementById('scannerModal');
