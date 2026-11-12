@@ -251,6 +251,29 @@
             }
         }
 
+        /* 🌟 Lightbox Mobile Responsive Fixes (Prevents Image Cropping) */
+        @media (max-width: 768px) {
+            #pinLightbox > div {
+                flex-direction: column !important;
+                max-height: 90vh !important;
+                width: 95vw !important;
+                border-radius: 16px !important;
+                overflow-y: auto !important;
+            }
+            #lightboxImgContainer {
+                flex: none !important;
+                width: 100% !important;
+                height: 50vh !important;
+                min-height: 250px !important;
+                background: #000 !important;
+            }
+            #lbImg {
+                max-width: 100% !important;
+                max-height: 100% !important;
+                object-fit: contain !important;
+            }
+        }
+
         /* 🌟 WhatsApp-Style Mobile Chat Fullscreen & Keyboard-Adaptive Support */
         @media (max-width: 768px) {
             body.chat-active #chatConnectionsList,
@@ -3855,7 +3878,7 @@ async function loadPosts() {
         function handleLogout() { localStorage.removeItem('hoknex_user'); localStorage.removeItem('hoknex_uid'); window.location.href = 'index.html'; }
     </script>
 <script>
- // --- 1. INSTANT RENDER WARMUP & TOAST NOTIFICATIONS ---
+// --- 1. INSTANT RENDER WARMUP & PINTEREST TOAST SYSTEM ---
 (function warmUpBackendServer() {
     fetch(`${API_URL}/api/pins`, { method: 'GET' }).catch(() => {});
 })();
@@ -3898,6 +3921,31 @@ function showPinterestToast(message, type = 'success') {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
     }, 3000);
+}
+
+function showPinterestConfirm(message, onConfirm) {
+    let existingModal = document.getElementById('pinterestConfirmModal');
+    if (existingModal) existingModal.remove();
+
+    const modalHtml = `
+        <div id="pinterestConfirmModal" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 5000; padding: 20px;">
+            <div style="background: var(--paper); border: 1px solid var(--border); padding: 2rem; border-radius: 20px; width: 100%; max-width: 360px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); color: var(--ink); text-align: center;">
+                <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 10px;">Are you sure?</h3>
+                <p style="font-size: 0.85rem; color: var(--ink-light); margin-bottom: 20px; font-weight: 600;">${message}</p>
+                <div style="display: flex; gap: 10px;">
+                    <button id="confirmCancelBtn" style="flex: 1; background: var(--canvas); color: var(--ink); border: 1px solid var(--border); padding: 10px; border-radius: 12px; font-weight: 700; cursor: pointer;">Cancel</button>
+                    <button id="confirmOkBtn" style="flex: 1; background: #ef4444; color: #fff; border: none; padding: 10px; border-radius: 12px; font-weight: 700; cursor: pointer;">Delete</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    document.getElementById('confirmCancelBtn').onclick = () => document.getElementById('pinterestConfirmModal').remove();
+    document.getElementById('confirmOkBtn').onclick = () => {
+        document.getElementById('pinterestConfirmModal').remove();
+        onConfirm();
+    };
 }
 
 // --- 2. CLOUDINARY AUTO QUALITY ENHANCEMENT ---
@@ -4212,15 +4260,20 @@ async function toggleLikePin(pinId, event) {
 
 async function deletePinServer(pinId, event) {
     if(event) event.stopPropagation();
-    if(!confirm('Delete this pin?')) return;
+    
+    showPinterestConfirm('Delete this pin permanently?', async () => {
+        cachedPinsMemory = cachedPinsMemory.filter(p => (p._id !== pinId && p.id !== pinId));
+        const container = document.getElementById('pinterestPinContainer');
+        if(container) container.innerHTML = renderPinsHtml(cachedPinsMemory);
+        if(currentViewerPinId === pinId) closePinViewer(null, true);
+        showPinterestToast('Pin deleted successfully! 🗑️');
 
-    cachedPinsMemory = cachedPinsMemory.filter(p => (p._id !== pinId && p.id !== pinId));
-    const container = document.getElementById('pinterestPinContainer');
-    if(container) container.innerHTML = renderPinsHtml(cachedPinsMemory);
-    if(currentViewerPinId === pinId) closePinViewer(null, true);
-    showPinterestToast('Pin deleted successfully! 🗑️');
-
-    fetch(`${API_URL}/api/pins/${pinId}`, { method: 'DELETE' }).catch(() => {});
+        try {
+            await fetch(`${API_URL}/api/pins/${pinId}`, { method: 'DELETE' });
+        } catch(e) {
+            console.error(e);
+        }
+    });
 }
 
 function downloadPinImage(imgUrl, title, event) {
