@@ -4632,9 +4632,14 @@ function openVerifyModal() {
         }
         
         if (!html5QrcodeScanner) {
+            // Passing { rememberLastUsedCamera: true } and cleaner config
             html5QrcodeScanner = new Html5QrcodeScanner(
                 "reader", 
-                { fps: 10, qrbox: { width: 250, height: 250 } }, 
+                { 
+                    fps: 10, 
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0
+                }, 
                 false
             );
         }
@@ -4642,12 +4647,11 @@ function openVerifyModal() {
         html5QrcodeScanner.render(
             onScanSuccess, 
             (error) => {
-                // Silently suppress continuous camera scan frame errors
+                // Completely suppress live frame errors so the red box never pops up
             }
         );
     }
 }
-
 function startScanner() {
     openVerifyModal();
 }
