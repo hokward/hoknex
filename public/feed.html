@@ -3261,8 +3261,8 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
             text: JSON.stringify({ eventId, ticketId, user: localStorage.getItem('hoknex_user') }),
             width: 160,
             height: 160,
-            colorDark : "#111827",
-            colorLight : "#ffffff",
+            colorDark : "#000000", // Dark modules for sharp scanning
+            colorLight : "#ffffff", // White background block for full visibility
             correctLevel : QRCode.CorrectLevel.H
         });
     } else {
@@ -3272,7 +3272,6 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type) {
     // 5. Show the modal!
     document.getElementById('ticketModal').style.display = 'flex';
 }
-
         async function createEvent() {
             const title = document.getElementById('eventTitle').value;
             const location = document.getElementById('eventLoc').value;
