@@ -3965,7 +3965,28 @@ function showPinterestConfirm(message, onConfirm) {
     };
 }
 
-// --- 2. CLOUDINARY AUTO QUALITY ENHANCEMENT ---
+// --- 2. LIVE HEADER STATS UPDATER HELPER ---
+function updateDiscoverHeaderStats() {
+    const totalPinsCount = (typeof cachedPinsMemory !== 'undefined') ? cachedPinsMemory.length : 0;
+    const totalLikesCount = (typeof cachedPinsMemory !== 'undefined') ? cachedPinsMemory.reduce((sum, p) => sum + (p.likes || 0), 0) : 0;
+    
+    let totalHooksCount = 0;
+    try {
+        let allCounts = JSON.parse(localStorage.getItem('hoknex_real_hook_counts') || '{}');
+        totalHooksCount = Object.values(allCounts).reduce((a, b) => a + b, 0);
+    } catch(e) {}
+
+    const statsContainer = document.getElementById('discoverHeaderStats');
+    if (statsContainer) {
+        statsContainer.innerHTML = `
+            <span>📌 ${totalPinsCount} Pins</span>
+            <span>🪝 ${totalHooksCount} Hooks</span>
+            <span>❤️ ${totalLikesCount} Likes</span>
+        `;
+    }
+}
+
+// --- 3. CLOUDINARY AUTO QUALITY ENHANCEMENT ---
 async function uploadToCloudinary(file) {
     const formData = new FormData();
     formData.append('file', file);
@@ -3989,7 +4010,7 @@ async function uploadToCloudinary(file) {
     }
 }
 
-// --- 3. PROFILE FETCH & REDIRECT SYSTEM ---
+// --- 4. PROFILE FETCH & REDIRECT SYSTEM ---
 let userProfilesCache = {};
 
 async function fetchUserProfileData(username) {
@@ -4028,7 +4049,7 @@ function goToUserProfile(username, event) {
     }
 }
 
-// --- 4. REAL HOOK / FOLLOW SYSTEM & ALGORITHM ---
+// --- 5. REAL HOOK / FOLLOW SYSTEM & ALGORITHM ---
 function getUserFollowedCreators() {
     const user = localStorage.getItem('hoknex_user');
     if (!user) return [];
@@ -4071,6 +4092,7 @@ function toggleHookFollow(creatorName, event) {
     
     const container = document.getElementById('pinterestPinContainer');
     if (container) container.innerHTML = renderPinsHtml(cachedPinsMemory);
+    updateDiscoverHeaderStats();
 }
 
 let cachedPinsMemory = [];
@@ -4118,6 +4140,7 @@ async function loadAndRenderDiscoverPins(forceRefresh = false) {
     const pins = await fetchAllPins();
     container.innerHTML = renderPinsHtml(pins);
     hydratePinAvatars();
+    updateDiscoverHeaderStats();
 }
 
 async function hydratePinAvatars() {
@@ -4138,7 +4161,7 @@ async function hydratePinAvatars() {
     }
 }
 
-// --- 5. RENDER PINS HTML WITH CLICKABLE PROFILE & AVATAR ---
+// --- 6. RENDER PINS HTML WITH CLICKABLE PROFILE & AVATAR ---
 function renderPinsHtml(pins) {
     if (!Array.isArray(pins) || pins.length === 0) {
         return `<p style="grid-column: 1/-1; text-align:center; font-weight:600; color:var(--ink-light); padding:2rem;">No pins found. Be the first to upload one!</p>`;
@@ -4238,6 +4261,7 @@ async function submitNewPinServer() {
             cachedPinsMemory.unshift(newPinData);
             const container = document.getElementById('pinterestPinContainer');
             if (container) container.innerHTML = renderPinsHtml(cachedPinsMemory);
+            updateDiscoverHeaderStats();
             showPinterestToast('Pin published successfully! 📌✨');
         } else {
             showPinterestToast('Failed to publish pin.', 'error');
@@ -4266,6 +4290,7 @@ async function toggleLikePin(pinId, event) {
         }
         const container = document.getElementById('pinterestPinContainer');
         if (container) container.innerHTML = renderPinsHtml(cachedPinsMemory);
+        updateDiscoverHeaderStats();
     }
 
     fetch(`${API_URL}/api/pins/${pinId}/like`, {
@@ -4283,6 +4308,7 @@ async function deletePinServer(pinId, event) {
         const container = document.getElementById('pinterestPinContainer');
         if(container) container.innerHTML = renderPinsHtml(cachedPinsMemory);
         if(currentViewerPinId === pinId) closePinViewer(null, true);
+        updateDiscoverHeaderStats();
         showPinterestToast('Pin deleted successfully! 🗑️');
 
         try {
