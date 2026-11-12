@@ -274,6 +274,26 @@
             }
         }
 
+        /* 🌟 QR Code Container Fix for Full Visibility */
+        #ticketQRCode {
+            width: 160px;
+            height: 160px;
+            background: #ffffff !important;
+            padding: 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 12px auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        #ticketQRCode canvas, 
+        #ticketQRCode img {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
         /* 🌟 WhatsApp-Style Mobile Chat Fullscreen & Keyboard-Adaptive Support */
         @media (max-width: 768px) {
             body.chat-active #chatConnectionsList,
