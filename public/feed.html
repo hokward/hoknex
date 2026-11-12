@@ -555,27 +555,28 @@
         let currentPlaybackRate = 1.0;
         let activeStickerUrl = '';
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const currentUsername = localStorage.getItem('hoknex_user');
-            if (!currentUsername) {
-                window.location.href = 'index.html';
-                return;
-            }
-            
-           const savedTheme = localStorage.getItem('hoknex_theme');
-if (savedTheme === 'light') {
-    document.body.classList.add('light-mode');
-    document.getElementById('themeToggleBtn').innerHTML = '🌙';
-} else {
-    document.body.classList.remove('light-mode');
-    document.getElementById('themeToggleBtn').innerHTML = '☀️';
-}
+       document.addEventListener("DOMContentLoaded", () => {
+    const currentUsername = localStorage.getItem('hoknex_user');
+    if (!currentUsername) {
+        window.location.href = 'index.html';
+        return;
+    }
 
-renderView('feed');
-fetchStats();
-loadLoggedInUserBanner(currentUsername);
-fetchNotifications();
-loadAllUsersForMention();
+    const savedTheme = localStorage.getItem('hoknex_theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        document.getElementById('themeToggleBtn').innerHTML = '🌙';
+    } else {
+        document.body.classList.remove('light-mode');
+        document.getElementById('themeToggleBtn').innerHTML = '☀️';
+    }
+
+    if (typeof renderView === 'function') renderView('feed');
+    if (typeof fetchStats === 'function') fetchStats();
+    if (typeof loadLoggedInUserBanner === 'function') loadLoggedInUserBanner(currentUsername);
+    if (typeof fetchNotifications === 'function') fetchNotifications();
+    if (typeof loadAllUsersForMention === 'function') loadAllUsersForMention();
+});
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
