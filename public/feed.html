@@ -274,7 +274,7 @@
             }
         }
 
-        /* 🌟 QR Code Container Fix for Clear Visibility */
+        /* 🌟 Bulletproof QR Code Visibility Fix */
         #ticketQRCode {
             width: 160px;
             height: 160px;
@@ -286,19 +286,15 @@
             justify-content: center;
             margin: 12px auto;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            overflow: hidden;
             position: relative;
         }
         #ticketQRCode canvas {
-            display: block;
+            display: block !important;
             width: 140px !important;
             height: 140px !important;
         }
         #ticketQRCode img {
-            display: block;
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: contain;
+            display: none !important;
         }
 
         /* 🌟 WhatsApp-Style Mobile Chat Fullscreen & Keyboard-Adaptive Support */
