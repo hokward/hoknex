@@ -3855,10 +3855,50 @@ async function loadPosts() {
         function handleLogout() { localStorage.removeItem('hoknex_user'); localStorage.removeItem('hoknex_uid'); window.location.href = 'index.html'; }
     </script>
 <script>
-  // --- 1. INSTANT RENDER WARMUP (Eliminates Load Delays) ---
+ // --- 1. INSTANT RENDER WARMUP & TOAST NOTIFICATIONS ---
 (function warmUpBackendServer() {
     fetch(`${API_URL}/api/pins`, { method: 'GET' }).catch(() => {});
 })();
+
+function showPinterestToast(message, type = 'success') {
+    let existingToast = document.getElementById('pinterestToast');
+    if (existingToast) existingToast.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'pinterestToast';
+    toast.innerHTML = message;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: ${type === 'error' ? '#ef4444' : '#111827'};
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        z-index: 9999;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        opacity: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+        toast.style.opacity = '1';
+    }, 10);
+
+    setTimeout(() => {
+        toast.style.transform = 'translateX(-50%) translateY(100px)';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
 
 // --- 2. CLOUDINARY AUTO QUALITY ENHANCEMENT ---
 async function uploadToCloudinary(file) {
@@ -3884,7 +3924,46 @@ async function uploadToCloudinary(file) {
     }
 }
 
-// --- 3. REAL HOOK / FOLLOW SYSTEM & ALGORITHM ---
+// --- 3. PROFILE FETCH & REDIRECT SYSTEM ---
+let userProfilesCache = {};
+
+async function fetchUserProfileData(username) {
+    if (!username) return { dpUrl: '', name: username };
+    const cleanUser = username.replace('@', '');
+    if (userProfilesCache[cleanUser]) return userProfilesCache[cleanUser];
+    
+    try {
+        const res = await fetch(`${API_URL}/api/users/${cleanUser}`);
+        if (res.ok) {
+            const userData = await res.json();
+            userProfilesCache[cleanUser] = userData;
+            return userData;
+        }
+    } catch (e) {
+        console.error('Error fetching user profile:', e);
+    }
+    return { dpUrl: '', name: cleanUser };
+}
+
+function goToUserProfile(username, event) {
+    if (event) event.stopPropagation();
+    if (!username) return;
+    const cleanUser = username.replace('@', '');
+    
+    closePinViewer(null, true);
+    
+    if (typeof openProfileView === 'function') {
+        openProfileView(cleanUser);
+    } else if (typeof renderView === 'function') {
+        localStorage.setItem('hoknex_viewing_profile', cleanUser);
+        renderView('profile');
+    } else {
+        window.location.hash = `profile=${cleanUser}`;
+        location.reload();
+    }
+}
+
+// --- 4. REAL HOOK / FOLLOW SYSTEM & ALGORITHM ---
 function getUserFollowedCreators() {
     const user = localStorage.getItem('hoknex_user');
     if (!user) return [];
@@ -3897,15 +3976,15 @@ function getUserFollowedCreators() {
 function getRealCreatorHookCount(creatorName) {
     try {
         let counts = JSON.parse(localStorage.getItem('hoknex_real_hook_counts') || '{}');
-        return counts[creatorName] || 0; // Starts at 0 real hooks
+        return counts[creatorName] || 0;
     } catch(e) { return 0; }
 }
 
 function toggleHookFollow(creatorName, event) {
     if (event) event.stopPropagation();
     const currentUser = localStorage.getItem('hoknex_user');
-    if (!currentUser) return alert('Please log in to use Hook!');
-    if (currentUser === creatorName) return alert("You cannot hook your own profile!");
+    if (!currentUser) return showPinterestToast('Please log in to use Hook!', 'error');
+    if (currentUser === creatorName) return showPinterestToast("You cannot hook your own profile!", 'error');
 
     let following = getUserFollowedCreators();
     let counts = JSON.parse(localStorage.getItem('hoknex_real_hook_counts') || '{}');
@@ -3915,19 +3994,24 @@ function toggleHookFollow(creatorName, event) {
     if (index > -1) {
         following.splice(index, 1);
         counts[creatorName] = Math.max(0, currentCount - 1);
-        alert(`Un-hooked from @${creatorName}`);
+        showPinterestToast(`Un-hooked from @${creatorName}`);
     } else {
         following.push(creatorName);
         counts[creatorName] = currentCount + 1;
-        alert(`🪝 Hooked successfully to @${creatorName}!`);
+        showPinterestToast(`🪝 Hooked successfully to @${creatorName}!`);
     }
 
     localStorage.setItem(`hoknex_hook_following_${currentUser}`, JSON.stringify(following));
     localStorage.setItem('hoknex_real_hook_counts', JSON.stringify(counts));
-    loadAndRenderDiscoverPins();
+    
+    const container = document.getElementById('pinterestPinContainer');
+    if (container) container.innerHTML = renderPinsHtml(cachedPinsMemory);
 }
 
+let cachedPinsMemory = [];
+
 async function fetchAllPins() {
+    if (cachedPinsMemory.length > 0) return cachedPinsMemory;
     let pins = [];
     try {
         const res = await fetch(`${API_URL}/api/pins`);
@@ -3946,9 +4030,9 @@ async function fetchAllPins() {
         ];
     }
 
-    // Recommendation Algorithm Ranking (Followed creators appear first)
+    cachedPinsMemory = pins;
     const followedCreators = getUserFollowedCreators();
-    pins.sort((a, b) => {
+    cachedPinsMemory.sort((a, b) => {
         let scoreA = followedCreators.includes(a.author) ? 100 : 0;
         let scoreB = followedCreators.includes(b.author) ? 100 : 0;
         scoreA += (a.likes || 0) * 0.1;
@@ -3956,19 +4040,40 @@ async function fetchAllPins() {
         return scoreB - scoreA;
     });
 
-    return pins;
+    return cachedPinsMemory;
 }
 
-async function loadAndRenderDiscoverPins() {
+async function loadAndRenderDiscoverPins(forceRefresh = false) {
     const container = document.getElementById('pinterestPinContainer');
     if (!container) return;
     
-    container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; font-weight:600; color:var(--ink-light); padding:2rem;">Loading pinboard...</p>`;
+    if (cachedPinsMemory.length === 0 || forceRefresh) {
+        container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; font-weight:600; color:var(--ink-light); padding:2rem;">Loading pinboard...</p>`;
+    }
     const pins = await fetchAllPins();
     container.innerHTML = renderPinsHtml(pins);
+    hydratePinAvatars();
 }
 
-// --- 4. RENDER PINS HTML WITH WORKING CLICK & HOOK BUTTONS ---
+async function hydratePinAvatars() {
+    const cards = document.querySelectorAll('.pin-card');
+    for (const card of cards) {
+        const author = card.getAttribute('data-author');
+        if (!author) continue;
+        const profile = await fetchUserProfileData(author);
+        if (profile && profile.dpUrl) {
+            const avatarDivs = card.querySelectorAll(`[id^="avatar-card-${author}"]`);
+            avatarDivs.forEach(div => {
+                div.style.backgroundImage = `url('${profile.dpUrl}')`;
+                div.style.backgroundSize = 'cover';
+                div.style.backgroundPosition = 'center';
+                div.innerText = '';
+            });
+        }
+    }
+}
+
+// --- 5. RENDER PINS HTML WITH CLICKABLE PROFILE & AVATAR ---
 function renderPinsHtml(pins) {
     if (!Array.isArray(pins) || pins.length === 0) {
         return `<p style="grid-column: 1/-1; text-align:center; font-weight:600; color:var(--ink-light); padding:2rem;">No pins found. Be the first to upload one!</p>`;
@@ -3988,8 +4093,10 @@ function renderPinsHtml(pins) {
             displayImg = displayImg.replace('/upload/', '/upload/q_auto,f_auto/');
         }
 
+        const authorInitial = (pin.author || 'S').charAt(0).toUpperCase();
+
         return `
-        <div class="pin-card" style="cursor: pointer;">
+        <div class="pin-card" style="cursor: pointer;" data-author="${pin.author}">
             <div class="pin-image-wrapper" onclick="openPinViewer('${pinKey}')" style="position: relative;">
                 <img src="${displayImg}" alt="${pin.title || 'Pin'}" loading="lazy" style="width: 100%; display: block;">
                 <div class="pin-overlay" onclick="event.stopPropagation()">
@@ -4001,9 +4108,14 @@ function renderPinsHtml(pins) {
                 </div>
             </div>
             <div class="pin-footer" style="padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; background: var(--paper);">
-                <div onclick="openPinViewer('${pinKey}')" style="min-width: 0; flex: 1; padding-right: 6px; cursor: pointer;">
-                    <h4 class="pin-title">${pin.title || 'Untitled'}</h4>
-                    <span class="pin-author">@${pin.author || 'Student'} • 🪝 ${realHookCount} Hooks</span>
+                <div style="min-width: 0; flex: 1; padding-right: 6px; display: flex; align-items: center; gap: 8px;">
+                    <div class="pin-author-avatar" id="avatar-card-${pin.author}" onclick="goToUserProfile('${pin.author}', event)" style="width: 28px; height: 28px; border-radius: 50%; background: var(--accent-gradient); color: #fff; font-weight: 800; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; flex-shrink: 0;">
+                        ${authorInitial}
+                    </div>
+                    <div style="min-width: 0; flex: 1;">
+                        <h4 class="pin-title" onclick="openPinViewer('${pinKey}')" style="cursor: pointer;">${pin.title || 'Untitled'}</h4>
+                        <span class="pin-author" onclick="goToUserProfile('${pin.author}', event)" style="cursor: pointer;">@${pin.author || 'Student'} • 🪝 ${realHookCount} Hooks</span>
+                    </div>
                 </div>
                 ${!isAuthor ? `
                 <button type="button" onclick="toggleHookFollow('${pin.author}', event)" style="background: ${isFollowed ? 'var(--canvas)' : 'var(--accent-purple)'}; color: ${isFollowed ? 'var(--ink)' : '#fff'}; border: 1px solid var(--border); padding: 5px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 800; cursor: pointer; flex-shrink: 0;">
@@ -4042,8 +4154,11 @@ async function submitNewPinServer() {
     const author = localStorage.getItem('hoknex_user') || 'Student';
 
     if (!title || !fileInput || !fileInput.files[0]) {
-        return alert('Please enter a title and select an image file!');
+        return showPinterestToast('Please enter a title and select an image file!', 'error');
     }
+
+    showPinterestToast('Uploading pin in background... ✨');
+    document.getElementById('pinModal')?.remove();
 
     try {
         const imageUrl = await uploadToCloudinary(fileInput.files[0]);
@@ -4054,45 +4169,58 @@ async function submitNewPinServer() {
         });
 
         if (res.ok) {
-            document.getElementById('pinModal').remove();
-            loadAndRenderDiscoverPins();
-            alert('Pin published with auto-enhanced quality! 📌✨');
+            const newPinData = await res.json();
+            cachedPinsMemory.unshift(newPinData);
+            const container = document.getElementById('pinterestPinContainer');
+            if (container) container.innerHTML = renderPinsHtml(cachedPinsMemory);
+            showPinterestToast('Pin published successfully! 📌✨');
         } else {
-            alert('Failed to publish pin.');
+            showPinterestToast('Failed to publish pin.', 'error');
         }
     } catch (err) {
         console.error(err);
-        alert('An error occurred while publishing.');
+        showPinterestToast('An error occurred while publishing.', 'error');
     }
 }
 
 async function toggleLikePin(pinId, event) {
     if(event) event.stopPropagation();
     const username = localStorage.getItem('hoknex_user');
-    if (!username) return alert('Please log in to like pins!');
+    if (!username) return showPinterestToast('Please log in to like pins!', 'error');
 
-    const res = await fetch(`${API_URL}/api/pins/${pinId}/like`, {
+    const pin = cachedPinsMemory.find(p => (p._id && p._id.toString() === pinId.toString()) || (p.id && p.id.toString() === pinId.toString()));
+    if (pin) {
+        pin.likedBy = pin.likedBy || [];
+        const idx = pin.likedBy.indexOf(username);
+        if (idx > -1) {
+            pin.likedBy.splice(idx, 1);
+            pin.likes = Math.max(0, pin.likes - 1);
+        } else {
+            pin.likedBy.push(username);
+            pin.likes = (pin.likes || 0) + 1;
+        }
+        const container = document.getElementById('pinterestPinContainer');
+        if (container) container.innerHTML = renderPinsHtml(cachedPinsMemory);
+    }
+
+    fetch(`${API_URL}/api/pins/${pinId}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username })
-    });
-
-    if (res.ok) {
-        loadAndRenderDiscoverPins();
-        if (currentViewerPinId === pinId) openPinViewer(pinId);
-    }
+    }).catch(e => console.error(e));
 }
 
 async function deletePinServer(pinId, event) {
     if(event) event.stopPropagation();
     if(!confirm('Delete this pin?')) return;
 
-    const res = await fetch(`${API_URL}/api/pins/${pinId}`, { method: 'DELETE' });
-    if (res.ok) {
-        loadAndRenderDiscoverPins();
-        if(currentViewerPinId === pinId) closePinViewer(null, true);
-        alert('Pin deleted successfully! 🗑️');
-    }
+    cachedPinsMemory = cachedPinsMemory.filter(p => (p._id !== pinId && p.id !== pinId));
+    const container = document.getElementById('pinterestPinContainer');
+    if(container) container.innerHTML = renderPinsHtml(cachedPinsMemory);
+    if(currentViewerPinId === pinId) closePinViewer(null, true);
+    showPinterestToast('Pin deleted successfully! 🗑️');
+
+    fetch(`${API_URL}/api/pins/${pinId}`, { method: 'DELETE' }).catch(() => {});
 }
 
 function downloadPinImage(imgUrl, title, event) {
@@ -4104,7 +4232,7 @@ function downloadPinImage(imgUrl, title, event) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    alert('Image saved! 📥');
+    showPinterestToast('Image saved! 📥');
 }
 
 let currentViewerPinId = null;
@@ -4139,8 +4267,8 @@ async function openPinViewer(pinId) {
                             <p id="lbDesc" style="font-size: 0.9rem; color: var(--ink-light); font-weight: 600; margin-bottom: 20px; line-height: 1.5; word-break: break-word;">No description provided.</p>
                         </div>
                         <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 15px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div class="avatar-circle" id="lbAvatar" style="width: 40px; height: 40px;">U</div>
+                            <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;" id="lbAuthorProfileTrigger">
+                                <div class="avatar-circle" id="lbAvatar" style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent-gradient); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; overflow: hidden;">U</div>
                                 <div>
                                     <h4 id="lbAuthor" style="font-size: 0.9rem; font-weight: 800; color: var(--ink);">User</h4>
                                     <p id="lbHookInfo" style="font-size: 0.75rem; color: var(--ink-light); font-weight: 600;">Hoknex Creator</p>
@@ -4166,9 +4294,22 @@ async function openPinViewer(pinId) {
 
     document.getElementById('lbTitle').innerText = pin.title || 'Untitled';
     document.getElementById('lbDesc').innerText = pin.desc || 'No description provided.';
-    document.getElementById('lbAuthor').innerText = pin.author || 'Student';
-    document.getElementById('lbAvatar').innerText = (pin.author || 'S').charAt(0).toUpperCase();
+    document.getElementById('lbAuthor').innerText = `@${pin.author || 'Student'}`;
     document.getElementById('lbHookInfo').innerText = `🪝 ${getRealCreatorHookCount(pin.author)} Hooks`;
+
+    const profile = await fetchUserProfileData(pin.author);
+    const avatarEl = document.getElementById('lbAvatar');
+    if (profile && profile.dpUrl) {
+        avatarEl.style.backgroundImage = `url('${profile.dpUrl}')`;
+        avatarEl.style.backgroundSize = 'cover';
+        avatarEl.style.backgroundPosition = 'center';
+        avatarEl.innerText = '';
+    } else {
+        avatarEl.style.backgroundImage = 'none';
+        avatarEl.innerText = (pin.author || 'S').charAt(0).toUpperCase();
+    }
+
+    document.getElementById('lbAuthorProfileTrigger').onclick = (e) => goToUserProfile(pin.author, e);
 
     const currentLoggedInUser = localStorage.getItem('hoknex_user');
     const isLiked = pin.likedBy && pin.likedBy.includes(currentLoggedInUser);
