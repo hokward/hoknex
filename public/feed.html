@@ -156,75 +156,98 @@
             .topbar { padding: 0.6rem 0.85rem; width: 100%; }
         }
 
-        /* 🌟 True Pinterest-Style Masonry Pinboard Grid Layout (Exact Match to Screenshots) */
-        .pinboard-masonry-grid, 
-        #discoverPinsContainer, 
-        #pinsGridContainer, 
-        .discover-grid {
-            column-count: 5; /* Expands smoothly on large screens */
-            column-gap: 14px;
+        /* 🌟 Compact Pinterest-Style Masonry Pinboard Layout */
+        #pinterestPinContainer,
+        .pinterest-grid {
+            column-count: 3;
+            column-gap: 12px;
             width: 100%;
         }
-        .pin-card-item, 
-        .discover-pin-card, 
         .pin-card {
             break-inside: avoid;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             background: var(--paper);
-            border: none;
-            border-radius: 16px; /* Smooth rounded corners like Pinterest */
+            border: 1px solid var(--border);
+            border-radius: 14px;
             overflow: hidden;
             box-shadow: var(--shadow-card);
             display: inline-block;
             width: 100%;
+            cursor: pointer;
             position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .pin-card-item img, 
-        .discover-pin-card img, 
+        .pin-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
         .pin-card img {
             width: 100%;
-            height: auto; /* Preserves natural image aspect ratio so cards stagger beautifully */
+            height: auto;
             object-fit: cover;
             display: block;
-            border-radius: 16px;
+            border-radius: 14px 14px 0 0;
         }
-
-        @media (max-width: 1400px) {
-            .pinboard-masonry-grid, 
-            #discoverPinsContainer, 
-            #pinsGridContainer, 
-            .discover-grid {
-                column-count: 4;
-            }
+        .pin-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 10px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .pin-card:hover .pin-overlay {
+            opacity: 1;
+        }
+        .pin-btn {
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+        }
+        .pin-btn.liked {
+            background: rgba(225, 48, 108, 0.85);
         }
 
         @media (max-width: 1024px) {
-            .pinboard-masonry-grid, 
-            #discoverPinsContainer, 
-            #pinsGridContainer, 
-            .discover-grid {
-                column-count: 3; /* Exactly 3 columns on standard desktops/tablets */
+            #pinterestPinContainer,
+            .pinterest-grid {
+                column-count: 3;
             }
         }
 
-        @media (max-width: 650px) {
-            .pinboard-masonry-grid, 
-            #discoverPinsContainer, 
-            #pinsGridContainer, 
-            .discover-grid {
-                column-count: 2; /* Exactly 2 columns on mobile phones like the Pinterest app */
-                column-gap: 10px;
+        @media (max-width: 768px) {
+            #pinterestPinContainer,
+            .pinterest-grid {
+                column-count: 2; /* Exactly 2 compact columns on mobile phones */
+                column-gap: 8px;
             }
-            .pin-card-item, 
-            .discover-pin-card, 
             .pin-card {
-                margin-bottom: 10px;
-                border-radius: 14px;
+                margin-bottom: 8px;
+                border-radius: 10px;
             }
-            .pin-card-item img, 
-            .discover-pin-card img, 
             .pin-card img {
-                border-radius: 14px;
+                border-radius: 10px 10px 0 0;
+            }
+            .pin-overlay {
+                opacity: 1;
+                background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 50%);
+                padding: 6px;
+            }
+            .pin-btn {
+                padding: 3px 6px;
+                font-size: 0.6rem;
             }
         }
 
@@ -1465,30 +1488,31 @@ mainView.innerHTML = `
                     <div id="usersList" class="posts-stream"></div>
                 `;
                 searchUsers();
-          } else if (view === 'discover') {
-                viewTitle.innerText = 'Discover Pinboard 📌';
-                mainView.innerHTML = `
-                    <div class="post-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background: linear-gradient(135deg, #ef4444 0%, #8b5cf6 100%); color: #fff; border: none;">
-                        <div>
-                            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 4px;">Hoknex Visual Pinboard 📌✨</h2>
-                            <p style="font-size: 0.9rem; font-weight: 600; opacity: 0.9;">Explore campus aesthetics, designs, and notes. Pin and share your own!</p>
-                        </div>
-                        <button class="btn-create" style="background: #ffffff; color: var(--accent-purple);" onclick="openPinUploadModal()">+ Upload New Pin</button>
-                    </div>
+         } else if (view === 'discover') {
+    viewTitle.innerText = 'Discover Pinboard 📌';
+    mainView.innerHTML = `
+        <div class="post-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background: linear-gradient(135deg, #ef4444 0%, #8b5cf6 100%); color: #fff; border: none;">
+            <div>
+                <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 4px;">Hoknex Visual Pinboard 📌✨</h2>
+                <p style="font-size: 0.9rem; font-weight: 600; opacity: 0.9;">Explore campus aesthetics, designs, and notes. Pin and share your own!</p>
+            </div>
+            <button class="btn-create" style="background: #ffffff; color: var(--accent-purple);" onclick="openPinUploadModal()">+ Upload New Pin</button>
+        </div>
 
-                    <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 15px;">
-                        <button class="profile-tab-btn active" onclick="filterPins('all')">🌟 All Pins</button>
-                        <button class="profile-tab-btn" onclick="filterPins('Study')">📚 Study Vibe</button>
-                        <button class="profile-tab-btn" onclick="filterPins('Coding')">💻 Coding</button>
-                        <button class="profile-tab-btn" onclick="filterPins('Campus')">🌅 Campus Life</button>
-                        <button class="profile-tab-btn" onclick="filterPins('Design')">🎨 UI/UX</button>
-                    </div>
+        <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 15px;">
+            <button class="profile-tab-btn active" onclick="filterPins('all')">🌟 All Pins</button>
+            <button class="profile-tab-btn" onclick="filterPins('Study')">📚 Study Vibe</button>
+            <button class="profile-tab-btn" onclick="filterPins('Coding')">💻 Coding</button>
+            <button class="profile-tab-btn" onclick="filterPins('Campus')">🌅 Campus Life</button>
+            <button class="profile-tab-btn" onclick="filterPins('Design')">🎨 UI/UX</button>
+        </div>
 
-                    <div class="pinterest-grid" id="pinterestPinContainer">
-                        <p style="grid-column: 1/-1; text-align:center; font-weight:600; color:var(--ink-light); padding:2rem;">Loading pinboard...</p>
-                    </div>
-                `;
-                loadAndRenderDiscoverPins(); // <--- This triggers the render call!
+        <div id="pinterestPinContainer">
+            <p style="grid-column: 1/-1; text-align:center; font-weight:600; color:var(--ink-light); padding:2rem;">Loading pinboard...</p>
+        </div>
+    `;
+    loadAndRenderDiscoverPins();
+}
            
            } else if (view === 'projects') {
         viewTitle.innerText = 'Build Together - Projects 🚀';
@@ -3830,40 +3854,8 @@ async function loadPosts() {
 
         function handleLogout() { localStorage.removeItem('hoknex_user'); localStorage.removeItem('hoknex_uid'); window.location.href = 'index.html'; }
     </script>
-
-    <!-- PINTEREST FULL-SCREEN LIGHTBOX VIEWER -->
-    <div id="pinLightbox" class="lightbox-overlay" onclick="closePinViewer(event)" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 2rem;">
-        <div style="background: var(--paper); border-radius: 20px; max-width: 950px; width: 100%; max-height: 90vh; display: flex; overflow: hidden; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);" onclick="event.stopPropagation()">
-            <div style="flex: 1; background: #000; display: flex; align-items: center; justify-content: center; padding: 10px; overflow: auto; cursor: zoom-in;" onclick="toggleImageZoom(this)">
-                <img id="lbImg" src="" alt="Pin Image" style="max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 8px; transition: transform 0.3s ease;">
-            </div>
-            <div style="width: 360px; padding: 2rem; display: flex; flex-direction: column; background: var(--paper); justify-content: space-between;">
-                <div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <div style="display: flex; gap: 8px;">
-                            <button class="action-btn" id="lbLikeBtn" onclick="toggleLikeInViewer()" style="border-radius: 20px; font-weight: 800;">❤️ 0</button>
-                            <button class="btn-create" id="lbSaveBtn" onclick="downloadCurrentPinImage()" style="border-radius: 20px;">📥 Download</button>
-                            <button class="action-btn" id="lbDeleteBtn" onclick="deleteCurrentLightboxPin()" style="background: rgba(239, 68, 68, 0.1); color: var(--accent-coral); border-color: rgba(239, 68, 68, 0.3); border-radius: 20px; display: none;">🗑️ Delete</button>
-                        </div>
-                        <button class="action-btn" style="border-radius: 50%; width: 35px; height: 35px; padding: 0; display: flex; align-items: center; justify-content: center; font-weight: 800;" onclick="closePinViewer(null, true)">✕</button>
-                    </div>
-                    <h2 id="lbTitle" style="font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; color: var(--ink);">Pin Title</h2>
-                    <p id="lbDesc" style="font-size: 0.9rem; color: var(--ink-light); font-weight: 600; margin-bottom: 20px; line-height: 1.5; word-break: break-word;">No description provided.</p>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--border); padding-top: 15px;">
-                    <div class="avatar-circle" id="lbAvatar" style="width: 40px; height: 40px;">U</div>
-                    <div>
-                        <h4 id="lbAuthor" style="font-size: 0.9rem; font-weight: 800; color: var(--ink);">User</h4>
-                        <p style="font-size: 0.75rem; color: var(--ink-light); font-weight: 600;">Hoknex Creator</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- PINTEREST DISCOVER ENGINE SCRIPT -->
-    <script>
-       // --- DIRECT CLOUDINARY CONFIGURATION FOR PINS ---
+<script>
+   // --- DIRECT CLOUDINARY CONFIGURATION WITH AUTO QUALITY ENHANCEMENT ---
 async function uploadToCloudinary(file) {
     const formData = new FormData();
     formData.append('file', file);
@@ -3876,27 +3868,108 @@ async function uploadToCloudinary(file) {
     
     const data = await res.json();
     if (res.ok && data.secure_url) {
-        return data.secure_url;
+        let rawUrl = data.secure_url;
+        // Automatic Quality & Format Converter (Enhances image quality instantly like Pinterest)
+        if (rawUrl.includes('/upload/')) {
+            return rawUrl.replace('/upload/', '/upload/q_auto,f_auto/');
+        }
+        return rawUrl;
     } else {
         console.error("Cloudinary Error:", data);
         throw new Error(data.error?.message || 'Cloudinary upload failed');
     }
 }
 
+// --- PINTEREST PERSONALIZATION ALGORITHM & HOOK SYSTEM ---
+function getUserFollowedCreators() {
+    const user = localStorage.getItem('hoknex_user');
+    if (!user) return [];
+    try {
+        let followed = JSON.parse(localStorage.getItem(`hoknex_hook_following_${user}`));
+        return Array.isArray(followed) ? followed : [];
+    } catch (e) { return []; }
+}
+
+function saveUserFollowedCreators(followedArray) {
+    const user = localStorage.getItem('hoknex_user');
+    if (!user) return;
+    localStorage.setItem(`hoknex_hook_following_${user}`, JSON.stringify(followedArray));
+}
+
+function getCreatorHookCount(creatorName) {
+    try {
+        let counts = JSON.parse(localStorage.getItem('hoknex_hook_counts') || '{}');
+        return counts[creatorName] || 12; // Default starting hook count
+    } catch(e) { return 12; }
+}
+
+function toggleHookFollow(creatorName, event) {
+    if (event) event.stopPropagation();
+    const currentUser = localStorage.getItem('hoknex_user');
+    if (!currentUser) return alert('Please log in to use Hook One follow!');
+    if (currentUser === creatorName) return alert("You cannot hook/follow yourself!");
+
+    let following = getUserFollowedCreators();
+    let counts = JSON.parse(localStorage.getItem('hoknex_hook_counts') || '{}');
+    let currentCount = counts[creatorName] || 12;
+
+    const index = following.indexOf(creatorName);
+    if (index > -1) {
+        // Unfollow
+        following.splice(index, 1);
+        counts[creatorName] = Math.max(0, currentCount - 1);
+        alert(`Un-hooked from @${creatorName}`);
+    } else {
+        // Follow (Hook One)
+        following.push(creatorName);
+        counts[creatorName] = currentCount + 1;
+        alert(`🪝 Hooked successfully to @${creatorName}! Their pins will now appear at the top of your feed.`);
+    }
+
+    saveUserFollowedCreators(following);
+    localStorage.setItem('hoknex_hook_counts', JSON.stringify(counts));
+    loadAndRenderDiscoverPins();
+}
+
 async function fetchAllPins() {
+    let pins = [];
     try {
         const res = await fetch(`${API_URL}/api/pins`);
         if (res.ok) {
             const data = await res.json();
-            if (Array.isArray(data)) return data;
+            if (Array.isArray(data)) pins = data;
         }
     } catch (e) {
         console.error('Could not fetch pins:', e);
     }
-    return [
-        { _id: 1, title: "Cozy Study Desk Aesthetics 📚", desc: "My daily setup for exams.", img: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&q=80", author: "Aarav M.", likes: 142 },
-        { _id: 2, title: "Clean Minimalist Coding Setup 💻", desc: "Dual monitors for coding.", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&q=80", author: "Priya S.", likes: 289 }
-    ];
+
+    if (pins.length === 0) {
+        pins = [
+            { _id: 1, title: "Cozy Study Desk Aesthetics 📚", desc: "My daily setup for exams.", img: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&q=80", author: "Aarav M.", likes: 142 },
+            { _id: 2, title: "Clean Minimalist Coding Setup 💻", desc: "Dual monitors for coding.", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&q=80", author: "Priya S.", likes: 289 }
+        ];
+    }
+
+    // --- ALGORITHM RANKING (Pinterest Feed Algorithm) ---
+    const followedCreators = getUserFollowedCreators();
+    const likedPins = getUserLikedPins();
+
+    pins.sort((a, b) => {
+        let scoreA = 0;
+        let scoreB = 0;
+
+        // Boost followed creators to the top
+        if (followedCreators.includes(a.author)) scoreA += 100;
+        if (followedCreators.includes(b.author)) scoreB += 100;
+
+        // Boost based on likes/engagement
+        scoreA += (a.likes || 0) * 0.1;
+        scoreB += (b.likes || 0) * 0.1;
+
+        return scoreB - scoreA;
+    });
+
+    return pins;
 }
 
 async function loadAndRenderDiscoverPins() {
@@ -3923,29 +3996,47 @@ function saveUserLikedPins(likedArray) {
     localStorage.setItem(`hoknex_liked_pins_${user}`, JSON.stringify(likedArray));
 }
 
+// Compact Pinterest-Style Pin Cards Rendering
 function renderPinsHtml(pins) {
     if (!Array.isArray(pins) || pins.length === 0) {
         return `<p style="grid-column: 1/-1; text-align:center; font-weight:600; color:var(--ink-light); padding:2rem;">No pins found. Be the first to upload one!</p>`;
     }
     const currentLoggedInUser = localStorage.getItem('hoknex_user');
+    const followedCreators = getUserFollowedCreators();
 
     return pins.map(pin => {
         const pinKey = pin._id || pin.id;
         const isAuthor = pin.author === currentLoggedInUser;
         const isLiked = pin.likedBy && pin.likedBy.includes(currentLoggedInUser);
+        const isFollowed = followedCreators.includes(pin.author);
+        const hookCount = getCreatorHookCount(pin.author);
+        
+        let displayImg = pin.img || '';
+        if (displayImg.includes('cloudinary.com') && !displayImg.includes('q_auto')) {
+            displayImg = displayImg.replace('/upload/', '/upload/q_auto,f_auto/');
+        }
+
         return `
         <div class="pin-card" onclick="openPinViewer('${pinKey}')">
-            <img src="${pin.img || ''}" alt="${pin.title || 'Pin'}">
-            <div class="pin-overlay" onclick="event.stopPropagation()">
-                <button class="pin-btn ${isLiked ? 'liked' : ''}" onclick="toggleLikePin('${pinKey}', event)">
-                    ${isLiked ? '❤️' : '🤍'} ${pin.likes || 0}
-                </button>
-                <button class="pin-btn" style="background: var(--accent-blue);" onclick="downloadPinImage('${pin.img}', '${pin.title}', event)">📥 Save</button>
-                ${isAuthor ? `<button class="pin-btn" style="background: rgba(239, 68, 68, 0.85);" onclick="deletePinServer('${pinKey}', event)">🗑️</button>` : ''}
+            <div class="pin-image-wrapper">
+                <img src="${displayImg}" alt="${pin.title || 'Pin'}" loading="lazy">
+                <div class="pin-overlay" onclick="event.stopPropagation()">
+                    <button class="pin-btn ${isLiked ? 'liked' : ''}" onclick="toggleLikePin('${pinKey}', event)">
+                        ${isLiked ? '❤️' : '🤍'} ${pin.likes || 0}
+                    </button>
+                    <button class="pin-btn save-btn" onclick="downloadPinImage('${displayImg}', '${pin.title}', event)">📥 Save</button>
+                    ${isAuthor ? `<button class="pin-btn delete-btn" onclick="deletePinServer('${pinKey}', event)">🗑️</button>` : ''}
+                </div>
             </div>
-            <div style="padding: 12px;">
-                <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--ink); margin-bottom: 4px;">${pin.title || 'Untitled'}</h4>
-                <span style="font-size: 0.75rem; color: var(--ink-light); font-weight: 600;">Pinned by @${pin.author || 'Student'}</span>
+            <div class="pin-footer" style="padding: 10px 12px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h4 class="pin-title" style="font-size: 0.85rem; font-weight: 800; color: var(--ink); margin-bottom: 2px;">${pin.title || 'Untitled'}</h4>
+                    <span class="pin-author" style="font-size: 0.7rem; color: var(--ink-light); font-weight: 600;">@${pin.author || 'Student'} • 🪝 ${hookCount} Hooks</span>
+                </div>
+                ${!isAuthor ? `
+                <button onclick="toggleHookFollow('${pin.author}', event)" style="background: ${isFollowed ? 'var(--paper)' : 'var(--accent-purple)'}; color: ${isFollowed ? 'var(--ink)' : '#fff'}; border: 1px solid var(--border); padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 800; cursor: pointer;">
+                    ${isFollowed ? 'Following 🪝' : 'Hook 🪝'}
+                </button>` : ''}
             </div>
         </div>
     `}).join('');
@@ -3953,8 +4044,8 @@ function renderPinsHtml(pins) {
 
 function openPinUploadModal() {
     let modalHtml = `
-        <div id="pinModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter: blur(4px); display:flex; align-items:center; justify-content:center; z-index:1000;">
-            <div style="background:var(--paper); border:1px solid var(--border); padding:2rem; border-radius:var(--radius); width:440px; box-shadow:var(--shadow-card); color:var(--ink);">
+        <div id="pinModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter: blur(5px); display:flex; align-items:center; justify-content:center; z-index:1000; padding:15px;">
+            <div style="background:var(--paper); border:1px solid var(--border); padding:1.75rem; border-radius:var(--radius); width:100%; max-width:420px; box-shadow:var(--shadow-card); color:var(--ink);">
                 <h3 style="margin-bottom:1rem; font-weight:800; font-size:1.1rem;">Create a New Pin 📌</h3>
                 
                 <label style="font-size:0.8rem; font-weight:700; color:var(--ink-light);">Pin Title</label>
@@ -3963,12 +4054,12 @@ function openPinUploadModal() {
                 <label style="font-size:0.8rem; font-weight:700; color:var(--ink-light);">Description / Notes</label>
                 <textarea id="pinDescInput" placeholder="Add a detailed description or study notes..." style="width:100%; background:var(--canvas); border:1px solid var(--border); color:var(--ink); border-radius:8px; padding:10px; outline:none; font-weight:600; height:70px; margin:4px 0 10px 0; resize:vertical;"></textarea>
 
-                <label style="font-size:0.8rem; font-weight:700; color:var(--ink-light);">Upload Image from Device 📁</label>
-                <input type="file" id="pinFileInput" accept="image/*" style="width:100%; margin:4px 0 15px 0; font-size:0.85rem;">
+                <label style="font-size:0.8rem; font-weight:700; color:var(--ink-light);">Upload Image (Auto Quality Enhanced) 📁</label>
+                <input type="file" id="pinFileInput" accept="image/*" style="width:100%; margin:4px 0 15px 0; font-size:0.85rem; color:var(--ink);">
 
                 <div style="display:flex; gap:10px;">
-                    <button class="btn-create" style="flex:1; background:var(--accent-purple);" onclick="submitNewPinServer()">Publish Pin ✨</button>
-                    <button class="action-btn" style="flex:1; background:var(--paper); color:var(--ink);" onclick="document.getElementById('pinModal').remove()">Cancel</button>
+                    <button class="btn-create" style="flex:1; background:var(--accent-purple); padding:10px;" onclick="submitNewPinServer()">Publish Pin ✨</button>
+                    <button class="action-btn" style="flex:1; background:var(--paper); color:var(--ink); border:1px solid var(--border); border-radius:8px; cursor:pointer;" onclick="document.getElementById('pinModal').remove()">Cancel</button>
                 </div>
             </div>
         </div>
@@ -3989,10 +4080,8 @@ async function submitNewPinServer() {
     const file = fileInput.files[0];
 
     try {
-        // 1. Upload directly to Cloudinary (Bypasses Render Bandwidth 100%)
         const imageUrl = await uploadToCloudinary(file);
 
-        // 2. Send lightweight JSON payload with the CDN URL to your backend
         const res = await fetch(`${API_URL}/api/pins`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -4002,7 +4091,7 @@ async function submitNewPinServer() {
         if (res.ok) {
             document.getElementById('pinModal').remove();
             loadAndRenderDiscoverPins();
-            alert('Pin published globally successfully! 📌');
+            alert('Pin published globally with auto-enhanced quality! 📌✨');
         } else {
             const errData = await res.json().catch(() => ({}));
             alert(errData.error || 'Failed to publish pin.');
@@ -4046,6 +4135,7 @@ function downloadPinImage(imgUrl, title, event) {
     if(event) event.stopPropagation();
     const a = document.createElement('a');
     a.href = imgUrl;
+    a.target = '_blank';
     a.download = (title ? title.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'hoknex_pin') + '.jpg';
     document.body.appendChild(a);
     a.click();
@@ -4061,43 +4151,116 @@ async function openPinViewer(pinId) {
     if(!pin) return;
 
     currentViewerPinId = pinId;
+
+    let lightbox = document.getElementById('pinLightbox');
+    if (!lightbox) {
+        const lightboxHtml = `
+            <div id="pinLightbox" class="lightbox-overlay" onclick="closePinViewer(event)" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 3000; align-items: center; justify-content: center; padding: 20px;">
+                <div style="background: var(--paper); border: 1px solid var(--border); border-radius: 20px; max-width: 950px; width: 100%; max-height: 90vh; display: flex; overflow: hidden; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.7);" onclick="event.stopPropagation()">
+                    <button onclick="closePinViewer(null, true)" style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.6); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-weight: 800; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;">✕</button>
+                    
+                    <div id="lightboxImgContainer" onclick="toggleImageZoom(this)" style="flex: 1.2; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: zoom-in; position: relative; min-height: 350px;">
+                        <img id="lbImg" src="" alt="Pin Image" style="max-width: 100%; max-height: 85vh; object-fit: contain; transition: transform 0.3s ease;">
+                        <span style="position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.6); color: #fff; font-size: 0.7rem; padding: 4px 8px; border-radius: 6px; pointer-events: none;">🔍 Tap/Click to Zoom</span>
+                    </div>
+
+                    <div style="width: 360px; padding: 2rem; display: flex; flex-direction: column; background: var(--paper); justify-content: space-between;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="action-btn" id="lbLikeBtn" onclick="toggleLikeInViewer()" style="border-radius: 20px; font-weight: 800;">❤️ 0</button>
+                                    <button class="btn-create" id="lbSaveBtn" onclick="downloadCurrentPinImage()" style="border-radius: 20px;">📥 Download</button>
+                                    <button class="action-btn" id="lbDeleteBtn" onclick="deleteCurrentLightboxPin()" style="background: rgba(239, 68, 68, 0.1); color: var(--accent-coral); border-color: rgba(239, 68, 68, 0.3); border-radius: 20px; display: none;">🗑️ Delete</button>
+                                </div>
+                            </div>
+                            <h2 id="lbTitle" style="font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; color: var(--ink);">Pin Title</h2>
+                            <p id="lbDesc" style="font-size: 0.9rem; color: var(--ink-light); font-weight: 600; margin-bottom: 20px; line-height: 1.5; word-break: break-word;">No description provided.</p>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 15px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="avatar-circle" id="lbAvatar" style="width: 40px; height: 40px;">U</div>
+                                <div>
+                                    <h4 id="lbAuthor" style="font-size: 0.9rem; font-weight: 800; color: var(--ink);">User</h4>
+                                    <p id="lbHookInfo" style="font-size: 0.75rem; color: var(--ink-light); font-weight: 600;">Hoknex Creator</p>
+                                </div>
+                            </div>
+                            <button id="lbHookBtn" onclick="toggleHookFollowFromViewer(event)" style="background: var(--accent-purple); color: #fff; border: none; padding: 6px 12px; border-radius: 14px; font-size: 0.75rem; font-weight: 800; cursor: pointer;">Hook 🪝</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', lightboxHtml);
+        lightbox = document.getElementById('pinLightbox');
+    }
+
     const imgElement = document.getElementById('lbImg');
-    imgElement.src = pin.img;
+    let displayImg = pin.img || '';
+    if (displayImg.includes('cloudinary.com') && !displayImg.includes('q_auto')) {
+        displayImg = displayImg.replace('/upload/', '/upload/q_auto,f_auto/');
+    }
+    imgElement.src = displayImg;
     imgElement.style.transform = "scale(1)";
 
     document.getElementById('lbTitle').innerText = pin.title || 'Untitled';
     document.getElementById('lbDesc').innerText = pin.desc || 'No description provided.';
     document.getElementById('lbAuthor').innerText = pin.author || 'Student';
     document.getElementById('lbAvatar').innerText = (pin.author || 'S').charAt(0).toUpperCase();
+    document.getElementById('lbHookInfo').innerText = `🪝 ${getCreatorHookCount(pin.author)} Hooks`;
 
-    const userLikes = getUserLikedPins();
-    const pinKey = pin._id || pin.id;
-    const isLiked = userLikes.includes(pinKey);
+    const currentLoggedInUser = localStorage.getItem('hoknex_user');
+    const isLiked = pin.likedBy && pin.likedBy.includes(currentLoggedInUser);
     document.getElementById('lbLikeBtn').innerHTML = `${isLiked ? '❤️' : '🤍'} ${pin.likes || 0}`;
+
+    const followedCreators = getUserFollowedCreators();
+    const isFollowed = followedCreators.includes(pin.author);
+    const hookBtn = document.getElementById('lbHookBtn');
+    if (hookBtn) {
+        if (pin.author === currentLoggedInUser) {
+            hookBtn.style.display = 'none';
+        } else {
+            hookBtn.style.display = 'block';
+            hookBtn.innerText = isFollowed ? 'Following 🪝' : 'Hook 🪝';
+            hookBtn.style.background = isFollowed ? 'var(--paper)' : 'var(--accent-purple)';
+            hookBtn.style.color = isFollowed ? 'var(--ink)' : '#fff';
+        }
+    }
 
     const deleteBtn = document.getElementById('lbDeleteBtn');
     if (deleteBtn) {
-        deleteBtn.style.display = (pin.author === localStorage.getItem('hoknex_user')) ? 'block' : 'none';
+        deleteBtn.style.display = (pin.author === currentLoggedInUser) ? 'block' : 'none';
     }
 
-    document.getElementById('pinLightbox').style.display = 'flex';
+    lightbox.style.display = 'flex';
+}
+
+function toggleHookFollowFromViewer(event) {
+    if (!currentViewerPinId) return;
+    fetchAllPins().then(pins => {
+        const pin = pins.find(p => (p._id && p._id.toString() === currentViewerPinId.toString()) || (p.id && p.id.toString() === currentViewerPinId.toString()));
+        if (pin) {
+            toggleHookFollow(pin.author, event);
+            openPinViewer(currentViewerPinId); // Refresh viewer hook state
+        }
+    });
 }
 
 function toggleImageZoom(container) {
     const img = container.querySelector('img');
     if (!img) return;
-    if (img.style.transform === "scale(1.75)") {
+    if (img.style.transform === "scale(1.8)") {
         img.style.transform = "scale(1)";
         container.style.cursor = "zoom-in";
     } else {
-        img.style.transform = "scale(1.75)";
+        img.style.transform = "scale(1.8)";
         container.style.cursor = "zoom-out";
     }
 }
 
 function closePinViewer(event, force=false) {
-    if(force || (event && event.target.id === 'pinLightbox')) {
-        document.getElementById('pinLightbox').style.display = 'none';
+    const lightbox = document.getElementById('pinLightbox');
+    if(lightbox && (force || (event && event.target.id === 'pinLightbox'))) {
+        lightbox.style.display = 'none';
         currentViewerPinId = null;
     }
 }
