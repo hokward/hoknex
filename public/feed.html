@@ -4882,14 +4882,13 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
         qrContainer.innerHTML = ''; 
         
         if (typeof QRCode !== 'undefined') {
-            // FIX: Encode ONLY the ticketId string so the QR code density is low and scans instantly!
             new QRCode(qrContainer, {
-                text: ticketId,
-                width: 150,
-                height: 150,
+                text: ticketId, // Encodes pure ticketId string for clean scanning
+                width: 160,
+                height: 160,
                 colorDark : "#000000",
                 colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.M
+                correctLevel : QRCode.CorrectLevel.L // Low correction reduces pixel crowding
             });
         } else {
             qrContainer.innerHTML = '<p style="color:red; font-size:12px;">QR Library Missing.</p>';
