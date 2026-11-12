@@ -1511,23 +1511,40 @@ mainView.innerHTML = `
                     <div id="usersList" class="posts-stream"></div>
                 `;
                 searchUsers();
-         } else if (view === 'discover') {
+       } else if (view === 'discover') {
     viewTitle.innerText = 'Discover Pinboard 📌';
+    
+    // Calculate live statistics from cache and local storage
+    const totalPinsCount = (typeof cachedPinsMemory !== 'undefined') ? cachedPinsMemory.length : 0;
+    const totalLikesCount = (typeof cachedPinsMemory !== 'undefined') ? cachedPinsMemory.reduce((sum, p) => sum + (p.likes || 0), 0) : 0;
+    
+    let totalHooksCount = 0;
+    try {
+        let allCounts = JSON.parse(localStorage.getItem('hoknex_real_hook_counts') || '{}');
+        totalHooksCount = Object.values(allCounts).reduce((a, b) => a + b, 0);
+    } catch(e) {}
+
     mainView.innerHTML = `
         <div class="post-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; background: linear-gradient(135deg, #ef4444 0%, #8b5cf6 100%); color: #fff; border: none;">
             <div>
                 <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 4px;">Hoknex Visual Pinboard 📌✨</h2>
-                <p style="font-size: 0.9rem; font-weight: 600; opacity: 0.9;">Explore campus aesthetics, designs, and notes. Pin and share your own!</p>
+                <p style="font-size: 0.9rem; font-weight: 600; opacity: 0.9; margin-bottom: 12px;">Explore campus aesthetics, designs, and notes. Pin and share your own!</p>
+                
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; font-size: 0.8rem; font-weight: 700; background: rgba(0,0,0,0.2); padding: 8px 14px; border-radius: 12px; backdrop-filter: blur(4px);">
+                    <span>📌 ${totalPinsCount} Pins</span>
+                    <span>🪝 ${totalHooksCount} Hooks</span>
+                    <span>❤️ ${totalLikesCount} Likes</span>
+                </div>
             </div>
             <button class="btn-create" style="background: #ffffff; color: var(--accent-purple);" onclick="openPinUploadModal()">+ Upload New Pin</button>
         </div>
 
         <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 15px;">
-            <button class="profile-tab-btn active" onclick="filterPins('all')">🌟 All Pins</button>
+            <button class="profile-tab-btn active" onclick="filterPins('all')">🎨 UI/UX</button>
             <button class="profile-tab-btn" onclick="filterPins('Study')">📚 Study Vibe</button>
             <button class="profile-tab-btn" onclick="filterPins('Coding')">💻 Coding</button>
             <button class="profile-tab-btn" onclick="filterPins('Campus')">🌅 Campus Life</button>
-            <button class="profile-tab-btn" onclick="filterPins('Design')">🎨 UI/UX</button>
+            <button class="profile-tab-btn" onclick="filterPins('Design')">✨ Aesthetics</button>
         </div>
 
         <div id="pinterestPinContainer">
