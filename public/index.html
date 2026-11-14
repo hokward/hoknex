@@ -462,7 +462,7 @@
 
         // --- DIRECT CLOUDINARY CONFIGURATION (Bypasses Render Bandwidth 100%) ---
         const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
-       const CLOUDINARY_UPLOAD_PREset = 'hoknex_uploads';
+        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads';
 
         async function uploadDirectToCloudinary(file) {
             const formData = new FormData();
@@ -543,7 +543,6 @@
             let screenshotUrl = '';
             if (screenshotInput.files && screenshotInput.files[0]) {
                 try {
-                    // Upload screenshot directly to Cloudinary (bypassing Render backend)
                     screenshotUrl = await uploadDirectToCloudinary(screenshotInput.files[0]);
                 } catch (err) {
                     showHoknexPopup('Upload Error', 'Failed to upload screenshot image directly to Cloudinary.', '❌');
@@ -716,19 +715,19 @@
         }
     </script>
 
-   <!--Start of Tawk.to Script-->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/6af8c6556f8b143c3f931dc2/1k7dsdghh';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
-<!--End of Tawk.to Script-->
+    <!-- Start of Tawk.to Script -->
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6af8c6556f8b143c3f931dc2/1k7dsdghh';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
+    <!-- End of Tawk.to Script -->
 
 </body>
 </html>
