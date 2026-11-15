@@ -4526,8 +4526,10 @@ function openMessageRequestModal(targetUser, actionType) {
       // --- EVENT SECTION LOGIC ---
 
 // ============================================================================
-// HOKNEX EVENT, RSVP & PROFESSIONAL APP-STYLE QR SCANNER + MANUAL FALLBACK
+// HOKNEX EVENT, RSVP & PROFESSIONAL APP-STYLE QR SCANNER + FIXED API URL
 // ============================================================================
+
+const API_URL = 'https://hoknex-backend.onrender.com';
 
 let html5QrCode = null;
 window.approvedOrganizersList = ['admin', 'aditya', 'bittu_lal'];
@@ -4630,7 +4632,6 @@ async function openVerifyModal() {
             readerEl.style.width = '100%';
         }
 
-        // Add Upload & Manual Fallback Box inside Modal UI if not already present
         let uploadContainer = document.getElementById('scannerUploadWrapper');
         if (!uploadContainer) {
             uploadContainer = document.createElement('div');
@@ -4693,7 +4694,6 @@ function startScanner() {
     openVerifyModal();
 }
 
-// Manual Verification Trigger from Input Box
 async function verifyTypedTicketCode() {
     const input = document.getElementById('manualTicketCodeInput');
     const ticketId = input ? input.value.trim() : '';
@@ -4710,7 +4710,6 @@ async function verifyTypedTicketCode() {
     input.value = '';
 }
 
-// File/Image QR Upload Scanner Handler with Fallback Notification
 async function scanQRCodeFromFile(inputElement) {
     const file = inputElement.files ? inputElement.files[0] : null;
     if (!file) return;
@@ -4744,15 +4743,9 @@ async function scanQRCodeFromFile(inputElement) {
     } catch (err) {
         console.error(`Error scanning file: ${err}`);
         try { await fileReaderInstance.clear(); } catch(e) {}
-        
-        // Friendly fallback prompt so you can easily copy-paste the ID if image decode fails
-        const fallbackId = prompt("⚠️ Image QR scan failed due to screenshot formatting.\n\nPlease check your ticket card for the Ticket ID (e.g., TKT-XXXXXX) and enter it here to verify:");
-        if (fallbackId && fallbackId.trim()) {
-            document.getElementById('scannerModal').style.display = 'none';
-            await verifyTicketCode(fallbackId.trim());
-        } else if (resultDiv) {
+        if (resultDiv) {
             resultDiv.style.background = 'rgba(239, 68, 68, 0.1)';
-            resultDiv.innerHTML = `<span style="color:#ef4444;">❌ Could not detect QR code in this image. Type the Ticket ID in the box below!</span>`;
+            resultDiv.innerHTML = `<span style="color:#ef4444;">❌ Could not detect QR code in this image. Type Ticket ID below!</span>`;
         }
     }
 }
