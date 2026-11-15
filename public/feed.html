@@ -4526,7 +4526,7 @@ function openMessageRequestModal(targetUser, actionType) {
       // --- EVENT SECTION LOGIC ---
 
 // ============================================================================
-// HOKNEX EVENT, RSVP & PROFESSIONAL APP-STYLE QR SCANNER SYSTEM
+// HOKNEX EVENT, RSVP & PROFESSIONAL APP-STYLE QR SCANNER + FILE UPLOAD SYSTEM
 // ============================================================================
 
 let html5QrCode = null;
@@ -4616,13 +4616,33 @@ function switchEventsTab(tabName, btnElement) {
     if (typeof loadEvents === 'function') loadEvents(tabName);
 }
 
-// --- 3. PROFESSIONAL APP-STYLE QR CAMERA SCANNER ---
+// --- 3. PROFESSIONAL SCANNER WITH LIVE CAMERA & FILE UPLOAD BACKUP ---
 async function openVerifyModal() {
     const scannerModal = document.getElementById('scannerModal');
     const resultDiv = document.getElementById('scanResult');
     
     if (scannerModal) {
         scannerModal.style.display = 'flex';
+        
+        // Dynamically ensure a file upload option is available inside the modal UI
+        let uploadContainer = document.getElementById('scannerUploadWrapper');
+        if (!uploadContainer) {
+            uploadContainer = document.createElement('div');
+            uploadContainer.id = 'scannerUploadWrapper';
+            uploadContainer.style.cssText = 'margin-top: 15px; text-align: center; padding: 10px; background: rgba(59,130,246,0.05); border-radius: 10px; border: 1px dashed var(--accent-blue);';
+            uploadContainer.innerHTML = `
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--accent-blue); cursor: pointer; display: block;">
+                    📁 Or Upload Ticket QR Image/Screenshot
+                    <input type="file" accept="image/*" onchange="scanQRCodeFromFile(this)" style="display: none;">
+                </label>
+            `;
+            // Append right after the reader or result div
+            const readerEl = document.getElementById('reader');
+            if (readerEl && readerEl.parentNode) {
+                readerEl.parentNode.insertBefore(uploadContainer, readerEl.nextSibling);
+            }
+        }
+
         if (resultDiv) {
             resultDiv.innerHTML = '<span style="color:var(--ink-light);">Initializing camera...</span>';
             resultDiv.style.background = 'transparent';
@@ -4639,7 +4659,7 @@ async function openVerifyModal() {
 
         const config = { 
             fps: 20, 
-            qrbox: { width: 260, height: 260 },
+            qrbox: { width: 250, height: 250 },
             aspectRatio: 1.0 
         };
 
@@ -4649,7 +4669,7 @@ async function openVerifyModal() {
                 config, 
                 onAppScanSuccess,
                 (errorMessage) => {
-                    // Suppress routine frame-by-frame scanning misses silently
+                    // Silently suppress routine frame-by-frame scanning misses
                 }
             );
             if (resultDiv) {
@@ -4658,7 +4678,7 @@ async function openVerifyModal() {
         } catch (err) {
             console.error("Camera start error:", err);
             if (resultDiv) {
-                resultDiv.innerHTML = `<span style="color:#ef4444; font-weight:700;">❌ Camera access denied or unavailable. Check browser permissions.</span>`;
+                resultDiv.innerHTML = `<span style="color:#ef4444; font-weight:700;">❌ Camera unavailable. Use the file upload option below!</span>`;
             }
         }
     }
@@ -4668,7 +4688,7 @@ function startScanner() {
     openVerifyModal();
 }
 
-// Optional: Scan QR from an uploaded image file
+// File/Image QR Upload Scanner Handler
 async function scanQRCodeFromFile(inputElement) {
     const file = inputElement.files ? inputElement.files[0] : null;
     if (!file) return;
@@ -4679,6 +4699,13 @@ async function scanQRCodeFromFile(inputElement) {
         resultDiv.style.background = 'transparent';
     }
 
+    // Stop live camera if running while scanning file
+    if (html5QrCode && html5QrCode.isScanning) {
+        try {
+            await html5QrCode.stop();
+        } catch (e) {}
+    }
+
     const fileReaderInstance = new Html5Qrcode("reader");
     try {
         const decodedText = await fileReaderInstance.scanFile(file, true);
@@ -4687,7 +4714,7 @@ async function scanQRCodeFromFile(inputElement) {
         console.error(`Error scanning file: ${err}`);
         if (resultDiv) {
             resultDiv.style.background = 'rgba(239, 68, 68, 0.1)';
-            resultDiv.innerHTML = `<span style="color:#ef4444;">❌ Could not detect QR code in this image. Try live camera scan.</span>`;
+            resultDiv.innerHTML = `<span style="color:#ef4444;">❌ Could not detect QR code in this image. Please upload a clear screenshot.</span>`;
         }
     }
 }
@@ -4695,7 +4722,6 @@ async function scanQRCodeFromFile(inputElement) {
 async function onAppScanSuccess(decodedText, decodedResult) {
     console.log(`Scan successful: ${decodedText}`);
     
-    // Stop camera immediately upon successful scan
     if (html5QrCode && html5QrCode.isScanning) {
         try {
             await html5QrCode.stop();
@@ -4875,8 +4901,7 @@ async function processRSVPAndGenerateTicket(eventId, eventTitle, eventLoc, type,
     }
 }
 
-// --- 5. TICKET QR GENERATOR ---
-// --- RESTORED DENSE TICKET QR GENERATOR ---
+// --- 5. DENSE JSON TICKET QR GENERATOR ---
 function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
     const ticketId = passedTicketId || ('TKT-' + Math.random().toString(36).substr(2, 6).toUpperCase());
     
@@ -4899,7 +4924,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
         qrContainer.innerHTML = ''; 
         
         if (typeof QRCode !== 'undefined') {
-            // Restored JSON payload + High correction for dense, scannable QR codes
+            // High-density JSON payload matching your working tickets
             const qrPayload = JSON.stringify({
                 eventId: eventId,
                 ticketId: ticketId,
@@ -4912,7 +4937,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
                 height: 180,
                 colorDark : "#000000",
                 colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H // Restores high density and reliability
+                correctLevel : QRCode.CorrectLevel.H 
             });
         } else {
             qrContainer.innerHTML = '<p style="color:red; font-size:12px;">QR Library Missing.</p>';
@@ -4922,6 +4947,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
     const ticketModal = document.getElementById('ticketModal');
     if (ticketModal) ticketModal.style.display = 'flex';
 }
+
 // --- 6. EVENT MANAGEMENT & UTILITIES ---
 async function deleteEvent(eventId) {
     if(!confirm("Are you sure you want to delete this event?")) return;
