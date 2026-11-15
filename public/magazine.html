@@ -63,14 +63,14 @@
         .books-section { max-width: 1400px; margin: 0 auto 5rem auto; padding: 0 4rem; }
         .books-section h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; margin-bottom: 1.5rem; border-bottom: 3px solid var(--border-color); padding-bottom: 8px; }
         .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2rem; }
-        .book-card { background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 14px; padding: 1rem; text-align: center; cursor: pointer; box-shadow: var(--shadow-zine); transition: transform 0.2s; }
+        .book-card { background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 14px; padding: 1rem; text-align: center; box-shadow: var(--shadow-zine); transition: transform 0.2s; display: flex; flex-direction: column; justify-content: space-between; }
         .book-card:hover { transform: translateY(-4px); }
-        .book-cover { width: 100%; height: 280px; object-fit: cover; border: 2px solid var(--border-color); border-radius: 8px; margin-bottom: 1rem; }
+        .book-cover { width: 100%; height: 260px; object-fit: cover; border: 2px solid var(--border-color); border-radius: 8px; margin-bottom: 1rem; cursor: pointer; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(35, 45, 47, 0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1.5rem; }
         .modal-panel { background: var(--bg-card); border: 4px solid var(--border-color); border-radius: 24px; padding: 3.5rem; width: 100%; max-width: 800px; box-shadow: 12px 12px 0px var(--border-color); position: relative; max-height: 90vh; overflow-y: auto; }
         
-        .book-reader-panel { background: #FAF9F6; border: 4px solid var(--border-color); border-radius: 24px; width: 100%; max-width: 900px; height: 80vh; display: flex; flex-direction: column; box-shadow: 15px 15px 0px var(--border-color); overflow: hidden; position: relative; }
+        .book-reader-panel { background: #FAF9F6; border: 4px solid var(--border-color); border-radius: 24px; width: 100%; max-width: 900px; height: 85vh; display: flex; flex-direction: column; box-shadow: 15px 15px 0px var(--border-color); overflow: hidden; position: relative; }
         .book-page-content { flex: 1; padding: 4rem; overflow-y: auto; font-family: 'Playfair Display', serif; font-size: 1.25rem; line-height: 2; color: #2C2C2C; background: #FFFDF9; border-bottom: 3px solid var(--border-color); text-align: justify; }
         .book-nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 2.5rem; background: var(--bg-card); }
 
@@ -175,12 +175,18 @@
         <div class="book-reader-panel">
             <div style="background: var(--border-color); color: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
                 <h3 id="readerBookTitle" style="font-family:'Playfair Display',serif; font-size: 1.2rem;">Book Title</h3>
-                <button onclick="closeBookReader()" style="background:#C27D65; color:#fff; border:none; width:30px; height:30px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <a id="readerDownloadPdfBtn" href="#" target="_blank" download style="display: none; background: var(--accent-sienna); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 900; text-decoration: none;">📥 Download PDF</a>
+                    <button onclick="closeBookReader()" style="background:#C27D65; color:#fff; border:none; width:30px; height:30px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+                </div>
             </div>
             <div class="book-page-content" id="bookPageText">Page loading...</div>
             <div class="book-nav-bar">
                 <button onclick="prevBookPage()" class="btn-subscribe-zine" style="background:var(--border-color);">← Previous Page</button>
-                <span id="bookPageIndicator" style="font-weight:900; font-size: 0.9rem;">Page 1 of 1</span>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <button onclick="saveManualBookmark()" class="btn-subscribe-zine" style="background: var(--accent-olive); padding: 0.4rem 0.9rem; font-size: 0.78rem;">📌 Save Bookmark</button>
+                    <span id="bookPageIndicator" style="font-weight:900; font-size: 0.9rem;">Page 1 of 1</span>
+                </div>
                 <button onclick="nextBookPage()" class="btn-subscribe-zine">Next Page →</button>
             </div>
         </div>
@@ -258,6 +264,7 @@
         let currentBooks = [];
         let activeBookPages = [];
         let currentBookPageIndex = 0;
+        let currentActiveBookId = null;
 
         async function loadMagazineData() {
             try {
@@ -335,10 +342,16 @@
                     return;
                 }
                 grid.innerHTML = currentBooks.map((b, idx) => `
-                    <div class="book-card" onclick="openBookReader(${idx})">
-                        <img src="${b.coverUrl}" class="book-cover" alt="${b.title}">
-                        <h4 style="font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:900; margin-bottom:4px;">${b.title}</h4>
-                        <p style="font-size:0.8rem; font-weight:800; color:var(--accent-sienna);">${b.author}</p>
+                    <div class="book-card">
+                        <div onclick="openBookReader(${idx})" style="cursor:pointer;">
+                            <img src="${b.coverUrl}" class="book-cover" alt="${b.title}">
+                            <h4 style="font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:900; margin-bottom:4px;">${b.title}</h4>
+                            <p style="font-size:0.8rem; font-weight:800; color:var(--accent-sienna); margin-bottom:10px;">${b.author}</p>
+                        </div>
+                        <div style="display:flex; gap:6px; justify-content:center;">
+                            <button onclick="openBookReader(${idx})" class="zine-filter-btn" style="padding:5px 10px; font-size:0.75rem;">📖 Read</button>
+                            ${b.pdfUrl ? `<a href="${b.pdfUrl}" target="_blank" download class="zine-filter-btn" style="padding:5px 10px; font-size:0.75rem; background:var(--accent-sienna); color:#fff; text-decoration:none;">📥 PDF</a>` : ''}
+                        </div>
                     </div>
                 `).join('');
             } catch(e) {}
@@ -410,12 +423,37 @@
 
         function closeModal() { document.getElementById('articleModal').style.display = 'none'; }
 
+        // --- BOOK READER WITH PERSISTENT BOOKMARKS ---
         function openBookReader(index) {
             const book = currentBooks[index];
             if(!book || !book.pages || book.pages.length === 0) { alert('Book pages not found.'); return; }
+            
+            currentActiveBookId = book._id || book.id || index;
             document.getElementById('readerBookTitle').innerText = book.title;
+
+            // Handle PDF download button visibility in reader header
+            const pdfBtn = document.getElementById('readerDownloadPdfBtn');
+            if (book.pdfUrl) {
+                pdfBtn.href = book.pdfUrl;
+                pdfBtn.style.display = 'inline-block';
+            } else {
+                pdfBtn.style.display = 'none';
+            }
+
             activeBookPages = book.pages;
-            currentBookPageIndex = 0;
+
+            // Check if a bookmark exists in localStorage
+            const savedPage = localStorage.getItem(`hoknex_bookmark_${currentActiveBookId}`);
+            if (savedPage !== null && Number(savedPage) < activeBookPages.length && Number(savedPage) > 0) {
+                if (confirm(`📌 Bookmark found on Page ${Number(savedPage) + 1}. Would you like to resume from where you left off?`)) {
+                    currentBookPageIndex = Number(savedPage);
+                } else {
+                    currentBookPageIndex = 0;
+                }
+            } else {
+                currentBookPageIndex = 0;
+            }
+
             updateBookPageDisplay();
             document.getElementById('bookReaderModal').style.display = 'flex';
         }
@@ -423,14 +461,32 @@
         function updateBookPageDisplay() {
             document.getElementById('bookPageText').innerText = activeBookPages[currentBookPageIndex];
             document.getElementById('bookPageIndicator').innerText = `Page ${currentBookPageIndex + 1} of ${activeBookPages.length}`;
+            
+            // Auto-save bookmark on page turn
+            if (currentActiveBookId) {
+                localStorage.setItem(`hoknex_bookmark_${currentActiveBookId}`, currentBookPageIndex);
+            }
+        }
+
+        function saveManualBookmark() {
+            if (currentActiveBookId) {
+                localStorage.setItem(`hoknex_bookmark_${currentActiveBookId}`, currentBookPageIndex);
+                alert(`📌 Bookmark saved successfully at Page ${currentBookPageIndex + 1}! You can safely exit and return anytime.`);
+            }
         }
 
         function nextBookPage() {
-            if (currentBookPageIndex < activeBookPages.length - 1) { currentBookPageIndex++; updateBookPageDisplay(); }
+            if (currentBookPageIndex < activeBookPages.length - 1) { 
+                currentBookPageIndex++; 
+                updateBookPageDisplay(); 
+            }
         }
 
         function prevBookPage() {
-            if (currentBookPageIndex > 0) { currentBookPageIndex--; updateBookPageDisplay(); }
+            if (currentBookPageIndex > 0) { 
+                currentBookPageIndex--; 
+                updateBookPageDisplay(); 
+            }
         }
 
         function closeBookReader() { document.getElementById('bookReaderModal').style.display = 'none'; }
@@ -473,7 +529,7 @@
         }
     </script>
 
-     <!-- Start of Tawk.to Script -->
+    <!-- Start of Tawk.to Script -->
     <script type="text/javascript">
     var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
     (function(){
