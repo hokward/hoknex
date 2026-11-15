@@ -78,14 +78,16 @@
         .coming-soon-container { padding: 3rem 4rem; max-width: 1400px; margin: 0 auto; }
         .coming-soon-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 4px; padding: 3rem; text-align: center; }
         .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
-        .drop-preview-card { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 4px; padding: 1.2rem; text-align: left; }
-        .drop-media { width: 100%; height: 320px; background: #E5E0D8; border-radius: 2px; overflow: hidden; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; }
-        .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: cover; }
+        .drop-preview-card { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 4px; padding: 1.2rem; text-align: left; transition: transform 0.25s ease; }
+        .drop-preview-card:hover { transform: translateY(-3px); }
+        .drop-media { width: 100%; height: 320px; background: #E5E0D8; border-radius: 2px; overflow: hidden; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
+        .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .drop-media:hover img { transform: scale(1.03); }
 
         .product-catalog-section { padding: 4rem; max-width: 1400px; margin: 0 auto; }
         .catalog-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5rem; margin-top: 2.5rem; }
 
-        /* --- BORDERLESS LUXURY PRODUCT CARDS (Box Completely Removed) --- */
+        /* --- BORDERLESS LUXURY PRODUCT CARDS --- */
         .product-card {
             background: transparent; border: none; border-radius: 0;
             padding: 0; display: flex; flex-direction: column; justify-content: space-between;
@@ -95,6 +97,7 @@
         .prod-img-box {
             width: 100%; height: 400px; background: #EAE5DC; border: none;
             border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1rem; overflow: hidden;
+            cursor: zoom-in;
         }
         .prod-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
         .product-card:hover .prod-img-box img { transform: scale(1.04); }
@@ -125,12 +128,56 @@
         .campaign-grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
         .campaign-tile { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; position: relative; transition: transform 0.3s ease; }
         .campaign-tile:hover { transform: translateY(-4px); }
-        .campaign-img-wrap { width: 100%; height: 380px; background: #E5E0D8; overflow: hidden; }
+        .campaign-img-wrap { width: 100%; height: 380px; background: #E5E0D8; overflow: hidden; cursor: zoom-in; }
         .campaign-img-wrap img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(15%); transition: filter 0.4s ease, transform 0.6s ease; }
         .campaign-tile:hover .campaign-img-wrap img { filter: grayscale(0%); transform: scale(1.03); }
         .campaign-caption { padding: 1.5rem; text-align: left; }
         .campaign-caption h4 { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.3rem; letter-spacing: 0.05em; font-family: 'Playfair Display', serif; }
         .campaign-caption p { font-size: 0.82rem; color: var(--text-muted); font-weight: 300; letter-spacing: 0.05em; }
+
+        /* Full Card Lightbox Modal (Amazon/Flipkart style with animation) */
+        .lightbox-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(44, 30, 22, 0.92); backdrop-filter: blur(16px);
+            display: none; justify-content: center; align-items: center; z-index: 30000;
+            padding: 2rem; animation: fadeInLightbox 0.3s ease;
+        }
+        .lightbox-panel {
+            position: relative; max-width: 90vw; max-height: 90vh;
+            animation: scaleUpLightbox 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            text-align: center;
+        }
+        .lightbox-panel img {
+            max-width: 85vw; max-height: 80vh; object-fit: contain;
+            border: 1px solid var(--border-color); border-radius: 4px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            background: #000;
+        }
+        .lightbox-caption {
+            color: #FAF6F0; margin-top: 1rem; font-family: 'Playfair Display', serif;
+            font-size: 1.2rem; letter-spacing: 0.05em;
+        }
+        .lightbox-close {
+            position: absolute; top: -45px; right: 0; background: transparent;
+            color: #FAF6F0; border: none; font-size: 2rem; cursor: pointer; font-weight: 300;
+            transition: opacity 0.2s;
+        }
+        .lightbox-close:hover { opacity: 0.7; }
+
+        @keyframes fadeInLightbox { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleUpLightbox { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* PDP Zoom Controls */
+        .zoomable-container {
+            position: relative; overflow: hidden; cursor: zoom-in;
+            border-radius: 2px; background: #E5E0D8; height: 380px; display: flex; align-items: center; justify-content: center;
+        }
+        .zoomable-container img {
+            transition: transform 0.3s ease; width: 100%; height: 100%; object-fit: cover;
+        }
+        .zoomable-container.zoomed img {
+            transform: scale(2); cursor: zoom-out;
+        }
 
         .store-footer { background: #2C1E16; color: #FAF6F0; padding: 6rem 4rem 3rem 4rem; margin-top: 6rem; border-top: 1px solid var(--border-color); position: relative; }
         .footer-newsletter { max-width: 700px; margin-bottom: 5rem; padding-bottom: 4rem; border-bottom: 1px solid rgba(250,246,240,0.15); }
@@ -172,6 +219,15 @@
     </style>
 </head>
 <body>
+
+    <!-- Lightbox Full Card View Modal -->
+    <div id="lightboxModal" class="lightbox-overlay" onclick="closeLightbox(event)">
+        <div class="lightbox-panel">
+            <button class="lightbox-close" onclick="closeLightbox(event)">&times;</button>
+            <img id="lightboxImg" src="" alt="Full View">
+            <div class="lightbox-caption" id="lightboxCaption"></div>
+        </div>
+    </div>
 
     <div id="proModalOverlay">
         <div id="proModalBox">
@@ -299,7 +355,11 @@
             <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:var(--text-main); border:none; width:36px; height:36px; font-size:1.2rem; cursor:pointer;">&times;</button>
             <div style="display:flex; gap:3rem; flex-wrap:wrap;">
                 <div style="flex:1; min-width:280px; text-align:center;">
-                    <div id="pdpMainBox" class="prod-img-box" style="height:380px; background:#E5E0D8;"><span id="pdpMainEmoji" style="font-size:5rem;">🧥</span></div>
+                    <!-- Zoomable Container in PDP -->
+                    <div id="pdpMainBox" class="zoomable-container" onclick="toggleZoom(this)">
+                        <span id="pdpMainEmoji" style="font-size:5rem;">🧥</span>
+                    </div>
+                    <p style="font-size:0.7rem; color:var(--text-muted); margin-top:6px; letter-spacing:0.05em;">Click image to Zoom In / Out</p>
                     <div id="pdpThumbnails" style="display:flex; gap:8px; margin-top:10px; justify-content:center;"></div>
                 </div>
                 <div style="flex:1; min-width:280px;">
@@ -396,6 +456,27 @@
         }
         function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
 
+        // --- Lightbox Functions for Full Card View ---
+        function openLightbox(imgSrc, title) {
+            const modal = document.getElementById('lightboxModal');
+            const img = document.getElementById('lightboxImg');
+            const caption = document.getElementById('lightboxCaption');
+            img.src = imgSrc;
+            caption.innerText = title || '';
+            modal.style.display = 'flex';
+        }
+
+        function closeLightbox(event) {
+            if (event.target.id === 'lightboxModal' || event.target.classList.contains('lightbox-close')) {
+                document.getElementById('lightboxModal').style.display = 'none';
+            }
+        }
+
+        // --- PDP Zoom Toggle ---
+        function toggleZoom(container) {
+            container.classList.toggle('zoomed');
+        }
+
         let defaultCatalog = [
             { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49, emoji: "🧥", badge: "New Drop", inStock: true, sizes: ['S', 'M', 'L', 'XL'], ratings: [5, 5, 4], votes: 12, description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.", galleryImages: ["🧥", "👔", "🔎"] },
             { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99, emoji: "👟", badge: "Best Seller", inStock: true, sizes: ['7', '8', '9', '10'], ratings: [5, 5, 5], votes: 8, description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.", galleryImages: ["👟", "🥾", "🔎"] }
@@ -437,7 +518,7 @@
             if(!drops || drops.length === 0) { section.style.display = 'none'; return; }
             section.style.display = 'block';
             grid.innerHTML = drops.map(d => `
-                <div class="drop-preview-card">
+                <div class="drop-preview-card" onclick="openLightbox('${d.image}', '${d.title}')">
                     <div class="drop-media">
                         ${d.image.includes('data:video') || d.image.includes('.mp4') ? `<video src="${d.image}" autoplay loop muted style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${d.image}" alt="Drop">`}
                     </div>
@@ -461,7 +542,7 @@
             ];
 
             container.innerHTML = displayCamps.map(c => `
-                <div class="campaign-tile">
+                <div class="campaign-tile" onclick="openLightbox('${c.image}', '${c.title}')">
                     <div class="campaign-img-wrap"><img src="${c.image}" alt="${c.title}"></div>
                     <div class="campaign-caption">
                         <h4>${c.title}</h4>
@@ -484,12 +565,14 @@
                 if(item.ratings && item.ratings.length > 0) {
                     avgRating = (item.ratings.reduce((a,b)=>a+b,0)/item.ratings.length).toFixed(1);
                 }
+                const imgSrc = item.image || '';
+                const titleStr = item.name;
                 return `
                     <div class="product-card" onclick="openPdpModal('${itemId}')">
                         <button class="btn-wishlist" onclick="event.stopPropagation(); toggleWishlist('${itemId}')">${isWishlisted ? '❤️' : '🤍'}</button>
                         <span style="position:absolute; top:16px; left:16px; background:#FAF6F0; color:var(--accent-terracotta); padding:2px 8px; font-size:0.6rem; font-weight:600; text-transform:uppercase; letter-spacing:0.15em; border:1px solid var(--border-color);">${item.badge || 'Atelier'}</span>
                         <div>
-                            <div class="prod-img-box">
+                            <div class="prod-img-box" onclick="event.stopPropagation(); openLightbox('${imgSrc || ''}', '${titleStr}')">
                                 ${item.image ? `<img src="${item.image}" alt="${item.name}">` : (item.emoji || '📦')}
                             </div>
                             <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -586,9 +669,12 @@
 
             const imgs = currentPdpItem.galleryImages && currentPdpItem.galleryImages.length > 0 ? currentPdpItem.galleryImages : [currentPdpItem.image || currentPdpItem.emoji || '📦'];
             
-            document.getElementById('pdpMainBox').innerHTML = imgs[0].startsWith('data:') || imgs[0].startsWith('http') ? `<img src="${imgs[0]}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:5rem;">${imgs[0]}</span>`;
+            const mainBox = document.getElementById('pdpMainBox');
+            mainBox.classList.remove('zoomed');
+            mainBox.innerHTML = imgs[0].startsWith('data:') || imgs[0].startsWith('http') ? `<img src="${imgs[0]}" alt="${currentPdpItem.name}">` : `<span style="font-size:5rem;">${imgs[0]}</span>`;
+            
             document.getElementById('pdpThumbnails').innerHTML = imgs.map((img, idx) => `
-                <div onclick="switchPdpImage(${idx})" style="width:50px; height:50px; background:#E5E0D8; border:1px solid var(--border-color); border-radius:2px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;">
+                <div onclick="switchPdpImage('${img}')" style="width:50px; height:50px; background:#E5E0D8; border:1px solid var(--border-color); border-radius:2px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;">
                     ${img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">` : img}
                 </div>
             `).join('');
@@ -628,10 +714,10 @@
             document.getElementById('pdpModal').style.display = 'flex';
         }
 
-        function switchPdpImage(idx) {
-            const imgs = currentPdpItem.galleryImages && currentPdpItem.galleryImages.length > 0 ? currentPdpItem.galleryImages : [currentPdpItem.image || currentPdpItem.emoji || '📦'];
-            const img = imgs[idx];
-            document.getElementById('pdpMainBox').innerHTML = img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:5rem;">${img}</span>`;
+        function switchPdpImage(img) {
+            const mainBox = document.getElementById('pdpMainBox');
+            mainBox.classList.remove('zoomed');
+            mainBox.innerHTML = img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" alt="Preview">` : `<span style="font-size:5rem;">${img}</span>`;
         }
 
         function selectSize(size, el) {
