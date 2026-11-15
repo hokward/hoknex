@@ -3,180 +3,213 @@
 <head>
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hoknex — Connect Every Campus in the World</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* Mobile-First Responsive & Ultra-Premium Enhancements */
-        @media (max-width: 968px) {
-            .hoknex-navbar {
-                padding: 1rem 1.5rem !important;
-            }
-            .nav-links {
-                display: none;
-            }
-            .hoknex-hero {
-                flex-direction: column !important;
-                padding: 2.5rem 1.5rem !important;
-                gap: 2rem !important;
-            }
-            .hero-left h1 {
-                font-size: 2.6rem !important;
-            }
-            .hero-right {
-                max-width: 100% !important;
-                padding: 2rem 1.5rem !important;
-            }
-            .hoknex-showcase, .hoknex-founder-section, .hoknex-footer-multi {
-                padding: 3rem 1.5rem !important;
-            }
-            .founder-card-box {
-                flex-direction: column !important;
-                padding: 2rem !important;
-                gap: 2rem !important;
-                text-align: center;
-            }
-            .founder-image-wrapper {
-                margin: 0 auto;
-            }
-            .footer-grid {
-                grid-template-columns: 1fr !important;
-                gap: 2.5rem !important;
-            }
-            .footer-bottom {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
+        :root {
+            --bg-deep: #0A1128;
+            --bg-alabaster: #F8F9FA;
+            --bg-white: #FFFFFF;
+            --text-navy: #0F172A;
+            --text-platinum: #E2E8F0;
+            --sapphire: #1E3A8A;
+            --bronze: #B48A5A;
+            --border-light: rgba(30, 58, 138, 0.15);
+            --shadow-card: 0 15px 35px rgba(10, 17, 40, 0.12);
         }
 
-        /* Upgraded Login / Create Account Theme (Neo-Glass Fusion) */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--bg-alabaster); color: var(--text-navy); min-height: 100vh; overflow-x: hidden; padding-bottom: env(safe-area-inset-bottom); }
+
+        /* Navbar */
+        .hoknex-navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.2rem 3rem; background: var(--bg-white); border-bottom: 2px solid var(--border-light);
+            position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(10,17,40,0.05);
+        }
+        .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 900; color: var(--text-navy); text-decoration: none; }
+        .logo-badge img { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a { color: var(--text-navy); text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--bronze); }
+        .btn-join { background: var(--sapphire); color: #fff; padding: 0.6rem 1.4rem; border-radius: 10px; font-weight: 800; text-decoration: none; transition: background 0.2s; }
+        .btn-join:hover { background: var(--bronze); }
+
+        /* Mobile App Bottom Navigation Bar */
+        .mobile-bottom-bar {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--bg-white); border-top: 2px solid var(--sapphire);
+            padding: 10px 1rem; z-index: 25000; justify-content: space-around; align-items: center;
+            box-shadow: 0 -4px 15px rgba(10,17,40,0.08);
+        }
+        .mob-nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            background: none; border: none; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+            color: var(--text-navy); cursor: pointer; text-decoration: none;
+        }
+        .mob-nav-item span.icon { font-size: 1.2rem; }
+
+        /* Hero Section (Deep Midnight Background) */
+        .hoknex-hero {
+            background: var(--bg-deep); color: var(--text-platinum);
+            padding: 5rem 3rem; display: flex; align-items: center; justify-content: space-between; gap: 3rem;
+            position: relative; overflow: hidden;
+        }
+        .hero-left { flex: 1; max-width: 650px; }
+        .pill-badge { display: inline-block; background: rgba(180, 138, 90, 0.15); color: var(--bronze); border: 1px solid var(--bronze); padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.2rem; }
+        .hero-left h1 { font-size: 3.5rem; font-weight: 900; line-height: 1.15; color: #FFFFFF; margin-bottom: 1.2rem; }
+        .hero-left h1 span { color: var(--bronze); font-style: italic; }
+        .hero-subtitle { color: var(--text-platinum); font-size: 1.05rem; font-weight: 600; line-height: 1.6; margin-bottom: 2rem; }
+
+        /* Live Stats */
+        .live-stats { display: flex; gap: 2rem; margin-top: 2.5rem; }
+        .stat-box h3 { font-size: 1.8rem; font-weight: 900; color: #FFFFFF; }
+        .stat-box p { font-size: 0.8rem; font-weight: 700; color: var(--text-platinum); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* Right Form Card (Pure White Surface) */
         .hero-right {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(10, 14, 23, 0.96) 100%) !important;
-            border: 2px solid rgba(255, 255, 255, 0.15) !important;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.15) !important;
+            background: var(--bg-white) !important; color: var(--text-navy) !important;
+            border-radius: 24px; padding: 2.5rem; box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            border: 2.5px solid var(--sapphire); width: 100%; max-width: 440px;
         }
-
         .auth-tabs {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            background: rgba(30, 58, 138, 0.06); border: 1.5px solid var(--border-light);
+            border-radius: 12px; padding: 4px; display: flex; margin-bottom: 1.5rem;
         }
+        .tab-btn { flex: 1; background: transparent; border: none; padding: 10px; font-weight: 800; color: var(--text-navy); cursor: pointer; border-radius: 8px; transition: all 0.2s; font-size: 0.88rem; }
+        .tab-btn.active { background: var(--sapphire) !important; color: #fff !important; }
 
+        .auth-form { display: flex; flex-direction: column; gap: 1.2rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-size: 0.78rem; font-weight: 900; text-transform: uppercase; color: var(--text-navy); letter-spacing: 0.05em; }
         .form-group input {
-            background: rgba(255, 255, 255, 0.06) !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
-            color: #fff !important;
+            background: var(--bg-alabaster) !important; border: 2px solid var(--border-light) !important;
+            padding: 12px 14px; border-radius: 12px; font-size: 16px !important; font-weight: 800; outline: none; color: var(--text-navy) !important; width: 100%;
         }
-
-        .form-group input:focus {
-            border-color: var(--accent-cyan) !important;
-            background: rgba(255, 255, 255, 0.1) !important;
+        .form-group input:focus { border-color: var(--bronze) !important; box-shadow: 0 0 0 3px rgba(180, 138, 90, 0.2); }
+        .btn-primary {
+            background: var(--sapphire); color: #fff; border: none; padding: 0.95rem;
+            border-radius: 12px; font-weight: 900; cursor: pointer; width: 100%;
+            text-transform: uppercase; letter-spacing: 0.08em; transition: background 0.2s;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
         }
+        .btn-primary:hover { background: var(--bronze); }
 
-        /* Store-Style Movement & Multi-Column Footer */
+        /* Showcase Vision Section */
+        .hoknex-showcase { padding: 5rem 3rem; max-width: 1300px; margin: 0 auto; text-align: center; }
+        .showcase-header h2 { font-size: 2.4rem; font-weight: 900; color: var(--text-navy); margin-bottom: 0.5rem; }
+        .showcase-header h2 span { color: var(--sapphire); }
+        .showcase-header p { color: var(--text-muted); font-size: 1rem; font-weight: 700; margin-bottom: 3rem; }
+        .showcase-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem; text-align: left; }
+        .showcase-card {
+            background: var(--bg-white); border: 2px solid var(--border-light); border-radius: 20px;
+            padding: 2.2rem; box-shadow: var(--shadow-card); transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+        .showcase-card:hover { transform: translateY(-6px); border-color: var(--sapphire); }
+        .card-tag { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 0.72rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1rem; }
+        .showcase-card h3 { font-size: 1.25rem; font-weight: 900; color: var(--text-navy); margin-bottom: 0.6rem; }
+        .showcase-card p { font-size: 0.9rem; font-weight: 700; color: var(--text-muted); line-height: 1.5; }
+
+        /* Founder Section */
+        .hoknex-founder-section { padding: 3rem; max-width: 1200px; margin: 0 auto; }
+        .founder-card-box {
+            background: var(--bg-white); border: 2.5px solid var(--sapphire); border-radius: 24px;
+            padding: 3.5rem; display: flex; align-items: center; gap: 3.5rem; box-shadow: var(--shadow-card);
+        }
+        .founder-image-wrapper img { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 4px solid var(--bronze); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .founder-content .founder-tag { color: var(--bronze); font-size: 0.78rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; display: inline-block; margin-bottom: 0.5rem; }
+        .founder-content h3 { font-size: 2rem; font-weight: 900; color: var(--text-navy); margin-bottom: 1rem; line-height: 1.2; }
+        .founder-content h3 span { color: var(--sapphire); }
+        .founder-quote { font-size: 1.05rem; font-weight: 700; font-style: italic; color: var(--text-muted); line-height: 1.7; margin-bottom: 1.5rem; }
+        .founder-signature { font-weight: 900; font-size: 1.1rem; color: var(--text-navy); }
+        .founder-signature span { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-top: 2px; }
+
+        /* Multi-Column Footer */
         .hoknex-footer-multi {
-            background: #111827;
-            color: #F5F2EB;
-            padding: 5rem 4rem 3rem 4rem;
-            margin-top: 4rem;
-            border-top: 3px solid #1E3A8A;
-            position: relative;
-            overflow: hidden;
-            text-align: left;
+            background: var(--bg-deep); color: var(--text-platinum);
+            padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 3px solid var(--sapphire);
+            position: relative; overflow: hidden; text-align: left;
         }
-        .footer-newsletter {
-            max-width: 800px;
-            margin-bottom: 4rem;
-            padding-bottom: 3rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-            position: relative;
-            z-index: 2;
-        }
+        .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.15); position: relative; z-index: 2; }
         .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; }
-        .footer-newsletter p { color: #CCBEB1; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
-        .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; }
+        .footer-newsletter p { color: var(--text-platinum); font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; flex-wrap: wrap; }
         .newsletter-input-group input {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.06);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            padding: 12px 16px;
-            border-radius: 10px;
-            color: #fff;
-            font-weight: 800;
-            outline: none;
+            flex: 1; min-width: 220px; background: rgba(255, 255, 255, 0.06); border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 16px; border-radius: 10px; color: #fff; font-weight: 800; outline: none; font-size: 16px !important;
         }
         .btn-newsletter {
-            background: #D9822B;
-            color: #fff;
-            border: none;
-            padding: 0 2rem;
-            border-radius: 10px;
-            font-weight: 900;
-            cursor: pointer;
-            transition: transform 0.15s;
+            background: var(--bronze); color: #fff; border: none; padding: 0 2rem;
+            border-radius: 10px; font-weight: 900; cursor: pointer; transition: transform 0.15s;
         }
         .btn-newsletter:hover { transform: translateY(-2px); }
 
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2.5rem;
-            font-size: 0.88rem;
-            position: relative;
-            z-index: 2;
-        }
+        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5rem; font-size: 0.88rem; position: relative; z-index: 2; }
         .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FAF9F6; text-transform: uppercase; letter-spacing: 1px; }
         .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
-        .footer-col a { color: #CCBEB1; text-decoration: none; font-weight: 700; cursor: pointer; transition: color 0.2s; }
+        .footer-col a { color: var(--text-platinum); text-decoration: none; font-weight: 700; cursor: pointer; transition: color 0.2s; }
         .footer-col a:hover { color: #fff; }
-        .footer-col p { color: #CCBEB1; font-size: 0.9rem; font-weight: 600; line-height: 1.5; }
+        .footer-col p { color: var(--text-platinum); font-size: 0.9rem; font-weight: 600; line-height: 1.5; }
         .footer-watermark {
-            position: absolute;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 15vw;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.03);
-            white-space: nowrap;
-            pointer-events: none;
-            z-index: 1;
-            letter-spacing: -5px;
+            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+            font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.03); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px;
+        }
+
+        /* Modals & Popups */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 17, 40, 0.85); backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center; z-index: 40000; padding: 1.5rem;
+        }
+        .modal-content {
+            background: var(--bg-white); border: 3px solid var(--sapphire); border-radius: 20px;
+            padding: 2.5rem; width: 100%; max-width: 600px; position: relative; box-shadow: 15px 15px 0px rgba(10,17,40,0.2);
+            color: var(--text-navy); max-height: 85vh; overflow-y: auto; text-align: left;
+        }
+        .modal-content h2 { font-size: 1.8rem; font-weight: 900; color: var(--sapphire); margin-bottom: 1rem; }
+        .modal-content p, .modal-content li { font-size: 0.95rem; font-weight: 700; color: var(--text-muted); line-height: 1.7; margin-bottom: 0.8rem; }
+        .modal-content ul { padding-left: 20px; margin-bottom: 1rem; }
+        .close-modal {
+            position: absolute; top: 20px; right: 20px; background: var(--bg-alabaster); color: var(--text-navy);
+            border: 2px solid var(--border-light); width: 36px; height: 36px; border-radius: 50%; font-weight: 900; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
         }
 
         /* Premium Toast Notification */
-        #hoknexToastContainer {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
-        }
+        #hoknexToastContainer { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
         .hoknex-toast {
-            background: rgba(13, 18, 30, 0.95);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 14px 20px;
-            border-radius: 14px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            pointer-events: auto;
-            animation: slideInToast 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            max-width: 380px;
+            background: rgba(10, 17, 40, 0.95); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 14px 20px;
+            border-radius: 14px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); display: flex; align-items: center;
+            gap: 12px; font-size: 0.95rem; font-weight: 700; pointer-events: auto;
+            animation: slideInToast 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; max-width: 380px;
         }
-        @keyframes slideInToast {
-            from { transform: translateX(100%) scale(0.9); opacity: 0; }
-            to { transform: translateX(0) scale(1); opacity: 1; }
+        @keyframes slideInToast { from { transform: translateX(100%) scale(0.9); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
+
+        /* --- MOBILE RESPONSIVENESS & APP-LIKE ADAPTATIONS --- */
+        @media (max-width: 968px) {
+            body { padding-bottom: 75px; }
+            .hoknex-navbar { padding: 1rem 1.2rem !important; }
+            .nav-links { display: none !important; }
+            .mobile-bottom-bar { display: flex !important; }
+            .hoknex-hero { flex-direction: column !important; padding: 3rem 1.2rem !important; gap: 2.5rem !important; text-align: center; }
+            .hero-left { max-width: 100% !important; display: flex; flex-direction: column; align-items: center; }
+            .hero-left h1 { font-size: 2.4rem !important; }
+            .hero-right { max-width: 100% !important; padding: 2rem 1.2rem !important; }
+            .hoknex-showcase, .hoknex-founder-section, .hoknex-footer-multi { padding: 3rem 1.2rem !important; }
+            .founder-card-box { flex-direction: column !important; padding: 2rem 1.2rem !important; gap: 1.5rem !important; text-align: center; }
+            .founder-image-wrapper { margin: 0 auto; }
+            .footer-grid { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
+            
+            /* App-like Bottom Sheet Modals on Mobile */
+            .modal-content {
+                padding: 1.8rem 1.2rem; max-height: 92vh;
+                border-radius: 24px 24px 0 0; position: fixed; bottom: 0; left: 0; width: 100%; max-width: 100% !important;
+                animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+            @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
         }
     </style>
 </head>
@@ -198,6 +231,14 @@
         <a href="#auth-box" class="btn-join">Join Network</a>
     </header>
 
+    <!-- Mobile App Bottom Navigation Bar -->
+    <nav class="mobile-bottom-bar">
+        <a href="index.html" class="mob-nav-item" style="color:var(--sapphire);"><span class="icon">🏠</span>Hub</a>
+        <a href="store.html" class="mob-nav-item"><span class="icon">🛍️</span>Store</a>
+        <a href="magazine.html" class="mob-nav-item"><span class="icon">📰</span>Zine</a>
+        <a href="donation.html" class="mob-nav-item"><span class="icon">☕</span>Support</a>
+    </nav>
+
     <!-- Hero Section -->
     <section class="hoknex-hero">
         <div class="hero-left">
@@ -206,11 +247,11 @@
             <p class="hero-subtitle">Hoknex is the ultimate global student network. Bringing together colleges, schools, and campus communities from every corner of the planet into one powerful platform.</p>
             
             <!-- Cartoon Animal Mascot Widget (Raccoon Hacker Theme) -->
-            <div class="mascot-container" style="display:flex; align-items:center; gap:14px; background:var(--paper); border:3px solid var(--border); padding:14px 18px; border-radius:16px; box-shadow:var(--shadow-art-sm); width:fit-content; margin-bottom:2rem;">
+            <div class="mascot-container" style="display:flex; align-items:center; gap:14px; background:var(--bg-white); border:2px solid var(--border-light); padding:14px 18px; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.1); width:fit-content; margin-bottom:2rem; color:var(--text-navy);">
                 <div class="mascot-avatar" style="font-size:2.2rem;">🦝</div>
                 <div class="mascot-text">
-                    <p style="font-weight:900; font-size:0.98rem; color:var(--ink);">Raccoon Hacker says hello! 🦝✨</p>
-                    <span style="font-size:0.82rem; color:var(--ink-light); font-weight:800;">Your campus mascot guiding global student builders</span>
+                    <p style="font-weight:900; font-size:0.98rem; color:var(--text-navy);">Raccoon Hacker says hello! 🦝✨</p>
+                    <span style="font-size:0.82rem; color:var(--text-muted); font-weight:800;">Your campus mascot guiding global student builders</span>
                 </div>
             </div>
 
@@ -247,7 +288,7 @@
                     <input type="password" id="loginPassword" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="btn-primary">Sign In 🚀</button>
-                <p id="loginError" class="error-msg" style="color:#fb7185; font-size:0.85rem; margin-top:5px;"></p>
+                <p id="loginError" class="error-msg" style="color:#ef4444; font-size:0.85rem; margin-top:5px; font-weight:800;"></p>
             </form>
 
             <!-- Create Account Form -->
@@ -271,7 +312,7 @@
                 
                 <!-- OTP Input (Hidden by default) -->
                 <div class="form-group" id="otpGroup" style="display:none;">
-                    <label style="color: var(--accent-cyan); font-weight: bold;">Enter 6-Digit OTP from Email</label>
+                    <label style="color: var(--sapphire); font-weight: bold;">Enter 6-Digit OTP from Email</label>
                     <input type="text" id="otpInput" placeholder="123456" maxlength="6">
                 </div>
 
@@ -289,22 +330,22 @@
 
         <div class="showcase-grid">
             <div class="showcase-card" onclick="window.location.href='store.html'" style="cursor:pointer;">
-                <span class="card-tag" style="background:var(--accent-yellow);">🛍️ Hoknex Store</span>
+                <span class="card-tag" style="background:#FEF3C7; color:#B45309;">🛍️ Hoknex Store</span>
                 <h3>Campus Swag & Tech Kits</h3>
                 <p>Grab official Hoknex hoodies, developer stickers, hardware prototyping kits, and custom student merchandise.</p>
             </div>
             <div class="showcase-card" onclick="window.location.href='magazine.html'" style="cursor:pointer;">
-                <span class="card-tag" style="background:var(--accent-cyan); color:#fff;">📖 Hoknex Magazine</span>
+                <span class="card-tag" style="background:#E0F2FE; color:#0369A1;">📖 Hoknex Magazine</span>
                 <h3>Global Student Stories</h3>
                 <p>Read cutting-edge articles, student startup spotlights, indie game showcases, and technical engineering deep-dives.</p>
             </div>
             <div class="showcase-card" onclick="window.location.href='donation.html'" style="cursor:pointer;">
-                <span class="card-tag" style="background:var(--accent-coral); color:#fff;">💖 Hoknex Fund</span>
+                <span class="card-tag" style="background:#FCE7F3; color:#BE185D;">💖 Hoknex Fund</span>
                 <h3>Crowdfund & Donate</h3>
                 <p>Support student innovators, fund open-source campus hackathons, and back peer-led community projects.</p>
             </div>
             <div class="showcase-card" onclick="openFeaturesModal()" style="cursor:pointer;">
-                <span class="card-tag" style="background:var(--accent-purple); color:#fff;">⚡ Platform Core</span>
+                <span class="card-tag" style="background:#EDE9FE; color:#6D28D9;">⚡ Platform Core</span>
                 <h3>The Social Network</h3>
                 <p>Real-time campus feeds, project launchpads, club management, and global student chat rooms.</p>
             </div>
@@ -345,7 +386,7 @@
         <div class="footer-grid">
             <div class="footer-col">
                 <div class="nav-brand" style="margin-bottom: 1rem;">
-                    <span class="logo-badge" style="background:var(--accent-orange); color:#fff; padding:6px 10px; border-radius:8px; font-weight:900;">H</span> <strong style="color:#fff; font-size:1.1rem;">Hoknex</strong>
+                    <span class="logo-badge" style="background:var(--bronze); color:#fff; padding:6px 10px; border-radius:8px; font-weight:900;">H</span> <strong style="color:#fff; font-size:1.1rem;">Hoknex</strong>
                 </div>
                 <p>Run by students, for students. Hoknex connects every school and college campus in the world into a single student network.</p>
             </div>
@@ -374,7 +415,7 @@
                 </ul>
             </div>
         </div>
-        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #CCBEB1; position: relative; z-index: 2;">
+        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #CCBEB1; position: relative; z-index: 2; flex-wrap: wrap; gap: 10px;">
             <span>&copy; 2026 Hoknex Platform. All rights reserved. Built for global campus connectivity.</span>
             <span>System Status: <span style="color:#22c55e;">● Live & Connected</span></span>
         </div>
@@ -382,18 +423,18 @@
     </footer>
 
     <!-- Universal Modern Centered Notification / Popup Modal -->
-    <div id="hoknexPopupModal" class="modal-overlay">
-        <div class="modal-content text-center" style="max-width: 420px; text-align: center;">
+    <div id="hoknexPopupModal" class="modal-overlay" onclick="if(event.target === this) closePopupModal()">
+        <div class="modal-content" style="max-width: 420px; text-align: center;">
             <button class="close-modal" onclick="closePopupModal()">&times;</button>
             <div id="popupModalEmoji" style="font-size: 3rem; margin-bottom: 0.5rem;">✨</div>
             <h2 id="popupModalTitle" style="font-size: 1.6rem; margin-bottom: 0.75rem;">Notice</h2>
-            <p id="popupModalText" style="margin-bottom: 1.8rem; font-size: 0.98rem; line-height: 1.6; color: var(--ink-light);">Message goes here...</p>
+            <p id="popupModalText" style="margin-bottom: 1.8rem; font-size: 0.98rem; line-height: 1.6; color: var(--text-muted);">Message goes here...</p>
             <button class="btn-primary" onclick="closePopupModal()" style="width: 100%; padding: 0.9rem;">Got it!</button>
         </div>
     </div>
 
     <!-- Modals for Features, Privacy, Terms, and Support -->
-    <div id="featuresModal" class="modal-overlay">
+    <div id="featuresModal" class="modal-overlay" onclick="if(event.target === this) closeModal('featuresModal')">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('featuresModal')">&times;</button>
             <h2>🚀 Hoknex Platform Features</h2>
@@ -408,7 +449,7 @@
         </div>
     </div>
 
-    <div id="privacyModal" class="modal-overlay">
+    <div id="privacyModal" class="modal-overlay" onclick="if(event.target === this) closeModal('privacyModal')">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('privacyModal')">&times;</button>
             <h2>🔒 Hoknex Privacy Policy</h2>
@@ -420,7 +461,7 @@
         </div>
     </div>
 
-    <div id="termsModal" class="modal-overlay">
+    <div id="termsModal" class="modal-overlay" onclick="if(event.target === this) closeModal('termsModal')">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('termsModal')">&times;</button>
             <h2>📜 Hoknex Terms of Service</h2>
@@ -431,25 +472,25 @@
         </div>
     </div>
 
-    <div id="supportModal" class="modal-overlay">
+    <div id="supportModal" class="modal-overlay" onclick="if(event.target === this) closeModal('supportModal')">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('supportModal')">&times;</button>
             <h2>🛠️ Hoknex Platform Support</h2>
             <p>Need assistance or have queries? Reach out to our official team directly:</p>
-            <p>📧 <strong>Official Email:</strong> <a href="mailto:support@hoknex.edu" style="color: var(--accent-blue); text-decoration: none;">support@hoknex.edu</a></p>
+            <p>📧 <strong>Official Email:</strong> <a href="mailto:support@hoknex.edu" style="color: var(--sapphire); text-decoration: none;">support@hoknex.edu</a></p>
             <p>📞 <strong>Send Message:</strong> In Queries Section (Mon-Fri, 9 AM - 6 PM)</p>
             
-            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 1.5rem 0;">
+            <hr style="border: 0; border-top: 1px solid rgba(15,23,42,0.1); margin: 1.5rem 0;">
 
-            <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 0.75rem;">Send a query directly to the Hoknex team</h3>
+            <h3 style="font-size: 1.1rem; color: var(--text-navy); margin-bottom: 0.75rem;">Send a query directly to the Hoknex team</h3>
             <form onsubmit="handleSupportSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem;">
                 <div class="form-group">
                     <label>Describe your problem or feedback</label>
-                    <textarea id="supportDesc" rows="3" placeholder="Tell us what's going wrong or what feature you need..." required style="background:rgba(8,12,20,0.75); border:1.5px solid rgba(255,255,255,0.12); padding:12px; border-radius:12px; color:#fff; outline:none; resize:vertical; font-family:'Plus Jakarta Sans',sans-serif;"></textarea>
+                    <textarea id="supportDesc" rows="3" placeholder="Tell us what's going wrong or what feature you need..." required style="background:var(--bg-alabaster); border:2px solid var(--border-light); padding:12px; border-radius:12px; color:var(--text-navy); outline:none; resize:vertical; font-family:'Plus Jakarta Sans',sans-serif; font-size:16px;"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Attach screenshot (Optional)</label>
-                    <input type="file" id="supportScreenshot" accept="image/*" style="color:#fff; font-size:0.85rem;">
+                    <input type="file" id="supportScreenshot" accept="image/*" style="color:var(--text-navy); font-size:0.85rem;">
                 </div>
                 <button type="submit" class="btn-primary">Submit to Hoknex Team 🚀</button>
             </form>
@@ -460,7 +501,7 @@
     <script>
         const API_URL = 'https://hoknex-backend.onrender.com';
 
-        // --- DIRECT CLOUDINARY CONFIGURATION (Bypasses Render Bandwidth 100%) ---
+        // --- DIRECT CLOUDINARY CONFIGURATION ---
         const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
         const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads';
 
