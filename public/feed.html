@@ -4525,6 +4525,13 @@ function openMessageRequestModal(targetUser, actionType) {
 
       // --- EVENT SECTION LOGIC ---
 
+// ============================================================================
+// HOKNEX EVENT, RSVP & ORGANIZER TICKET SCANNER SYSTEM
+// ============================================================================
+
+let html5QrcodeScanner = null;
+window.approvedOrganizersList = ['admin', 'aditya', 'bittu_lal'];
+
 // --- 1. LOAD EVENTS & TICKETS SYSTEM ---
 async function loadEvents(tab = 'explore') {
     const container = document.getElementById('eventsList');
@@ -4597,7 +4604,7 @@ async function loadEvents(tab = 'explore') {
     }
 }
 
-// --- 2. OPEN CREATE EVENT MODAL ---
+// --- 2. MODAL & TAB CONTROLLERS ---
 function openCreateEventModal() {
     const modal = document.getElementById('createEventModal');
     if (modal) {
@@ -4607,7 +4614,6 @@ function openCreateEventModal() {
     }
 }
 
-// --- 3. SWITCH EVENTS TAB ---
 function switchEventsTab(tabName, btnElement) {
     document.querySelectorAll('.profile-tab-btn').forEach(btn => btn.classList.remove('active'));
     if (btnElement) btnElement.classList.add('active');
@@ -4617,9 +4623,7 @@ function switchEventsTab(tabName, btnElement) {
     }
 }
 
-// --- 4. ORGANIZER TICKET SCANNER & FILE SCAN LOGIC ---
-let html5QrcodeScanner = null;
-
+// --- 3. ORGANIZER TICKET SCANNER & FILE SCAN LOGIC ---
 function openVerifyModal() {
     const scannerModal = document.getElementById('scannerModal');
     const resultDiv = document.getElementById('scanResult');
@@ -4632,7 +4636,6 @@ function openVerifyModal() {
         }
         
         if (!html5QrcodeScanner) {
-            // Passing { rememberLastUsedCamera: true } and cleaner config
             html5QrcodeScanner = new Html5QrcodeScanner(
                 "reader", 
                 { 
@@ -4644,19 +4647,17 @@ function openVerifyModal() {
             );
         }
 
-        html5QrcodeScanner.render(
-            onScanSuccess, 
-            (error) => {
-                // Completely suppress live frame errors so the red box never pops up
-            }
-        );
+        html5QrcodeScanner.render(onScanSuccess, (error) => {
+            // Suppress frame scan errors
+        });
     }
 }
+
 function startScanner() {
     openVerifyModal();
 }
 
-// 🌟 ROBUST FILE SCANNER HANDLER (Fixes the "No MultiFormat Readers" error on image upload/drop)
+// File/Image QR Upload Handler
 async function scanQRCodeFromFile(inputElement) {
     const file = inputElement.files ? inputElement.files[0] : null;
     if (!file) return;
@@ -4677,7 +4678,7 @@ async function scanQRCodeFromFile(inputElement) {
         console.error(`Error scanning file: ${err}`);
         if (resultDiv) {
             resultDiv.style.background = 'rgba(239, 68, 68, 0.1)';
-            resultDiv.innerHTML = `<span style="color:#ef4444;">❌ Could not read QR from image. Try using live camera scan instead.</span>`;
+            resultDiv.innerHTML = `<span style="color:#ef4444;">❌ Could not read QR from image. Try live camera scan.</span>`;
         }
     }
 }
@@ -4697,14 +4698,14 @@ async function onScanSuccess(decodedText, decodedResult) {
     const scannerModal = document.getElementById('scannerModal');
     if (scannerModal) scannerModal.style.display = 'none';
 
-    let ticketId = decodedText;
+    let ticketId = decodedText.trim();
     try {
         const parsedData = JSON.parse(decodedText);
         if (parsedData.ticketId) {
             ticketId = parsedData.ticketId;
         }
     } catch (e) {
-        // Fallback for plain text ticket IDs
+        // Plain text string ticketId fallback
     }
 
     await verifyTicketCode(ticketId);
@@ -4741,7 +4742,7 @@ function closeScanner() {
     if (scannerModal) scannerModal.style.display = 'none';
 }
 
-// --- 5. SUBMIT ENHANCED EVENT & RSVP SYSTEM ---
+// --- 4. SUBMIT EVENT & RSVP SYSTEM ---
 async function submitEnhancedEvent() {
     const title = document.getElementById('evTitle') ? document.getElementById('evTitle').value : '';
     const location = document.getElementById('evLoc') ? document.getElementById('evLoc').value : '';
@@ -4859,7 +4860,7 @@ async function processRSVPAndGenerateTicket(eventId, eventTitle, eventLoc, type,
     }
 }
 
-// --- UPDATED TICKET QR GENERATOR (Encodes pure ticketId for instant scanning) ---
+// --- 5. TICKET QR GENERATOR (Encodes pure ticketId for instant scanning) ---
 function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
     const ticketId = passedTicketId || ('TKT-' + Math.random().toString(36).substr(2, 6).toUpperCase());
     
@@ -4883,7 +4884,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
         
         if (typeof QRCode !== 'undefined') {
             new QRCode(qrContainer, {
-                text: ticketId, // Encodes pure ticketId string for clean scanning
+                text: ticketId, // Pure ticketId string for robust camera scanning
                 width: 160,
                 height: 160,
                 colorDark : "#000000",
@@ -4898,6 +4899,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
     const ticketModal = document.getElementById('ticketModal');
     if (ticketModal) ticketModal.style.display = 'flex';
 }
+
 // --- 6. EVENT MANAGEMENT & UTILITIES ---
 async function deleteEvent(eventId) {
     if(!confirm("Are you sure you want to delete this event?")) return;
@@ -5014,8 +5016,7 @@ function forceShowOrganizerButtons() {
     }
 }
 
-window.approvedOrganizersList = ['admin', 'aditya', 'bittu_lal'];
-
+// --- 8. INITIALIZATION ON PAGE LOAD ---
 window.addEventListener('DOMContentLoaded', async () => {
     try {
         const res = await fetch(`${API_URL}/api/organizers`);
