@@ -3,166 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoknex — Official Global Store [Drop Culture]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Hoknex — Official Global Store [Luxury Edition]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #0A0A0C;
-            --bg-card: #14141A;
+            --bg-body: #000000;
+            --bg-card: #0A0A0C;
             --text-main: #FFFFFF;
-            --text-muted: #9CA3AF;
-            --border-color: #FFFFFF;
-            --accent-neon: #00F5FF;
-            --accent-hot: #FF007F;
-            --accent-lime: #CCFF00;
-            --shadow-brand: 5px 5px 0px #FFFFFF;
-            --shadow-hover: 8px 8px 0px var(--accent-neon);
+            --text-muted: #888888;
+            --border-color: rgba(255, 255, 255, 0.12);
+            --accent-gold: #D4AF37;
+            --accent-terracotta: #B85D3B;
+            --accent-hover: #9E4B2D;
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         html { scroll-behavior: smooth; }
         body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
-        /* Marquee Drop Countdown Banner */
-        .marquee-container {
-            background: var(--accent-lime);
-            color: #0A0A0C;
-            font-weight: 900;
-            font-size: 0.85rem;
+        h1, h2, h3, h4, .store-logo-brand, .store-hero h1 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Editorial Marquee Top Banner */
+        .top-announcement {
+            background: #0D0D11;
+            color: var(--accent-gold);
+            text-align: center;
+            padding: 10px 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            padding: 10px 0;
-            overflow: hidden;
-            white-space: nowrap;
-            border-bottom: 3px solid var(--border-color);
-        }
-        .marquee-content {
-            display: inline-block;
-            animation: marquee 20s linear infinite;
-        }
-        @keyframes marquee {
-            0% { transform: translateX(0%); }
-            100% { transform: translateX(-50%); }
+            border-bottom: 1px solid var(--border-color);
         }
 
         .store-navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.25rem 4rem;
-            background: rgba(10, 10, 12, 0.92);
-            backdrop-filter: blur(16px);
-            border-bottom: 3px solid var(--border-color);
+            padding: 1.5rem 4rem;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 100;
         }
         
-        .nav-left-links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-left-links { display: flex; gap: 2.5rem; align-items: center; }
         .nav-left-links a { 
-            color: var(--text-main); text-decoration: none; font-weight: 800; font-size: 0.9rem; cursor: pointer; 
-            transition: all 0.2s; padding: 6px 14px; border-radius: 6px; border: 2px solid transparent; display: inline-block;
-            text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.85rem; cursor: pointer; 
+            transition: color 0.2s; padding: 4px 0; border-bottom: 1px solid transparent; display: inline-block;
+            text-transform: uppercase; letter-spacing: 0.12em;
         }
-        .nav-left-links a:hover, .nav-left-links a.active { color: var(--accent-neon); border-color: var(--accent-neon); background: rgba(0,245,255,0.08); box-shadow: 2px 2px 0px var(--accent-neon); }
+        .nav-left-links a:hover, .nav-left-links a.active { color: var(--text-main); border-bottom-color: var(--accent-gold); }
 
-        .store-logo-brand { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; color: var(--text-main); text-decoration: none; display: flex; flex-direction: column; align-items: center; line-height: 1.1; font-style: italic; }
-        .store-logo-brand span { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent-hot); font-style: normal; }
+        .store-logo-brand { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-main); text-decoration: none; display: flex; flex-direction: column; align-items: center; line-height: 1; }
+        .store-logo-brand span { font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.35em; color: var(--accent-gold); margin-top: 4px; font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        .nav-right-actions { display: flex; gap: 1rem; align-items: center; }
-        .search-box-wrap { display: flex; align-items: center; background: #1A1A22; border: 2.5px solid var(--border-color); border-radius: 8px; padding: 6px 14px; width: 220px; box-shadow: 2px 2px 0px var(--border-color); }
-        .search-box-wrap input { border: none; outline: none; background: transparent; font-size: 0.85rem; font-weight: 700; color: #fff; width: 100%; margin-left: 6px; }
-        .icon-btn { background: #1A1A22; border: 2.5px solid var(--border-color); border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; color: #fff; font-weight: 900; box-shadow: 2px 2px 0px var(--border-color); transition: transform 0.15s; }
-        .icon-btn:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-brand); border-color: var(--accent-neon); color: var(--accent-neon); }
+        .nav-right-actions { display: flex; gap: 1.5rem; align-items: center; }
+        .search-box-wrap { display: flex; align-items: center; background: transparent; border-bottom: 1px solid var(--border-color); padding: 4px 8px; width: 200px; }
+        .search-box-wrap input { border: none; outline: none; background: transparent; font-size: 0.82rem; font-weight: 400; color: #fff; width: 100%; margin-left: 6px; letter-spacing: 0.05em; }
+        .icon-btn { background: transparent; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-main); transition: opacity 0.2s; position: relative; }
+        .icon-btn:hover { opacity: 0.7; }
 
-        /* Oversized Brutalist Hero */
-        .store-hero { padding: 5rem 4rem 3rem 4rem; max-width: 1400px; margin: 0 auto; text-align: left; border-bottom: 3px solid rgba(255,255,255,0.1); }
-        .store-hero h1 { font-size: 4rem; font-weight: 900; letter-spacing: -2px; margin-bottom: 1rem; text-transform: uppercase; line-height: 1.05; }
-        .store-hero h1 span { color: var(--accent-neon); text-shadow: 0 0 20px rgba(0,245,255,0.4); }
-        .store-hero p { color: var(--text-muted); font-size: 1.1rem; font-weight: 700; max-width: 700px; line-height: 1.6; }
+        /* Luxury Editorial Hero */
+        .store-hero { padding: 6rem 4rem 4rem 4rem; max-width: 1400px; margin: 0 auto; text-align: center; }
+        .store-hero h1 { font-size: 4rem; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 1.2rem; line-height: 1.1; }
+        .store-hero h1 span { font-style: italic; color: var(--accent-gold); }
+        .store-hero p { color: var(--text-muted); font-size: 1rem; font-weight: 300; max-width: 600px; margin: 0 auto; letter-spacing: 0.05em; line-height: 1.7; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         .coming-soon-container { padding: 3rem 4rem; max-width: 1400px; margin: 0 auto; }
-        .coming-soon-card { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 16px; padding: 3rem; text-align: center; box-shadow: var(--shadow-brand); position: relative; overflow: hidden; }
+        .coming-soon-card { background: #0D0D11; border: 1px solid var(--border-color); border-radius: 4px; padding: 3rem; text-align: center; }
         .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
-        .drop-preview-card { background: #1A1A24; border: 2.5px solid var(--border-color); border-radius: 12px; padding: 1.2rem; text-align: left; box-shadow: 4px 4px 0px var(--border-color); }
-        .drop-media { width: 100%; height: 280px; background: #000; border-radius: 8px; border: 2px solid var(--border-color); overflow: hidden; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; }
+        .drop-preview-card { background: #14141A; border: 1px solid var(--border-color); border-radius: 4px; padding: 1.2rem; text-align: left; }
+        .drop-media { width: 100%; height: 320px; background: #000; border-radius: 2px; overflow: hidden; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; }
         .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: cover; }
 
-        .product-catalog-section { padding: 3rem 4rem; max-width: 1400px; margin: 0 auto; }
-        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 3rem; margin-top: 2rem; }
+        .product-catalog-section { padding: 4rem; max-width: 1400px; margin: 0 auto; }
+        .catalog-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5rem; margin-top: 2.5rem; }
 
-        /* Asymmetrical Brutalist Product Cards */
+        /* --- BORDERLESS LUXURY PRODUCT CARDS (Box Removed) --- */
         .product-card {
-            background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 16px;
-            padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;
-            position: relative; box-shadow: var(--shadow-brand); cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            background: transparent; border: none; border-radius: 0;
+            padding: 0; display: flex; flex-direction: column; justify-content: space-between;
+            position: relative; cursor: pointer; text-align: left;
         }
-        .product-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); border-color: var(--accent-neon); }
 
         .prod-img-box {
-            width: 100%; height: 280px; background: #0F0F14; border: 2px solid var(--border-color);
-            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1.2rem; overflow: hidden;
+            width: 100%; height: 400px; background: #111116; border: none;
+            border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1rem; overflow: hidden;
         }
-        .prod-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-        .product-card:hover .prod-img-box img { transform: scale(1.05); }
+        .prod-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .product-card:hover .prod-img-box img { transform: scale(1.04); }
 
-        .prod-title { font-size: 1.2rem; font-weight: 900; margin-bottom: 0.4rem; letter-spacing: -0.3px; }
-        .prod-category { font-size: 0.75rem; font-weight: 800; color: var(--accent-neon); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.4rem; }
-        .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem; border-top: 1.5px solid rgba(255,255,255,0.1); padding-top: 1rem; }
-        .prod-price { font-size: 1.35rem; font-weight: 900; color: #fff; }
+        .prod-title { font-size: 1rem; font-weight: 500; margin-bottom: 0.3rem; letter-spacing: 0.05em; font-family: 'Playfair Display', serif; }
+        .prod-category { font-size: 0.65rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 0.4rem; }
+        .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.6rem; }
+        .prod-price { font-size: 0.95rem; font-weight: 500; color: var(--accent-gold); font-variant-numeric: tabular-nums; letter-spacing: 0.05em; }
 
-        .btn-add-bag { background: var(--accent-neon); color: #0A0A0C; border: 2.5px solid var(--border-color); padding: 8px 16px; border-radius: 8px; font-weight: 900; font-size: 0.85rem; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color); transition: all 0.15s; }
-        .btn-add-bag:hover { background: var(--accent-hot); color: #fff; transform: translateY(-2px); box-shadow: 3px 3px 0px var(--border-color); }
+        .btn-add-bag { 
+            background: transparent; color: var(--text-main); border: 1px solid var(--border-color); 
+            padding: 6px 14px; border-radius: 2px; font-weight: 500; font-size: 0.75rem; cursor: pointer; 
+            text-transform: uppercase; letter-spacing: 0.12em; transition: all 0.2s; 
+        }
+        .btn-add-bag:hover { background: var(--accent-terracotta); border-color: var(--accent-terracotta); color: #fff; }
         
-        .btn-wishlist { background: #1A1A22; border: 2px solid var(--border-color); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; position: absolute; top: 22px; left: 22px; z-index: 5; box-shadow: 2px 2px 0px var(--border-color); transition: transform 0.15s; }
-        .btn-wishlist:hover { transform: scale(1.15); }
+        .btn-wishlist { 
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); border: none; width: 32px; height: 32px; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; 
+            cursor: pointer; position: absolute; top: 16px; right: 16px; z-index: 5; transition: transform 0.2s; 
+        }
+        .btn-wishlist:hover { transform: scale(1.1); }
 
-        .campaign-showcase-section { padding: 4rem; max-width: 1400px; margin: 0 auto; }
-        .campaign-header { text-align: left; margin-bottom: 3rem; border-left: 5px solid var(--accent-neon); padding-left: 1.5rem; }
-        .campaign-header h2 { font-size: 2.8rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 0.4rem; text-transform: uppercase; }
-        .campaign-header p { color: var(--text-muted); font-weight: 700; font-size: 1.05rem; }
+        .campaign-showcase-section { padding: 5rem 4rem; max-width: 1400px; margin: 0 auto; }
+        .campaign-header { text-align: center; margin-bottom: 3.5rem; }
+        .campaign-header h2 { font-size: 2.5rem; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+        .campaign-header p { color: var(--text-muted); font-weight: 300; font-size: 0.95rem; letter-spacing: 0.05em; }
         .campaign-grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-        .campaign-tile { background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-brand); position: relative; transition: transform 0.25s ease, box-shadow 0.25s ease; }
-        .campaign-tile:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); border-color: var(--accent-neon); }
-        .campaign-img-wrap { width: 100%; height: 340px; background: #000; border-bottom: 2.5px solid var(--border-color); overflow: hidden; }
-        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; filter: grayscale(20%); }
-        .campaign-tile:hover .campaign-img-wrap img { transform: scale(1.06); filter: grayscale(0%); }
+        .campaign-tile { background: #0D0D11; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; position: relative; transition: transform 0.3s ease; }
+        .campaign-tile:hover { transform: translateY(-4px); }
+        .campaign-img-wrap { width: 100%; height: 380px; background: #000; overflow: hidden; }
+        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(30%); transition: filter 0.4s ease, transform 0.6s ease; }
+        .campaign-tile:hover .campaign-img-wrap img { filter: grayscale(0%); transform: scale(1.03); }
         .campaign-caption { padding: 1.5rem; text-align: left; }
-        .campaign-caption h4 { font-size: 1.2rem; font-weight: 900; margin-bottom: 0.4rem; color: #fff; }
-        .campaign-caption p { font-size: 0.9rem; color: var(--text-muted); font-weight: 700; }
+        .campaign-caption h4 { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.3rem; letter-spacing: 0.05em; font-family: 'Playfair Display', serif; }
+        .campaign-caption p { font-size: 0.82rem; color: var(--text-muted); font-weight: 300; letter-spacing: 0.05em; }
 
-        .store-footer { background: #050507; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 5rem; border-top: 3px solid var(--border-color); position: relative; overflow: hidden; }
-        .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.15); position: relative; z-index: 2; }
-        .footer-newsletter h3 { font-size: 2.4rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; text-transform: uppercase; }
-        .footer-newsletter p { color: #9CA3AF; font-size: 1rem; font-weight: 700; margin-bottom: 1.5rem; }
-        .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; }
-        .newsletter-input-group input { flex: 1; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); padding: 14px 18px; border-radius: 10px; color: #fff; font-weight: 800; outline: none; }
-        .btn-newsletter { background: var(--accent-neon); color: #0A0A0C; border: none; padding: 0 2.5rem; border-radius: 10px; font-weight: 900; cursor: pointer; transition: transform 0.15s; }
-        .btn-newsletter:hover { transform: translateY(-2px); background: var(--accent-hot); color: #fff; }
+        .store-footer { background: #050507; color: #F5F2EB; padding: 6rem 4rem 3rem 4rem; margin-top: 6rem; border-top: 1px solid var(--border-color); position: relative; }
+        .footer-newsletter { max-width: 700px; margin-bottom: 5rem; padding-bottom: 4rem; border-bottom: 1px solid var(--border-color); }
+        .footer-newsletter h3 { font-size: 2rem; font-weight: 400; margin-bottom: 0.6rem; font-family: 'Playfair Display', serif; letter-spacing: -0.01em; }
+        .footer-newsletter p { color: var(--text-muted); font-size: 0.9rem; font-weight: 300; margin-bottom: 2rem; letter-spacing: 0.05em; }
+        .newsletter-input-group { display: flex; gap: 1rem; max-width: 550px; }
+        .newsletter-input-group input { flex: 1; background: transparent; border: 1px solid var(--border-color); padding: 12px 16px; border-radius: 2px; color: #fff; font-weight: 400; outline: none; letter-spacing: 0.05em; }
+        .btn-newsletter { background: var(--accent-terracotta); color: #fff; border: none; padding: 0 2rem; border-radius: 2px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer; transition: background 0.2s; }
+        .btn-newsletter:hover { background: var(--accent-hover); }
 
-        .footer-links-grid { display: grid; grid-template-columns: repeat(5, 1fr) 1.5fr; gap: 2rem; font-size: 0.88rem; position: relative; z-index: 2; }
-        .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FAF9F6; text-transform: uppercase; letter-spacing: 1px; }
+        .footer-links-grid { display: grid; grid-template-columns: repeat(5, 1fr) 1.5fr; gap: 2rem; font-size: 0.82rem; }
+        .footer-col h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 1.2rem; color: #fff; text-transform: uppercase; letter-spacing: 0.15em; }
         .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
-        .footer-col a { color: #9CA3AF; text-decoration: none; font-weight: 700; cursor: pointer; transition: color 0.15s; }
-        .footer-col a:hover { color: var(--accent-neon); }
+        .footer-col a { color: var(--text-muted); text-decoration: none; font-weight: 300; cursor: pointer; transition: color 0.15s; letter-spacing: 0.05em; }
+        .footer-col a:hover { color: #fff; }
 
-        .footer-watermark { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 16vw; font-weight: 900; color: rgba(255, 255, 255, 0.02); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; }
+        .footer-watermark { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 18vw; font-weight: 700; color: rgba(255, 255, 255, 0.015); white-space: nowrap; pointer-events: none; z-index: 1; font-family: 'Playfair Display', serif; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 12, 0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
-        .modal-panel { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 20px; padding: 3rem; width: 100%; max-width: 680px; box-shadow: 10px 10px 0px var(--accent-neon); position: relative; max-height: 90vh; overflow-y: auto; color: #fff; }
-        .btn-primary { width: 100%; background: var(--accent-neon); color: #0A0A0C; border: 2.5px solid var(--border-color); border-radius: 10px; padding: 1.1rem; font-size: 1rem; font-weight: 900; cursor: pointer; box-shadow: 3px 3px 0px var(--border-color); margin-top: 1rem; transition: transform 0.1s; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-primary:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0px var(--accent-hot); background: var(--accent-hot); color: #fff; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
+        .modal-panel { background: #0D0D11; border: 1px solid var(--border-color); border-radius: 4px; padding: 3rem; width: 100%; max-width: 700px; position: relative; max-height: 90vh; overflow-y: auto; color: #fff; }
+        .btn-primary { width: 100%; background: var(--accent-terracotta); color: #fff; border: none; border-radius: 2px; padding: 1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 1.5rem; text-transform: uppercase; letter-spacing: 0.15em; transition: background 0.2s; }
+        .btn-primary:hover { background: var(--accent-hover); }
 
-        #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 12, 0.8); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
-        #proModalBox { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 16px; padding: 2.5rem; max-width: 440px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--accent-neon); color: #fff; }
+        #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
+        #proModalBox { background: #0D0D11; border: 1px solid var(--border-color); border-radius: 4px; padding: 2.5rem; max-width: 420px; width: 100%; text-align: center; color: #fff; }
 
-        @media (max-width: 968px) {
+        @media (max-width: 1024px) {
+            .catalog-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
             .store-navbar, .store-hero, .coming-soon-container, .product-catalog-section, .campaign-showcase-section, .store-footer { padding: 2rem 1.5rem; }
+            .catalog-grid { grid-template-columns: 1fr; }
             .campaign-grid-layout { grid-template-columns: 1fr; }
             .footer-links-grid { grid-template-columns: 1fr; }
             .nav-left-links { display: none; }
-            .store-hero h1 { font-size: 2.8rem; }
+            .store-hero h1 { font-size: 2.5rem; }
         }
     </style>
 </head>
@@ -170,18 +173,13 @@
 
     <div id="proModalOverlay">
         <div id="proModalBox">
-            <h3 id="proModalTitle" style="font-size: 1.4rem; font-weight: 900; margin-bottom: 0.5rem; color: var(--accent-neon);">Hoknex Notice</h3>
-            <p id="proModalMessage" style="font-size: 0.95rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1.8rem;"></p>
-            <button onclick="closeProModal()" class="btn-primary" style="margin-top:0; padding: 0.8rem 1.5rem;">Okay ⚡</button>
+            <h3 id="proModalTitle" style="font-size: 1.2rem; font-weight: 500; margin-bottom: 0.5rem; font-family: 'Playfair Display', serif; color: var(--accent-gold);">Hoknex Notice</h3>
+            <p id="proModalMessage" style="font-size: 0.85rem; font-weight: 300; color: var(--text-muted); margin-bottom: 1.8rem; letter-spacing: 0.05em;"></p>
+            <button onclick="closeProModal()" class="btn-primary" style="margin-top:0; padding: 0.8rem 1.5rem;">Okay</button>
         </div>
     </div>
 
-    <!-- Marquee Drop Countdown Banner -->
-    <div class="marquee-container">
-        <div class="marquee-content">
-            ⚡ DROP 04 LIVE NOW &nbsp;&bull;&nbsp; FREE CAMPUS DELIVERY ON ORDERS OVER ₹999 &nbsp;&bull;&nbsp; HEAVYWEIGHT 450GSM STREETWEAR &nbsp;&bull;&nbsp; ENGINEERED FOR GLOBAL CREATORS &nbsp;&bull;&nbsp; ⚡ DROP 04 LIVE NOW &nbsp;&bull;&nbsp; FREE CAMPUS DELIVERY ON ORDERS OVER ₹999 &nbsp;&bull;&nbsp; HEAVYWEIGHT 450GSM STREETWEAR &nbsp;&bull;&nbsp; ENGINEERED FOR GLOBAL CREATORS &nbsp;&bull;&nbsp;
-        </div>
-    </div>
+    <div class="top-announcement" id="topAnnouncementBar">Complimentary Global Delivery on Orders Over ₹999 &nbsp;|&nbsp; The Essentials Collection</div>
 
     <header class="store-navbar">
         <div class="nav-left-links">
@@ -190,39 +188,38 @@
             <a id="nav-footwear" onclick="filterCategory('Footwear', event)">Footwear & Gear</a>
             <a href="index.html">Hoknex Hub</a>
         </div>
-        <a href="index.html" class="store-logo-brand">HOKNEX<span>Store</span></a>
+        <a href="index.html" class="store-logo-brand">HOKNEX<span>Atelier</span></a>
         <div class="nav-right-actions">
             <div class="search-box-wrap">
-                <span>🔍</span>
-                <input type="text" placeholder="Search Drop..." oninput="filterCatalogSearch(this.value)">
+                <span style="font-size: 0.8rem;">🔍</span>
+                <input type="text" placeholder="Search..." oninput="filterCatalogSearch(this.value)">
             </div>
-            <button class="icon-btn" onclick="openWishlistModal()" title="Wishlist">❤️<span style="font-size:0.75rem; margin-left:2px; color:var(--accent-hot);" id="wishlistCount">0</span></button>
+            <button class="icon-btn" onclick="openWishlistModal()" title="Wishlist">🤍<span style="font-size:0.65rem; margin-left:2px; color:var(--accent-gold);" id="wishlistCount">0</span></button>
             <button class="icon-btn" onclick="openTrackModal()" title="Track Order">📦</button>
-            <button class="icon-btn" onclick="openCartModal()" title="Shopping Bag">🛒<span style="font-size:0.75rem; margin-left:2px; color:var(--accent-neon);" id="bagCount">0</span></button>
+            <button class="icon-btn" onclick="openCartModal()" title="Shopping Bag">🛒<span style="font-size:0.65rem; margin-left:2px; color:var(--accent-gold);" id="bagCount">0</span></button>
         </div>
     </header>
 
     <section class="store-hero">
-        <h1>Engineered for students, <span>worn by creators.</span></h1>
-        <p>Heavyweight brutalist streetwear, oversized hoodies, and technical essentials designed for global campus innovators and hackhouse builders.</p>
+        <h1>Timeless essentials, <span>uncompromising craft.</span></h1>
+        <p>Curated heavyweight silhouettes and architectural apparel designed for global creators and modern minimalists.</p>
     </section>
 
     <!-- Coming Soon Section -->
     <section class="coming-soon-container" id="comingSoonSection" style="display:none;">
         <div class="coming-soon-card">
-            <div style="font-size: 2.2rem; margin-bottom: 0.4rem;">🚨</div>
-            <h2 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 0.3rem; text-transform: uppercase;">Upcoming Vault Drops</h2>
-            <p style="font-size: 0.95rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-neon); margin-bottom: 1rem;">Limited Quantity Allocation</p>
+            <h2 style="font-size: 1.8rem; font-weight: 400; letter-spacing: -0.01em; margin-bottom: 0.3rem;">Upcoming Releases</h2>
+            <p style="font-size: 0.75rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-gold); margin-bottom: 1rem;">Limited Allocation</p>
             <div class="coming-soon-grid" id="comingSoonGrid"></div>
         </div>
     </section>
 
     <!-- Product Catalog Section -->
     <section class="product-catalog-section" id="catalog">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom: 1px solid var(--border-color); padding-bottom: 1.2rem;">
             <div>
-                <h3 style="font-size: 2rem; font-weight: 900; text-transform: uppercase;" id="activeCategoryTitle">Featured Collection</h3>
-                <p style="color: var(--text-muted); font-weight: 700; font-size: 0.9rem;">Inspect high-res specs, secure drop allocations, and view multi-angle specs.</p>
+                <h3 style="font-size: 1.8rem; font-weight: 400;" id="activeCategoryTitle">Featured Collection</h3>
+                <p style="color: var(--text-muted); font-weight: 300; font-size: 0.85rem; letter-spacing: 0.05em; margin-top: 4px;">Explore atelier specifications and select your size.</p>
             </div>
         </div>
         <div class="catalog-grid" id="catalogGrid"></div>
@@ -231,8 +228,8 @@
     <!-- Visual Campaign Showcase Segment -->
     <section class="campaign-showcase-section">
         <div class="campaign-header">
-            <h2>The Hoknex Visual Archive ⚡</h2>
-            <p>Glimpses into our underground campus labs, hacker houses, and heavyweight apparel craftsmanship.</p>
+            <h2>The Visual Archive</h2>
+            <p>Glimpses into our studio spaces and material craftsmanship.</p>
         </div>
         <div class="campaign-grid-layout" id="campaignGridContainer"></div>
     </section>
@@ -240,11 +237,11 @@
     <!-- Footer -->
     <footer class="store-footer">
         <div class="footer-newsletter">
-            <h3>Join the Hoknex movement</h3>
-            <p>Get exclusive drop alerts, underground hackathon invites, and creator stories straight to your inbox.</p>
+            <h3>Join the Atelier</h3>
+            <p>Receive private drop notifications and editorial stories directly to your inbox.</p>
             <div class="newsletter-input-group">
                 <input type="email" id="newsletterEmailInput" placeholder="Enter your email address">
-                <button class="btn-newsletter" onclick="submitNewsletterEmail()">Join ⚡</button>
+                <button class="btn-newsletter" onclick="submitNewsletterEmail()">Subscribe</button>
             </div>
         </div>
 
@@ -259,8 +256,8 @@
             <div class="footer-col">
                 <h4>Hoknex</h4>
                 <ul>
-                    <li><a href="index.html">About Hoknex</a></li>
-                    <li><a href="index.html">The Hoknex Promise</a></li>
+                    <li><a href="index.html">About Atelier</a></li>
+                    <li><a href="index.html">The Promise</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -272,24 +269,24 @@
             <div class="footer-col">
                 <h4>Account</h4>
                 <ul>
-                    <li><a href="index.html">Student Sign In</a></li>
+                    <li><a href="index.html">Sign In</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Legal</h4>
                 <ul>
-                    <li><a onclick="showProModal('Privacy Policy', 'Hoknex respects student privacy. All user and order data are securely encrypted.')">Privacy Policy</a></li>
-                    <li><a onclick="showProModal('Terms of Service', 'By shopping at Hoknex, you agree to campus delivery terms and direct founder UPI guidelines.')">Terms of Service</a></li>
+                    <li><a onclick="showProModal('Privacy Policy', 'Hoknex respects your privacy. All user and order data are securely encrypted.')">Privacy Policy</a></li>
+                    <li><a onclick="showProModal('Terms of Service', 'By shopping at Hoknex, you agree to delivery terms and direct founder guidelines.')">Terms of Service</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Follow</h4>
-                <p style="color: #9CA3AF; font-size: 0.8rem; margin-top: 8px;">Connect with us on social channels for student spotlights.</p>
+                <h4>Connect</h4>
+                <p style="color: var(--text-muted); font-size: 0.78rem; margin-top: 8px; font-weight: 300; letter-spacing: 0.05em;">Global studio inquiries and creator spotlights.</p>
             </div>
         </div>
-        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #9CA3AF; position: relative; z-index: 2;">
+        <div style="margin-top: 4rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); position: relative; z-index: 2; letter-spacing: 0.05em;">
             <span>&copy; Hoknex 2026. All rights reserved.</span>
-            <span>Secure Campus Checkout (Zero Fees)</span>
+            <span>Secure Atelier Checkout</span>
         </div>
         <div class="footer-watermark">hoknex</div>
     </footer>
@@ -297,23 +294,23 @@
     <!-- PDP Modal -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
         <div class="modal-panel" style="max-width: 850px;">
-            <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
-            <div style="display:flex; gap:2.5rem; flex-wrap:wrap;">
+            <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:#fff; border:none; width:36px; height:36px; font-size:1.2rem; cursor:pointer;">&times;</button>
+            <div style="display:flex; gap:3rem; flex-wrap:wrap;">
                 <div style="flex:1; min-width:280px; text-align:center;">
-                    <div id="pdpMainBox" class="prod-img-box" style="height:320px;"><span id="pdpMainEmoji" style="font-size:6rem;">🧥</span></div>
+                    <div id="pdpMainBox" class="prod-img-box" style="height:380px;"><span id="pdpMainEmoji" style="font-size:5rem;">🧥</span></div>
                     <div id="pdpThumbnails" style="display:flex; gap:8px; margin-top:10px; justify-content:center;"></div>
                 </div>
                 <div style="flex:1; min-width:280px;">
-                    <span id="pdpBadge" style="background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); padding:3px 10px; border-radius:6px; font-size:0.75rem; font-weight:900; text-transform:uppercase;">Best Seller</span>
-                    <h2 id="pdpTitle" style="font-size:1.9rem; font-weight:900; margin:0.4rem 0; color:#fff;">Product Title</h2>
-                    <div id="pdpPrice" style="font-size:1.5rem; font-weight:900; color:var(--accent-neon); margin-bottom:0.4rem;">₹0</div>
-                    <div id="pdpDeliveryNote" style="font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:0.4rem;">Delivery Fee: ₹0</div>
-                    <div id="pdpRatingDisplay" style="font-size:0.85rem; font-weight:900; color:var(--accent-lime); margin-bottom:0.8rem;">⭐ 5.0 (0 reviews)</div>
-                    <p id="pdpDesc" style="color:var(--text-muted); font-size:0.95rem; font-weight:700; line-height:1.6; margin-bottom:1.2rem;"></p>
-                    <div id="pdpSizeSection"><div style="font-size:0.8rem; font-weight:900; color:#fff; text-transform:uppercase; margin-bottom:0.4rem; letter-spacing:1px;">Select Size</div><div style="display:flex; gap:8px; margin-bottom:1.2rem;" id="sizeGroup"></div></div>
-                    <div id="pdpStockSection" style="display:none; margin-bottom:1.2rem;"><p style="color:var(--accent-hot); font-weight:900; font-size:0.95rem; margin-bottom:8px;">Currently Out of Stock ❌</p><button onclick="voteForStock()" class="btn-primary" style="background:var(--accent-lime); color:#0A0A0C;">Vote to Restock 🔥 (<span id="voteCountDisplay">0</span>)</button></div>
-                    <button id="pdpAddBtn" onclick="addPdpToBag()" class="btn-primary">Add to Bag 🛍️</button>
-                    <div style="margin-top:1.5rem; border-top:1.5px solid rgba(255,255,255,0.1); padding-top:1rem;"><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Rate this product:</label><select id="userRatingSelect" onchange="submitUserRating()" style="margin-top:4px; padding:8px; font-weight:800; border-radius:8px; background:#1A1A22; color:#fff; border:2px solid var(--border-color); width:100%;"><option value="5">⭐⭐⭐⭐⭐ (5/5)</option><option value="4">⭐⭐⭐⭐ (4/5)</option><option value="3">⭐⭐⭐ (3/5)</option><option value="2">⭐⭐ (2/5)</option><option value="1">⭐ (1/5)</option></select></div>
+                    <span id="pdpBadge" style="font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.2em; color:var(--accent-gold);">Atelier Exclusive</span>
+                    <h2 id="pdpTitle" style="font-size:2rem; font-weight:400; margin:0.4rem 0; font-family: 'Playfair Display', serif;">Product Title</h2>
+                    <div id="pdpPrice" style="font-size:1.3rem; font-weight:500; color:var(--accent-gold); margin-bottom:0.4rem; font-variant-numeric: tabular-nums;">₹0</div>
+                    <div id="pdpDeliveryNote" style="font-size:0.75rem; font-weight:300; color:var(--text-muted); margin-bottom:0.4rem; letter-spacing:0.05em;">Delivery Fee: ₹0</div>
+                    <div id="pdpRatingDisplay" style="font-size:0.8rem; font-weight:500; color:var(--accent-gold); margin-bottom:1rem;">⭐ 5.0 (0 reviews)</div>
+                    <p id="pdpDesc" style="color:var(--text-muted); font-size:0.88rem; font-weight:300; line-height:1.7; margin-bottom:1.5rem; letter-spacing:0.05em;"></p>
+                    <div id="pdpSizeSection"><div style="font-size:0.75rem; font-weight:600; color:#fff; text-transform:uppercase; margin-bottom:0.5rem; letter-spacing:0.15em;">Select Size</div><div style="display:flex; gap:8px; margin-bottom:1.5rem;" id="sizeGroup"></div></div>
+                    <div id="pdpStockSection" style="display:none; margin-bottom:1.2rem;"><p style="color:var(--accent-terracotta); font-weight:600; font-size:0.85rem; margin-bottom:8px; letter-spacing:0.05em;">Currently Unavailable</p><button onclick="voteForStock()" class="btn-primary" style="background:#222; color:#fff;">Register Interest (<span id="voteCountDisplay">0</span>)</button></div>
+                    <button id="pdpAddBtn" onclick="addPdpToBag()" class="btn-primary">Add to Bag</button>
+                    <div style="margin-top:2rem; border-top:1px solid var(--border-color); padding-top:1.2rem;"><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Rate this piece:</label><select id="userRatingSelect" onchange="submitUserRating()" style="margin-top:6px; padding:8px; font-weight:400; border-radius:2px; background:#14141A; color:#fff; border:1px solid var(--border-color); width:100%; outline:none;"><option value="5">⭐⭐⭐⭐⭐ (5/5)</option><option value="4">⭐⭐⭐⭐ (4/5)</option><option value="3">⭐⭐⭐ (3/5)</option><option value="2">⭐⭐ (2/5)</option><option value="1">⭐ (1/5)</option></select></div>
                 </div>
             </div>
         </div>
@@ -321,50 +318,50 @@
 
     <!-- Wishlist Modal -->
     <div id="wishlistModal" class="modal-overlay" onclick="if(event.target === this) closeModal('wishlistModal')">
-        <div class="modal-panel" style="max-width: 480px;"><button onclick="closeModal('wishlistModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color:#fff;">Your Wishlist ❤️</h2><div id="wishlistItemsList" style="max-height: 280px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your wishlist is empty.</p></div><button onclick="closeModal('wishlistModal')" class="btn-primary" style="margin-top:0;">Continue Shopping 🛍️</button></div>
+        <div class="modal-panel" style="max-width: 450px;"><button onclick="closeModal('wishlistModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:#fff; border:none; font-size:1.2rem; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 400; margin-bottom: 1.2rem; font-family:'Playfair Display',serif;">Wishlist</h2><div id="wishlistItemsList" style="max-height: 280px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0; font-weight: 300;">Your wishlist is empty.</p></div><button onclick="closeModal('wishlistModal')" class="btn-primary" style="margin-top:0;">Continue Shopping</button></div>
     </div>
 
     <!-- Cart Modal -->
     <div id="cartModal" class="modal-overlay" onclick="if(event.target === this) closeModal('cartModal')">
-        <div class="modal-panel" style="max-width: 480px;"><button onclick="closeModal('cartModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color:#fff;">Your Shopping Bag</h2><div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your bag is empty.</p></div><div style="font-size:0.88rem; font-weight:800; margin-bottom:1rem; border-top:2px solid rgba(255,255,255,0.1); padding-top:0.8rem;"><div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--text-muted);"><span>Items Subtotal:</span><span id="bagSubtotal">₹0</span></div><div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--text-muted);"><span>Total Delivery Charge:</span><span id="bagDelivery">₹0</span></div><div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:900; margin-top:6px; color:var(--accent-neon);"><span>Final Total:</span><span id="bagTotal">₹0</span></div></div><button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Checkout 🚀</button></div>
+        <div class="modal-panel" style="max-width: 450px;"><button onclick="closeModal('cartModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:#fff; border:none; font-size:1.2rem; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 400; margin-bottom: 1.2rem; font-family:'Playfair Display',serif;">Shopping Bag</h2><div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0; font-weight: 300;">Your bag is empty.</p></div><div style="font-size:0.85rem; font-weight:400; margin-bottom:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;"><div style="display:flex; justify-content:space-between; margin-bottom:6px; color:var(--text-muted);"><span>Subtotal:</span><span id="bagSubtotal">₹0</span></div><div style="display:flex; justify-content:space-between; margin-bottom:6px; color:var(--text-muted);"><span>Delivery:</span><span id="bagDelivery">₹0</span></div><div style="display:flex; justify-content:space-between; font-size:1rem; font-weight:600; margin-top:10px; color:var(--accent-gold);"><span>Total:</span><span id="bagTotal">₹0</span></div></div><button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Checkout</button></div>
     </div>
 
     <!-- Checkout Modal -->
     <div id="checkoutModal" class="modal-overlay" onclick="if(event.target === this) closeModal('checkoutModal')">
-        <div class="modal-panel" style="max-width: 540px;">
-            <button onclick="closeModal('checkoutModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
-            <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.4rem; color:#fff;">Secure Checkout 🛡️</h2>
-            <p id="checkoutSubNotice" style="color: var(--accent-neon); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;"></p>
-            <form onsubmit="finalizeOrder(event)" style="display:flex; flex-direction:column; gap:0.8rem;">
-                <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Full Name *</label><input type="text" id="shipName" placeholder="Alex Morgan" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:10px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Phone *</label><input type="tel" id="shipPhone" placeholder="+91 9876543210" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:10px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
-                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Email *</label><input type="email" id="shipEmail" placeholder="student@edu.in" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:10px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
+        <div class="modal-panel" style="max-width: 520px;">
+            <button onclick="closeModal('checkoutModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:#fff; border:none; font-size:1.2rem; cursor:pointer;">&times;</button>
+            <h2 style="font-size: 1.4rem; font-weight: 400; margin-bottom: 0.4rem; font-family:'Playfair Display',serif;">Secure Checkout</h2>
+            <p id="checkoutSubNotice" style="color: var(--accent-gold); font-size: 0.8rem; font-weight: 300; margin-bottom: 1.5rem; letter-spacing: 0.05em;"></p>
+            <form onsubmit="finalizeOrder(event)" style="display:flex; flex-direction:column; gap:1rem;">
+                <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Full Name *</label><input type="text" id="shipName" placeholder="Alex Morgan" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Phone *</label><input type="tel" id="shipPhone" placeholder="+91 9876543210" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
+                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Email *</label><input type="email" id="shipEmail" placeholder="student@edu.in" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Country *</label><input type="text" id="shipCountry" value="India" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
-                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">State *</label><input type="text" id="shipState" placeholder="Bihar" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Country *</label><input type="text" id="shipCountry" value="India" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
+                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">State *</label><input type="text" id="shipState" placeholder="Bihar" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">City *</label><input type="text" id="shipCity" placeholder="Muzaffarpur" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
-                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Pin Code *</label><input type="text" id="shipPin" placeholder="842001" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">City *</label><input type="text" id="shipCity" placeholder="Muzaffarpur" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
+                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Pin Code *</label><input type="text" id="shipPin" placeholder="842001" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
                 </div>
-                <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Landmark *</label><input type="text" id="shipLandmark" placeholder="Near Gate" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
-                <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Full Address *</label><textarea id="shipAddress" rows="2" placeholder="Room 404..." required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:10px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none; resize:vertical;"></textarea></div>
-                <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Payment Mode *</label><select id="payMode" onchange="toggleQrScanner(this.value)" style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:10px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"><option id="codOption" value="COD">Pay on Campus Delivery</option><option value="DirectUPI">Direct Founder UPI (hoknex@upi)</option></select></div>
-                <div id="qrScannerSection" style="display:none; background:#14141A; border:2px dashed var(--accent-neon); padding:1.2rem; border-radius:12px; text-align:center; margin-top:0.5rem;">
-                    <h4 style="font-size:0.95rem; font-weight:900; margin-bottom:0.4rem; color:#fff;">📷 Scan Founder UPI QR Code to Pay</h4>
-                    <div id="qrImageContainer" style="width:160px; height:160px; margin:0 auto; background:#000; border:2px solid var(--border-color); border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; color:#fff;">📱 QR Loading...</div>
-                    <div style="margin-top:1rem; text-align:left;"><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Upload Payment Screenshot *</label><input type="file" id="paymentProofInput" accept="image/*" style="width:100%; margin-top:4px; font-size:0.8rem; font-weight:800; color:#fff;"></div>
+                <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Landmark *</label><input type="text" id="shipLandmark" placeholder="Near Gate" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
+                <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Full Address *</label><textarea id="shipAddress" rows="2" placeholder="Room 404..." required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none; resize:vertical;"></textarea></div>
+                <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Payment Mode *</label><select id="payMode" onchange="toggleQrScanner(this.value)" style="width:100%; background:#0D0D11; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"><option id="codOption" value="COD">Pay on Delivery</option><option value="DirectUPI">Direct Founder UPI (hoknex@upi)</option></select></div>
+                <div id="qrScannerSection" style="display:none; background:#0D0D11; border:1px solid var(--accent-gold); padding:1.2rem; border-radius:2px; text-align:center; margin-top:0.5rem;">
+                    <h4 style="font-size:0.85rem; font-weight:600; margin-bottom:0.4rem; color:#fff; letter-spacing:0.05em;">Scan QR Code to Pay</h4>
+                    <div id="qrImageContainer" style="width:150px; height:150px; margin:0 auto; background:#000; border:1px solid var(--border-color); border-radius:2px; display:flex; align-items:center; justify-content:center; overflow:hidden; color:#fff; font-size:0.8rem;">Loading...</div>
+                    <div style="margin-top:1rem; text-align:left;"><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Payment Screenshot *</label><input type="file" id="paymentProofInput" accept="image/*" style="width:100%; margin-top:4px; font-size:0.78rem; color:#fff;"></div>
                 </div>
-                <button type="submit" class="btn-primary" style="margin-top:0.5rem;">Place Order Now 🎉</button>
+                <button type="submit" class="btn-primary">Complete Order</button>
             </form>
         </div>
     </div>
 
     <!-- Track Order Modal -->
     <div id="trackModal" class="modal-overlay" onclick="if(event.target === this) closeModal('trackModal')">
-        <div class="modal-panel" style="max-width: 480px; text-align: center;"><button onclick="closeModal('trackModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 900; margin-bottom: 0.4rem; color:#fff;">📦 Track Your Hoknex Order</h2><div style="display:flex; gap:8px; margin-bottom:1.2rem;"><input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:#1A1A22; border:2px solid var(--border-color); border-radius:8px; padding:10px; font-weight:800; color:#fff; flex:1; outline:none;"><button onclick="performTracking()" class="btn-primary" style="margin:0; padding:10px 14px; width:110px;">Track 🔍</button></div><div id="trackResultBox" style="text-align:left; background:#1A1A22; border:2px solid var(--border-color); padding:1.2rem; border-radius:10px; display:none;"><h4 id="resId" style="font-size:0.95rem; font-weight:900; margin-bottom:0.4rem; color:#fff;">Order ID: #</h4><div id="resCustomMsgContainer" style="display:none; background:#0A0A0C; border:2px solid var(--accent-neon); padding:10px; border-radius:8px; margin-bottom:10px;"></div><div id="resTimeline" style="display:flex; flex-direction:column; gap:8px; font-size:0.82rem; font-weight:800; color:var(--text-muted);"></div></div></div>
+        <div class="modal-panel" style="max-width: 450px; text-align: center;"><button onclick="closeModal('trackModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:#fff; border:none; font-size:1.2rem; cursor:pointer;">&times;</button><h2 style="font-size: 1.3rem; font-weight: 400; margin-bottom: 0.8rem; font-family:'Playfair Display',serif;">Track Order</h2><div style="display:flex; gap:8px; margin-bottom:1.2rem;"><input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:transparent; border:1px solid var(--border-color); border-radius:2px; padding:10px; font-weight:400; color:#fff; flex:1; outline:none;"><button onclick="performTracking()" class="btn-primary" style="margin:0; padding:10px 14px; width:100px;">Search</button></div><div id="trackResultBox" style="text-align:left; background:#0D0D11; border:1px solid var(--border-color); padding:1.2rem; border-radius:2px; display:none;"><h4 id="resId" style="font-size:0.85rem; font-weight:600; margin-bottom:0.4rem; color:#fff;">Order ID: #</h4><div id="resCustomMsgContainer" style="display:none; background:#000; border:1px solid var(--accent-gold); padding:10px; border-radius:2px; margin-bottom:10px; font-size:0.8rem;"></div><div id="resTimeline" style="display:flex; flex-direction:column; gap:8px; font-size:0.78rem; font-weight:400; color:var(--text-muted);"></div></div></div>
     </div>
 
     <script>
@@ -442,8 +439,8 @@
                     <div class="drop-media">
                         ${d.image.includes('data:video') || d.image.includes('.mp4') ? `<video src="${d.image}" autoplay loop muted style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${d.image}" alt="Drop">`}
                     </div>
-                    <h4 style="font-weight:900; font-size:1.05rem; margin-bottom:4px; color:#fff;">${d.title}</h4>
-                    <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">${d.desc}</p>
+                    <h4 style="font-weight:500; font-size:0.95rem; margin-bottom:4px; color:#fff; font-family:'Playfair Display',serif;">${d.title}</h4>
+                    <p style="font-size:0.78rem; color:var(--text-muted); font-weight:300;">${d.desc}</p>
                 </div>
             `).join('');
         }
@@ -475,7 +472,7 @@
         function renderCatalog(items) {
             const grid = document.getElementById('catalogGrid');
             if(!items || items.length === 0) {
-                grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-weight:800; padding:3rem;">No products found in store.</p>`;
+                grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-weight:300; padding:3rem;">No pieces found.</p>`;
                 return;
             }
             grid.innerHTML = items.map(item => {
@@ -488,22 +485,20 @@
                 return `
                     <div class="product-card" onclick="openPdpModal('${itemId}')">
                         <button class="btn-wishlist" onclick="event.stopPropagation(); toggleWishlist('${itemId}')">${isWishlisted ? '❤️' : '🤍'}</button>
-                        <span style="position:absolute; top:22px; right:22px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); padding:3px 10px; border-radius:6px; font-size:0.65rem; font-weight:900; text-transform:uppercase;">${item.badge || 'New'}</span>
+                        <span style="position:absolute; top:16px; left:16px; background:#000; color:var(--accent-gold); padding:2px 8px; font-size:0.6rem; font-weight:600; text-transform:uppercase; letter-spacing:0.15em;">${item.badge || 'Atelier'}</span>
                         <div>
                             <div class="prod-img-box">
                                 ${item.image ? `<img src="${item.image}" alt="${item.name}">` : (item.emoji || '📦')}
                             </div>
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <div class="prod-category">${item.category}</div>
-                                <div style="font-size:0.75rem; font-weight:900; color:var(--accent-lime);">⭐ ${avgRating}</div>
+                                <div style="font-size:0.7rem; font-weight:500; color:var(--accent-gold);">⭐ ${avgRating}</div>
                             </div>
                             <div class="prod-title">${item.name}</div>
-                            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">${item.description}</p>
-                            ${!item.inStock ? '<p style="color:var(--accent-hot); font-weight:900; font-size:0.8rem; margin-top:4px;">Currently Out of Stock ❌</p>' : ''}
                         </div>
                         <div class="prod-bottom-row">
                             <span class="prod-price">₹${item.price}.00</span>
-                            ${item.inStock ? `<button class="btn-add-bag" onclick="event.stopPropagation(); addToBag('${itemId}')">Add to Bag 🛍️</button>` : `<span style="font-size:0.75rem; font-weight:900; color:var(--text-muted);">Unavailable</span>`}
+                            ${item.inStock ? `<button class="btn-add-bag" onclick="event.stopPropagation(); addToBag('${itemId}')">Add to Bag</button>` : `<span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em;">Sold Out</span>`}
                         </div>
                     </div>
                 `;
@@ -555,20 +550,20 @@
             document.getElementById('wishlistCount').innerText = wishlist.length;
             const list = document.getElementById('wishlistItemsList');
             if(wishlist.length === 0) {
-                list.innerHTML = `<p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your wishlist is empty.</p>`;
+                list.innerHTML = `<p style="color: var(--text-muted); text-align: center; margin: 2rem 0; font-weight:300;">Your wishlist is empty.</p>`;
                 return;
             }
             list.innerHTML = wishlist.map((item, index) => {
                 const itemId = item._id || item.id;
                 return `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#1A1A22; border:2px solid var(--border-color); padding:10px 14px; border-radius:8px; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#14141A; border:1px solid var(--border-color); padding:10px 14px; border-radius:2px; margin-bottom:8px;">
                         <div>
-                            <div style="font-weight:900; font-size:0.85rem; color:#fff;">${item.name}</div>
-                            <div style="font-size:0.78rem; color:var(--accent-neon); font-weight:900;">₹${item.price}</div>
+                            <div style="font-weight:500; font-size:0.85rem; color:#fff; font-family:'Playfair Display',serif;">${item.name}</div>
+                            <div style="font-size:0.75rem; color:var(--accent-gold); font-weight:500;">₹${item.price}</div>
                         </div>
-                        <div style="display:flex; gap:6px;">
-                            <button onclick="addToBag('${itemId}'); closeModal('wishlistModal'); openCartModal();" class="btn-add-bag">Add 🛍️</button>
-                            <button onclick="removeWishlistItem(${index})" style="background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:26px; height:26px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
+                        <div style="display:flex; gap:8px;">
+                            <button onclick="addToBag('${itemId}'); closeModal('wishlistModal'); openCartModal();" class="btn-add-bag">Add</button>
+                            <button onclick="removeWishlistItem(${index})" style="background:transparent; color:var(--text-muted); border:none; cursor:pointer; font-size:0.9rem;">✕</button>
                         </div>
                     </div>
                 `;
@@ -589,14 +584,14 @@
 
             const imgs = currentPdpItem.galleryImages && currentPdpItem.galleryImages.length > 0 ? currentPdpItem.galleryImages : [currentPdpItem.image || currentPdpItem.emoji || '📦'];
             
-            document.getElementById('pdpMainBox').innerHTML = imgs[0].startsWith('data:') || imgs[0].startsWith('http') ? `<img src="${imgs[0]}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:6rem;">${imgs[0]}</span>`;
+            document.getElementById('pdpMainBox').innerHTML = imgs[0].startsWith('data:') || imgs[0].startsWith('http') ? `<img src="${imgs[0]}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:5rem;">${imgs[0]}</span>`;
             document.getElementById('pdpThumbnails').innerHTML = imgs.map((img, idx) => `
-                <div onclick="switchPdpImage(${idx})" style="width:60px; height:60px; background:#000; border:2px solid var(--border-color); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;">
+                <div onclick="switchPdpImage(${idx})" style="width:50px; height:50px; background:#000; border:1px solid var(--border-color); border-radius:2px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;">
                     ${img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">` : img}
                 </div>
             `).join('');
 
-            document.getElementById('pdpBadge').innerText = currentPdpItem.badge || 'New';
+            document.getElementById('pdpBadge').innerText = currentPdpItem.badge || 'Atelier Exclusive';
             document.getElementById('pdpTitle').innerText = currentPdpItem.name;
             document.getElementById('pdpPrice').innerText = '₹' + currentPdpItem.price + '.00';
             document.getElementById('pdpDeliveryNote').innerText = `Delivery Fee: ₹${currentPdpItem.deliveryFee || 0}`;
@@ -606,7 +601,7 @@
             if(currentPdpItem.ratings && currentPdpItem.ratings.length > 0) {
                 avgRating = (currentPdpItem.ratings.reduce((a,b)=>a+b,0)/currentPdpItem.ratings.length).toFixed(1);
             }
-            document.getElementById('pdpRatingDisplay').innerText = `⭐ ${avgRating} (${(currentPdpItem.ratings || []).length} ratings)`;
+            document.getElementById('pdpRatingDisplay').innerText = `⭐ ${avgRating} (${(currentPdpItem.ratings || []).length} reviews)`;
 
             const sizeSec = document.getElementById('pdpSizeSection');
             const stockSec = document.getElementById('pdpStockSection');
@@ -619,7 +614,7 @@
                 const availableSizes = currentPdpItem.sizes || ['S', 'M', 'L', 'XL'];
                 selectedSize = availableSizes[0];
                 document.getElementById('sizeGroup').innerHTML = availableSizes.map((sz, idx) => `
-                    <button class="btn-add-bag" style="padding:8px 16px; ${idx===0?'background:var(--accent-neon); color:#0A0A0C;':''}" onclick="selectSize('${sz}', this)">${sz}</button>
+                    <button class="btn-add-bag" style="padding:6px 14px; ${idx===0?'background:var(--accent-terracotta); border-color:var(--accent-terracotta); color:#fff;':''}" onclick="selectSize('${sz}', this)">${sz}</button>
                 `).join('');
             } else {
                 sizeSec.style.display = 'none';
@@ -634,12 +629,12 @@
         function switchPdpImage(idx) {
             const imgs = currentPdpItem.galleryImages && currentPdpItem.galleryImages.length > 0 ? currentPdpItem.galleryImages : [currentPdpItem.image || currentPdpItem.emoji || '📦'];
             const img = imgs[idx];
-            document.getElementById('pdpMainBox').innerHTML = img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:6rem;">${img}</span>`;
+            document.getElementById('pdpMainBox').innerHTML = img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:5rem;">${img}</span>`;
         }
 
         function selectSize(size, el) {
-            document.querySelectorAll('#sizeGroup button').forEach(b => { b.style.background = '#1A1A22'; b.style.color = '#fff'; });
-            el.style.background = 'var(--accent-neon)'; el.style.color = '#0A0A0C';
+            document.querySelectorAll('#sizeGroup button').forEach(b => { b.style.background = 'transparent'; b.style.color = '#fff'; b.style.borderColor = 'var(--border-color)'; });
+            el.style.background = 'var(--accent-terracotta)'; el.style.borderColor = 'var(--accent-terracotta)'; el.style.color = '#fff';
             selectedSize = size;
         }
 
@@ -651,9 +646,9 @@
                 if(data.success) {
                     currentPdpItem.votes = data.votes;
                     document.getElementById('voteCountDisplay').innerText = data.votes;
-                    showProModal('Vote Recorded!', 'Demand signal received by allocation team.');
+                    showProModal('Interest Registered', 'Our studio has recorded your request.');
                 }
-            } catch(e) { showProModal('Error', 'Could not record vote.'); }
+            } catch(e) { showProModal('Error', 'Could not record interest.'); }
         }
 
         async function submitUserRating() {
@@ -668,10 +663,10 @@
                 const data = await res.json();
                 if(data.success) {
                     currentPdpItem.ratings = data.ratings;
-                    showProModal('Rating Recorded', 'Thank you for reviewing drop specifications.');
+                    showProModal('Review Submitted', 'Thank you for your feedback.');
                     openPdpModal(itemId);
                 }
-            } catch(e) { showProModal('Error', 'Could not submit rating.'); }
+            } catch(e) { showProModal('Error', 'Could not submit review.'); }
         }
 
         function addPdpToBag() {
@@ -681,7 +676,7 @@
             const found = bag.find(b => b.cartKey === cartKey);
             if (found) { found.qty += 1; } else { bag.push({ ...currentPdpItem, id: itemId, cartKey, size: selectedSize, qty: 1 }); }
             saveCart(); updateBagUI(); closeModal('pdpModal');
-            showProModal('Bag Updated', `Added item to shopping bag.`);
+            showProModal('Bag Updated', `Piece added to your shopping bag.`);
         }
 
         function addToBag(id) {
@@ -692,7 +687,7 @@
             const found = bag.find(b => b.cartKey === cartKey);
             if (found) { found.qty += 1; } else { bag.push({ ...item, id: id, cartKey, size: defaultSz, qty: 1 }); }
             saveCart(); updateBagUI();
-            showProModal('Bag Updated', `Added item to shopping bag.`);
+            showProModal('Bag Updated', `Piece added to your shopping bag.`);
         }
 
         function saveCart() { localStorage.setItem('hoknex_persistent_cart', JSON.stringify(bag)); }
@@ -703,7 +698,7 @@
 
             const list = document.getElementById('cartItemsList');
             if (bag.length === 0) {
-                list.innerHTML = `<p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your bag is empty.</p>`;
+                list.innerHTML = `<p style="color: var(--text-muted); text-align: center; margin: 2rem 0; font-weight:300;">Your bag is empty.</p>`;
                 document.getElementById('bagSubtotal').innerText = '₹0';
                 document.getElementById('bagDelivery').innerText = '₹0';
                 document.getElementById('bagTotal').innerText = '₹0';
@@ -716,12 +711,12 @@
                 subtotal += (item.price * item.qty);
                 totalDelivery += ((item.deliveryFee || 0) * item.qty);
                 return `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#1A1A22; border:2px solid var(--border-color); padding:10px 14px; border-radius:8px; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#14141A; border:1px solid var(--border-color); padding:10px 14px; border-radius:2px; margin-bottom:8px;">
                         <div>
-                            <div style="font-weight:900; font-size:0.85rem; color:#fff;">${item.name} (${item.size})</div>
-                            <div style="font-size:0.78rem; color:var(--accent-neon); font-weight:900;">₹${item.price} × ${item.qty}</div>
+                            <div style="font-weight:500; font-size:0.85rem; color:#fff; font-family:'Playfair Display',serif;">${item.name} (${item.size})</div>
+                            <div style="font-size:0.75rem; color:var(--accent-gold); font-weight:500;">₹${item.price} × ${item.qty}</div>
                         </div>
-                        <button onclick="removeBagItem(${index})" style="background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:26px; height:26px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
+                        <button onclick="removeBagItem(${index})" style="background:transparent; color:var(--text-muted); border:none; cursor:pointer; font-size:0.9rem;">✕</button>
                     </div>
                 `;
             }).join('');
@@ -749,12 +744,12 @@
                 codOption.disabled = true;
                 payModeSelect.value = 'DirectUPI';
                 toggleQrScanner('DirectUPI');
-                document.getElementById('checkoutSubNotice').innerText = `Subtotal is ₹${subtotal} (₹599+). Pay on Campus Delivery is locked. Please pay online via UPI.`;
+                document.getElementById('checkoutSubNotice').innerText = `Subtotal exceeds ₹599. Delivery on payment available via Atelier UPI.`;
             } else {
                 codOption.disabled = false;
                 payModeSelect.value = 'COD';
                 toggleQrScanner('COD');
-                document.getElementById('checkoutSubNotice').innerText = `Subtotal is ₹${subtotal}. Pay on Campus Delivery or Direct Founder UPI available.`;
+                document.getElementById('checkoutSubNotice').innerText = `Subtotal is ₹${subtotal}. Pay on delivery or direct UPI available.`;
             }
 
             document.getElementById('checkoutModal').style.display = 'flex';
@@ -772,9 +767,9 @@
                         const randomQr = qrs[Math.floor(Math.random() * qrs.length)];
                         container.innerHTML = `<img src="${randomQr.imageUrl}" style="width:100%; height:100%; object-fit:cover;">`;
                     } else {
-                        container.innerHTML = `📱 Default QR (Upload in Admin)`;
+                        container.innerHTML = `Atelier QR Code`;
                     }
-                } catch(e) { container.innerHTML = `📱 QR Loading Error`; }
+                } catch(e) { container.innerHTML = `QR Error`; }
             } else {
                 section.style.display = 'none';
             }
@@ -797,13 +792,13 @@
             if (payMode === 'DirectUPI') {
                 const proofInput = document.getElementById('paymentProofInput');
                 if (!proofInput.files || !proofInput.files[0]) {
-                    showProModal('Payment Screenshot Required', 'Attach payment screenshot before placing order.');
+                    showProModal('Screenshot Required', 'Please attach payment verification screenshot.');
                     return;
                 }
                 try {
                     proofUrl = await uploadDirectToCloudinary(proofInput.files[0]);
                 } catch(err) {
-                    showProModal('Error', 'Failed to upload payment proof to Cloudinary.');
+                    showProModal('Error', 'Failed to upload verification screenshot.');
                     return;
                 }
             }
@@ -820,8 +815,8 @@
                 items: bag,
                 subtotal, deliveryFee: totalDelivery,
                 total: subtotal + totalDelivery,
-                status: 'Order Placed & Awaiting Owner Approval ⏳',
-                timeline: [{ title: 'Order Placed & Awaiting Approval', time: new Date().toLocaleString() }],
+                status: 'Order Placed & Awaiting Verification ⏳',
+                timeline: [{ title: 'Order Placed & Awaiting Verification', time: new Date().toLocaleString() }],
                 customImage: proofUrl,
                 date: new Date().toLocaleDateString()
             };
@@ -834,10 +829,10 @@
                 });
                 if((await res.json()).success) {
                     bag = []; saveCart(); closeModal('checkoutModal'); updateBagUI();
-                    showProModal('Order Placed! 🎉', `Order ID: #${orderId}. Track status anytime.`);
+                    showProModal('Order Confirmed', `Reference ID: #${orderId}. Thank you for your acquisition.`);
                 }
             } catch(e) {
-                showProModal('Error', 'Could not save order to database.');
+                showProModal('Error', 'Could not complete order transmission.');
             }
         }
 
@@ -856,13 +851,13 @@
                     const customMsgBox = document.getElementById('resCustomMsgContainer');
                     if(found.customMessage) {
                         customMsgBox.style.display = 'block';
-                        customMsgBox.innerHTML = `<b>Message from Hoknex Owner:</b><p>${found.customMessage}</p>${found.customImage ? `<img src="${found.customImage}" style="max-width:100%; height:120px; object-fit:cover; border-radius:6px; margin-top:6px;">` : ''}`;
+                        customMsgBox.innerHTML = `<b>Studio Note:</b><p>${found.customMessage}</p>${found.customImage ? `<img src="${found.customImage}" style="max-width:100%; height:100px; object-fit:cover; border-radius:2px; margin-top:6px;">` : ''}`;
                     } else {
                         customMsgBox.style.display = 'none';
                     }
 
                     let timelineHtml = (found.timeline || [{title: found.status, time: found.date}]).map(t => `
-                        <div style="display:flex; align-items:center; gap:8px; border-left:2px solid var(--accent-neon); padding-left:10px; margin-bottom:6px;">
+                        <div style="display:flex; align-items:center; gap:8px; border-left:1px solid var(--accent-gold); padding-left:10px; margin-bottom:6px;">
                             <div><b>${t.title}</b><br><small style="color:var(--text-muted);">${t.time}</small></div>
                         </div>
                     `).join('');
@@ -870,10 +865,10 @@
                 } else {
                     document.getElementById('resId').innerText = `Order ID: #${queryId}`;
                     document.getElementById('resCustomMsgContainer').style.display = 'none';
-                    document.getElementById('resTimeline').innerHTML = `<p style="color:var(--accent-hot);">Order ID not found or invalid.</p>`;
+                    document.getElementById('resTimeline').innerHTML = `<p style="color:var(--accent-terracotta);">Order reference not found.</p>`;
                 }
             } catch(e) {
-                showProModal('Error', 'Could not retrieve tracking details.');
+                showProModal('Error', 'Could not query order status.');
             }
         }
 
@@ -887,9 +882,9 @@
                     body: JSON.stringify({ email, date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString() })
                 });
                 document.getElementById('newsletterEmailInput').value = '';
-                showProModal('Welcome to Hoknex Drop Club', 'Your email has been registered for exclusive drops.');
+                showProModal('Welcome', 'You have been added to our private atelier registry.');
             } catch(e) {
-                showProModal('Error', 'Could not subscribe.');
+                showProModal('Error', 'Could not complete subscription.');
             }
         }
 
