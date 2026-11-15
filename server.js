@@ -73,7 +73,7 @@ const storage = new CloudinaryStorage({
     params: {
         folder: 'hoknex_uploads', 
         resource_type: 'auto',
-        allowedFormats: ['jpeg', 'png', 'jpg', 'webp', 'webm', 'mp3', 'wav', 'mov', 'mp4'] 
+        allowedFormats: ['jpeg', 'png', 'jpg', 'webp', 'webm', 'mp3', 'wav', 'mov', 'mp4', 'pdf'] 
     }
 });
 
@@ -604,6 +604,7 @@ const DigitalBookSchema = new mongoose.Schema({
     title: { type: String, required: true },
     author: { type: String, required: true },
     coverUrl: { type: String, required: true },
+    pdfUrl: { type: String, default: '' }, // ✅ Added pdfUrl so PDF downloads function properly
     pages: [String],
     createdAt: { type: Date, default: Date.now }
 });
