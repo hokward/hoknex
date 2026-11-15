@@ -4635,7 +4635,7 @@ async function openVerifyModal() {
             resultDiv.style.background = 'transparent';
         }
         
-        // Clean up any lingering instance safely
+        // Clean up any lingering scanner instance safely before rendering a new one
         if (html5QrcodeScanner) {
             try {
                 await html5QrcodeScanner.clear();
@@ -4654,9 +4654,12 @@ async function openVerifyModal() {
             false
         );
 
-        html5QrcodeScanner.render(onScanSuccess, (error) => {
-            // Suppress continuous frame scan errors
-        });
+        html5QrcodeScanner.render(
+            onScanSuccess, 
+            (error) => {
+                // Silently suppress routine frame-by-frame "No MultiFormat Readers" misses
+            }
+        );
     }
 }
 
@@ -4684,7 +4687,7 @@ async function scanQRCodeFromFile(inputElement) {
         console.error(`Error scanning file: ${err}`);
         if (resultDiv) {
             resultDiv.style.background = 'rgba(239, 68, 68, 0.1)';
-            resultDiv.innerHTML = `<span style="color:#ef4444;">❌ Could not read QR from image. Try live camera scan.</span>`;
+            resultDiv.innerHTML = `<span style="color:#ef4444;">❌ Could not detect QR code in this image. Please try a clearer screenshot or the live camera scan.</span>`;
         }
     }
 }
