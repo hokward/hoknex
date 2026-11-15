@@ -184,8 +184,8 @@
         const OWNER_PASSWORD = 'hoknex2026';
 
         // --- DIRECT CLOUDINARY CONFIGURATION (Bypasses Render Bandwidth 100%) ---
-        const CLOUDINARY_CLOUD_NAME = 'wnnotcmw'; // Updated with your cloud name from screenshot
-      const CLOUDINARY_UPLOAD_PREset = 'hoknex_uploads'; // Replace with your Cloudinary unsigned preset name
+        const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
+        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads'; // ✅ Fixed (all caps PRESET)
 
         async function uploadDirectToCloudinary(file) {
             const formData = new FormData();
@@ -270,7 +270,6 @@
             const desc = document.getElementById('campDesc').value;
             const fileInput = document.getElementById('campFile');
             
-            // Upload straight to Cloudinary (bypassing Render)
             const imageUrl = await uploadDirectToCloudinary(fileInput.files[0]);
 
             await fetch(`${API_URL}/api/store/campaigns`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, desc, image: imageUrl }) });
@@ -300,7 +299,6 @@
             const desc = document.getElementById('dropDesc').value;
             const fileInput = document.getElementById('dropFile');
             
-            // Upload straight to Cloudinary (bypassing Render)
             const mediaUrl = await uploadDirectToCloudinary(fileInput.files[0]);
 
             await fetch(`${API_URL}/api/store/drops`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, desc, image: mediaUrl }) });
@@ -332,7 +330,6 @@
             const fileInput = document.getElementById('newQrFile');
             if (fileInput.files && fileInput.files[0]) {
                 try {
-                    // Upload straight to Cloudinary (bypassing Render)
                     const qrUrl = await uploadDirectToCloudinary(fileInput.files[0]);
 
                     await fetch(`${API_URL}/api/store/qrs`, {
@@ -367,7 +364,6 @@
             if (fileInput.files && fileInput.files.length > 0) {
                 let uploadedUrls = [];
                 for(let i=0; i<fileInput.files.length; i++) {
-                    // Upload gallery files straight to Cloudinary (bypassing Render)
                     const fileUrl = await uploadDirectToCloudinary(fileInput.files[i]);
                     uploadedUrls.push(fileUrl);
                 }
