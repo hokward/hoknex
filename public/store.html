@@ -7,14 +7,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #000000;
-            --bg-card: #0A0A0C;
-            --text-main: #FFFFFF;
-            --text-muted: #888888;
-            --border-color: rgba(255, 255, 255, 0.12);
-            --accent-gold: #D4AF37;
-            --accent-terracotta: #B85D3B;
-            --accent-hover: #9E4B2D;
+            --bg-body: #FAF6F0;
+            --bg-card: #F2ECE1;
+            --text-main: #2C1E16;
+            --text-muted: #6E5D52;
+            --border-color: #E2DBD0;
+            --accent-gold: #B8860B;
+            --accent-terracotta: #C05621;
+            --accent-hover: #A04018;
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -23,11 +23,12 @@
 
         h1, h2, h3, h4, .store-logo-brand, .store-hero h1 {
             font-family: 'Playfair Display', serif;
+            color: var(--text-main);
         }
 
         .top-announcement {
-            background: #0D0D11;
-            color: var(--accent-gold);
+            background: #2C1E16;
+            color: #FAF6F0;
             text-align: center;
             padding: 10px 1rem;
             font-size: 0.75rem;
@@ -42,7 +43,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 1.5rem 4rem;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(250, 246, 240, 0.92);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-color);
             position: sticky;
@@ -56,28 +57,29 @@
             transition: color 0.2s; padding: 4px 0; border-bottom: 1px solid transparent; display: inline-block;
             text-transform: uppercase; letter-spacing: 0.12em;
         }
-        .nav-left-links a:hover, .nav-left-links a.active { color: var(--text-main); border-bottom-color: var(--accent-gold); }
+        .nav-left-links a:hover, .nav-left-links a.active { color: var(--text-main); border-bottom-color: var(--accent-terracotta); }
 
         .store-logo-brand { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-main); text-decoration: none; display: flex; flex-direction: column; align-items: center; line-height: 1; }
-        .store-logo-brand span { font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.35em; color: var(--accent-gold); margin-top: 4px; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .store-logo-brand span { font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.35em; color: var(--accent-terracotta); margin-top: 4px; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         .nav-right-actions { display: flex; gap: 1.5rem; align-items: center; }
         .search-box-wrap { display: flex; align-items: center; background: transparent; border-bottom: 1px solid var(--border-color); padding: 4px 8px; width: 200px; }
-        .search-box-wrap input { border: none; outline: none; background: transparent; font-size: 0.82rem; font-weight: 400; color: #fff; width: 100%; margin-left: 6px; letter-spacing: 0.05em; }
+        .search-box-wrap input { border: none; outline: none; background: transparent; font-size: 0.82rem; font-weight: 400; color: var(--text-main); width: 100%; margin-left: 6px; letter-spacing: 0.05em; }
+        .search-box-wrap input::placeholder { color: var(--text-muted); }
         .icon-btn { background: transparent; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-main); transition: opacity 0.2s; position: relative; }
         .icon-btn:hover { opacity: 0.7; }
 
         /* Luxury Editorial Hero */
         .store-hero { padding: 6rem 4rem 4rem 4rem; max-width: 1400px; margin: 0 auto; text-align: center; }
         .store-hero h1 { font-size: 4rem; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 1.2rem; line-height: 1.1; }
-        .store-hero h1 span { font-style: italic; color: var(--accent-gold); }
+        .store-hero h1 span { font-style: italic; color: var(--accent-terracotta); }
         .store-hero p { color: var(--text-muted); font-size: 1rem; font-weight: 300; max-width: 600px; margin: 0 auto; letter-spacing: 0.05em; line-height: 1.7; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         .coming-soon-container { padding: 3rem 4rem; max-width: 1400px; margin: 0 auto; }
-        .coming-soon-card { background: #0D0D11; border: 1px solid var(--border-color); border-radius: 4px; padding: 3rem; text-align: center; }
+        .coming-soon-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 4px; padding: 3rem; text-align: center; }
         .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
-        .drop-preview-card { background: #14141A; border: 1px solid var(--border-color); border-radius: 4px; padding: 1.2rem; text-align: left; }
-        .drop-media { width: 100%; height: 320px; background: #000; border-radius: 2px; overflow: hidden; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; }
+        .drop-preview-card { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 4px; padding: 1.2rem; text-align: left; }
+        .drop-media { width: 100%; height: 320px; background: #E5E0D8; border-radius: 2px; overflow: hidden; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; }
         .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: cover; }
 
         .product-catalog-section { padding: 4rem; max-width: 1400px; margin: 0 auto; }
@@ -91,26 +93,26 @@
         }
 
         .prod-img-box {
-            width: 100%; height: 400px; background: #111116; border: none;
+            width: 100%; height: 400px; background: #EAE5DC; border: none;
             border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1rem; overflow: hidden;
         }
         .prod-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
         .product-card:hover .prod-img-box img { transform: scale(1.04); }
 
-        .prod-title { font-size: 1rem; font-weight: 500; margin-bottom: 0.3rem; letter-spacing: 0.05em; font-family: 'Playfair Display', serif; }
+        .prod-title { font-size: 1rem; font-weight: 500; margin-bottom: 0.3rem; letter-spacing: 0.05em; font-family: 'Playfair Display', serif; color: var(--text-main); }
         .prod-category { font-size: 0.65rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 0.4rem; }
         .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.6rem; }
-        .prod-price { font-size: 0.95rem; font-weight: 500; color: var(--accent-gold); font-variant-numeric: tabular-nums; letter-spacing: 0.05em; }
+        .prod-price { font-size: 0.95rem; font-weight: 500; color: var(--accent-terracotta); font-variant-numeric: tabular-nums; letter-spacing: 0.05em; }
 
         .btn-add-bag { 
-            background: transparent; color: var(--text-main); border: 1px solid var(--border-color); 
+            background: transparent; color: var(--text-main); border: 1px solid var(--text-main); 
             padding: 6px 14px; border-radius: 2px; font-weight: 500; font-size: 0.75rem; cursor: pointer; 
             text-transform: uppercase; letter-spacing: 0.12em; transition: all 0.2s; 
         }
         .btn-add-bag:hover { background: var(--accent-terracotta); border-color: var(--accent-terracotta); color: #fff; }
         
         .btn-wishlist { 
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); border: none; width: 32px; height: 32px; 
+            background: rgba(250, 246, 240, 0.8); backdrop-filter: blur(4px); border: none; width: 32px; height: 32px; 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; 
             cursor: pointer; position: absolute; top: 16px; right: 16px; z-index: 5; transition: transform 0.2s; 
         }
@@ -121,39 +123,40 @@
         .campaign-header h2 { font-size: 2.5rem; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
         .campaign-header p { color: var(--text-muted); font-weight: 300; font-size: 0.95rem; letter-spacing: 0.05em; }
         .campaign-grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-        .campaign-tile { background: #0D0D11; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; position: relative; transition: transform 0.3s ease; }
+        .campaign-tile { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; position: relative; transition: transform 0.3s ease; }
         .campaign-tile:hover { transform: translateY(-4px); }
-        .campaign-img-wrap { width: 100%; height: 380px; background: #000; overflow: hidden; }
-        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(30%); transition: filter 0.4s ease, transform 0.6s ease; }
+        .campaign-img-wrap { width: 100%; height: 380px; background: #E5E0D8; overflow: hidden; }
+        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(15%); transition: filter 0.4s ease, transform 0.6s ease; }
         .campaign-tile:hover .campaign-img-wrap img { filter: grayscale(0%); transform: scale(1.03); }
         .campaign-caption { padding: 1.5rem; text-align: left; }
         .campaign-caption h4 { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.3rem; letter-spacing: 0.05em; font-family: 'Playfair Display', serif; }
         .campaign-caption p { font-size: 0.82rem; color: var(--text-muted); font-weight: 300; letter-spacing: 0.05em; }
 
-        .store-footer { background: #050507; color: #F5F2EB; padding: 6rem 4rem 3rem 4rem; margin-top: 6rem; border-top: 1px solid var(--border-color); position: relative; }
-        .footer-newsletter { max-width: 700px; margin-bottom: 5rem; padding-bottom: 4rem; border-bottom: 1px solid var(--border-color); }
-        .footer-newsletter h3 { font-size: 2rem; font-weight: 400; margin-bottom: 0.6rem; font-family: 'Playfair Display', serif; letter-spacing: -0.01em; }
-        .footer-newsletter p { color: var(--text-muted); font-size: 0.9rem; font-weight: 300; margin-bottom: 2rem; letter-spacing: 0.05em; }
+        .store-footer { background: #2C1E16; color: #FAF6F0; padding: 6rem 4rem 3rem 4rem; margin-top: 6rem; border-top: 1px solid var(--border-color); position: relative; }
+        .footer-newsletter { max-width: 700px; margin-bottom: 5rem; padding-bottom: 4rem; border-bottom: 1px solid rgba(250,246,240,0.15); }
+        .footer-newsletter h3 { font-size: 2rem; font-weight: 400; margin-bottom: 0.6rem; font-family: 'Playfair Display', serif; letter-spacing: -0.01em; color: #FAF6F0; }
+        .footer-newsletter p { color: #D1C7BD; font-size: 0.9rem; font-weight: 300; margin-bottom: 2rem; letter-spacing: 0.05em; }
         .newsletter-input-group { display: flex; gap: 1rem; max-width: 550px; }
-        .newsletter-input-group input { flex: 1; background: transparent; border: 1px solid var(--border-color); padding: 12px 16px; border-radius: 2px; color: #fff; font-weight: 400; outline: none; letter-spacing: 0.05em; }
-        .btn-newsletter { background: var(--accent-terracotta); color: #fff; border: none; padding: 0 2rem; border-radius: 2px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer; transition: background 0.2s; }
-        .btn-newsletter:hover { background: var(--accent-hover); }
+        .newsletter-input-group input { flex: 1; background: transparent; border: 1px solid rgba(250,246,240,0.3); padding: 12px 16px; border-radius: 2px; color: #FAF6F0; font-weight: 400; outline: none; letter-spacing: 0.05em; }
+        .newsletter-input-group input::placeholder { color: #A89D93; }
+        .btn-newsletter { background: var(--accent-gold); color: #2C1E16; border: none; padding: 0 2rem; border-radius: 2px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer; transition: background 0.2s; }
+        .btn-newsletter:hover { background: #C99612; }
 
         .footer-links-grid { display: grid; grid-template-columns: repeat(5, 1fr) 1.5fr; gap: 2rem; font-size: 0.82rem; }
-        .footer-col h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 1.2rem; color: #fff; text-transform: uppercase; letter-spacing: 0.15em; }
+        .footer-col h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 1.2rem; color: #FAF6F0; text-transform: uppercase; letter-spacing: 0.15em; }
         .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
-        .footer-col a { color: var(--text-muted); text-decoration: none; font-weight: 300; cursor: pointer; transition: color 0.15s; letter-spacing: 0.05em; }
-        .footer-col a:hover { color: #fff; }
+        .footer-col a { color: #D1C7BD; text-decoration: none; font-weight: 300; cursor: pointer; transition: color 0.15s; letter-spacing: 0.05em; }
+        .footer-col a:hover { color: #FAF6F0; }
 
-        .footer-watermark { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 18vw; font-weight: 700; color: rgba(255, 255, 255, 0.015); white-space: nowrap; pointer-events: none; z-index: 1; font-family: 'Playfair Display', serif; }
+        .footer-watermark { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 18vw; font-weight: 700; color: rgba(250, 246, 240, 0.03); white-space: nowrap; pointer-events: none; z-index: 1; font-family: 'Playfair Display', serif; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
-        .modal-panel { background: #0D0D11; border: 1px solid var(--border-color); border-radius: 4px; padding: 3rem; width: 100%; max-width: 700px; position: relative; max-height: 90vh; overflow-y: auto; color: #fff; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 30, 22, 0.7); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
+        .modal-panel { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 4px; padding: 3rem; width: 100%; max-width: 700px; position: relative; max-height: 90vh; overflow-y: auto; color: var(--text-main); }
         .btn-primary { width: 100%; background: var(--accent-terracotta); color: #fff; border: none; border-radius: 2px; padding: 1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 1.5rem; text-transform: uppercase; letter-spacing: 0.15em; transition: background 0.2s; }
         .btn-primary:hover { background: var(--accent-hover); }
 
-        #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
-        #proModalBox { background: #0D0D11; border: 1px solid var(--border-color); border-radius: 4px; padding: 2.5rem; max-width: 420px; width: 100%; text-align: center; color: #fff; }
+        #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 30, 22, 0.7); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
+        #proModalBox { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 4px; padding: 2.5rem; max-width: 420px; width: 100%; text-align: center; color: var(--text-main); }
 
         @media (max-width: 1024px) {
             .catalog-grid { grid-template-columns: repeat(2, 1fr); }
@@ -193,9 +196,9 @@
                 <span style="font-size: 0.8rem;">🔍</span>
                 <input type="text" placeholder="Search..." oninput="filterCatalogSearch(this.value)">
             </div>
-            <button class="icon-btn" onclick="openWishlistModal()" title="Wishlist">🤍<span style="font-size:0.65rem; margin-left:2px; color:var(--accent-gold);" id="wishlistCount">0</span></button>
+            <button class="icon-btn" onclick="openWishlistModal()" title="Wishlist">🤍<span style="font-size:0.65rem; margin-left:2px; color:var(--accent-terracotta);" id="wishlistCount">0</span></button>
             <button class="icon-btn" onclick="openTrackModal()" title="Track Order">📦</button>
-            <button class="icon-btn" onclick="openCartModal()" title="Shopping Bag">🛒<span style="font-size:0.65rem; margin-left:2px; color:var(--accent-gold);" id="bagCount">0</span></button>
+            <button class="icon-btn" onclick="openCartModal()" title="Shopping Bag">🛒<span style="font-size:0.65rem; margin-left:2px; color:var(--accent-terracotta);" id="bagCount">0</span></button>
         </div>
     </header>
 
@@ -280,10 +283,10 @@
             </div>
             <div class="footer-col">
                 <h4>Connect</h4>
-                <p style="color: var(--text-muted); font-size: 0.78rem; margin-top: 8px; font-weight: 300; letter-spacing: 0.05em;">Global studio inquiries and creator spotlights.</p>
+                <p style="color: #D1C7BD; font-size: 0.78rem; margin-top: 8px; font-weight: 300; letter-spacing: 0.05em;">Global studio inquiries and creator spotlights.</p>
             </div>
         </div>
-        <div style="margin-top: 4rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); position: relative; z-index: 2; letter-spacing: 0.05em;">
+        <div style="margin-top: 4rem; border-top: 1px solid rgba(250,246,240,0.15); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.75rem; color: #D1C7BD; position: relative; z-index: 2; letter-spacing: 0.05em;">
             <span>&copy; Hoknex 2026. All rights reserved.</span>
             <span>Secure Atelier Checkout</span>
         </div>
@@ -293,23 +296,23 @@
     <!-- PDP Modal -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
         <div class="modal-panel" style="max-width: 850px;">
-            <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:#fff; border:none; width:36px; height:36px; font-size:1.2rem; cursor:pointer;">&times;</button>
+            <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:var(--text-main); border:none; width:36px; height:36px; font-size:1.2rem; cursor:pointer;">&times;</button>
             <div style="display:flex; gap:3rem; flex-wrap:wrap;">
                 <div style="flex:1; min-width:280px; text-align:center;">
-                    <div id="pdpMainBox" class="prod-img-box" style="height:380px;"><span id="pdpMainEmoji" style="font-size:5rem;">🧥</span></div>
+                    <div id="pdpMainBox" class="prod-img-box" style="height:380px; background:#E5E0D8;"><span id="pdpMainEmoji" style="font-size:5rem;">🧥</span></div>
                     <div id="pdpThumbnails" style="display:flex; gap:8px; margin-top:10px; justify-content:center;"></div>
                 </div>
                 <div style="flex:1; min-width:280px;">
-                    <span id="pdpBadge" style="font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.2em; color:var(--accent-gold);">Atelier Exclusive</span>
+                    <span id="pdpBadge" style="font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.2em; color:var(--accent-terracotta);">Atelier Exclusive</span>
                     <h2 id="pdpTitle" style="font-size:2rem; font-weight:400; margin:0.4rem 0; font-family: 'Playfair Display', serif;">Product Title</h2>
-                    <div id="pdpPrice" style="font-size:1.3rem; font-weight:500; color:var(--accent-gold); margin-bottom:0.4rem; font-variant-numeric: tabular-nums;">₹0</div>
+                    <div id="pdpPrice" style="font-size:1.3rem; font-weight:500; color:var(--accent-terracotta); margin-bottom:0.4rem; font-variant-numeric: tabular-nums;">₹0</div>
                     <div id="pdpDeliveryNote" style="font-size:0.75rem; font-weight:300; color:var(--text-muted); margin-bottom:0.4rem; letter-spacing:0.05em;">Delivery Fee: ₹0</div>
                     <div id="pdpRatingDisplay" style="font-size:0.8rem; font-weight:500; color:var(--accent-gold); margin-bottom:1rem;">⭐ 5.0 (0 reviews)</div>
                     <p id="pdpDesc" style="color:var(--text-muted); font-size:0.88rem; font-weight:300; line-height:1.7; margin-bottom:1.5rem; letter-spacing:0.05em;"></p>
-                    <div id="pdpSizeSection"><div style="font-size:0.75rem; font-weight:600; color:#fff; text-transform:uppercase; margin-bottom:0.5rem; letter-spacing:0.15em;">Select Size</div><div style="display:flex; gap:8px; margin-bottom:1.5rem;" id="sizeGroup"></div></div>
-                    <div id="pdpStockSection" style="display:none; margin-bottom:1.2rem;"><p style="color:var(--accent-terracotta); font-weight:600; font-size:0.85rem; margin-bottom:8px; letter-spacing:0.05em;">Currently Unavailable</p><button onclick="voteForStock()" class="btn-primary" style="background:#222; color:#fff;">Register Interest (<span id="voteCountDisplay">0</span>)</button></div>
+                    <div id="pdpSizeSection"><div style="font-size:0.75rem; font-weight:600; color:var(--text-main); text-transform:uppercase; margin-bottom:0.5rem; letter-spacing:0.15em;">Select Size</div><div style="display:flex; gap:8px; margin-bottom:1.5rem;" id="sizeGroup"></div></div>
+                    <div id="pdpStockSection" style="display:none; margin-bottom:1.2rem;"><p style="color:var(--accent-terracotta); font-weight:600; font-size:0.85rem; margin-bottom:8px; letter-spacing:0.05em;">Currently Unavailable</p><button onclick="voteForStock()" class="btn-primary" style="background:#2C1E16; color:#FAF6F0;">Register Interest (<span id="voteCountDisplay">0</span>)</button></div>
                     <button id="pdpAddBtn" onclick="addPdpToBag()" class="btn-primary">Add to Bag</button>
-                    <div style="margin-top:2rem; border-top:1px solid var(--border-color); padding-top:1.2rem;"><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Rate this piece:</label><select id="userRatingSelect" onchange="submitUserRating()" style="margin-top:6px; padding:8px; font-weight:400; border-radius:2px; background:#14141A; color:#fff; border:1px solid var(--border-color); width:100%; outline:none;"><option value="5">⭐⭐⭐⭐⭐ (5/5)</option><option value="4">⭐⭐⭐⭐ (4/5)</option><option value="3">⭐⭐⭐ (3/5)</option><option value="2">⭐⭐ (2/5)</option><option value="1">⭐ (1/5)</option></select></div>
+                    <div style="margin-top:2rem; border-top:1px solid var(--border-color); padding-top:1.2rem;"><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Rate this piece:</label><select id="userRatingSelect" onchange="submitUserRating()" style="margin-top:6px; padding:8px; font-weight:400; border-radius:2px; background:var(--bg-body); color:var(--text-main); border:1px solid var(--border-color); width:100%; outline:none;"><option value="5">⭐⭐⭐⭐⭐ (5/5)</option><option value="4">⭐⭐⭐⭐ (4/5)</option><option value="3">⭐⭐⭐ (3/5)</option><option value="2">⭐⭐ (2/5)</option><option value="1">⭐ (1/5)</option></select></div>
                 </div>
             </div>
         </div>
@@ -317,41 +320,41 @@
 
     <!-- Wishlist Modal -->
     <div id="wishlistModal" class="modal-overlay" onclick="if(event.target === this) closeModal('wishlistModal')">
-        <div class="modal-panel" style="max-width: 450px;"><button onclick="closeModal('wishlistModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:#fff; border:none; font-size:1.2rem; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 400; margin-bottom: 1.2rem; font-family:'Playfair Display',serif;">Wishlist</h2><div id="wishlistItemsList" style="max-height: 280px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0; font-weight: 300;">Your wishlist is empty.</p></div><button onclick="closeModal('wishlistModal')" class="btn-primary" style="margin-top:0;">Continue Shopping</button></div>
+        <div class="modal-panel" style="max-width: 450px;"><button onclick="closeModal('wishlistModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:var(--text-main); border:none; font-size:1.2rem; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 400; margin-bottom: 1.2rem; font-family:'Playfair Display',serif;">Wishlist</h2><div id="wishlistItemsList" style="max-height: 280px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0; font-weight: 300;">Your wishlist is empty.</p></div><button onclick="closeModal('wishlistModal')" class="btn-primary" style="margin-top:0;">Continue Shopping</button></div>
     </div>
 
     <!-- Cart Modal -->
     <div id="cartModal" class="modal-overlay" onclick="if(event.target === this) closeModal('cartModal')">
-        <div class="modal-panel" style="max-width: 450px;"><button onclick="closeModal('cartModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:#fff; border:none; font-size:1.2rem; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 400; margin-bottom: 1.2rem; font-family:'Playfair Display',serif;">Shopping Bag</h2><div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0; font-weight: 300;">Your bag is empty.</p></div><div style="font-size:0.85rem; font-weight:400; margin-bottom:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;"><div style="display:flex; justify-content:space-between; margin-bottom:6px; color:var(--text-muted);"><span>Subtotal:</span><span id="bagSubtotal">₹0</span></div><div style="display:flex; justify-content:space-between; margin-bottom:6px; color:var(--text-muted);"><span>Delivery:</span><span id="bagDelivery">₹0</span></div><div style="display:flex; justify-content:space-between; font-size:1rem; font-weight:600; margin-top:10px; color:var(--accent-gold);"><span>Total:</span><span id="bagTotal">₹0</span></div></div><button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Checkout</button></div>
+        <div class="modal-panel" style="max-width: 450px;"><button onclick="closeModal('cartModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:var(--text-main); border:none; font-size:1.2rem; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 400; margin-bottom: 1.2rem; font-family:'Playfair Display',serif;">Shopping Bag</h2><div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0; font-weight: 300;">Your bag is empty.</p></div><div style="font-size:0.85rem; font-weight:400; margin-bottom:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;"><div style="display:flex; justify-content:space-between; margin-bottom:6px; color:var(--text-muted);"><span>Subtotal:</span><span id="bagSubtotal">₹0</span></div><div style="display:flex; justify-content:space-between; margin-bottom:6px; color:var(--text-muted);"><span>Delivery:</span><span id="bagDelivery">₹0</span></div><div style="display:flex; justify-content:space-between; font-size:1rem; font-weight:600; margin-top:10px; color:var(--accent-terracotta);"><span>Total:</span><span id="bagTotal">₹0</span></div></div><button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Checkout</button></div>
     </div>
 
     <!-- Checkout Modal -->
     <div id="checkoutModal" class="modal-overlay" onclick="if(event.target === this) closeModal('checkoutModal')">
         <div class="modal-panel" style="max-width: 520px;">
-            <button onclick="closeModal('checkoutModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:#fff; border:none; font-size:1.2rem; cursor:pointer;">&times;</button>
+            <button onclick="closeModal('checkoutModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:var(--text-main); border:none; font-size:1.2rem; cursor:pointer;">&times;</button>
             <h2 style="font-size: 1.4rem; font-weight: 400; margin-bottom: 0.4rem; font-family:'Playfair Display',serif;">Secure Checkout</h2>
-            <p id="checkoutSubNotice" style="color: var(--accent-gold); font-size: 0.8rem; font-weight: 300; margin-bottom: 1.5rem; letter-spacing: 0.05em;"></p>
+            <p id="checkoutSubNotice" style="color: var(--accent-terracotta); font-size: 0.8rem; font-weight: 300; margin-bottom: 1.5rem; letter-spacing: 0.05em;"></p>
             <form onsubmit="finalizeOrder(event)" style="display:flex; flex-direction:column; gap:1rem;">
-                <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Full Name *</label><input type="text" id="shipName" placeholder="Alex Morgan" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
+                <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Full Name *</label><input type="text" id="shipName" placeholder="Alex Morgan" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:var(--text-main); margin-top:4px; outline:none;"></div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Phone *</label><input type="tel" id="shipPhone" placeholder="+91 9876543210" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
-                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Email *</label><input type="email" id="shipEmail" placeholder="student@edu.in" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
+                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Phone *</label><input type="tel" id="shipPhone" placeholder="+91 9876543210" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:var(--text-main); margin-top:4px; outline:none;"></div>
+                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Email *</label><input type="email" id="shipEmail" placeholder="student@edu.in" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:var(--text-main); margin-top:4px; outline:none;"></div>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Country *</label><input type="text" id="shipCountry" value="India" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
-                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">State *</label><input type="text" id="shipState" placeholder="Bihar" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
+                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Country *</label><input type="text" id="shipCountry" value="India" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:var(--text-main); margin-top:4px; outline:none;"></div>
+                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">State *</label><input type="text" id="shipState" placeholder="Bihar" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:var(--text-main); margin-top:4px; outline:none;"></div>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">City *</label><input type="text" id="shipCity" placeholder="Muzaffarpur" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
-                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Pin Code *</label><input type="text" id="shipPin" placeholder="842001" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
+                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">City *</label><input type="text" id="shipCity" placeholder="Muzaffarpur" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:var(--text-main); margin-top:4px; outline:none;"></div>
+                    <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Pin Code *</label><input type="text" id="shipPin" placeholder="842001" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:var(--text-main); margin-top:4px; outline:none;"></div>
                 </div>
-                <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Landmark *</label><input type="text" id="shipLandmark" placeholder="Near Gate" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"></div>
-                <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Full Address *</label><textarea id="shipAddress" rows="2" placeholder="Room 404..." required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none; resize:vertical;"></textarea></div>
-                <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Payment Mode *</label><select id="payMode" onchange="toggleQrScanner(this.value)" style="width:100%; background:#0D0D11; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:#fff; margin-top:4px; outline:none;"><option id="codOption" value="COD">Pay on Delivery</option><option value="DirectUPI">Direct Founder UPI (hoknex@upi)</option></select></div>
-                <div id="qrScannerSection" style="display:none; background:#0D0D11; border:1px solid var(--accent-gold); padding:1.2rem; border-radius:2px; text-align:center; margin-top:0.5rem;">
-                    <h4 style="font-size:0.85rem; font-weight:600; margin-bottom:0.4rem; color:#fff; letter-spacing:0.05em;">Scan QR Code to Pay</h4>
-                    <div id="qrImageContainer" style="width:150px; height:150px; margin:0 auto; background:#000; border:1px solid var(--border-color); border-radius:2px; display:flex; align-items:center; justify-content:center; overflow:hidden; color:#fff; font-size:0.8rem;">Loading...</div>
-                    <div style="margin-top:1rem; text-align:left;"><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Payment Screenshot *</label><input type="file" id="paymentProofInput" accept="image/*" style="width:100%; margin-top:4px; font-size:0.78rem; color:#fff;"></div>
+                <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Landmark *</label><input type="text" id="shipLandmark" placeholder="Near Gate" required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:var(--text-main); margin-top:4px; outline:none;"></div>
+                <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Full Address *</label><textarea id="shipAddress" rows="2" placeholder="Room 404..." required style="width:100%; background:transparent; border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:var(--text-main); margin-top:4px; outline:none; resize:vertical;"></textarea></div>
+                <div><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Payment Mode *</label><select id="payMode" onchange="toggleQrScanner(this.value)" style="width:100%; background:var(--bg-body); border:1px solid var(--border-color); padding:10px; border-radius:2px; font-weight:400; color:var(--text-main); margin-top:4px; outline:none;"><option id="codOption" value="COD">Pay on Delivery</option><option value="DirectUPI">Direct Founder UPI (hoknex@upi)</option></select></div>
+                <div id="qrScannerSection" style="display:none; background:var(--bg-body); border:1px solid var(--accent-gold); padding:1.2rem; border-radius:2px; text-align:center; margin-top:0.5rem;">
+                    <h4 style="font-size:0.85rem; font-weight:600; margin-bottom:0.4rem; color:var(--text-main); letter-spacing:0.05em;">Scan QR Code to Pay</h4>
+                    <div id="qrImageContainer" style="width:150px; height:150px; margin:0 auto; background:#E5E0D8; border:1px solid var(--border-color); border-radius:2px; display:flex; align-items:center; justify-content:center; overflow:hidden; color:var(--text-main); font-size:0.8rem;">Loading...</div>
+                    <div style="margin-top:1rem; text-align:left;"><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Payment Screenshot *</label><input type="file" id="paymentProofInput" accept="image/*" style="width:100%; margin-top:4px; font-size:0.78rem; color:var(--text-main);"></div>
                 </div>
                 <button type="submit" class="btn-primary">Complete Order</button>
             </form>
@@ -360,7 +363,7 @@
 
     <!-- Track Order Modal -->
     <div id="trackModal" class="modal-overlay" onclick="if(event.target === this) closeModal('trackModal')">
-        <div class="modal-panel" style="max-width: 450px; text-align: center;"><button onclick="closeModal('trackModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:#fff; border:none; font-size:1.2rem; cursor:pointer;">&times;</button><h2 style="font-size: 1.3rem; font-weight: 400; margin-bottom: 0.8rem; font-family:'Playfair Display',serif;">Track Order</h2><div style="display:flex; gap:8px; margin-bottom:1.2rem;"><input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:transparent; border:1px solid var(--border-color); border-radius:2px; padding:10px; font-weight:400; color:#fff; flex:1; outline:none;"><button onclick="performTracking()" class="btn-primary" style="margin:0; padding:10px 14px; width:100px;">Search</button></div><div id="trackResultBox" style="text-align:left; background:#0D0D11; border:1px solid var(--border-color); padding:1.2rem; border-radius:2px; display:none;"><h4 id="resId" style="font-size:0.85rem; font-weight:600; margin-bottom:0.4rem; color:#fff;">Order ID: #</h4><div id="resCustomMsgContainer" style="display:none; background:#000; border:1px solid var(--accent-gold); padding:10px; border-radius:2px; margin-bottom:10px; font-size:0.8rem;"></div><div id="resTimeline" style="display:flex; flex-direction:column; gap:8px; font-size:0.78rem; font-weight:400; color:var(--text-muted);"></div></div></div>
+        <div class="modal-panel" style="max-width: 450px; text-align: center;"><button onclick="closeModal('trackModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:var(--text-main); border:none; font-size:1.2rem; cursor:pointer;">&times;</button><h2 style="font-size: 1.3rem; font-weight: 400; margin-bottom: 0.8rem; font-family:'Playfair Display',serif;">Track Order</h2><div style="display:flex; gap:8px; margin-bottom:1.2rem;"><input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:transparent; border:1px solid var(--border-color); border-radius:2px; padding:10px; font-weight:400; color:var(--text-main); flex:1; outline:none;"><button onclick="performTracking()" class="btn-primary" style="margin:0; padding:10px 14px; width:100px;">Search</button></div><div id="trackResultBox" style="text-align:left; background:var(--bg-body); border:1px solid var(--border-color); padding:1.2rem; border-radius:2px; display:none;"><h4 id="resId" style="font-size:0.85rem; font-weight:600; margin-bottom:0.4rem; color:var(--text-main);">Order ID: #</h4><div id="resCustomMsgContainer" style="display:none; background:#E5E0D8; border:1px solid var(--accent-gold); padding:10px; border-radius:2px; margin-bottom:10px; font-size:0.8rem; color:var(--text-main);"></div><div id="resTimeline" style="display:flex; flex-direction:column; gap:8px; font-size:0.78rem; font-weight:400; color:var(--text-muted);"></div></div></div>
     </div>
 
     <script>
@@ -438,7 +441,7 @@
                     <div class="drop-media">
                         ${d.image.includes('data:video') || d.image.includes('.mp4') ? `<video src="${d.image}" autoplay loop muted style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${d.image}" alt="Drop">`}
                     </div>
-                    <h4 style="font-weight:500; font-size:0.95rem; margin-bottom:4px; color:#fff; font-family:'Playfair Display',serif;">${d.title}</h4>
+                    <h4 style="font-weight:500; font-size:0.95rem; margin-bottom:4px; color:var(--text-main); font-family:'Playfair Display',serif;">${d.title}</h4>
                     <p style="font-size:0.78rem; color:var(--text-muted); font-weight:300;">${d.desc}</p>
                 </div>
             `).join('');
@@ -484,7 +487,7 @@
                 return `
                     <div class="product-card" onclick="openPdpModal('${itemId}')">
                         <button class="btn-wishlist" onclick="event.stopPropagation(); toggleWishlist('${itemId}')">${isWishlisted ? '❤️' : '🤍'}</button>
-                        <span style="position:absolute; top:16px; left:16px; background:#000; color:var(--accent-gold); padding:2px 8px; font-size:0.6rem; font-weight:600; text-transform:uppercase; letter-spacing:0.15em;">${item.badge || 'Atelier'}</span>
+                        <span style="position:absolute; top:16px; left:16px; background:#FAF6F0; color:var(--accent-terracotta); padding:2px 8px; font-size:0.6rem; font-weight:600; text-transform:uppercase; letter-spacing:0.15em; border:1px solid var(--border-color);">${item.badge || 'Atelier'}</span>
                         <div>
                             <div class="prod-img-box">
                                 ${item.image ? `<img src="${item.image}" alt="${item.name}">` : (item.emoji || '📦')}
@@ -555,10 +558,10 @@
             list.innerHTML = wishlist.map((item, index) => {
                 const itemId = item._id || item.id;
                 return `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#14141A; border:1px solid var(--border-color); padding:10px 14px; border-radius:2px; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-body); border:1px solid var(--border-color); padding:10px 14px; border-radius:2px; margin-bottom:8px;">
                         <div>
-                            <div style="font-weight:500; font-size:0.85rem; color:#fff; font-family:'Playfair Display',serif;">${item.name}</div>
-                            <div style="font-size:0.75rem; color:var(--accent-gold); font-weight:500;">₹${item.price}</div>
+                            <div style="font-weight:500; font-size:0.85rem; color:var(--text-main); font-family:'Playfair Display',serif;">${item.name}</div>
+                            <div style="font-size:0.75rem; color:var(--accent-terracotta); font-weight:500;">₹${item.price}</div>
                         </div>
                         <div style="display:flex; gap:8px;">
                             <button onclick="addToBag('${itemId}'); closeModal('wishlistModal'); openCartModal();" class="btn-add-bag">Add</button>
@@ -585,7 +588,7 @@
             
             document.getElementById('pdpMainBox').innerHTML = imgs[0].startsWith('data:') || imgs[0].startsWith('http') ? `<img src="${imgs[0]}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:5rem;">${imgs[0]}</span>`;
             document.getElementById('pdpThumbnails').innerHTML = imgs.map((img, idx) => `
-                <div onclick="switchPdpImage(${idx})" style="width:50px; height:50px; background:#000; border:1px solid var(--border-color); border-radius:2px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;">
+                <div onclick="switchPdpImage(${idx})" style="width:50px; height:50px; background:#E5E0D8; border:1px solid var(--border-color); border-radius:2px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;">
                     ${img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">` : img}
                 </div>
             `).join('');
@@ -632,7 +635,7 @@
         }
 
         function selectSize(size, el) {
-            document.querySelectorAll('#sizeGroup button').forEach(b => { b.style.background = 'transparent'; b.style.color = '#fff'; b.style.borderColor = 'var(--border-color)'; });
+            document.querySelectorAll('#sizeGroup button').forEach(b => { b.style.background = 'transparent'; b.style.color = 'var(--text-main)'; b.style.borderColor = 'var(--text-main)'; });
             el.style.background = 'var(--accent-terracotta)'; el.style.borderColor = 'var(--accent-terracotta)'; el.style.color = '#fff';
             selectedSize = size;
         }
@@ -710,10 +713,10 @@
                 subtotal += (item.price * item.qty);
                 totalDelivery += ((item.deliveryFee || 0) * item.qty);
                 return `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#14141A; border:1px solid var(--border-color); padding:10px 14px; border-radius:2px; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-body); border:1px solid var(--border-color); padding:10px 14px; border-radius:2px; margin-bottom:8px;">
                         <div>
-                            <div style="font-weight:500; font-size:0.85rem; color:#fff; font-family:'Playfair Display',serif;">${item.name} (${item.size})</div>
-                            <div style="font-size:0.75rem; color:var(--accent-gold); font-weight:500;">₹${item.price} × ${item.qty}</div>
+                            <div style="font-weight:500; font-size:0.85rem; color:var(--text-main); font-family:'Playfair Display',serif;">${item.name} (${item.size})</div>
+                            <div style="font-size:0.75rem; color:var(--accent-terracotta); font-weight:500;">₹${item.price} × ${item.qty}</div>
                         </div>
                         <button onclick="removeBagItem(${index})" style="background:transparent; color:var(--text-muted); border:none; cursor:pointer; font-size:0.9rem;">✕</button>
                     </div>
@@ -856,7 +859,7 @@
                     }
 
                     let timelineHtml = (found.timeline || [{title: found.status, time: found.date}]).map(t => `
-                        <div style="display:flex; align-items:center; gap:8px; border-left:1px solid var(--accent-gold); padding-left:10px; margin-bottom:6px;">
+                        <div style="display:flex; align-items:center; gap:8px; border-left:1px solid var(--accent-terracotta); padding-left:10px; margin-bottom:6px;">
                             <div><b>${t.title}</b><br><small style="color:var(--text-muted);">${t.time}</small></div>
                         </div>
                     `).join('');
