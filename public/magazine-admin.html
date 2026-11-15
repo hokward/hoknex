@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hoknex — Global Zine & Chronicle Owner Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-body: #F4F4F6;
@@ -16,14 +16,14 @@
             --shadow-brand: 4px 4px 0px #111827;
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 2.5rem 2rem; }
 
         #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 99999; padding: 1rem; }
         #authBox { background: #FAF9F6; border: 4px solid var(--border-color); border-radius: 24px; padding: 3rem; max-width: 440px; width: 100%; text-align: center; box-shadow: 10px 10px 0px var(--border-color); }
 
         .admin-container { max-width: 1200px; margin: 0 auto; display: none; }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border: 3.5px solid var(--border-color); padding: 1.8rem 2.5rem; border-radius: 20px; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border: 3.5px solid var(--border-color); padding: 1.8rem 2.5rem; border-radius: 20px; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem; }
         .admin-section { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 20px; padding: 2.5rem; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem; }
         h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color: var(--text-main); border-bottom: 2px solid #F3F4F6; padding-bottom: 8px; }
         
@@ -31,14 +31,49 @@
         .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
         .form-group label { font-size: 0.8rem; font-weight: 900; text-transform: uppercase; }
         .form-group input, .form-group textarea, .form-group select { background: #FAF9F6; border: 2.5px solid var(--border-color); padding: 12px; border-radius: 12px; font-weight: 800; outline: none; width: 100%; color: var(--text-main); }
-        .btn-action { background: var(--accent-terracotta); color: #fff; border: 2.5px solid var(--border-color); padding: 0.85rem 1.6rem; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color); transition: transform 0.15s, box-shadow 0.15s; text-decoration: none; display: inline-block; }
+        .btn-action { background: var(--accent-terracotta); color: #fff; border: 2.5px solid var(--border-color); padding: 0.85rem 1.6rem; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color); transition: transform 0.15s, box-shadow 0.15s; text-decoration: none; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em; }
         .btn-action:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0px var(--border-color); }
+        
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.88rem; }
         th, td { border: 2.5px solid var(--border-color); padding: 12px; text-align: left; font-weight: 800; }
         th { background: #FAF9F6; font-weight: 900; }
+
+        /* --- PREMIUM STUDIO POPUP MODAL --- */
+        .custom-popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(12px);
+            display: none; justify-content: center; align-items: center; z-index: 50000; padding: 1.5rem;
+            animation: fadeInOverlay 0.2s ease forwards;
+        }
+        .custom-popup-box {
+            background: #FFFFFF; border: 3.5px solid var(--border-color); border-radius: 20px;
+            padding: 2.5rem; width: 100%; max-width: 440px; text-align: center;
+            box-shadow: 12px 12px 0px var(--border-color);
+            animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUpModal { from { transform: translateY(35px) scale(0.96); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+        @media (max-width: 768px) {
+            body { padding: 1.2rem 1rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .admin-section { padding: 1.5rem; }
+            .admin-header { padding: 1.2rem; }
+            input, select, textarea { font-size: 16px !important; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Custom Studio Alert Modal Popup -->
+    <div id="customPopupModal" class="custom-popup-overlay">
+        <div class="custom-popup-box">
+            <h3 id="customPopupTitle" style="font-family:'Playfair Display',serif; font-size: 1.4rem; font-weight: 900; margin-bottom: 0.6rem; color: var(--accent-terracotta);">Notice</h3>
+            <p id="customPopupMessage" style="font-size: 0.92rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1.8rem; line-height: 1.5;"></p>
+            <button onclick="closeStudioPopup()" class="btn-action" style="width:100%;">Okay ⚡</button>
+        </div>
+    </div>
 
     <div id="authOverlay">
         <div id="authBox">
@@ -122,9 +157,21 @@
         const API_URL = 'https://hoknex-backend.onrender.com';
         const OWNER_PASSWORD = 'hoknex2026';
 
-        // --- DIRECT CLOUDINARY CONFIGURATION (Fixed typo & supports auto/pdf uploads) ---
+        // --- DIRECT CLOUDINARY CONFIGURATION ---
         const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
-        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads'; // ✅ Fixed uppercase PRESET
+        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads';
+
+        // --- Custom Studio Popup Replacement for alert() ---
+        function showStudioPopup(title, message) {
+            const modal = document.getElementById('customPopupModal');
+            document.getElementById('customPopupTitle').innerText = title;
+            document.getElementById('customPopupMessage').innerText = message;
+            modal.style.display = 'flex';
+        }
+
+        function closeStudioPopup() {
+            document.getElementById('customPopupModal').style.display = 'none';
+        }
 
         async function uploadDirectToCloudinary(file, resourceType = 'auto') {
             const formData = new FormData();
@@ -150,7 +197,9 @@
                 document.getElementById('authOverlay').style.display = 'none';
                 document.getElementById('adminMainContent').style.display = 'block';
                 loadAdminPanelData();
-            } else { alert('Incorrect password!'); }
+            } else { 
+                showStudioPopup('Access Denied', 'Incorrect password!'); 
+            }
         }
 
         window.onload = function() {
@@ -191,7 +240,7 @@
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, tag, excerpt, body, mediaUrl, mediaType, author, readTime })
             });
-            alert('Featured Spotlight Banner published successfully!');
+            showStudioPopup('Success 🌟', 'Featured Spotlight Banner published successfully!');
         }
 
         async function renderTrendingInputs() {
@@ -214,7 +263,7 @@
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ headlines })
             });
-            alert('Trending headlines updated successfully!');
+            showStudioPopup('Success 📌', 'Trending headlines updated successfully!');
         }
 
         async function renderMagazineTable() {
@@ -257,7 +306,7 @@
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, category, type, mediaUrl, author, time, excerpt, body })
             });
-            alert('Article published successfully!');
+            showStudioPopup('Success ⚡', 'Article published successfully!');
             renderMagazineTable();
         }
 
@@ -309,7 +358,7 @@
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, author, coverUrl, pdfUrl, pages })
             });
-            alert('Digital book published successfully with text reader and PDF download option!');
+            showStudioPopup('Success 📖', 'Digital book published successfully with text reader and PDF download option!');
             renderBooksTable();
         }
 
