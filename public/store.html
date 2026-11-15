@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hoknex — Official Global Store [Atelier Edition]</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -17,9 +17,9 @@
             --accent-hover: #A04018;
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         html { scroll-behavior: smooth; }
-        body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+        body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; padding-bottom: env(safe-area-inset-bottom); }
 
         h1, h2, h3, h4, .store-logo-brand, .store-hero h1 {
             font-family: 'Playfair Display', serif;
@@ -30,10 +30,10 @@
             background: #2C1E16;
             color: #FAF6F0;
             text-align: center;
-            padding: 10px 1rem;
-            font-size: 0.75rem;
+            padding: 8px 1rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            letter-spacing: 0.18em;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
             border-bottom: 1px solid var(--border-color);
         }
@@ -42,8 +42,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 4rem;
-            background: rgba(250, 246, 240, 0.92);
+            padding: 1.2rem 2rem;
+            background: rgba(250, 246, 240, 0.95);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-color);
             position: sticky;
@@ -51,41 +51,54 @@
             z-index: 100;
         }
         
-        .nav-left-links { display: flex; gap: 2.5rem; align-items: center; }
+        .nav-left-links { display: flex; gap: 2rem; align-items: center; }
         .nav-left-links a { 
-            color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.85rem; cursor: pointer; 
+            color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.82rem; cursor: pointer; 
             transition: color 0.2s; padding: 4px 0; border-bottom: 1px solid transparent; display: inline-block;
             text-transform: uppercase; letter-spacing: 0.12em;
         }
         .nav-left-links a:hover, .nav-left-links a.active { color: var(--text-main); border-bottom-color: var(--accent-terracotta); }
 
-        .store-logo-brand { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-main); text-decoration: none; display: flex; flex-direction: column; align-items: center; line-height: 1; }
-        .store-logo-brand span { font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.35em; color: var(--accent-terracotta); margin-top: 4px; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .store-logo-brand { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-main); text-decoration: none; display: flex; flex-direction: column; align-items: center; line-height: 1; }
+        .store-logo-brand span { font-size: 0.45rem; text-transform: uppercase; letter-spacing: 0.3em; color: var(--accent-terracotta); margin-top: 3px; font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        .nav-right-actions { display: flex; gap: 1.5rem; align-items: center; }
-        .search-box-wrap { display: flex; align-items: center; background: transparent; border-bottom: 1px solid var(--border-color); padding: 4px 8px; width: 200px; }
-        .search-box-wrap input { border: none; outline: none; background: transparent; font-size: 0.82rem; font-weight: 400; color: var(--text-main); width: 100%; margin-left: 6px; letter-spacing: 0.05em; }
+        .nav-right-actions { display: flex; gap: 1.2rem; align-items: center; }
+        .search-box-wrap { display: flex; align-items: center; background: transparent; border-bottom: 1px solid var(--border-color); padding: 4px 6px; width: 170px; }
+        .search-box-wrap input { border: none; outline: none; background: transparent; font-size: 0.8rem; font-weight: 400; color: var(--text-main); width: 100%; margin-left: 4px; }
         .search-box-wrap input::placeholder { color: var(--text-muted); }
-        .icon-btn { background: transparent; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-main); transition: opacity 0.2s; position: relative; }
+        .icon-btn { background: transparent; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-main); transition: opacity 0.2s; position: relative; padding: 4px; }
         .icon-btn:hover { opacity: 0.7; }
 
+        /* Mobile App Bottom Navigation Bar */
+        .mobile-bottom-bar {
+            display: none;
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--bg-card); border-top: 2px solid var(--border-color);
+            padding: 10px 1rem; z-index: 25000; justify-content: space-around; align-items: center;
+            box-shadow: 0 -4px 15px rgba(44,30,22,0.08);
+        }
+        .mob-nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            background: none; border: none; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+            color: var(--text-main); cursor: pointer; text-decoration: none; position: relative;
+        }
+        .mob-nav-item span.icon { font-size: 1.2rem; }
+
         /* Luxury Editorial Hero */
-        .store-hero { padding: 6rem 4rem 4rem 4rem; max-width: 1400px; margin: 0 auto; text-align: center; }
-        .store-hero h1 { font-size: 4rem; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 1.2rem; line-height: 1.1; }
+        .store-hero { padding: 4rem 2rem 2.5rem 2rem; max-width: 1400px; margin: 0 auto; text-align: center; }
+        .store-hero h1 { font-size: 3rem; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 1rem; line-height: 1.1; }
         .store-hero h1 span { font-style: italic; color: var(--accent-terracotta); }
-        .store-hero p { color: var(--text-muted); font-size: 1rem; font-weight: 300; max-width: 600px; margin: 0 auto; letter-spacing: 0.05em; line-height: 1.7; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .store-hero p { color: var(--text-muted); font-size: 0.95rem; font-weight: 300; max-width: 600px; margin: 0 auto; letter-spacing: 0.05em; line-height: 1.6; }
 
-        .coming-soon-container { padding: 3rem 4rem; max-width: 1400px; margin: 0 auto; }
-        .coming-soon-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 4px; padding: 3rem; text-align: center; }
-        .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
-        .drop-preview-card { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 4px; padding: 1.2rem; text-align: left; transition: transform 0.25s ease; }
-        .drop-preview-card:hover { transform: translateY(-3px); }
-        .drop-media { width: 100%; height: 320px; background: #E5E0D8; border-radius: 2px; overflow: hidden; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
-        .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .drop-media:hover img { transform: scale(1.03); }
+        .coming-soon-container { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        .coming-soon-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem 1.5rem; text-align: center; }
+        .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        .drop-preview-card { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 1rem; text-align: left; }
+        .drop-media { width: 100%; height: 260px; background: #E5E0D8; border-radius: 4px; overflow: hidden; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
+        .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: cover; }
 
-        .product-catalog-section { padding: 4rem; max-width: 1400px; margin: 0 auto; }
-        .catalog-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5rem; margin-top: 2.5rem; }
+        .product-catalog-section { padding: 2.5rem 2rem; max-width: 1400px; margin: 0 auto; }
+        .catalog-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 2rem; }
 
         /* --- BORDERLESS LUXURY PRODUCT CARDS --- */
         .product-card {
@@ -95,126 +108,112 @@
         }
 
         .prod-img-box {
-            width: 100%; height: 400px; background: #EAE5DC; border: none;
-            border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1rem; overflow: hidden;
+            width: 100%; height: 360px; background: #EAE5DC; border: none;
+            border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; margin-bottom: 0.8rem; overflow: hidden;
             cursor: zoom-in;
         }
-        .prod-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
-        .product-card:hover .prod-img-box img { transform: scale(1.04); }
+        .prod-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
 
-        .prod-title { font-size: 1rem; font-weight: 500; margin-bottom: 0.3rem; letter-spacing: 0.05em; font-family: 'Playfair Display', serif; color: var(--text-main); }
-        .prod-category { font-size: 0.65rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 0.4rem; }
-        .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.6rem; }
-        .prod-price { font-size: 0.95rem; font-weight: 500; color: var(--accent-terracotta); font-variant-numeric: tabular-nums; letter-spacing: 0.05em; }
+        .prod-title { font-size: 0.95rem; font-weight: 500; margin-bottom: 0.2rem; letter-spacing: 0.04em; font-family: 'Playfair Display', serif; color: var(--text-main); }
+        .prod-category { font-size: 0.6rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 0.3rem; }
+        .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; }
+        .prod-price { font-size: 0.9rem; font-weight: 500; color: var(--accent-terracotta); font-variant-numeric: tabular-nums; }
 
         .btn-add-bag { 
             background: transparent; color: var(--text-main); border: 1px solid var(--text-main); 
-            padding: 6px 14px; border-radius: 2px; font-weight: 500; font-size: 0.75rem; cursor: pointer; 
-            text-transform: uppercase; letter-spacing: 0.12em; transition: all 0.2s; 
+            padding: 6px 12px; border-radius: 4px; font-weight: 500; font-size: 0.72rem; cursor: pointer; 
+            text-transform: uppercase; letter-spacing: 0.1em; transition: all 0.2s; 
         }
         .btn-add-bag:hover { background: var(--accent-terracotta); border-color: var(--accent-terracotta); color: #fff; }
         
         .btn-wishlist { 
-            background: rgba(250, 246, 240, 0.8); backdrop-filter: blur(4px); border: none; width: 32px; height: 32px; 
+            background: rgba(250, 246, 240, 0.9); border: none; width: 34px; height: 34px; 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; 
-            cursor: pointer; position: absolute; top: 16px; right: 16px; z-index: 5; transition: transform 0.2s; 
+            cursor: pointer; position: absolute; top: 12px; right: 12px; z-index: 5; box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
         }
-        .btn-wishlist:hover { transform: scale(1.1); }
 
-        .campaign-showcase-section { padding: 5rem 4rem; max-width: 1400px; margin: 0 auto; }
-        .campaign-header { text-align: center; margin-bottom: 3.5rem; }
-        .campaign-header h2 { font-size: 2.5rem; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
-        .campaign-header p { color: var(--text-muted); font-weight: 300; font-size: 0.95rem; letter-spacing: 0.05em; }
-        .campaign-grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-        .campaign-tile { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; position: relative; transition: transform 0.3s ease; }
-        .campaign-tile:hover { transform: translateY(-4px); }
-        .campaign-img-wrap { width: 100%; height: 380px; background: #E5E0D8; overflow: hidden; cursor: zoom-in; }
-        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(15%); transition: filter 0.4s ease, transform 0.6s ease; }
-        .campaign-tile:hover .campaign-img-wrap img { filter: grayscale(0%); transform: scale(1.03); }
-        .campaign-caption { padding: 1.5rem; text-align: left; }
-        .campaign-caption h4 { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.3rem; letter-spacing: 0.05em; font-family: 'Playfair Display', serif; }
-        .campaign-caption p { font-size: 0.82rem; color: var(--text-muted); font-weight: 300; letter-spacing: 0.05em; }
+        .campaign-showcase-section { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+        .campaign-header { text-align: center; margin-bottom: 2.5rem; }
+        .campaign-header h2 { font-size: 2.2rem; font-weight: 400; margin-bottom: 0.4rem; }
+        .campaign-header p { color: var(--text-muted); font-weight: 300; font-size: 0.9rem; }
+        .campaign-grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .campaign-tile { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; position: relative; }
+        .campaign-img-wrap { width: 100%; height: 300px; background: #E5E0D8; overflow: hidden; cursor: zoom-in; }
+        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(15%); }
+        .campaign-caption { padding: 1.2rem; text-align: left; }
+        .campaign-caption h4 { font-size: 1.05rem; font-weight: 500; margin-bottom: 0.3rem; font-family: 'Playfair Display', serif; }
+        .campaign-caption p { font-size: 0.8rem; color: var(--text-muted); font-weight: 300; }
 
-        /* Full Card Lightbox Modal (Amazon/Flipkart style with animation) */
+        /* Full Card Lightbox Modal */
         .lightbox-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(44, 30, 22, 0.92); backdrop-filter: blur(16px);
-            display: none; justify-content: center; align-items: center; z-index: 30000;
-            padding: 2rem; animation: fadeInLightbox 0.3s ease;
+            background: rgba(44, 30, 22, 0.94); backdrop-filter: blur(16px);
+            display: none; justify-content: center; align-items: center; z-index: 40000;
+            padding: 1rem; animation: fadeInLightbox 0.3s ease;
         }
         .lightbox-panel {
-            position: relative; max-width: 90vw; max-height: 90vh;
+            position: relative; max-width: 95vw; max-height: 90vh;
             animation: scaleUpLightbox 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             text-align: center;
         }
         .lightbox-panel img {
-            max-width: 85vw; max-height: 80vh; object-fit: contain;
-            border: 1px solid var(--border-color); border-radius: 4px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-            background: #000;
+            max-width: 90vw; max-height: 75vh; object-fit: contain;
+            border: 2px solid var(--border-color); border-radius: 8px; background: #000;
         }
-        .lightbox-caption {
-            color: #FAF6F0; margin-top: 1rem; font-family: 'Playfair Display', serif;
-            font-size: 1.2rem; letter-spacing: 0.05em;
-        }
+        .lightbox-caption { color: #FAF6F0; margin-top: 1rem; font-family: 'Playfair Display', serif; font-size: 1.1rem; }
         .lightbox-close {
-            position: absolute; top: -45px; right: 0; background: transparent;
-            color: #FAF6F0; border: none; font-size: 2rem; cursor: pointer; font-weight: 300;
-            transition: opacity 0.2s;
+            position: absolute; top: -45px; right: 0; background: var(--bg-card);
+            color: var(--border-color); border: 2px solid var(--border-color); width: 36px; height: 36px;
+            border-radius: 50%; font-size: 1.3rem; cursor: pointer; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
         }
-        .lightbox-close:hover { opacity: 0.7; }
 
         @keyframes fadeInLightbox { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scaleUpLightbox { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* PDP Zoom Controls */
+        /* PDP Zoom Container */
         .zoomable-container {
             position: relative; overflow: hidden; cursor: zoom-in;
-            border-radius: 2px; background: #E5E0D8; height: 380px; display: flex; align-items: center; justify-content: center;
+            border-radius: 4px; background: #E5E0D8; height: 340px; display: flex; align-items: center; justify-content: center;
         }
-        .zoomable-container img {
-            transition: transform 0.3s ease; width: 100%; height: 100%; object-fit: cover;
-        }
-        .zoomable-container.zoomed img {
-            transform: scale(2); cursor: zoom-out;
-        }
+        .zoomable-container img { transition: transform 0.3s ease; width: 100%; height: 100%; object-fit: cover; }
+        .zoomable-container.zoomed img { transform: scale(2); cursor: zoom-out; }
 
-        .store-footer { background: #2C1E16; color: #FAF6F0; padding: 6rem 4rem 3rem 4rem; margin-top: 6rem; border-top: 1px solid var(--border-color); position: relative; }
-        .footer-newsletter { max-width: 700px; margin-bottom: 5rem; padding-bottom: 4rem; border-bottom: 1px solid rgba(250,246,240,0.15); }
-        .footer-newsletter h3 { font-size: 2rem; font-weight: 400; margin-bottom: 0.6rem; font-family: 'Playfair Display', serif; letter-spacing: -0.01em; color: #FAF6F0; }
-        .footer-newsletter p { color: #D1C7BD; font-size: 0.9rem; font-weight: 300; margin-bottom: 2rem; letter-spacing: 0.05em; }
-        .newsletter-input-group { display: flex; gap: 1rem; max-width: 550px; }
-        .newsletter-input-group input { flex: 1; background: transparent; border: 1px solid rgba(250,246,240,0.3); padding: 12px 16px; border-radius: 2px; color: #FAF6F0; font-weight: 400; outline: none; letter-spacing: 0.05em; }
-        .newsletter-input-group input::placeholder { color: #A89D93; }
-        .btn-newsletter { background: var(--accent-gold); color: #2C1E16; border: none; padding: 0 2rem; border-radius: 2px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer; transition: background 0.2s; }
-        .btn-newsletter:hover { background: #C99612; }
+        .store-footer { background: #2C1E16; color: #FAF6F0; padding: 4rem 2rem 3rem 2rem; margin-top: 4rem; border-top: 1px solid var(--border-color); position: relative; }
+        .footer-newsletter { max-width: 700px; margin-bottom: 3rem; padding-bottom: 2.5rem; border-bottom: 1px solid rgba(250,246,240,0.15); }
+        .footer-newsletter h3 { font-size: 1.8rem; font-weight: 400; margin-bottom: 0.5rem; font-family: 'Playfair Display', serif; }
+        .footer-newsletter p { color: #D1C7BD; font-size: 0.88rem; font-weight: 300; margin-bottom: 1.5rem; }
+        .newsletter-input-group { display: flex; gap: 0.8rem; max-width: 500px; flex-wrap: wrap; }
+        .newsletter-input-group input { flex: 1; min-width: 220px; background: transparent; border: 1px solid rgba(250,246,240,0.3); padding: 12px 14px; border-radius: 4px; color: #FAF6F0; outline: none; }
+        .btn-newsletter { background: var(--accent-gold); color: #2C1E16; border: none; padding: 0 1.8rem; border-radius: 4px; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; }
 
-        .footer-links-grid { display: grid; grid-template-columns: repeat(5, 1fr) 1.5fr; gap: 2rem; font-size: 0.82rem; }
-        .footer-col h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 1.2rem; color: #FAF6F0; text-transform: uppercase; letter-spacing: 0.15em; }
-        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
-        .footer-col a { color: #D1C7BD; text-decoration: none; font-weight: 300; cursor: pointer; transition: color 0.15s; letter-spacing: 0.05em; }
-        .footer-col a:hover { color: #FAF6F0; }
+        .footer-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2rem; font-size: 0.82rem; }
+        .footer-col h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; color: #FAF6F0; text-transform: uppercase; letter-spacing: 0.12em; }
+        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+        .footer-col a { color: #D1C7BD; text-decoration: none; font-weight: 300; cursor: pointer; }
+        .footer-watermark { position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); font-size: 16vw; font-weight: 700; color: rgba(250, 246, 240, 0.02); white-space: nowrap; pointer-events: none; font-family: 'Playfair Display', serif; }
 
-        .footer-watermark { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 18vw; font-weight: 700; color: rgba(250, 246, 240, 0.03); white-space: nowrap; pointer-events: none; z-index: 1; font-family: 'Playfair Display', serif; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 30, 22, 0.8); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 3000; padding: 1rem; }
+        .modal-panel { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 2.5rem 2rem; width: 100%; max-width: 700px; position: relative; max-height: 90vh; overflow-y: auto; color: var(--text-main); }
+        .btn-primary { width: 100%; background: var(--accent-terracotta); color: #fff; border: none; border-radius: 4px; padding: 1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 1.2rem; text-transform: uppercase; letter-spacing: 0.12em; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 30, 22, 0.7); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
-        .modal-panel { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 4px; padding: 3rem; width: 100%; max-width: 700px; position: relative; max-height: 90vh; overflow-y: auto; color: var(--text-main); }
-        .btn-primary { width: 100%; background: var(--accent-terracotta); color: #fff; border: none; border-radius: 2px; padding: 1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 1.5rem; text-transform: uppercase; letter-spacing: 0.15em; transition: background 0.2s; }
-        .btn-primary:hover { background: var(--accent-hover); }
+        #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 30, 22, 0.8); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 35000; padding: 1rem; }
+        #proModalBox { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 8px; padding: 2.2rem; max-width: 400px; width: 100%; text-align: center; }
 
-        #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 30, 22, 0.7); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
-        #proModalBox { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 4px; padding: 2.5rem; max-width: 420px; width: 100%; text-align: center; color: var(--text-main); }
-
-        @media (max-width: 1024px) {
-            .catalog-grid { grid-template-columns: repeat(2, 1fr); }
-        }
+        /* --- MOBILE RESPONSIVENESS & APP-LIKE ADAPTATIONS --- */
         @media (max-width: 768px) {
-            .store-navbar, .store-hero, .coming-soon-container, .product-catalog-section, .campaign-showcase-section, .store-footer { padding: 2rem 1.5rem; }
-            .catalog-grid { grid-template-columns: 1fr; }
+            body { padding-bottom: 70px; }
+            .store-navbar { padding: 1rem 1.2rem; }
+            .nav-left-links, .search-box-wrap { display: none; }
+            .mobile-bottom-bar { display: flex; }
+            .store-hero { padding: 3rem 1.2rem 2rem 1.2rem; }
+            .store-hero h1 { font-size: 2.2rem; }
+            .product-catalog-section, .coming-soon-container, .campaign-showcase-section, .store-footer { padding: 2rem 1.2rem; }
+            .catalog-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
+            .prod-img-box { height: 220px; font-size: 2.5rem; }
             .campaign-grid-layout { grid-template-columns: 1fr; }
-            .footer-links-grid { grid-template-columns: 1fr; }
-            .nav-left-links { display: none; }
-            .store-hero h1 { font-size: 2.5rem; }
+            .modal-panel { padding: 1.5rem; max-height: 92vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; width: 100%; max-width: 100% !important; animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+            @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
         }
     </style>
 </head>
@@ -257,6 +256,15 @@
             <button class="icon-btn" onclick="openCartModal()" title="Shopping Bag">🛒<span style="font-size:0.65rem; margin-left:2px; color:var(--accent-terracotta);" id="bagCount">0</span></button>
         </div>
     </header>
+
+    <!-- Mobile App Bottom Navigation Bar -->
+    <nav class="mobile-bottom-bar">
+        <a href="index.html" class="mob-nav-item"><span class="icon">🏠</span>Hub</a>
+        <button onclick="filterCategory('all', event); window.scrollTo({top: 400, behavior: 'smooth'});" class="mob-nav-item"><span class="icon">🛍️</span>Store</button>
+        <button onclick="openWishlistModal()" class="mob-nav-item"><span class="icon">❤️</span>Wishlist</button>
+        <button onclick="openCartModal()" class="mob-nav-item"><span class="icon">🛒</span>Bag</button>
+        <button onclick="openTrackModal()" class="mob-nav-item"><span class="icon">📦</span>Track</button>
+    </nav>
 
     <section class="store-hero">
         <h1>Timeless essentials, <span>uncompromising craft.</span></h1>
@@ -353,26 +361,25 @@
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
         <div class="modal-panel" style="max-width: 850px;">
             <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:var(--text-main); border:none; width:36px; height:36px; font-size:1.2rem; cursor:pointer;">&times;</button>
-            <div style="display:flex; gap:3rem; flex-wrap:wrap;">
-                <div style="flex:1; min-width:280px; text-align:center;">
-                    <!-- Zoomable Container in PDP -->
+            <div style="display:flex; gap:2.5rem; flex-wrap:wrap;">
+                <div style="flex:1; min-width:260px; text-align:center;">
                     <div id="pdpMainBox" class="zoomable-container" onclick="toggleZoom(this)">
                         <span id="pdpMainEmoji" style="font-size:5rem;">🧥</span>
                     </div>
-                    <p style="font-size:0.7rem; color:var(--text-muted); margin-top:6px; letter-spacing:0.05em;">Click image to Zoom In / Out</p>
-                    <div id="pdpThumbnails" style="display:flex; gap:8px; margin-top:10px; justify-content:center;"></div>
+                    <p style="font-size:0.7rem; color:var(--text-muted); margin-top:6px; letter-spacing:0.05em;">Tap image to Zoom In / Out</p>
+                    <div id="pdpThumbnails" style="display:flex; gap:8px; margin-top:10px; justify-content:center; overflow-x:auto;"></div>
                 </div>
-                <div style="flex:1; min-width:280px;">
+                <div style="flex:1; min-width:260px;">
                     <span id="pdpBadge" style="font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.2em; color:var(--accent-terracotta);">Atelier Exclusive</span>
-                    <h2 id="pdpTitle" style="font-size:2rem; font-weight:400; margin:0.4rem 0; font-family: 'Playfair Display', serif;">Product Title</h2>
+                    <h2 id="pdpTitle" style="font-size:1.8rem; font-weight:400; margin:0.4rem 0; font-family: 'Playfair Display', serif;">Product Title</h2>
                     <div id="pdpPrice" style="font-size:1.3rem; font-weight:500; color:var(--accent-terracotta); margin-bottom:0.4rem; font-variant-numeric: tabular-nums;">₹0</div>
                     <div id="pdpDeliveryNote" style="font-size:0.75rem; font-weight:300; color:var(--text-muted); margin-bottom:0.4rem; letter-spacing:0.05em;">Delivery Fee: ₹0</div>
                     <div id="pdpRatingDisplay" style="font-size:0.8rem; font-weight:500; color:var(--accent-gold); margin-bottom:1rem;">⭐ 5.0 (0 reviews)</div>
-                    <p id="pdpDesc" style="color:var(--text-muted); font-size:0.88rem; font-weight:300; line-height:1.7; margin-bottom:1.5rem; letter-spacing:0.05em;"></p>
-                    <div id="pdpSizeSection"><div style="font-size:0.75rem; font-weight:600; color:var(--text-main); text-transform:uppercase; margin-bottom:0.5rem; letter-spacing:0.15em;">Select Size</div><div style="display:flex; gap:8px; margin-bottom:1.5rem;" id="sizeGroup"></div></div>
-                    <div id="pdpStockSection" style="display:none; margin-bottom:1.2rem;"><p style="color:var(--accent-terracotta); font-weight:600; font-size:0.85rem; margin-bottom:8px; letter-spacing:0.05em;">Currently Unavailable</p><button onclick="voteForStock()" class="btn-primary" style="background:#2C1E16; color:#FAF6F0;">Register Interest (<span id="voteCountDisplay">0</span>)</button></div>
+                    <p id="pdpDesc" style="color:var(--text-muted); font-size:0.85rem; font-weight:300; line-height:1.6; margin-bottom:1.2rem;"></p>
+                    <div id="pdpSizeSection"><div style="font-size:0.75rem; font-weight:600; color:var(--text-main); text-transform:uppercase; margin-bottom:0.5rem; letter-spacing:0.15em;">Select Size</div><div style="display:flex; gap:8px; margin-bottom:1.2rem; flex-wrap:wrap;" id="sizeGroup"></div></div>
+                    <div id="pdpStockSection" style="display:none; margin-bottom:1.2rem;"><p style="color:var(--accent-terracotta); font-weight:600; font-size:0.85rem; margin-bottom:8px;">Currently Unavailable</p><button onclick="voteForStock()" class="btn-primary" style="background:#2C1E16; color:#FAF6F0;">Register Interest (<span id="voteCountDisplay">0</span>)</button></div>
                     <button id="pdpAddBtn" onclick="addPdpToBag()" class="btn-primary">Add to Bag</button>
-                    <div style="margin-top:2rem; border-top:1px solid var(--border-color); padding-top:1.2rem;"><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Rate this piece:</label><select id="userRatingSelect" onchange="submitUserRating()" style="margin-top:6px; padding:8px; font-weight:400; border-radius:2px; background:var(--bg-body); color:var(--text-main); border:1px solid var(--border-color); width:100%; outline:none;"><option value="5">⭐⭐⭐⭐⭐ (5/5)</option><option value="4">⭐⭐⭐⭐ (4/5)</option><option value="3">⭐⭐⭐ (3/5)</option><option value="2">⭐⭐ (2/5)</option><option value="1">⭐ (1/5)</option></select></div>
+                    <div style="margin-top:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;"><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Rate this piece:</label><select id="userRatingSelect" onchange="submitUserRating()" style="margin-top:6px; padding:8px; font-weight:400; border-radius:2px; background:var(--bg-body); color:var(--text-main); border:1px solid var(--border-color); width:100%; outline:none;"><option value="5">⭐⭐⭐⭐⭐ (5/5)</option><option value="4">⭐⭐⭐⭐ (4/5)</option><option value="3">⭐⭐⭐ (3/5)</option><option value="2">⭐⭐ (2/5)</option><option value="1">⭐ (1/5)</option></select></div>
                 </div>
             </div>
         </div>
@@ -570,20 +577,20 @@
                 return `
                     <div class="product-card" onclick="openPdpModal('${itemId}')">
                         <button class="btn-wishlist" onclick="event.stopPropagation(); toggleWishlist('${itemId}')">${isWishlisted ? '❤️' : '🤍'}</button>
-                        <span style="position:absolute; top:16px; left:16px; background:#FAF6F0; color:var(--accent-terracotta); padding:2px 8px; font-size:0.6rem; font-weight:600; text-transform:uppercase; letter-spacing:0.15em; border:1px solid var(--border-color);">${item.badge || 'Atelier'}</span>
+                        <span style="position:absolute; top:12px; left:12px; background:#FAF6F0; color:var(--accent-terracotta); padding:2px 6px; font-size:0.55rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; border:1px solid var(--border-color);">${item.badge || 'Atelier'}</span>
                         <div>
                             <div class="prod-img-box" onclick="event.stopPropagation(); openLightbox('${imgSrc || ''}', '${titleStr}')">
                                 ${item.image ? `<img src="${item.image}" alt="${item.name}">` : (item.emoji || '📦')}
                             </div>
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <div class="prod-category">${item.category}</div>
-                                <div style="font-size:0.7rem; font-weight:500; color:var(--accent-gold);">⭐ ${avgRating}</div>
+                                <div style="font-size:0.65rem; font-weight:500; color:var(--accent-gold);">⭐ ${avgRating}</div>
                             </div>
                             <div class="prod-title">${item.name}</div>
                         </div>
                         <div class="prod-bottom-row">
                             <span class="prod-price">₹${item.price}.00</span>
-                            ${item.inStock ? `<button class="btn-add-bag" onclick="event.stopPropagation(); addToBag('${itemId}')">Add to Bag</button>` : `<span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em;">Sold Out</span>`}
+                            ${item.inStock ? `<button class="btn-add-bag" onclick="event.stopPropagation(); addToBag('${itemId}')">Add</button>` : `<span style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Sold Out</span>`}
                         </div>
                     </div>
                 `;
