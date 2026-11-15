@@ -4526,10 +4526,10 @@ function openMessageRequestModal(targetUser, actionType) {
       // --- EVENT SECTION LOGIC ---
 
 // ============================================================================
-// HOKNEX EVENT, RSVP & ORGANIZER TICKET SCANNER SYSTEM (FULLY FIXED)
+// HOKNEX EVENT, RSVP & PROFESSIONAL APP-STYLE QR SCANNER SYSTEM
 // ============================================================================
 
-let html5QrcodeScanner = null;
+let html5QrCode = null;
 window.approvedOrganizersList = ['admin', 'aditya', 'bittu_lal'];
 
 // --- 1. LOAD EVENTS & TICKETS SYSTEM ---
@@ -4607,23 +4607,16 @@ async function loadEvents(tab = 'explore') {
 // --- 2. MODAL & TAB CONTROLLERS ---
 function openCreateEventModal() {
     const modal = document.getElementById('createEventModal');
-    if (modal) {
-        modal.style.display = 'flex';
-    } else {
-        console.error("Modal with ID 'createEventModal' not found in HTML.");
-    }
+    if (modal) modal.style.display = 'flex';
 }
 
 function switchEventsTab(tabName, btnElement) {
     document.querySelectorAll('.profile-tab-btn').forEach(btn => btn.classList.remove('active'));
     if (btnElement) btnElement.classList.add('active');
-    
-    if (typeof loadEvents === 'function') {
-        loadEvents(tabName);
-    }
+    if (typeof loadEvents === 'function') loadEvents(tabName);
 }
 
-// --- 3. ROBUST ORGANIZER TICKET SCANNER & FILE SCAN LOGIC ---
+// --- 3. PROFESSIONAL APP-STYLE QR CAMERA SCANNER ---
 async function openVerifyModal() {
     const scannerModal = document.getElementById('scannerModal');
     const resultDiv = document.getElementById('scanResult');
@@ -4631,35 +4624,43 @@ async function openVerifyModal() {
     if (scannerModal) {
         scannerModal.style.display = 'flex';
         if (resultDiv) {
-            resultDiv.innerHTML = '<span style="color:var(--ink-light);">Awaiting scan...</span>';
+            resultDiv.innerHTML = '<span style="color:var(--ink-light);">Initializing camera...</span>';
             resultDiv.style.background = 'transparent';
         }
-        
-        // Clean up any lingering scanner instance safely before rendering a new one
-        if (html5QrcodeScanner) {
+
+        // Stop any active scanner instance before starting fresh
+        if (html5QrCode && html5QrCode.isScanning) {
             try {
-                await html5QrcodeScanner.clear();
+                await html5QrCode.stop();
             } catch (e) {}
-            html5QrcodeScanner = null;
         }
 
-        // Instantiate fresh every time to avoid DOM element locks
-        html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", 
-            { 
-                fps: 10, 
-                qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0
-            }, 
-            false
-        );
+        html5QrCode = new Html5Qrcode("reader");
 
-        html5QrcodeScanner.render(
-            onScanSuccess, 
-            (error) => {
-                // Silently suppress routine frame-by-frame "No MultiFormat Readers" misses
+        const config = { 
+            fps: 20, 
+            qrbox: { width: 260, height: 260 },
+            aspectRatio: 1.0 
+        };
+
+        try {
+            await html5QrCode.start(
+                { facingMode: "environment" }, 
+                config, 
+                onAppScanSuccess,
+                (errorMessage) => {
+                    // Suppress routine frame-by-frame scanning misses silently
+                }
+            );
+            if (resultDiv) {
+                resultDiv.innerHTML = '<span style="color:var(--accent-blue); font-weight:700;">📷 Point camera at attendee QR code</span>';
             }
-        );
+        } catch (err) {
+            console.error("Camera start error:", err);
+            if (resultDiv) {
+                resultDiv.innerHTML = `<span style="color:#ef4444; font-weight:700;">❌ Camera access denied or unavailable. Check browser permissions.</span>`;
+            }
+        }
     }
 }
 
@@ -4667,6 +4668,7 @@ function startScanner() {
     openVerifyModal();
 }
 
+// Optional: Scan QR from an uploaded image file
 async function scanQRCodeFromFile(inputElement) {
     const file = inputElement.files ? inputElement.files[0] : null;
     if (!file) return;
@@ -4677,31 +4679,29 @@ async function scanQRCodeFromFile(inputElement) {
         resultDiv.style.background = 'transparent';
     }
 
-    const html5QrCode = new Html5Qrcode("reader");
-    
+    const fileReaderInstance = new Html5Qrcode("reader");
     try {
-        const decodedText = await html5QrCode.scanFile(file, true);
-        console.log(`File scan successful: ${decodedText}`);
-        await onScanSuccess(decodedText, null);
+        const decodedText = await fileReaderInstance.scanFile(file, true);
+        await onAppScanSuccess(decodedText, null);
     } catch (err) {
         console.error(`Error scanning file: ${err}`);
         if (resultDiv) {
             resultDiv.style.background = 'rgba(239, 68, 68, 0.1)';
-            resultDiv.innerHTML = `<span style="color:#ef4444;">❌ Could not detect QR code in this image. Please try a clearer screenshot or the live camera scan.</span>`;
+            resultDiv.innerHTML = `<span style="color:#ef4444;">❌ Could not detect QR code in this image. Try live camera scan.</span>`;
         }
     }
 }
 
-async function onScanSuccess(decodedText, decodedResult) {
+async function onAppScanSuccess(decodedText, decodedResult) {
     console.log(`Scan successful: ${decodedText}`);
     
-    if (html5QrcodeScanner) {
+    // Stop camera immediately upon successful scan
+    if (html5QrCode && html5QrCode.isScanning) {
         try {
-            await html5QrcodeScanner.clear();
+            await html5QrCode.stop();
         } catch (err) {
-            console.error("Failed to clear scanner", err);
+            console.error("Failed to stop scanner", err);
         }
-        html5QrcodeScanner = null;
     }
 
     const scannerModal = document.getElementById('scannerModal');
@@ -4714,7 +4714,7 @@ async function onScanSuccess(decodedText, decodedResult) {
             ticketId = parsedData.ticketId;
         }
     } catch (e) {
-        // Plain text string ticketId fallback
+        // Plain text ticketId fallback
     }
 
     await verifyTicketCode(ticketId);
@@ -4735,23 +4735,26 @@ async function verifyTicketCode(ticketId) {
             alert(`❌ Verification Failed: ${result.error}`);
         }
     } catch (err) {
-        console.error("Scanning error:", err);
-        alert("❌ Error processing QR code verification request.");
+        console.error("Verification error:", err);
+        alert("❌ Error processing ticket verification.");
     }
 }
 
-function closeScanner() {
-    if (html5QrcodeScanner) {
-        html5QrcodeScanner.clear().catch(err => {
-            console.log("Scanner already cleared", err);
-        });
-        html5QrcodeScanner = null;
+async function closeScanner() {
+    if (html5QrCode) {
+        try {
+            if (html5QrCode.isScanning) {
+                await html5QrCode.stop();
+            }
+        } catch (err) {
+            console.error("Error stopping scanner:", err);
+        }
     }
     const scannerModal = document.getElementById('scannerModal');
     if (scannerModal) scannerModal.style.display = 'none';
 }
 
-// --- 4. SUBMIT EVENT & RSVP SYSTEM (Robust ID Fallbacks) ---
+// --- 4. SUBMIT EVENT & RSVP SYSTEM ---
 async function submitEnhancedEvent() {
     const title = document.getElementById('evTitle')?.value || document.getElementById('eventTitle')?.value || '';
     const location = document.getElementById('evLoc')?.value || document.getElementById('eventLoc')?.value || '';
@@ -4798,21 +4801,17 @@ async function submitEnhancedEvent() {
             if(document.getElementById('eventTitle')) document.getElementById('eventTitle').value = '';
             if(document.getElementById('evLoc')) document.getElementById('evLoc').value = '';
             if(document.getElementById('eventLoc')) document.getElementById('eventLoc').value = '';
-            if(document.getElementById('evCampUser')) document.getElementById('evCampUser').value = '';
-            if(document.getElementById('evCampPass')) document.getElementById('evCampPass').value = '';
             
             loadEvents('explore');
         } else {
             const errorData = await res.json();
-            alert("Database Error: " + (errorData.error || "Validation Failed. Check terminal."));
-            console.error("Server responded with:", errorData);
+            alert("Database Error: " + (errorData.error || "Validation Failed."));
         }
     } catch (err) {
         console.error("Failed to create event", err);
     }
 }
 
-// Alias for backwards compatibility if HTML calls createEvent()
 async function createEvent() {
     await submitEnhancedEvent();
 }
@@ -4878,7 +4877,7 @@ async function processRSVPAndGenerateTicket(eventId, eventTitle, eventLoc, type,
 
 // --- 5. TICKET QR GENERATOR ---
 function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
-    const ticketId = passedTicketId || ('TKT-' + Math.random().toString(36).substr(2, 6).toUpperCase());
+    const ticketId = passedTicketId || ('HOK-' + Math.random().toString(36).substr(2, 6).toUpperCase());
     
     const nameEl = document.getElementById('ticketEventName');
     const locEl = document.getElementById('ticketEventLoc');
@@ -4900,7 +4899,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
         
         if (typeof QRCode !== 'undefined') {
             new QRCode(qrContainer, {
-                text: ticketId, // Pure ticketId string for robust camera scanning
+                text: ticketId, // Pure ticketId string for instant camera scanning
                 width: 160,
                 height: 160,
                 colorDark : "#000000",
@@ -4938,9 +4937,7 @@ function downloadAttendance(eventId) {
 }
 
 function viewUserProfile(username) {
-    if (typeof loadUserProfile === 'function') {
-        loadUserProfile(username);
-    }
+    if (typeof loadUserProfile === 'function') loadUserProfile(username);
 }
 
 // --- 7. DYNAMIC ORGANIZER STATUS & UI CONTROLS ---
@@ -4968,28 +4965,22 @@ async function submitOrganizerApp() {
         const res = await fetch(`${API_URL}/api/applications`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username: currentUser,
-                organization: orgName,
-                description: desc
-            })
+            body: JSON.stringify({ username: currentUser, organization: orgName, description: desc })
         });
 
         if (res.ok) {
             const orgModal = document.getElementById('organizerModal');
             if (orgModal) orgModal.style.display = 'none';
-            
             if(document.getElementById('appOrg')) document.getElementById('appOrg').value = '';
             if(document.getElementById('appDesc')) document.getElementById('appDesc').value = '';
-            
-            alert(`🎉 Application Submitted!\n\nThank you, ${currentUser}. The Hoknex team will review your application for ${orgName} shortly.`);
+            alert(`🎉 Application Submitted! The Hoknex team will review your application for ${orgName} shortly.`);
         } else {
             const errData = await res.json();
             alert("Database Error: " + (errData.error || "Failed to submit."));
         }
     } catch (err) {
         console.error("Submission failed", err);
-        alert("Network error. Please make sure your server is running.");
+        alert("Network error.");
     }
 }
 
@@ -5002,17 +4993,9 @@ function forceShowOrganizerButtons() {
     const applyBtn = document.getElementById('applyOrganizerBtn');
 
     if (isApproved || currentUser === 'admin') {
-        if (hostBtn) {
-            hostBtn.style.setProperty('display', 'inline-block', 'important');
-            hostBtn.style.visibility = 'visible';
-        }
-        if (verifyBtn) {
-            verifyBtn.style.setProperty('display', 'inline-block', 'important');
-            verifyBtn.style.visibility = 'visible';
-        }
-        if (applyBtn) {
-            applyBtn.style.setProperty('display', 'none', 'important');
-        }
+        if (hostBtn) { hostBtn.style.setProperty('display', 'inline-block', 'important'); hostBtn.style.visibility = 'visible'; }
+        if (verifyBtn) { verifyBtn.style.setProperty('display', 'inline-block', 'important'); verifyBtn.style.visibility = 'visible'; }
+        if (applyBtn) { applyBtn.style.setProperty('display', 'none', 'important'); }
     } else {
         if (hostBtn) hostBtn.style.display = 'none';
         if (verifyBtn) verifyBtn.style.display = 'none';
