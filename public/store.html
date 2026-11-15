@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hoknex — Official Global Store [Drop Culture]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-body: #0A0A0C;
             --bg-card: #14141A;
-            --text-main: #F3F4F6;
+            --text-main: #FFFFFF;
             --text-muted: #9CA3AF;
             --border-color: #FFFFFF;
             --accent-neon: #00F5FF;
@@ -23,7 +23,7 @@
         html { scroll-behavior: smooth; }
         body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
-        /* Marquee Scrolling Banner */
+        /* Marquee Drop Countdown Banner */
         .marquee-container {
             background: var(--accent-lime);
             color: #0A0A0C;
@@ -321,18 +321,18 @@
 
     <!-- Wishlist Modal -->
     <div id="wishlistModal" class="modal-overlay" onclick="if(event.target === this) closeModal('wishlistModal')">
-        <div class="modal-panel" style="max-width: 480px;"><button onclick="closeModal('wishlistModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color:#fff;">Your Wishlist ❤️</h2><div id="wishlistItemsList" style="max-height: 280px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your wishlist is empty.</p></div><button onclick="closeModal('wishlistModal')" class="btn-primary" style="margin-top:0;">Continue Shopping 🛍️</button></div>
+        <div class="modal-panel" style="max-width: 480px;"><button onclick="closeModal('wishlistModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color:#fff;">Your Wishlist ❤️</h2><div id="wishlistItemsList" style="max-height: 280px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your wishlist is empty.</p></div><button onclick="closeModal('wishlistModal')" class="btn-primary" style="margin-top:0;">Continue Shopping 🛍️</button></div>
     </div>
 
     <!-- Cart Modal -->
     <div id="cartModal" class="modal-overlay" onclick="if(event.target === this) closeModal('cartModal')">
-        <div class="modal-panel" style="max-width: 480px;"><button onclick="closeModal('cartModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color:#fff;">Your Shopping Bag</h2><div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your bag is empty.</p></div><div style="font-size:0.88rem; font-weight:800; margin-bottom:1rem; border-top:2px solid rgba(255,255,255,0.1); padding-top:0.8rem;"><div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--text-muted);"><span>Items Subtotal:</span><span id="bagSubtotal">₹0</span></div><div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--text-muted);"><span>Total Delivery Charge:</span><span id="bagDelivery">₹0</span></div><div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:900; margin-top:6px; color:var(--accent-neon);"><span>Final Total:</span><span id="bagTotal">₹0</span></div></div><button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Checkout 🚀</button></div>
+        <div class="modal-panel" style="max-width: 480px;"><button onclick="closeModal('cartModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color:#fff;">Your Shopping Bag</h2><div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your bag is empty.</p></div><div style="font-size:0.88rem; font-weight:800; margin-bottom:1rem; border-top:2px solid rgba(255,255,255,0.1); padding-top:0.8rem;"><div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--text-muted);"><span>Items Subtotal:</span><span id="bagSubtotal">₹0</span></div><div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--text-muted);"><span>Total Delivery Charge:</span><span id="bagDelivery">₹0</span></div><div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:900; margin-top:6px; color:var(--accent-neon);"><span>Final Total:</span><span id="bagTotal">₹0</span></div></div><button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Checkout 🚀</button></div>
     </div>
 
     <!-- Checkout Modal -->
     <div id="checkoutModal" class="modal-overlay" onclick="if(event.target === this) closeModal('checkoutModal')">
         <div class="modal-panel" style="max-width: 540px;">
-            <button onclick="closeModal('checkoutModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <button onclick="closeModal('checkoutModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
             <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.4rem; color:#fff;">Secure Checkout 🛡️</h2>
             <p id="checkoutSubNotice" style="color: var(--accent-neon); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;"></p>
             <form onsubmit="finalizeOrder(event)" style="display:flex; flex-direction:column; gap:0.8rem;">
@@ -364,7 +364,7 @@
 
     <!-- Track Order Modal -->
     <div id="trackModal" class="modal-overlay" onclick="if(event.target === this) closeModal('trackModal')">
-        <div class="modal-panel" style="max-width: 480px; text-align: center;"><button onclick="closeModal('trackModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 900; margin-bottom: 0.4rem; color:#fff;">📦 Track Your Hoknex Order</h2><div style="display:flex; gap:8px; margin-bottom:1.2rem;"><input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:#1A1A22; border:2px solid var(--border-color); border-radius:8px; padding:10px; font-weight:800; color:#fff; flex:1; outline:none;"><button onclick="performTracking()" class="btn-primary" style="margin:0; padding:10px 14px; width:110px;">Track 🔍</button></div><div id="trackResultBox" style="text-align:left; background:#1A1A22; border:2px solid var(--border-color); padding:1.2rem; border-radius:10px; display:none;"><h4 id="resId" style="font-size:0.95rem; font-weight:900; margin-bottom:0.4rem; color:#fff;">Order ID: #</h4><div id="resCustomMsgContainer" style="display:none; background:#0A0A0C; border:2px solid var(--accent-neon); padding:10px; border-radius:8px; margin-bottom:10px;"></div><div id="resTimeline" style="display:flex; flex-direction:column; gap:8px; font-size:0.82rem; font-weight:800; color:var(--text-muted);"></div></div></div>
+        <div class="modal-panel" style="max-width: 480px; text-align: center;"><button onclick="closeModal('trackModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 900; margin-bottom: 0.4rem; color:#fff;">📦 Track Your Hoknex Order</h2><div style="display:flex; gap:8px; margin-bottom:1.2rem;"><input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:#1A1A22; border:2px solid var(--border-color); border-radius:8px; padding:10px; font-weight:800; color:#fff; flex:1; outline:none;"><button onclick="performTracking()" class="btn-primary" style="margin:0; padding:10px 14px; width:110px;">Track 🔍</button></div><div id="trackResultBox" style="text-align:left; background:#1A1A22; border:2px solid var(--border-color); padding:1.2rem; border-radius:10px; display:none;"><h4 id="resId" style="font-size:0.95rem; font-weight:900; margin-bottom:0.4rem; color:#fff;">Order ID: #</h4><div id="resCustomMsgContainer" style="display:none; background:#0A0A0C; border:2px solid var(--accent-neon); padding:10px; border-radius:8px; margin-bottom:10px;"></div><div id="resTimeline" style="display:flex; flex-direction:column; gap:8px; font-size:0.82rem; font-weight:800; color:var(--text-muted);"></div></div></div>
     </div>
 
     <script>
