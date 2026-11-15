@@ -34,7 +34,7 @@
 
         .zine-hero { padding: 3rem 4rem 2rem 4rem; max-width: 1400px; margin: 0 auto; }
         .zine-hero-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2.5rem; align-items: stretch; }
-        .featured-story-card { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 16px; padding: 3rem; display: flex; flex-direction: column; justify-content: flex-end; min-height: 480px; cursor: pointer; box-shadow: var(--shadow-zine); transition: transform 0.2s; overflow: relative; position: relative; }
+        .featured-story-card { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 16px; padding: 3rem; display: flex; flex-direction: column; justify-content: flex-end; min-height: 480px; cursor: pointer; box-shadow: var(--shadow-zine); transition: transform 0.2s; position: relative; overflow: hidden; }
         .featured-story-card:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0px var(--border-color); }
         .story-tag { background: var(--accent-olive); color: #fff; border: 2px solid var(--border-color); padding: 4px 12px; border-radius: 6px; font-size: 0.72rem; font-weight: 900; text-transform: uppercase; width: fit-content; margin-bottom: 1rem; z-index: 2; }
         .featured-story-card h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 1rem; line-height: 1.15; color: var(--text-main); z-index: 2; }
@@ -302,7 +302,8 @@
                 mediaContainer.innerHTML = currentSpotlight.mediaType === 'video' ? `<video src="${currentSpotlight.mediaUrl}" controls style="width:100%; max-height:380px; border-radius:12px; border:2px solid var(--border-color);"></video>` : `<img src="${currentSpotlight.mediaUrl}" style="width:100%; max-height:380px; object-fit:cover; border-radius:12px; border:2px solid var(--border-color);">`;
             } else { mediaContainer.innerHTML = ''; }
 
-            document.getElementById('modalBody').innerHTML = `<p>${(currentSpotlight.body || currentSpotlight.excerpt).replace(/\n/g, '</p><p>')}</p>`;
+            const spotlightBodyText = currentSpotlight.body || currentSpotlight.excerpt || '';
+            document.getElementById('modalBody').innerHTML = spotlightBodyText ? `<p>${spotlightBodyText.replace(/\n/g, '</p><p>')}</p>` : '';
             document.getElementById('articleModal').style.display = 'flex';
         }
 
@@ -316,7 +317,7 @@
                 }
                 const listEl = document.getElementById('trendingHeadlinesList');
                 listEl.innerHTML = trends.slice(0, 5).map((t, idx) => `
-                    <div class="trending-item" onclick="openArticleByTitle('${t}')">
+                    <div class="trending-item" onclick="openArticleByTitle('${t.replace(/'/g, "\\'")}')">
                         <div class="trending-num">0${idx+1}</div>
                         <div class="trending-title">${t}</div>
                     </div>
@@ -349,22 +350,25 @@
                 grid.innerHTML = `<p style="font-weight:800; color:var(--text-muted);">No stories found in this category.</p>`;
                 return;
             }
-            grid.innerHTML = articles.map(a => `
-                <article class="zine-article-card" onclick="openArticle('${a._id}')">
-                    <div>
-                        <div class="article-media-box">
-                            ${a.mediaUrl ? (a.type === 'video' ? `<video src="${a.mediaUrl}" muted loop></video>` : `<img src="${a.mediaUrl}" alt="${a.title}">`) : `<span style="font-weight:900; color:var(--text-muted);">HOKNEX CHRONICLE</span>`}
+            grid.innerHTML = articles.map(a => {
+                const articleId = a._id || a.id;
+                return `
+                    <article class="zine-article-card" onclick="openArticle('${articleId}')">
+                        <div>
+                            <div class="article-media-box">
+                                ${a.mediaUrl ? (a.type === 'video' ? `<video src="${a.mediaUrl}" muted loop></video>` : `<img src="${a.mediaUrl}" alt="${a.title}">`) : `<span style="font-weight:900; color:var(--text-muted);">HOKNEX CHRONICLE</span>`}
+                            </div>
+                            <span class="story-tag">${a.category}</span>
+                            <h3>${a.title}</h3>
+                            <p>${a.excerpt}</p>
                         </div>
-                        <span class="story-tag">${a.category}</span>
-                        <h3>${a.title}</h3>
-                        <p>${a.excerpt}</p>
-                    </div>
-                    <div class="article-meta">
-                        <span>${a.author}</span>
-                        <span>⏱️ ${a.time || '4 min read'} • 👁️ ${a.views || 0}</span>
-                    </div>
-                </article>
-            `).join('');
+                        <div class="article-meta">
+                            <span>${a.author}</span>
+                            <span>⏱️ ${a.time || '4 min read'} • 👁️ ${a.views || 0}</span>
+                        </div>
+                    </article>
+                `;
+            }).join('');
         }
 
         function filterZine(category, btn) {
@@ -375,9 +379,14 @@
         }
 
         async function openArticle(id) {
-            const article = allArticles.find(a => a._id === id || a.id === id);
+            const article = allArticles.find(a => (a._id === id || a.id === id));
             if(!article) return;
-            if (article._id) { await fetch(`${API_URL}/api/magazine/articles/${article._id}/visit`, { method: 'PUT' }); }
+            const articleId = article._id || article.id;
+            if (articleId) { 
+                try {
+                    await fetch(`${API_URL}/api/magazine/articles/${articleId}/visit`, { method: 'PUT' }); 
+                } catch(err) {}
+            }
 
             document.getElementById('modalTag').innerText = article.category;
             document.getElementById('modalTitle').innerText = article.title;
@@ -388,13 +397,15 @@
                 mediaContainer.innerHTML = article.type === 'video' ? `<video src="${article.mediaUrl}" controls style="width:100%; max-height:380px; border-radius:12px; border:2px solid var(--border-color);"></video>` : `<img src="${article.mediaUrl}" style="width:100%; max-height:380px; object-fit:cover; border-radius:12px; border:2px solid var(--border-color);">`;
             } else { mediaContainer.innerHTML = ''; }
 
-            document.getElementById('modalBody').innerHTML = `<p>${article.body.replace(/\n/g, '</p><p>')}</p>`;
+            const bodyText = article.body || '';
+            document.getElementById('modalBody').innerHTML = bodyText ? `<p>${bodyText.replace(/\n/g, '</p><p>')}</p>` : '';
             document.getElementById('articleModal').style.display = 'flex';
         }
 
         function openArticleByTitle(title) {
             const found = allArticles.find(a => a.title.toLowerCase() === title.toLowerCase());
-            if (found) { openArticle(found._id); }
+            const foundId = found ? (found._id || found.id) : null;
+            if (foundId) { openArticle(foundId); }
         }
 
         function closeModal() { document.getElementById('articleModal').style.display = 'none'; }
@@ -448,13 +459,17 @@
         async function submitNewsletterEmail() {
             const email = document.getElementById('newsletterEmailInput').value.trim();
             if(!email) return;
-            await fetch(`${API_URL}/api/store/subscribers`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, date: new Date().toLocaleString() })
-            });
-            alert('Subscribed successfully to Hoknex Chronicle!');
-            document.getElementById('newsletterEmailInput').value = '';
+            try {
+                await fetch(`${API_URL}/api/store/subscribers`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, date: new Date().toLocaleString() })
+                });
+                alert('Subscribed successfully to Hoknex Chronicle!');
+                document.getElementById('newsletterEmailInput').value = '';
+            } catch(e) {
+                alert('Could not subscribe.');
+            }
         }
     </script>
 
@@ -472,6 +487,5 @@
     </script>
     <!-- End of Tawk.to Script -->
 
-    
 </body>
 </html>
