@@ -4526,7 +4526,7 @@ function openMessageRequestModal(targetUser, actionType) {
       // --- EVENT SECTION LOGIC ---
 
 // ============================================================================
-// HOKNEX EVENT, RSVP & ORGANIZER TICKET SCANNER SYSTEM
+// HOKNEX EVENT, RSVP & ORGANIZER TICKET SCANNER SYSTEM (FULLY FIXED)
 // ============================================================================
 
 let html5QrcodeScanner = null;
@@ -4623,8 +4623,8 @@ function switchEventsTab(tabName, btnElement) {
     }
 }
 
-// --- 3. ORGANIZER TICKET SCANNER & FILE SCAN LOGIC ---
-function openVerifyModal() {
+// --- 3. ROBUST ORGANIZER TICKET SCANNER & FILE SCAN LOGIC ---
+async function openVerifyModal() {
     const scannerModal = document.getElementById('scannerModal');
     const resultDiv = document.getElementById('scanResult');
     
@@ -4635,20 +4635,27 @@ function openVerifyModal() {
             resultDiv.style.background = 'transparent';
         }
         
-        if (!html5QrcodeScanner) {
-            html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader", 
-                { 
-                    fps: 10, 
-                    qrbox: { width: 250, height: 250 },
-                    aspectRatio: 1.0
-                }, 
-                false
-            );
+        // Clean up any lingering instance safely
+        if (html5QrcodeScanner) {
+            try {
+                await html5QrcodeScanner.clear();
+            } catch (e) {}
+            html5QrcodeScanner = null;
         }
 
+        // Instantiate fresh every time to avoid DOM element locks
+        html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", 
+            { 
+                fps: 10, 
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
+            }, 
+            false
+        );
+
         html5QrcodeScanner.render(onScanSuccess, (error) => {
-            // Suppress frame scan errors
+            // Suppress continuous frame scan errors
         });
     }
 }
@@ -4657,7 +4664,6 @@ function startScanner() {
     openVerifyModal();
 }
 
-// File/Image QR Upload Handler
 async function scanQRCodeFromFile(inputElement) {
     const file = inputElement.files ? inputElement.files[0] : null;
     if (!file) return;
@@ -4689,10 +4695,10 @@ async function onScanSuccess(decodedText, decodedResult) {
     if (html5QrcodeScanner) {
         try {
             await html5QrcodeScanner.clear();
-            html5QrcodeScanner = null;
         } catch (err) {
             console.error("Failed to clear scanner", err);
         }
+        html5QrcodeScanner = null;
     }
 
     const scannerModal = document.getElementById('scannerModal');
@@ -4742,16 +4748,16 @@ function closeScanner() {
     if (scannerModal) scannerModal.style.display = 'none';
 }
 
-// --- 4. SUBMIT EVENT & RSVP SYSTEM ---
+// --- 4. SUBMIT EVENT & RSVP SYSTEM (Robust ID Fallbacks) ---
 async function submitEnhancedEvent() {
-    const title = document.getElementById('evTitle') ? document.getElementById('evTitle').value : '';
-    const location = document.getElementById('evLoc') ? document.getElementById('evLoc').value : '';
-    const visibility = document.getElementById('evVis') ? document.getElementById('evVis').value : 'public';
-    const ticketType = document.getElementById('evTicket') ? document.getElementById('evTicket').value : 'free';
-    const price = document.getElementById('evPrice') ? document.getElementById('evPrice').value : 0;
+    const title = document.getElementById('evTitle')?.value || document.getElementById('eventTitle')?.value || '';
+    const location = document.getElementById('evLoc')?.value || document.getElementById('eventLoc')?.value || '';
+    const visibility = document.getElementById('evVis')?.value || 'public';
+    const ticketType = document.getElementById('evTicket')?.value || 'free';
+    const price = document.getElementById('evPrice')?.value || 0;
     
-    const campusUsername = document.getElementById('evCampUser') ? document.getElementById('evCampUser').value : '';
-    const campusPassword = document.getElementById('evCampPass') ? document.getElementById('evCampPass').value : '';
+    const campusUsername = document.getElementById('evCampUser')?.value || '';
+    const campusPassword = document.getElementById('evCampPass')?.value || '';
     
     const author = localStorage.getItem('hoknex_user') || 'Guest';
 
@@ -4786,7 +4792,9 @@ async function submitEnhancedEvent() {
             if (createModal) createModal.style.display = 'none';
             
             if(document.getElementById('evTitle')) document.getElementById('evTitle').value = '';
+            if(document.getElementById('eventTitle')) document.getElementById('eventTitle').value = '';
             if(document.getElementById('evLoc')) document.getElementById('evLoc').value = '';
+            if(document.getElementById('eventLoc')) document.getElementById('eventLoc').value = '';
             if(document.getElementById('evCampUser')) document.getElementById('evCampUser').value = '';
             if(document.getElementById('evCampPass')) document.getElementById('evCampPass').value = '';
             
@@ -4799,6 +4807,11 @@ async function submitEnhancedEvent() {
     } catch (err) {
         console.error("Failed to create event", err);
     }
+}
+
+// Alias for backwards compatibility if HTML calls createEvent()
+async function createEvent() {
+    await submitEnhancedEvent();
 }
 
 async function handleRSVP(eventId, eventTitle, eventLoc, type, price, visibility) {
@@ -4846,7 +4859,7 @@ async function processRSVPAndGenerateTicket(eventId, eventTitle, eventLoc, type,
 
         if (!res.ok) {
             const data = await res.json();
-            alert("❌ ACCESS DENIED: " + data.error);
+            alert("❌ ACCESS DENIED: " + (data.error || "RSVP failed"));
             return; 
         }
 
@@ -4860,7 +4873,7 @@ async function processRSVPAndGenerateTicket(eventId, eventTitle, eventLoc, type,
     }
 }
 
-// --- 5. TICKET QR GENERATOR (Encodes pure ticketId for instant scanning) ---
+// --- 5. TICKET QR GENERATOR ---
 function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
     const ticketId = passedTicketId || ('TKT-' + Math.random().toString(36).substr(2, 6).toUpperCase());
     
@@ -4889,7 +4902,7 @@ function generateTicketQR(eventId, eventTitle, eventLoc, type, passedTicketId) {
                 height: 160,
                 colorDark : "#000000",
                 colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.L // Low correction reduces pixel crowding
+                correctLevel : QRCode.CorrectLevel.L 
             });
         } else {
             qrContainer.innerHTML = '<p style="color:red; font-size:12px;">QR Library Missing.</p>';
@@ -4919,18 +4932,6 @@ function copyInviteLink(eventId) {
 
 function downloadAttendance(eventId) {
     window.location.href = `${API_URL}/api/events/${eventId}/export-attendance`;
-}
-
-async function createEvent() {
-    const title = document.getElementById('eventTitle') ? document.getElementById('eventTitle').value : '';
-    const location = document.getElementById('eventLoc') ? document.getElementById('eventLoc').value : '';
-    if(!title) return alert('Enter title');
-    await fetch(`${API_URL}/api/events`, { 
-        method: 'POST', 
-        headers: {'Content-Type': 'application/json'}, 
-        body: JSON.stringify({title, location, date: new Date(), author: localStorage.getItem('hoknex_user') || 'Guest'}) 
-    });
-    loadEvents();
 }
 
 function viewUserProfile(username) {
@@ -5053,19 +5054,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 setTimeout(forceShowOrganizerButtons, 500);
 setTimeout(forceShowOrganizerButtons, 1500);
-// --- 8. PROJECT TAB LISTENERS ---
-document.addEventListener('click', function(e) {
-    const target = e.target.closest('a, div, span');
-    if (target && target.textContent && target.textContent.trim() === 'Projects') {
-        setTimeout(loadAndRenderProjects, 100);
-    }
-});
-
-window.addEventListener('load', () => {
-    if (window.location.hash.includes('projects') || document.getElementById('projectcontainer')) {
-        loadAndRenderProjects();
-    }
-});
 // --- 8. PROJECT TAB LISTENERS ---
 document.addEventListener('click', function(e) {
     const target = e.target.closest('a, div, span');
