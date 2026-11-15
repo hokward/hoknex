@@ -101,15 +101,16 @@
             <div id="magazineTableWrap" style="overflow-x:auto; margin-top:1.5rem;"><p>Loading articles...</p></div>
         </div>
 
-        <!-- 4. Digital Books Publisher -->
+        <!-- 4. Digital Books & Novels Publisher -->
         <div class="admin-section">
-            <h2>📚 4. Upload Digital Book / Novel</h2>
+            <h2>📚 4. Upload Digital Book / Novel (Text Reader & Downloadable PDF)</h2>
             <form onsubmit="handleBookUpload(event)">
                 <div class="form-grid">
                     <div class="form-group"><label>Book Title</label><input type="text" id="bookTitle" placeholder="Novel Title" required></div>
                     <div class="form-group"><label>Author</label><input type="text" id="bookAuthor" placeholder="Author Name" required></div>
                     <div class="form-group"><label>Front Cover Image</label><input type="file" id="bookCoverFile" accept="image/*" required style="background:#fff;"></div>
-                    <div class="form-group" style="grid-column: span 2;"><label>Book Pages (`---NEWPAGE---`)</label><textarea id="bookPagesText" rows="5" placeholder="Page 1...&#10;---NEWPAGE---&#10;Page 2..." required></textarea></div>
+                    <div class="form-group"><label>Downloadable Novel PDF (Optional)</label><input type="file" id="bookPdfFile" accept=".pdf" style="background:#fff;"></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Book Pages for Direct Reading (`---NEWPAGE---`)</label><textarea id="bookPagesText" rows="5" placeholder="Page 1...&#10;---NEWPAGE---&#10;Page 2..." required></textarea></div>
                 </div>
                 <button type="submit" class="btn-action">Publish Digital Book 📖</button>
             </form>
@@ -121,16 +122,16 @@
         const API_URL = 'https://hoknex-backend.onrender.com';
         const OWNER_PASSWORD = 'hoknex2026';
 
-        // --- DIRECT CLOUDINARY CONFIGURATION (Bypasses Render Bandwidth 100%) ---
+        // --- DIRECT CLOUDINARY CONFIGURATION (Fixed typo & supports auto/pdf uploads) ---
         const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
-        const CLOUDINARY_UPLOAD_PREset = 'hoknex_uploads';
+        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads'; // ✅ Fixed uppercase PRESET
 
-        async function uploadDirectToCloudinary(file) {
+        async function uploadDirectToCloudinary(file, resourceType = 'auto') {
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
-            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`, {
                 method: 'POST',
                 body: formData
             });
@@ -180,8 +181,7 @@
 
             let mediaUrl = '';
             if (fileInput.files && fileInput.files[0]) {
-                // Upload straight to Cloudinary (bypassing Render)
-                mediaUrl = await uploadDirectToCloudinary(fileInput.files[0]);
+                mediaUrl = await uploadDirectToCloudinary(fileInput.files[0], 'auto');
             }
 
             let author = authorInfo.split('•')[0].trim();
@@ -247,8 +247,7 @@
 
             let mediaUrl = '';
             if (fileInput.files && fileInput.files[0]) {
-                // Upload straight to Cloudinary (bypassing Render)
-                mediaUrl = await uploadDirectToCloudinary(fileInput.files[0]);
+                mediaUrl = await uploadDirectToCloudinary(fileInput.files[0], 'auto');
             }
 
             let author = authorInfo.split('•')[0].trim();
@@ -272,12 +271,14 @@
             const books = await res.json();
             document.getElementById('booksTableWrap').innerHTML = `
                 <table>
-                    <thead><tr><th>Cover</th><th>Title</th><th>Author</th><th>Pages</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Cover</th><th>Title</th><th>Author</th><th>Pages / PDF</th><th>Action</th></tr></thead>
                     <tbody>
                         ${books.map(b => `
                             <tr>
                                 <td><img src="${b.coverUrl}" style="width:40px; height:50px; object-fit:cover;"></td>
-                                <td><b>${b.title}</b></td><td>${b.author}</td><td>${b.pages.length} pages</td>
+                                <td><b>${b.title}</b></td>
+                                <td>${b.author}</td>
+                                <td>${b.pages ? b.pages.length + ' pages' : '0 pages'} ${b.pdfUrl ? '• 📄 PDF Attached' : ''}</td>
                                 <td><button onclick="deleteBook('${b._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
                             </tr>
                         `).join('')}
@@ -291,17 +292,24 @@
             const title = document.getElementById('bookTitle').value;
             const author = document.getElementById('bookAuthor').value;
             const coverFile = document.getElementById('bookCoverFile').files[0];
+            const pdfFile = document.getElementById('bookPdfFile').files[0];
             const rawPages = document.getElementById('bookPagesText').value;
             const pages = rawPages.split('---NEWPAGE---').map(p => p.trim());
 
-            // Upload book cover straight to Cloudinary (bypassing Render)
-            const coverUrl = await uploadDirectToCloudinary(coverFile);
+            // Upload cover image
+            const coverUrl = await uploadDirectToCloudinary(coverFile, 'auto');
+
+            // Upload PDF if provided
+            let pdfUrl = '';
+            if (pdfFile) {
+                pdfUrl = await uploadDirectToCloudinary(pdfFile, 'auto');
+            }
 
             await fetch(`${API_URL}/api/magazine/books`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, author, coverUrl, pages })
+                body: JSON.stringify({ title, author, coverUrl, pdfUrl, pages })
             });
-            alert('Digital book published successfully!');
+            alert('Digital book published successfully with text reader and PDF download option!');
             renderBooksTable();
         }
 
@@ -309,7 +317,6 @@
             await fetch(`${API_URL}/api/magazine/books/${id}`, { method: 'DELETE' });
             renderBooksTable();
         }
-        
     </script>
 </body>
 </html>
