@@ -116,6 +116,20 @@
         @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUpModal { from { transform: translateY(35px) scale(0.96); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
 
+        /* Custom Studio Alert / Confirm Modal Popup */
+        .custom-popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(44, 34, 30, 0.85); backdrop-filter: blur(12px);
+            display: none; justify-content: center; align-items: center; z-index: 50000; padding: 1.5rem;
+            animation: fadeInOverlay 0.2s ease forwards;
+        }
+        .custom-popup-box {
+            background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 20px;
+            padding: 2.5rem; width: 100%; max-width: 440px; text-align: center;
+            box-shadow: 12px 12px 0px var(--border-color);
+            animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
         /* Amazon/Flipkart-Style Lightbox Full Card Overlay */
         .lightbox-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -192,6 +206,18 @@
     </style>
 </head>
 <body>
+
+    <!-- Custom Studio Alert / Confirm Modal Popup -->
+    <div id="customPopupModal" class="custom-popup-overlay">
+        <div class="custom-popup-box">
+            <h3 id="customPopupTitle" style="font-family:'Playfair Display',serif; font-size: 1.4rem; font-weight: 900; margin-bottom: 0.6rem; color: var(--accent-sienna);">Notice</h3>
+            <p id="customPopupMessage" style="font-size: 0.92rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1.8rem; line-height: 1.5;"></p>
+            <div id="customPopupButtons" style="display: flex; gap: 10px; justify-content: center;">
+                <button id="customPopupOkBtn" class="btn-subscribe-zine" style="flex:1;">Okay ⚡</button>
+                <button id="customPopupCancelBtn" class="btn-subscribe-zine" style="flex:1; background:var(--border-color); display:none;">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Amazon/Flipkart-Style Lightbox Full Card View Modal -->
     <div id="lightboxModal" class="lightbox-overlay" onclick="closeLightbox(event)">
@@ -280,7 +306,7 @@
             <div style="background: var(--border-color); color: #FAF6F0; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
                 <h3 id="readerBookTitle" style="font-family:'Playfair Display',serif; font-size: 1.2rem;">Book Title</h3>
                 <div style="display: flex; gap: 12px; align-items: center;">
-                    <!-- Fixed PDF Download button pointing directly to attached book.pdfUrl from Admin Dashboard -->
+                    <!-- Direct file download anchor linked to real book.pdfUrl from dashboard -->
                     <a id="readerDownloadPdfBtn" href="#" target="_blank" download style="display: none; align-items: center; gap: 6px; background: var(--accent-sienna); color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 900; text-decoration: none; border: 2px solid #fff; box-shadow: 2px 2px 0px rgba(0,0,0,0.3);">📥 Download PDF</a>
                     <button onclick="closeBookReader()" style="background:#B85D3B; color:#fff; border:none; width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
                 </div>
@@ -371,6 +397,33 @@
         let activeBookPages = [];
         let currentBookPageIndex = 0;
         let currentActiveBookId = null;
+
+        // --- Custom Studio Popup Replacement for alert() and confirm() ---
+        function showStudioPopup(title, message, isConfirm = false, onConfirm = null) {
+            const modal = document.getElementById('customPopupModal');
+            document.getElementById('customPopupTitle').innerText = title;
+            document.getElementById('customPopupMessage').innerText = message;
+            
+            const okBtn = document.getElementById('customPopupOkBtn');
+            const cancelBtn = document.getElementById('customPopupCancelBtn');
+            
+            okBtn.onclick = () => {
+                modal.style.display = 'none';
+                if (onConfirm) onConfirm(true);
+            };
+
+            if (isConfirm) {
+                cancelBtn.style.display = 'block';
+                cancelBtn.onclick = () => {
+                    modal.style.display = 'none';
+                    if (onConfirm) onConfirm(false);
+                };
+            } else {
+                cancelBtn.style.display = 'none';
+            }
+
+            modal.style.display = 'flex';
+        }
 
         async function loadMagazineData() {
             try {
@@ -571,37 +624,43 @@
 
         function closeModal() { document.getElementById('articleModal').style.display = 'none'; }
 
-        // --- BOOK READER WITH FEATURE-FULL BOOKMARKS & REAL DASHBOARD PDF ---
+        // --- BOOK READER WITH CUSTOM STUDIO POPUPS & REAL PDF URL ---
         function openBookReader(index) {
             const book = currentBooks[index];
-            if(!book || !book.pages || book.pages.length === 0) { alert('Book pages not found.'); return; }
+            if(!book || !book.pages || book.pages.length === 0) {
+                showStudioPopup('Notice', 'Book pages not found.');
+                return;
+            }
             
             currentActiveBookId = book._id || book.id || index;
             document.getElementById('readerBookTitle').innerText = book.title;
 
             const pdfBtn = document.getElementById('readerDownloadPdfBtn');
             if (book.pdfUrl) {
-                pdfBtn.href = book.pdfUrl;
+                pdfBtn.href = book.pdfUrl; // Links directly to the PDF uploaded in admin dashboard
                 pdfBtn.style.display = 'inline-flex';
             } else {
-                pdfBtn.style.display = 'none'; // Hide button if no PDF was attached in dashboard
+                pdfBtn.style.display = 'none'; 
             }
 
             activeBookPages = book.pages;
 
             const savedPage = localStorage.getItem(`hoknex_bookmark_${currentActiveBookId}`);
             if (savedPage !== null && Number(savedPage) < activeBookPages.length && Number(savedPage) > 0) {
-                if (confirm(`📌 Bookmark found on Page ${Number(savedPage) + 1}. Would you like to resume from where you left off?`)) {
-                    currentBookPageIndex = Number(savedPage);
-                } else {
-                    currentBookPageIndex = 0;
-                }
+                showStudioPopup('Bookmark Found', `📌 Resume reading from Page ${Number(savedPage) + 1}?`, true, (confirmed) => {
+                    if (confirmed) {
+                        currentBookPageIndex = Number(savedPage);
+                    } else {
+                        currentBookPageIndex = 0;
+                    }
+                    updateBookPageDisplay();
+                    document.getElementById('bookReaderModal').style.display = 'flex';
+                });
             } else {
                 currentBookPageIndex = 0;
+                updateBookPageDisplay();
+                document.getElementById('bookReaderModal').style.display = 'flex';
             }
-
-            updateBookPageDisplay();
-            document.getElementById('bookReaderModal').style.display = 'flex';
         }
 
         function updateBookPageDisplay() {
@@ -625,7 +684,7 @@
             if (currentActiveBookId) {
                 localStorage.setItem(`hoknex_bookmark_${currentActiveBookId}`, currentBookPageIndex);
                 updateBookPageDisplay();
-                alert(`📌 Bookmark saved successfully at Page ${currentBookPageIndex + 1}!`);
+                showStudioPopup('Bookmark Saved', `📌 Bookmark successfully recorded at Page ${currentBookPageIndex + 1}!`);
             }
         }
 
@@ -675,10 +734,10 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, date: new Date().toLocaleString() })
                 });
-                alert('Subscribed successfully to Hoknex Chronicle!');
+                showStudioPopup('Subscribed', 'Subscribed successfully to Hoknex Chronicle!');
                 document.getElementById('newsletterEmailInput').value = '';
             } catch(e) {
-                alert('Could not subscribe.');
+                showStudioPopup('Error', 'Could not subscribe.');
             }
         }
     </script>
