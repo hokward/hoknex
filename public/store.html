@@ -3,125 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoknex — Official Global Store</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Hoknex — Official Global Store [Drop Culture]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-body: #F5F2EB;
-            --bg-card: #FFFFFF;
-            --text-main: #4C5844;
-            --text-muted: #6B7280;
-            --border-color: #4C5844;
-            --accent-terracotta: #C27D65;
-            --accent-ochre: #D9822B;
-            --shadow-brand: 5px 5px 0px #4C5844;
-            --shadow-hover: 8px 8px 0px #4C5844;
+            --bg-body: #0A0A0C;
+            --bg-card: #14141A;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --border-color: #FFFFFF;
+            --accent-neon: #00F5FF;
+            --accent-hot: #FF007F;
+            --accent-lime: #CCFF00;
+            --shadow-brand: 5px 5px 0px #FFFFFF;
+            --shadow-hover: 8px 8px 0px var(--accent-neon);
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         html { scroll-behavior: smooth; }
         body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
-        .top-announcement { background: var(--text-main); color: #F5F2EB; text-align: center; padding: 9px 1rem; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; }
-        .store-navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 4rem; background: rgba(245, 242, 235, 0.95); backdrop-filter: blur(16px); border-bottom: 2.5px solid var(--border-color); position: sticky; top: 0; z-index: 100; }
-        
-        .nav-left-links { display: flex; gap: 2rem; align-items: center; }
-        .nav-left-links a { 
-            color: var(--text-main); text-decoration: none; font-weight: 800; font-size: 0.92rem; cursor: pointer; 
-            transition: color 0.2s; padding: 6px 12px; border-radius: 8px; border: 2px solid transparent; display: inline-block;
+        /* Marquee Scrolling Banner */
+        .marquee-container {
+            background: var(--accent-lime);
+            color: #0A0A0C;
+            font-weight: 900;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 10px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            border-bottom: 3px solid var(--border-color);
         }
-        .nav-left-links a:hover, .nav-left-links a.active { color: var(--accent-terracotta); border-color: var(--border-color); background: #fff; box-shadow: 2px 2px 0px var(--border-color); }
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
 
-        .store-logo-brand { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main); text-decoration: none; display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
-        .store-logo-brand span { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2.5px; color: var(--accent-terracotta); }
+        .store-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 4rem;
+            background: rgba(10, 10, 12, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 3px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-left-links { display: flex; gap: 1.5rem; align-items: center; }
+        .nav-left-links a { 
+            color: var(--text-main); text-decoration: none; font-weight: 800; font-size: 0.9rem; cursor: pointer; 
+            transition: all 0.2s; padding: 6px 14px; border-radius: 6px; border: 2px solid transparent; display: inline-block;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .nav-left-links a:hover, .nav-left-links a.active { color: var(--accent-neon); border-color: var(--accent-neon); background: rgba(0,245,255,0.08); box-shadow: 2px 2px 0px var(--accent-neon); }
 
-        .nav-right-actions { display: flex; gap: 1.2rem; align-items: center; }
-        .search-box-wrap { display: flex; align-items: center; background: #fff; border: 2.5px solid var(--border-color); border-radius: 12px; padding: 6px 14px; width: 240px; box-shadow: 2px 2px 0px var(--border-color); }
-        .search-box-wrap input { border: none; outline: none; background: transparent; font-size: 0.85rem; font-weight: 700; color: var(--text-main); width: 100%; margin-left: 6px; }
-        .icon-btn { background: #fff; border: 2.5px solid var(--border-color); border-radius: 10px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; color: var(--text-main); font-weight: 900; box-shadow: 2px 2px 0px var(--border-color); transition: transform 0.15s; }
-        .icon-btn:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-brand); }
+        .store-logo-brand { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; color: var(--text-main); text-decoration: none; display: flex; flex-direction: column; align-items: center; line-height: 1.1; font-style: italic; }
+        .store-logo-brand span { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent-hot); font-style: normal; }
 
-        .store-hero { padding: 4rem 4rem 2rem 4rem; max-width: 1350px; margin: 0 auto; text-align: center; }
-        .store-hero h1 { font-size: 3.2rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 0.8rem; }
-        .store-hero p { color: var(--text-muted); font-size: 1.05rem; font-weight: 700; max-width: 650px; margin: 0 auto 2rem auto; }
+        .nav-right-actions { display: flex; gap: 1rem; align-items: center; }
+        .search-box-wrap { display: flex; align-items: center; background: #1A1A22; border: 2.5px solid var(--border-color); border-radius: 8px; padding: 6px 14px; width: 220px; box-shadow: 2px 2px 0px var(--border-color); }
+        .search-box-wrap input { border: none; outline: none; background: transparent; font-size: 0.85rem; font-weight: 700; color: #fff; width: 100%; margin-left: 6px; }
+        .icon-btn { background: #1A1A22; border: 2.5px solid var(--border-color); border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; color: #fff; font-weight: 900; box-shadow: 2px 2px 0px var(--border-color); transition: transform 0.15s; }
+        .icon-btn:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-brand); border-color: var(--accent-neon); color: var(--accent-neon); }
 
-        .coming-soon-container { padding: 2rem 4rem; max-width: 1350px; margin: 0 auto; }
-        .coming-soon-card { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 24px; padding: 2.5rem; text-align: center; box-shadow: var(--shadow-brand); position: relative; overflow: hidden; }
-        .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .drop-preview-card { background: #FAF9F6; border: 2.5px solid var(--border-color); border-radius: 16px; padding: 1rem; text-align: left; box-shadow: 3px 3px 0px var(--border-color); }
-        .drop-media { width: 100%; height: 260px; background: #EAE6DF; border-radius: 12px; border: 2px solid var(--border-color); overflow: hidden; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; }
+        /* Oversized Brutalist Hero */
+        .store-hero { padding: 5rem 4rem 3rem 4rem; max-width: 1400px; margin: 0 auto; text-align: left; border-bottom: 3px solid rgba(255,255,255,0.1); }
+        .store-hero h1 { font-size: 4rem; font-weight: 900; letter-spacing: -2px; margin-bottom: 1rem; text-transform: uppercase; line-height: 1.05; }
+        .store-hero h1 span { color: var(--accent-neon); text-shadow: 0 0 20px rgba(0,245,255,0.4); }
+        .store-hero p { color: var(--text-muted); font-size: 1.1rem; font-weight: 700; max-width: 700px; line-height: 1.6; }
+
+        .coming-soon-container { padding: 3rem 4rem; max-width: 1400px; margin: 0 auto; }
+        .coming-soon-card { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 16px; padding: 3rem; text-align: center; box-shadow: var(--shadow-brand); position: relative; overflow: hidden; }
+        .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .drop-preview-card { background: #1A1A24; border: 2.5px solid var(--border-color); border-radius: 12px; padding: 1.2rem; text-align: left; box-shadow: 4px 4px 0px var(--border-color); }
+        .drop-media { width: 100%; height: 280px; background: #000; border-radius: 8px; border: 2px solid var(--border-color); overflow: hidden; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; }
         .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: cover; }
 
-        .product-catalog-section { padding: 2rem 4rem 3rem 4rem; max-width: 1350px; margin: 0 auto; }
-        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2.5rem; margin-top: 1.5rem; }
+        .product-catalog-section { padding: 3rem 4rem; max-width: 1400px; margin: 0 auto; }
+        .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 3rem; margin-top: 2rem; }
 
-        .campaign-showcase-section { padding: 3rem 4rem 5rem 4rem; max-width: 1350px; margin: 0 auto; }
-        .campaign-header { text-align: center; margin-bottom: 2.5rem; }
-        .campaign-header h2 { font-size: 2.4rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 0.4rem; }
-        .campaign-header p { color: var(--text-muted); font-weight: 700; font-size: 1rem; }
-        .campaign-grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-        .campaign-tile { background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-brand); position: relative; transition: transform 0.25s ease, box-shadow 0.25s ease; }
-        .campaign-tile:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
-        .campaign-img-wrap { width: 100%; height: 320px; background: #EAE6DF; border-bottom: 2.5px solid var(--border-color); overflow: hidden; }
-        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-        .campaign-tile:hover .campaign-img-wrap img { transform: scale(1.06); }
-        .campaign-caption { padding: 1.2rem; text-align: left; }
-        .campaign-caption h4 { font-size: 1.1rem; font-weight: 900; margin-bottom: 0.3rem; }
-        .campaign-caption p { font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
-
+        /* Asymmetrical Brutalist Product Cards */
         .product-card {
-            background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 20px;
-            padding: 1.2rem; display: flex; flex-direction: column; justify-content: space-between;
+            background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 16px;
+            padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;
             position: relative; box-shadow: var(--shadow-brand); cursor: pointer;
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .product-card:hover { transform: translateY(-6px) scale(1.01); box-shadow: var(--shadow-hover); }
+        .product-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); border-color: var(--accent-neon); }
 
         .prod-img-box {
-            width: 100%; height: 260px; background: #EAE6DF; border: 2px solid var(--border-color);
-            border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1rem; overflow: hidden;
+            width: 100%; height: 280px; background: #0F0F14; border: 2px solid var(--border-color);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 4rem; margin-bottom: 1.2rem; overflow: hidden;
         }
         .prod-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
         .product-card:hover .prod-img-box img { transform: scale(1.05); }
 
-        .prod-title { font-size: 1.1rem; font-weight: 900; margin-bottom: 0.3rem; }
-        .prod-category { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
-        .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; border-top: 1.5px solid #F3F4F6; padding-top: 0.8rem; }
-        .prod-price { font-size: 1.25rem; font-weight: 900; color: var(--text-main); }
+        .prod-title { font-size: 1.2rem; font-weight: 900; margin-bottom: 0.4rem; letter-spacing: -0.3px; }
+        .prod-category { font-size: 0.75rem; font-weight: 800; color: var(--accent-neon); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.4rem; }
+        .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem; border-top: 1.5px solid rgba(255,255,255,0.1); padding-top: 1rem; }
+        .prod-price { font-size: 1.35rem; font-weight: 900; color: #fff; }
 
-        .btn-add-bag { background: #fff; border: 2.5px solid var(--border-color); padding: 7px 14px; border-radius: 10px; font-weight: 900; font-size: 0.82rem; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color); transition: all 0.15s; }
-        .btn-add-bag:hover { background: var(--accent-terracotta); color: #fff; transform: translateY(-1px); }
-        .btn-wishlist { background: #fff; border: 2px solid var(--border-color); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; position: absolute; top: 18px; left: 18px; z-index: 5; box-shadow: 2px 2px 0px var(--border-color); transition: transform 0.15s; }
-        .btn-wishlist:hover { transform: scale(1.1); }
+        .btn-add-bag { background: var(--accent-neon); color: #0A0A0C; border: 2.5px solid var(--border-color); padding: 8px 16px; border-radius: 8px; font-weight: 900; font-size: 0.85rem; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color); transition: all 0.15s; }
+        .btn-add-bag:hover { background: var(--accent-hot); color: #fff; transform: translateY(-2px); box-shadow: 3px 3px 0px var(--border-color); }
+        
+        .btn-wishlist { background: #1A1A22; border: 2px solid var(--border-color); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; position: absolute; top: 22px; left: 22px; z-index: 5; box-shadow: 2px 2px 0px var(--border-color); transition: transform 0.15s; }
+        .btn-wishlist:hover { transform: scale(1.15); }
 
-        .store-footer { background: #111827; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 3px solid var(--border-color); position: relative; overflow: hidden; }
+        .campaign-showcase-section { padding: 4rem; max-width: 1400px; margin: 0 auto; }
+        .campaign-header { text-align: left; margin-bottom: 3rem; border-left: 5px solid var(--accent-neon); padding-left: 1.5rem; }
+        .campaign-header h2 { font-size: 2.8rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 0.4rem; text-transform: uppercase; }
+        .campaign-header p { color: var(--text-muted); font-weight: 700; font-size: 1.05rem; }
+        .campaign-grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .campaign-tile { background: var(--bg-card); border: 3px solid var(--border-color); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-brand); position: relative; transition: transform 0.25s ease, box-shadow 0.25s ease; }
+        .campaign-tile:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); border-color: var(--accent-neon); }
+        .campaign-img-wrap { width: 100%; height: 340px; background: #000; border-bottom: 2.5px solid var(--border-color); overflow: hidden; }
+        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; filter: grayscale(20%); }
+        .campaign-tile:hover .campaign-img-wrap img { transform: scale(1.06); filter: grayscale(0%); }
+        .campaign-caption { padding: 1.5rem; text-align: left; }
+        .campaign-caption h4 { font-size: 1.2rem; font-weight: 900; margin-bottom: 0.4rem; color: #fff; }
+        .campaign-caption p { font-size: 0.9rem; color: var(--text-muted); font-weight: 700; }
+
+        .store-footer { background: #050507; color: #F5F2EB; padding: 5rem 4rem 3rem 4rem; margin-top: 5rem; border-top: 3px solid var(--border-color); position: relative; overflow: hidden; }
         .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.15); position: relative; z-index: 2; }
-        .footer-newsletter h3 { font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; }
-        .footer-newsletter p { color: #CCBEB1; font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .footer-newsletter h3 { font-size: 2.4rem; font-weight: 900; margin-bottom: 0.5rem; color: #FAF9F6; text-transform: uppercase; }
+        .footer-newsletter p { color: #9CA3AF; font-size: 1rem; font-weight: 700; margin-bottom: 1.5rem; }
         .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; }
-        .newsletter-input-group input { flex: 1; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.2); padding: 12px 16px; border-radius: 10px; color: #fff; font-weight: 800; outline: none; }
-        .btn-newsletter { background: var(--accent-ochre); color: #fff; border: none; padding: 0 2rem; border-radius: 10px; font-weight: 900; cursor: pointer; }
+        .newsletter-input-group input { flex: 1; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); padding: 14px 18px; border-radius: 10px; color: #fff; font-weight: 800; outline: none; }
+        .btn-newsletter { background: var(--accent-neon); color: #0A0A0C; border: none; padding: 0 2.5rem; border-radius: 10px; font-weight: 900; cursor: pointer; transition: transform 0.15s; }
+        .btn-newsletter:hover { transform: translateY(-2px); background: var(--accent-hot); color: #fff; }
 
         .footer-links-grid { display: grid; grid-template-columns: repeat(5, 1fr) 1.5fr; gap: 2rem; font-size: 0.88rem; position: relative; z-index: 2; }
-        .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FAF9F6; }
-        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
-        .footer-col a { color: #CCBEB1; text-decoration: none; font-weight: 700; cursor: pointer; }
-        .footer-col a:hover { color: #fff; }
+        .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FAF9F6; text-transform: uppercase; letter-spacing: 1px; }
+        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+        .footer-col a { color: #9CA3AF; text-decoration: none; font-weight: 700; cursor: pointer; transition: color 0.15s; }
+        .footer-col a:hover { color: var(--accent-neon); }
 
-        .footer-watermark { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.04); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; }
+        .footer-watermark { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); font-size: 16vw; font-weight: 900; color: rgba(255, 255, 255, 0.02); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(76, 88, 68, 0.7); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
-        .modal-panel { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 24px; padding: 2.5rem; width: 100%; max-width: 650px; box-shadow: 8px 8px 0px var(--border-color); position: relative; max-height: 90vh; overflow-y: auto; }
-        .btn-primary { width: 100%; background: var(--accent-terracotta); color: #fff; border: 2.5px solid var(--border-color); border-radius: 12px; padding: 1rem; font-size: 1rem; font-weight: 900; cursor: pointer; box-shadow: 3px 3px 0px var(--border-color); margin-top: 1rem; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 12, 0.85); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
+        .modal-panel { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 20px; padding: 3rem; width: 100%; max-width: 680px; box-shadow: 10px 10px 0px var(--accent-neon); position: relative; max-height: 90vh; overflow-y: auto; color: #fff; }
+        .btn-primary { width: 100%; background: var(--accent-neon); color: #0A0A0C; border: 2.5px solid var(--border-color); border-radius: 10px; padding: 1.1rem; font-size: 1rem; font-weight: 900; cursor: pointer; box-shadow: 3px 3px 0px var(--border-color); margin-top: 1rem; transition: transform 0.1s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-primary:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0px var(--accent-hot); background: var(--accent-hot); color: #fff; }
 
-        #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
-        #proModalBox { background: #FAF9F6; border: 3.5px solid var(--border-color); border-radius: 20px; padding: 2rem; max-width: 420px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--border-color); }
+        #proModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 12, 0.8); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem; }
+        #proModalBox { background: var(--bg-card); border: 3.5px solid var(--border-color); border-radius: 16px; padding: 2.5rem; max-width: 440px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--accent-neon); color: #fff; }
 
         @media (max-width: 968px) {
             .store-navbar, .store-hero, .coming-soon-container, .product-catalog-section, .campaign-showcase-section, .store-footer { padding: 2rem 1.5rem; }
             .campaign-grid-layout { grid-template-columns: 1fr; }
             .footer-links-grid { grid-template-columns: 1fr; }
             .nav-left-links { display: none; }
+            .store-hero h1 { font-size: 2.8rem; }
         }
     </style>
 </head>
@@ -129,13 +170,18 @@
 
     <div id="proModalOverlay">
         <div id="proModalBox">
-            <h3 id="proModalTitle" style="font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem;">Hoknex Notice</h3>
-            <p id="proModalMessage" style="font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1.5rem;"></p>
-            <button onclick="closeProModal()" class="btn-primary" style="margin-top:0; padding: 0.6rem 1.5rem;">Okay 👍</button>
+            <h3 id="proModalTitle" style="font-size: 1.4rem; font-weight: 900; margin-bottom: 0.5rem; color: var(--accent-neon);">Hoknex Notice</h3>
+            <p id="proModalMessage" style="font-size: 0.95rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1.8rem;"></p>
+            <button onclick="closeProModal()" class="btn-primary" style="margin-top:0; padding: 0.8rem 1.5rem;">Okay ⚡</button>
         </div>
     </div>
 
-    <div class="top-announcement" id="topAnnouncementBar">⚡ Free Campus Delivery on all Hoknex Apparel Orders over ₹999 | Crafted for Global Creators</div>
+    <!-- Marquee Drop Countdown Banner -->
+    <div class="marquee-container">
+        <div class="marquee-content">
+            ⚡ DROP 04 LIVE NOW &nbsp;&bull;&nbsp; FREE CAMPUS DELIVERY ON ORDERS OVER ₹999 &nbsp;&bull;&nbsp; HEAVYWEIGHT 450GSM STREETWEAR &nbsp;&bull;&nbsp; ENGINEERED FOR GLOBAL CREATORS &nbsp;&bull;&nbsp; ⚡ DROP 04 LIVE NOW &nbsp;&bull;&nbsp; FREE CAMPUS DELIVERY ON ORDERS OVER ₹999 &nbsp;&bull;&nbsp; HEAVYWEIGHT 450GSM STREETWEAR &nbsp;&bull;&nbsp; ENGINEERED FOR GLOBAL CREATORS &nbsp;&bull;&nbsp;
+        </div>
+    </div>
 
     <header class="store-navbar">
         <div class="nav-left-links">
@@ -148,35 +194,35 @@
         <div class="nav-right-actions">
             <div class="search-box-wrap">
                 <span>🔍</span>
-                <input type="text" placeholder="Search Hoknex..." oninput="filterCatalogSearch(this.value)">
+                <input type="text" placeholder="Search Drop..." oninput="filterCatalogSearch(this.value)">
             </div>
-            <button class="icon-btn" onclick="openWishlistModal()" title="Wishlist">❤️<span style="font-size:0.75rem; margin-left:2px;" id="wishlistCount">0</span></button>
+            <button class="icon-btn" onclick="openWishlistModal()" title="Wishlist">❤️<span style="font-size:0.75rem; margin-left:2px; color:var(--accent-hot);" id="wishlistCount">0</span></button>
             <button class="icon-btn" onclick="openTrackModal()" title="Track Order">📦</button>
-            <button class="icon-btn" onclick="openCartModal()" title="Shopping Bag">🛒<span style="font-size:0.75rem; margin-left:2px;" id="bagCount">0</span></button>
+            <button class="icon-btn" onclick="openCartModal()" title="Shopping Bag">🛒<span style="font-size:0.75rem; margin-left:2px; color:var(--accent-neon);" id="bagCount">0</span></button>
         </div>
     </header>
 
     <section class="store-hero">
         <h1>Engineered for students, <span>worn by creators.</span></h1>
-        <p>Premium oversized hoodies, heavyweight graphic tees, and streetwear essentials designed for global campus innovators.</p>
+        <p>Heavyweight brutalist streetwear, oversized hoodies, and technical essentials designed for global campus innovators and hackhouse builders.</p>
     </section>
 
     <!-- Coming Soon Section -->
     <section class="coming-soon-container" id="comingSoonSection" style="display:none;">
         <div class="coming-soon-card">
-            <div style="font-size: 2.2rem; margin-bottom: 0.4rem;">✨</div>
-            <h2 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 0.3rem;">COMING SOON</h2>
-            <p style="font-size: 1rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-terracotta); margin-bottom: 1rem;">STAY TUNED</p>
+            <div style="font-size: 2.2rem; margin-bottom: 0.4rem;">🚨</div>
+            <h2 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 0.3rem; text-transform: uppercase;">Upcoming Vault Drops</h2>
+            <p style="font-size: 0.95rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--accent-neon); margin-bottom: 1rem;">Limited Quantity Allocation</p>
             <div class="coming-soon-grid" id="comingSoonGrid"></div>
         </div>
     </section>
 
     <!-- Product Catalog Section -->
     <section class="product-catalog-section" id="catalog">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
             <div>
-                <h3 style="font-size: 1.8rem; font-weight: 900;" id="activeCategoryTitle">Featured Hoknex Collection</h3>
-                <p style="color: var(--text-muted); font-weight: 700; font-size: 0.9rem;">Click any product to inspect multi-angle views and place an order.</p>
+                <h3 style="font-size: 2rem; font-weight: 900; text-transform: uppercase;" id="activeCategoryTitle">Featured Collection</h3>
+                <p style="color: var(--text-muted); font-weight: 700; font-size: 0.9rem;">Inspect high-res specs, secure drop allocations, and view multi-angle specs.</p>
             </div>
         </div>
         <div class="catalog-grid" id="catalogGrid"></div>
@@ -195,10 +241,10 @@
     <footer class="store-footer">
         <div class="footer-newsletter">
             <h3>Join the Hoknex movement</h3>
-            <p>Get exclusive drops, campus hackathon invites, and stories that fuel your next breakthrough - straight to your inbox.</p>
+            <p>Get exclusive drop alerts, underground hackathon invites, and creator stories straight to your inbox.</p>
             <div class="newsletter-input-group">
                 <input type="email" id="newsletterEmailInput" placeholder="Enter your email address">
-                <button class="btn-newsletter" onclick="submitNewsletterEmail()">Join</button>
+                <button class="btn-newsletter" onclick="submitNewsletterEmail()">Join ⚡</button>
             </div>
         </div>
 
@@ -238,10 +284,10 @@
             </div>
             <div class="footer-col">
                 <h4>Follow</h4>
-                <p style="color: #CCBEB1; font-size: 0.8rem; margin-top: 8px;">Connect with us on social channels for student spotlights.</p>
+                <p style="color: #9CA3AF; font-size: 0.8rem; margin-top: 8px;">Connect with us on social channels for student spotlights.</p>
             </div>
         </div>
-        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #CCBEB1; position: relative; z-index: 2;">
+        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: #9CA3AF; position: relative; z-index: 2;">
             <span>&copy; Hoknex 2026. All rights reserved.</span>
             <span>Secure Campus Checkout (Zero Fees)</span>
         </div>
@@ -251,23 +297,23 @@
     <!-- PDP Modal -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
         <div class="modal-panel" style="max-width: 850px;">
-            <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:34px; height:34px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:36px; height:36px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
             <div style="display:flex; gap:2.5rem; flex-wrap:wrap;">
                 <div style="flex:1; min-width:280px; text-align:center;">
-                    <div id="pdpMainBox" class="prod-img-box" style="height:300px;"><span id="pdpMainEmoji" style="font-size:6rem;">🧥</span></div>
+                    <div id="pdpMainBox" class="prod-img-box" style="height:320px;"><span id="pdpMainEmoji" style="font-size:6rem;">🧥</span></div>
                     <div id="pdpThumbnails" style="display:flex; gap:8px; margin-top:10px; justify-content:center;"></div>
                 </div>
                 <div style="flex:1; min-width:280px;">
-                    <span id="pdpBadge" style="background:var(--accent-ochre); color:#fff; border:2px solid var(--border-color); padding:3px 10px; border-radius:6px; font-size:0.75rem; font-weight:900; text-transform:uppercase;">Best Seller</span>
-                    <h2 id="pdpTitle" style="font-size:1.8rem; font-weight:900; margin:0.4rem 0;">Product Title</h2>
-                    <div id="pdpPrice" style="font-size:1.4rem; font-weight:900; color:var(--accent-terracotta); margin-bottom:0.4rem;">₹0</div>
+                    <span id="pdpBadge" style="background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); padding:3px 10px; border-radius:6px; font-size:0.75rem; font-weight:900; text-transform:uppercase;">Best Seller</span>
+                    <h2 id="pdpTitle" style="font-size:1.9rem; font-weight:900; margin:0.4rem 0; color:#fff;">Product Title</h2>
+                    <div id="pdpPrice" style="font-size:1.5rem; font-weight:900; color:var(--accent-neon); margin-bottom:0.4rem;">₹0</div>
                     <div id="pdpDeliveryNote" style="font-size:0.8rem; font-weight:800; color:var(--text-muted); margin-bottom:0.4rem;">Delivery Fee: ₹0</div>
-                    <div id="pdpRatingDisplay" style="font-size:0.85rem; font-weight:900; color:var(--accent-ochre); margin-bottom:0.8rem;">⭐ 5.0 (0 reviews)</div>
-                    <p id="pdpDesc" style="color:var(--text-muted); font-size:0.9rem; font-weight:700; line-height:1.5; margin-bottom:1.2rem;"></p>
-                    <div id="pdpSizeSection"><div style="font-size:0.8rem; font-weight:900; color:var(--text-main); text-transform:uppercase; margin-bottom:0.4rem;">Select Size</div><div style="display:flex; gap:8px; margin-bottom:1.2rem;" id="sizeGroup"></div></div>
-                    <div id="pdpStockSection" style="display:none; margin-bottom:1.2rem;"><p style="color:#C27D65; font-weight:900; font-size:0.95rem; margin-bottom:8px;">Currently Out of Stock ❌</p><button onclick="voteForStock()" class="btn-primary" style="background:var(--accent-ochre);">Vote to Come Fast 🔥 (<span id="voteCountDisplay">0</span>)</button></div>
+                    <div id="pdpRatingDisplay" style="font-size:0.85rem; font-weight:900; color:var(--accent-lime); margin-bottom:0.8rem;">⭐ 5.0 (0 reviews)</div>
+                    <p id="pdpDesc" style="color:var(--text-muted); font-size:0.95rem; font-weight:700; line-height:1.6; margin-bottom:1.2rem;"></p>
+                    <div id="pdpSizeSection"><div style="font-size:0.8rem; font-weight:900; color:#fff; text-transform:uppercase; margin-bottom:0.4rem; letter-spacing:1px;">Select Size</div><div style="display:flex; gap:8px; margin-bottom:1.2rem;" id="sizeGroup"></div></div>
+                    <div id="pdpStockSection" style="display:none; margin-bottom:1.2rem;"><p style="color:var(--accent-hot); font-weight:900; font-size:0.95rem; margin-bottom:8px;">Currently Out of Stock ❌</p><button onclick="voteForStock()" class="btn-primary" style="background:var(--accent-lime); color:#0A0A0C;">Vote to Restock 🔥 (<span id="voteCountDisplay">0</span>)</button></div>
                     <button id="pdpAddBtn" onclick="addPdpToBag()" class="btn-primary">Add to Bag 🛍️</button>
-                    <div style="margin-top:1.5rem; border-top:1.5px solid #F3F4F6; padding-top:1rem;"><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Rate this product:</label><select id="userRatingSelect" onchange="submitUserRating()" style="margin-top:4px; padding:6px; font-weight:800; border-radius:8px;"><option value="5">⭐⭐⭐⭐⭐ (5/5)</option><option value="4">⭐⭐⭐⭐ (4/5)</option><option value="3">⭐⭐⭐ (3/5)</option><option value="2">⭐⭐ (2/5)</option><option value="1">⭐ (1/5)</option></select></div>
+                    <div style="margin-top:1.5rem; border-top:1.5px solid rgba(255,255,255,0.1); padding-top:1rem;"><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Rate this product:</label><select id="userRatingSelect" onchange="submitUserRating()" style="margin-top:4px; padding:8px; font-weight:800; border-radius:8px; background:#1A1A22; color:#fff; border:2px solid var(--border-color); width:100%;"><option value="5">⭐⭐⭐⭐⭐ (5/5)</option><option value="4">⭐⭐⭐⭐ (4/5)</option><option value="3">⭐⭐⭐ (3/5)</option><option value="2">⭐⭐ (2/5)</option><option value="1">⭐ (1/5)</option></select></div>
                 </div>
             </div>
         </div>
@@ -275,41 +321,41 @@
 
     <!-- Wishlist Modal -->
     <div id="wishlistModal" class="modal-overlay" onclick="if(event.target === this) closeModal('wishlistModal')">
-        <div class="modal-panel" style="max-width: 480px;"><button onclick="closeModal('wishlistModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem;">Your Wishlist ❤️</h2><div id="wishlistItemsList" style="max-height: 280px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your wishlist is empty.</p></div><button onclick="closeModal('wishlistModal')" class="btn-primary" style="margin-top:0;">Continue Shopping 🛍️</button></div>
+        <div class="modal-panel" style="max-width: 480px;"><button onclick="closeModal('wishlistModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color:#fff;">Your Wishlist ❤️</h2><div id="wishlistItemsList" style="max-height: 280px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your wishlist is empty.</p></div><button onclick="closeModal('wishlistModal')" class="btn-primary" style="margin-top:0;">Continue Shopping 🛍️</button></div>
     </div>
 
     <!-- Cart Modal -->
     <div id="cartModal" class="modal-overlay" onclick="if(event.target === this) closeModal('cartModal')">
-        <div class="modal-panel" style="max-width: 480px;"><button onclick="closeModal('cartModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem;">Your Shopping Bag</h2><div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your bag is empty.</p></div><div style="font-size:0.88rem; font-weight:800; margin-bottom:1rem; border-top:2px solid var(--border-color); padding-top:0.8rem;"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Items Subtotal:</span><span id="bagSubtotal">₹0</span></div><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Total Delivery Charge:</span><span id="bagDelivery">₹0</span></div><div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:900; margin-top:6px; color:var(--accent-terracotta);"><span>Final Total:</span><span id="bagTotal">₹0</span></div></div><button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Checkout 🚀</button></div>
+        <div class="modal-panel" style="max-width: 480px;"><button onclick="closeModal('cartModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color:#fff;">Your Shopping Bag</h2><div id="cartItemsList" style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0;">Your bag is empty.</p></div><div style="font-size:0.88rem; font-weight:800; margin-bottom:1rem; border-top:2px solid rgba(255,255,255,0.1); padding-top:0.8rem;"><div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--text-muted);"><span>Items Subtotal:</span><span id="bagSubtotal">₹0</span></div><div style="display:flex; justify-content:space-between; margin-bottom:4px; color:var(--text-muted);"><span>Total Delivery Charge:</span><span id="bagDelivery">₹0</span></div><div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:900; margin-top:6px; color:var(--accent-neon);"><span>Final Total:</span><span id="bagTotal">₹0</span></div></div><button onclick="proceedToCheckout()" class="btn-primary" style="margin-top:0;">Proceed to Checkout 🚀</button></div>
     </div>
 
     <!-- Checkout Modal -->
     <div id="checkoutModal" class="modal-overlay" onclick="if(event.target === this) closeModal('checkoutModal')">
         <div class="modal-panel" style="max-width: 540px;">
-            <button onclick="closeModal('checkoutModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
-            <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.4rem;">Hoknex Secure Checkout 🛡️</h2>
-            <p id="checkoutSubNotice" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;"></p>
+            <button onclick="closeModal('checkoutModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button>
+            <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.4rem; color:#fff;">Secure Checkout 🛡️</h2>
+            <p id="checkoutSubNotice" style="color: var(--accent-neon); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem;"></p>
             <form onsubmit="finalizeOrder(event)" style="display:flex; flex-direction:column; gap:0.8rem;">
-                <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Full Name *</label><input type="text" id="shipName" placeholder="Alex Morgan" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;"></div>
+                <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Full Name *</label><input type="text" id="shipName" placeholder="Alex Morgan" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:10px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Phone *</label><input type="tel" id="shipPhone" placeholder="+91 9876543210" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;"></div>
-                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Email *</label><input type="email" id="shipEmail" placeholder="student@edu.in" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;"></div>
+                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Phone *</label><input type="tel" id="shipPhone" placeholder="+91 9876543210" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:10px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
+                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Email *</label><input type="email" id="shipEmail" placeholder="student@edu.in" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:10px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Country *</label><input type="text" id="shipCountry" value="India" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; margin-top:3px; outline:none;"></div>
-                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">State *</label><input type="text" id="shipState" placeholder="Bihar" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; margin-top:3px; outline:none;"></div>
+                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Country *</label><input type="text" id="shipCountry" value="India" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
+                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">State *</label><input type="text" id="shipState" placeholder="Bihar" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">City *</label><input type="text" id="shipCity" placeholder="Muzaffarpur" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; margin-top:3px; outline:none;"></div>
-                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Pin Code *</label><input type="text" id="shipPin" placeholder="842001" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; margin-top:3px; outline:none;"></div>
+                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">City *</label><input type="text" id="shipCity" placeholder="Muzaffarpur" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
+                    <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Pin Code *</label><input type="text" id="shipPin" placeholder="842001" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
                 </div>
-                <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Landmark *</label><input type="text" id="shipLandmark" placeholder="Near Gate" required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; margin-top:3px; outline:none;"></div>
-                <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Full Address *</label><textarea id="shipAddress" rows="2" placeholder="Room 404..." required style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none; resize:vertical;"></textarea></div>
-                <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Payment Mode *</label><select id="payMode" onchange="toggleQrScanner(this.value)" style="width:100%; background:#fff; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; margin-top:3px; outline:none;"><option id="codOption" value="COD">Pay on Campus Delivery</option><option value="DirectUPI">Direct Founder UPI (hoknex@upi)</option></select></div>
-                <div id="qrScannerSection" style="display:none; background:#FAF9F6; border:2.5px dashed var(--border-color); padding:1.2rem; border-radius:14px; text-align:center; margin-top:0.5rem;">
-                    <h4 style="font-size:0.95rem; font-weight:900; margin-bottom:0.4rem;">📷 Scan Founder UPI QR Code to Pay</h4>
-                    <div id="qrImageContainer" style="width:160px; height:160px; margin:0 auto; background:#fff; border:2px solid var(--border-color); border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">📱 QR Code Loading...</div>
-                    <div style="margin-top:1rem; text-align:left;"><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase;">Upload Payment Screenshot *</label><input type="file" id="paymentProofInput" accept="image/*" style="width:100%; margin-top:4px; font-size:0.8rem; font-weight:800;"></div>
+                <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Landmark *</label><input type="text" id="shipLandmark" placeholder="Near Gate" required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:8px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"></div>
+                <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Full Address *</label><textarea id="shipAddress" rows="2" placeholder="Room 404..." required style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:10px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none; resize:vertical;"></textarea></div>
+                <div><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Payment Mode *</label><select id="payMode" onchange="toggleQrScanner(this.value)" style="width:100%; background:#1A1A22; border:2px solid var(--border-color); padding:10px; border-radius:8px; font-weight:800; color:#fff; margin-top:3px; outline:none;"><option id="codOption" value="COD">Pay on Campus Delivery</option><option value="DirectUPI">Direct Founder UPI (hoknex@upi)</option></select></div>
+                <div id="qrScannerSection" style="display:none; background:#14141A; border:2px dashed var(--accent-neon); padding:1.2rem; border-radius:12px; text-align:center; margin-top:0.5rem;">
+                    <h4 style="font-size:0.95rem; font-weight:900; margin-bottom:0.4rem; color:#fff;">📷 Scan Founder UPI QR Code to Pay</h4>
+                    <div id="qrImageContainer" style="width:160px; height:160px; margin:0 auto; background:#000; border:2px solid var(--border-color); border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; color:#fff;">📱 QR Loading...</div>
+                    <div style="margin-top:1rem; text-align:left;"><label style="font-size:0.75rem; font-weight:900; text-transform:uppercase; color:var(--text-muted);">Upload Payment Screenshot *</label><input type="file" id="paymentProofInput" accept="image/*" style="width:100%; margin-top:4px; font-size:0.8rem; font-weight:800; color:#fff;"></div>
                 </div>
                 <button type="submit" class="btn-primary" style="margin-top:0.5rem;">Place Order Now 🎉</button>
             </form>
@@ -318,15 +364,14 @@
 
     <!-- Track Order Modal -->
     <div id="trackModal" class="modal-overlay" onclick="if(event.target === this) closeModal('trackModal')">
-        <div class="modal-panel" style="max-width: 480px; text-align: center;"><button onclick="closeModal('trackModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 900; margin-bottom: 0.4rem;">📦 Track Your Hoknex Order</h2><div style="display:flex; gap:8px; margin-bottom:1.2rem;"><input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:#fff; border:2.5px solid var(--border-color); border-radius:10px; padding:10px; font-weight:800; flex:1; outline:none;"><button onclick="performTracking()" class="btn-primary" style="margin:0; padding:10px 14px; width:110px;">Track 🔍</button></div><div id="trackResultBox" style="text-align:left; background:#fff; border:2.5px solid var(--border-color); padding:1.2rem; border-radius:10px; display:none;"><h4 id="resId" style="font-size:0.95rem; font-weight:900; margin-bottom:0.4rem;">Order ID: #</h4><div id="resCustomMsgContainer" style="display:none; background:#F5F2EB; border:2px solid var(--accent-ochre); padding:10px; border-radius:8px; margin-bottom:10px;"></div><div id="resTimeline" style="display:flex; flex-direction:column; gap:8px; font-size:0.82rem; font-weight:800;"></div></div></div>
+        <div class="modal-panel" style="max-width: 480px; text-align: center;"><button onclick="closeModal('trackModal')" style="position:absolute; top:20px; right:20px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:32px; height:32px; border-radius:50%; font-weight:900; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 900; margin-bottom: 0.4rem; color:#fff;">📦 Track Your Hoknex Order</h2><div style="display:flex; gap:8px; margin-bottom:1.2rem;"><input type="text" id="trackOrderIdInput" placeholder="e.g. HOK-98421" style="background:#1A1A22; border:2px solid var(--border-color); border-radius:8px; padding:10px; font-weight:800; color:#fff; flex:1; outline:none;"><button onclick="performTracking()" class="btn-primary" style="margin:0; padding:10px 14px; width:110px;">Track 🔍</button></div><div id="trackResultBox" style="text-align:left; background:#1A1A22; border:2px solid var(--border-color); padding:1.2rem; border-radius:10px; display:none;"><h4 id="resId" style="font-size:0.95rem; font-weight:900; margin-bottom:0.4rem; color:#fff;">Order ID: #</h4><div id="resCustomMsgContainer" style="display:none; background:#0A0A0C; border:2px solid var(--accent-neon); padding:10px; border-radius:8px; margin-bottom:10px;"></div><div id="resTimeline" style="display:flex; flex-direction:column; gap:8px; font-size:0.82rem; font-weight:800; color:var(--text-muted);"></div></div></div>
     </div>
 
     <script>
         const API_URL = 'https://hoknex-backend.onrender.com';
 
-        // --- DIRECT CLOUDINARY CONFIGURATION (Bypasses Render Bandwidth 100%) ---
         const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
-        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads'; // ✅ Fixed typo here (PRESET in uppercase)
+        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads';
 
         async function uploadDirectToCloudinary(file) {
             const formData = new FormData();
@@ -351,9 +396,6 @@
             document.getElementById('proModalOverlay').style.display = 'flex';
         }
         function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
-
-        const savedAnnouncement = localStorage.getItem('hoknex_announcement');
-        if(savedAnnouncement) { document.getElementById('topAnnouncementBar').innerText = savedAnnouncement; }
 
         let defaultCatalog = [
             { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49, emoji: "🧥", badge: "New Drop", inStock: true, sizes: ['S', 'M', 'L', 'XL'], ratings: [5, 5, 4], votes: 12, description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.", galleryImages: ["🧥", "👔", "🔎"] },
@@ -400,7 +442,7 @@
                     <div class="drop-media">
                         ${d.image.includes('data:video') || d.image.includes('.mp4') ? `<video src="${d.image}" autoplay loop muted style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${d.image}" alt="Drop">`}
                     </div>
-                    <h4 style="font-weight:900; font-size:1.05rem; margin-bottom:4px; color:var(--text-main);">${d.title}</h4>
+                    <h4 style="font-weight:900; font-size:1.05rem; margin-bottom:4px; color:#fff;">${d.title}</h4>
                     <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">${d.desc}</p>
                 </div>
             `).join('');
@@ -446,18 +488,18 @@
                 return `
                     <div class="product-card" onclick="openPdpModal('${itemId}')">
                         <button class="btn-wishlist" onclick="event.stopPropagation(); toggleWishlist('${itemId}')">${isWishlisted ? '❤️' : '🤍'}</button>
-                        <span style="position:absolute; top:18px; right:18px; background:var(--accent-ochre); color:#fff; border:2px solid var(--border-color); padding:2px 8px; border-radius:6px; font-size:0.65rem; font-weight:900; text-transform:uppercase;">${item.badge || 'New'}</span>
+                        <span style="position:absolute; top:22px; right:22px; background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); padding:3px 10px; border-radius:6px; font-size:0.65rem; font-weight:900; text-transform:uppercase;">${item.badge || 'New'}</span>
                         <div>
                             <div class="prod-img-box">
                                 ${item.image ? `<img src="${item.image}" alt="${item.name}">` : (item.emoji || '📦')}
                             </div>
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <div class="prod-category">${item.category}</div>
-                                <div style="font-size:0.75rem; font-weight:900; color:var(--accent-ochre);">⭐ ${avgRating}</div>
+                                <div style="font-size:0.75rem; font-weight:900; color:var(--accent-lime);">⭐ ${avgRating}</div>
                             </div>
                             <div class="prod-title">${item.name}</div>
-                            <p style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">${item.description}</p>
-                            ${!item.inStock ? '<p style="color:#C27D65; font-weight:900; font-size:0.8rem; margin-top:4px;">Currently Out of Stock ❌</p>' : ''}
+                            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">${item.description}</p>
+                            ${!item.inStock ? '<p style="color:var(--accent-hot); font-weight:900; font-size:0.8rem; margin-top:4px;">Currently Out of Stock ❌</p>' : ''}
                         </div>
                         <div class="prod-bottom-row">
                             <span class="prod-price">₹${item.price}.00</span>
@@ -482,7 +524,7 @@
             }
 
             if (cat === 'all') { 
-                document.getElementById('activeCategoryTitle').innerText = "Featured Hoknex Collection";
+                document.getElementById('activeCategoryTitle').innerText = "Featured Collection";
                 renderCatalog(catalog); 
             } else { 
                 document.getElementById('activeCategoryTitle').innerText = `${cat} Collection`;
@@ -519,14 +561,14 @@
             list.innerHTML = wishlist.map((item, index) => {
                 const itemId = item._id || item.id;
                 return `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; border:2px solid var(--border-color); padding:8px 12px; border-radius:8px; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#1A1A22; border:2px solid var(--border-color); padding:10px 14px; border-radius:8px; margin-bottom:8px;">
                         <div>
-                            <div style="font-weight:900; font-size:0.85rem;">${item.name}</div>
-                            <div style="font-size:0.78rem; color:var(--accent-terracotta); font-weight:900;">₹${item.price}</div>
+                            <div style="font-weight:900; font-size:0.85rem; color:#fff;">${item.name}</div>
+                            <div style="font-size:0.78rem; color:var(--accent-neon); font-weight:900;">₹${item.price}</div>
                         </div>
                         <div style="display:flex; gap:6px;">
                             <button onclick="addToBag('${itemId}'); closeModal('wishlistModal'); openCartModal();" class="btn-add-bag">Add 🛍️</button>
-                            <button onclick="removeWishlistItem(${index})" style="background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:24px; height:24px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
+                            <button onclick="removeWishlistItem(${index})" style="background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:26px; height:26px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
                         </div>
                     </div>
                 `;
@@ -549,7 +591,7 @@
             
             document.getElementById('pdpMainBox').innerHTML = imgs[0].startsWith('data:') || imgs[0].startsWith('http') ? `<img src="${imgs[0]}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:6rem;">${imgs[0]}</span>`;
             document.getElementById('pdpThumbnails').innerHTML = imgs.map((img, idx) => `
-                <div onclick="switchPdpImage(${idx})" style="width:55px; height:55px; background:#EAE6DF; border:2px solid var(--border-color); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;">
+                <div onclick="switchPdpImage(${idx})" style="width:60px; height:60px; background:#000; border:2px solid var(--border-color); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;">
                     ${img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">` : img}
                 </div>
             `).join('');
@@ -577,7 +619,7 @@
                 const availableSizes = currentPdpItem.sizes || ['S', 'M', 'L', 'XL'];
                 selectedSize = availableSizes[0];
                 document.getElementById('sizeGroup').innerHTML = availableSizes.map((sz, idx) => `
-                    <button class="btn-add-bag" style="padding:8px 16px; ${idx===0?'background:var(--accent-terracotta); color:#fff;':''}" onclick="selectSize('${sz}', this)">${sz}</button>
+                    <button class="btn-add-bag" style="padding:8px 16px; ${idx===0?'background:var(--accent-neon); color:#0A0A0C;':''}" onclick="selectSize('${sz}', this)">${sz}</button>
                 `).join('');
             } else {
                 sizeSec.style.display = 'none';
@@ -596,8 +638,8 @@
         }
 
         function selectSize(size, el) {
-            document.querySelectorAll('#sizeGroup button').forEach(b => { b.style.background = '#fff'; b.style.color = 'var(--text-main)'; });
-            el.style.background = 'var(--accent-terracotta)'; el.style.color = '#fff';
+            document.querySelectorAll('#sizeGroup button').forEach(b => { b.style.background = '#1A1A22'; b.style.color = '#fff'; });
+            el.style.background = 'var(--accent-neon)'; el.style.color = '#0A0A0C';
             selectedSize = size;
         }
 
@@ -609,7 +651,7 @@
                 if(data.success) {
                     currentPdpItem.votes = data.votes;
                     document.getElementById('voteCountDisplay').innerText = data.votes;
-                    showProModal('Vote Recorded!', 'Thank you! Owner has been notified of your demand.');
+                    showProModal('Vote Recorded!', 'Demand signal received by allocation team.');
                 }
             } catch(e) { showProModal('Error', 'Could not record vote.'); }
         }
@@ -626,7 +668,7 @@
                 const data = await res.json();
                 if(data.success) {
                     currentPdpItem.ratings = data.ratings;
-                    showProModal('Rating Submitted', 'Thank you for rating this product!');
+                    showProModal('Rating Recorded', 'Thank you for reviewing drop specifications.');
                     openPdpModal(itemId);
                 }
             } catch(e) { showProModal('Error', 'Could not submit rating.'); }
@@ -639,7 +681,7 @@
             const found = bag.find(b => b.cartKey === cartKey);
             if (found) { found.qty += 1; } else { bag.push({ ...currentPdpItem, id: itemId, cartKey, size: selectedSize, qty: 1 }); }
             saveCart(); updateBagUI(); closeModal('pdpModal');
-            showProModal('Added to Bag', `Added item to your bag.`);
+            showProModal('Bag Updated', `Added item to shopping bag.`);
         }
 
         function addToBag(id) {
@@ -650,7 +692,7 @@
             const found = bag.find(b => b.cartKey === cartKey);
             if (found) { found.qty += 1; } else { bag.push({ ...item, id: id, cartKey, size: defaultSz, qty: 1 }); }
             saveCart(); updateBagUI();
-            showProModal('Added to Bag', `Added item to your bag.`);
+            showProModal('Bag Updated', `Added item to shopping bag.`);
         }
 
         function saveCart() { localStorage.setItem('hoknex_persistent_cart', JSON.stringify(bag)); }
@@ -674,12 +716,12 @@
                 subtotal += (item.price * item.qty);
                 totalDelivery += ((item.deliveryFee || 0) * item.qty);
                 return `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; border:2px solid var(--border-color); padding:8px 12px; border-radius:8px; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#1A1A22; border:2px solid var(--border-color); padding:10px 14px; border-radius:8px; margin-bottom:8px;">
                         <div>
-                            <div style="font-weight:900; font-size:0.85rem;">${item.name} (${item.size})</div>
-                            <div style="font-size:0.78rem; color:var(--accent-terracotta); font-weight:900;">₹${item.price} × ${item.qty}</div>
+                            <div style="font-weight:900; font-size:0.85rem; color:#fff;">${item.name} (${item.size})</div>
+                            <div style="font-size:0.78rem; color:var(--accent-neon); font-weight:900;">₹${item.price} × ${item.qty}</div>
                         </div>
-                        <button onclick="removeBagItem(${index})" style="background:var(--accent-terracotta); color:#fff; border:2px solid var(--border-color); width:24px; height:24px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
+                        <button onclick="removeBagItem(${index})" style="background:var(--accent-hot); color:#fff; border:2px solid var(--border-color); width:26px; height:26px; border-radius:6px; cursor:pointer; font-weight:900;">✕</button>
                     </div>
                 `;
             }).join('');
@@ -707,7 +749,7 @@
                 codOption.disabled = true;
                 payModeSelect.value = 'DirectUPI';
                 toggleQrScanner('DirectUPI');
-                document.getElementById('checkoutSubNotice').innerText = `Subtotal is ₹${subtotal} (₹599+). Pay on Campus Delivery is disabled. Please pay online via UPI.`;
+                document.getElementById('checkoutSubNotice').innerText = `Subtotal is ₹${subtotal} (₹599+). Pay on Campus Delivery is locked. Please pay online via UPI.`;
             } else {
                 codOption.disabled = false;
                 payModeSelect.value = 'COD';
@@ -759,7 +801,6 @@
                     return;
                 }
                 try {
-                    // Upload payment proof straight to Cloudinary (bypassing Render)
                     proofUrl = await uploadDirectToCloudinary(proofInput.files[0]);
                 } catch(err) {
                     showProModal('Error', 'Failed to upload payment proof to Cloudinary.');
@@ -821,7 +862,7 @@
                     }
 
                     let timelineHtml = (found.timeline || [{title: found.status, time: found.date}]).map(t => `
-                        <div style="display:flex; align-items:center; gap:8px; border-left:2px solid var(--accent-terracotta); padding-left:10px; margin-bottom:6px;">
+                        <div style="display:flex; align-items:center; gap:8px; border-left:2px solid var(--accent-neon); padding-left:10px; margin-bottom:6px;">
                             <div><b>${t.title}</b><br><small style="color:var(--text-muted);">${t.time}</small></div>
                         </div>
                     `).join('');
@@ -829,7 +870,7 @@
                 } else {
                     document.getElementById('resId').innerText = `Order ID: #${queryId}`;
                     document.getElementById('resCustomMsgContainer').style.display = 'none';
-                    document.getElementById('resTimeline').innerHTML = `<p style="color:var(--accent-terracotta);">Order ID not found or invalid.</p>`;
+                    document.getElementById('resTimeline').innerHTML = `<p style="color:var(--accent-hot);">Order ID not found or invalid.</p>`;
                 }
             } catch(e) {
                 showProModal('Error', 'Could not retrieve tracking details.');
@@ -846,7 +887,7 @@
                     body: JSON.stringify({ email, date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString() })
                 });
                 document.getElementById('newsletterEmailInput').value = '';
-                showProModal('Welcome to Hoknex', 'Your email has been successfully registered.');
+                showProModal('Welcome to Hoknex Drop Club', 'Your email has been registered for exclusive drops.');
             } catch(e) {
                 showProModal('Error', 'Could not subscribe.');
             }
@@ -869,6 +910,5 @@
     </script>
     <!-- End of Tawk.to Script -->
 
-    
 </body>
 </html>
