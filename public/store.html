@@ -21,7 +21,7 @@
         html { scroll-behavior: smooth; }
         body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; padding-bottom: env(safe-area-inset-bottom); }
 
-        h1, h2, h3, h4, .store-logo-brand, .store-hero h1 {
+        h1, h2, h3, h4, .store-logo-brand {
             font-family: 'Playfair Display', serif;
             color: var(--text-main);
         }
@@ -84,23 +84,27 @@
         }
         .mob-nav-item span.icon { font-size: 1.2rem; }
 
-        /* Luxury Editorial Hero */
-        .store-hero { padding: 4rem 2rem 2.5rem 2rem; max-width: 1400px; margin: 0 auto; text-align: center; }
-        .store-hero h1 { font-size: 3rem; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 1rem; line-height: 1.1; }
-        .store-hero h1 span { font-style: italic; color: var(--accent-terracotta); }
-        .store-hero p { color: var(--text-muted); font-size: 0.95rem; font-weight: 300; max-width: 600px; margin: 0 auto; letter-spacing: 0.05em; line-height: 1.6; }
+        /* Full-Bleed Immersive Hero Banner (Clean Image with Zero Text Overlay) */
+        .store-hero-banner {
+            width: 100%; height: 520px; background-image: url('1794789114701~2.jpg.jpeg');
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            position: relative; border-bottom: 1px solid var(--border-color);
+        }
+        @media (max-width: 768px) {
+            .store-hero-banner { height: 280px; }
+        }
 
         .coming-soon-container { padding: 2rem; max-width: 1400px; margin: 0 auto; }
         .coming-soon-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem 1.5rem; text-align: center; }
         .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
         .drop-preview-card { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 1rem; text-align: left; }
         .drop-media { width: 100%; height: 260px; background: #E5E0D8; border-radius: 4px; overflow: hidden; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
-        .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: cover; }
+        .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: contain; background: #FAF6F0; }
 
         .product-catalog-section { padding: 2.5rem 2rem; max-width: 1400px; margin: 0 auto; }
         .catalog-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 2rem; }
 
-        /* --- BORDERLESS LUXURY PRODUCT CARDS --- */
+        /* --- ZERO-CROP LUXURY PRODUCT CARDS --- */
         .product-card {
             background: transparent; border: none; border-radius: 0;
             padding: 0; display: flex; flex-direction: column; justify-content: space-between;
@@ -108,11 +112,12 @@
         }
 
         .prod-img-box {
-            width: 100%; height: 360px; background: #EAE5DC; border: none;
+            width: 100%; height: 360px; background: #FAF6F0; border: 1px solid var(--border-color);
             border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; margin-bottom: 0.8rem; overflow: hidden;
             cursor: zoom-in;
         }
-        .prod-img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .prod-img-box img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.5s ease; padding: 10px; }
+        .product-card:hover .prod-img-box img { transform: scale(1.06); }
 
         .prod-title { font-size: 0.95rem; font-weight: 500; margin-bottom: 0.2rem; letter-spacing: 0.04em; font-family: 'Playfair Display', serif; color: var(--text-main); }
         .prod-category { font-size: 0.6rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 0.3rem; }
@@ -139,7 +144,7 @@
         .campaign-grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
         .campaign-tile { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; position: relative; }
         .campaign-img-wrap { width: 100%; height: 300px; background: #E5E0D8; overflow: hidden; cursor: zoom-in; }
-        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(15%); }
+        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: contain; background: #FAF6F0; filter: grayscale(15%); }
         .campaign-caption { padding: 1.2rem; text-align: left; }
         .campaign-caption h4 { font-size: 1.05rem; font-weight: 500; margin-bottom: 0.3rem; font-family: 'Playfair Display', serif; }
         .campaign-caption p { font-size: 0.8rem; color: var(--text-muted); font-weight: 300; }
@@ -158,7 +163,7 @@
         }
         .lightbox-panel img {
             max-width: 90vw; max-height: 75vh; object-fit: contain;
-            border: 2px solid var(--border-color); border-radius: 8px; background: #000;
+            border: 2px solid var(--border-color); border-radius: 8px; background: #FAF6F0;
         }
         .lightbox-caption { color: #FAF6F0; margin-top: 1rem; font-family: 'Playfair Display', serif; font-size: 1.1rem; }
         .lightbox-close {
@@ -171,13 +176,25 @@
         @keyframes fadeInLightbox { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scaleUpLightbox { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* PDP Zoom Container */
+        /* Enhanced Interactive Zoom Container & Mobile Swipe Slider */
         .zoomable-container {
             position: relative; overflow: hidden; cursor: zoom-in;
-            border-radius: 4px; background: #E5E0D8; height: 340px; display: flex; align-items: center; justify-content: center;
+            border-radius: 4px; background: #FAF6F0; border: 1px solid var(--border-color); height: 360px; display: flex; align-items: center; justify-content: center;
         }
-        .zoomable-container img { transition: transform 0.3s ease; width: 100%; height: 100%; object-fit: cover; }
-        .zoomable-container.zoomed img { transform: scale(2); cursor: zoom-out; }
+        .zoomable-container img { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+        .zoomable-container.zoomed img { transform: scale(2.5); cursor: zoom-out; }
+
+        /* Mobile Swipe Carousel for PDP Gallery */
+        .pdp-slider-track {
+            display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+        }
+        .pdp-slider-track::-webkit-scrollbar { display: none; }
+        .pdp-slide-item {
+            flex: 0 0 75px; height: 75px; background: #FAF6F0; border: 1.5px solid var(--border-color); border-radius: 4px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; scroll-snap-align: start; transition: border-color 0.2s;
+        }
+        .pdp-slide-item.active { border-color: var(--accent-terracotta); box-shadow: 0 0 0 2px rgba(192,86,33,0.2); }
+        .pdp-slide-item img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
 
         .store-footer { background: #2C1E16; color: #FAF6F0; padding: 4rem 2rem 3rem 2rem; margin-top: 4rem; border-top: 1px solid var(--border-color); position: relative; }
         .footer-newsletter { max-width: 700px; margin-bottom: 3rem; padding-bottom: 2.5rem; border-bottom: 1px solid rgba(250,246,240,0.15); }
@@ -206,14 +223,13 @@
             .store-navbar { padding: 1rem 1.2rem; }
             .nav-left-links, .search-box-wrap { display: none; }
             .mobile-bottom-bar { display: flex; }
-            .store-hero { padding: 3rem 1.2rem 2rem 1.2rem; }
-            .store-hero h1 { font-size: 2.2rem; }
             .product-catalog-section, .coming-soon-container, .campaign-showcase-section, .store-footer { padding: 2rem 1.2rem; }
             .catalog-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
-            .prod-img-box { height: 220px; font-size: 2.5rem; }
+            .prod-img-box { height: 210px; font-size: 2.2rem; }
             .campaign-grid-layout { grid-template-columns: 1fr; }
             .modal-panel { padding: 1.5rem; max-height: 92vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; width: 100%; max-width: 100% !important; animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
             @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
+            input, select, textarea { font-size: 16px !important; }
         }
     </style>
 </head>
@@ -266,10 +282,8 @@
         <button onclick="openTrackModal()" class="mob-nav-item"><span class="icon">📦</span>Track</button>
     </nav>
 
-    <section class="store-hero">
-        <h1>Timeless essentials, <span>uncompromising craft.</span></h1>
-        <p>Curated heavyweight silhouettes and architectural apparel designed for global creators and students.</p>
-    </section>
+    <!-- Full-Bleed Immersive Hero Banner (No Text Overlay) -->
+    <section class="store-hero-banner"></section>
 
     <!-- Coming Soon Section -->
     <section class="coming-soon-container" id="comingSoonSection" style="display:none;">
@@ -357,7 +371,7 @@
         <div class="footer-watermark">hoknex</div>
     </footer>
 
-    <!-- PDP Modal -->
+    <!-- PDP Modal with Mobile Slide Carousel & Enhanced Zoom -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
         <div class="modal-panel" style="max-width: 850px;">
             <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:var(--text-main); border:none; width:36px; height:36px; font-size:1.2rem; cursor:pointer;">&times;</button>
@@ -367,7 +381,7 @@
                         <span id="pdpMainEmoji" style="font-size:5rem;">🧥</span>
                     </div>
                     <p style="font-size:0.7rem; color:var(--text-muted); margin-top:6px; letter-spacing:0.05em;">Tap image to Zoom In / Out</p>
-                    <div id="pdpThumbnails" style="display:flex; gap:8px; margin-top:10px; justify-content:center; overflow-x:auto;"></div>
+                    <div class="pdp-slider-track" id="pdpThumbnails" style="margin-top:12px;"></div>
                 </div>
                 <div style="flex:1; min-width:260px;">
                     <span id="pdpBadge" style="font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.2em; color:var(--accent-terracotta);">Atelier Exclusive</span>
@@ -479,7 +493,7 @@
             }
         }
 
-        // --- PDP Zoom Toggle ---
+        // --- PDP Enhanced Interactive Zoom Toggle ---
         function toggleZoom(container) {
             container.classList.toggle('zoomed');
         }
@@ -681,8 +695,8 @@
             mainBox.innerHTML = imgs[0].startsWith('data:') || imgs[0].startsWith('http') ? `<img src="${imgs[0]}" alt="${currentPdpItem.name}">` : `<span style="font-size:5rem;">${imgs[0]}</span>`;
             
             document.getElementById('pdpThumbnails').innerHTML = imgs.map((img, idx) => `
-                <div onclick="switchPdpImage('${img}')" style="width:50px; height:50px; background:#E5E0D8; border:1px solid var(--border-color); border-radius:2px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;">
-                    ${img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover;">` : img}
+                <div class="pdp-slide-item ${idx===0?'active':''}" onclick="switchPdpImage('${img}', this)">
+                    ${img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" alt="Thumb">` : img}
                 </div>
             `).join('');
 
@@ -721,7 +735,10 @@
             document.getElementById('pdpModal').style.display = 'flex';
         }
 
-        function switchPdpImage(img) {
+        function switchPdpImage(img, el) {
+            document.querySelectorAll('.pdp-slide-item').forEach(el => el.classList.remove('active'));
+            if(el) el.classList.add('active');
+
             const mainBox = document.getElementById('pdpMainBox');
             mainBox.classList.remove('zoomed');
             mainBox.innerHTML = img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" alt="Preview">` : `<span style="font-size:5rem;">${img}</span>`;
