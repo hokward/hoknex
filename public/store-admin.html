@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hoknex — Store Owner Command Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-body: #F5F2EB;
@@ -17,7 +17,7 @@
             --shadow-brand: 4px 4px 0px #4C5844;
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; padding: 2.5rem 2rem; }
 
         /* Password Protection Gate */
@@ -27,24 +27,24 @@
         .admin-container { max-width: 1300px; margin: 0 auto; display: none; }
         .admin-header {
             display: flex; justify-content: space-between; align-items: center; background: var(--bg-card);
-            border: 3.5px solid var(--border-color); padding: 1.8rem 2.5rem; border-radius: 20px; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
+            border: 3.5px solid var(--border-color); padding: 1.8rem 2.5rem; border-radius: 20px; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;
         }
         .admin-section {
             background: var(--bg-card); border: 3.5px solid var(--border-color);
             border-radius: 20px; padding: 2.5rem; box-shadow: var(--shadow-brand); margin-bottom: 2.5rem;
         }
-        h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color: var(--text-main); border-bottom: 2px solid #F3F4F6; padding-bottom: 8px; }
+        h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color: var(--text-main); border-bottom: 2px solid #F3F4F6; padding-bottom: 8px; font-family: 'Playfair Display', serif; }
         
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
         .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.2rem; }
         .form-group label { font-size: 0.8rem; font-weight: 900; text-transform: uppercase; }
         .form-group input, .form-group textarea, .form-group select {
-            background: #FAF9F6; border: 2.5px solid var(--border-color); padding: 12px; border-radius: 12px; font-weight: 800; outline: none; width: 100%; color: var(--text-main);
+            background: #FAF9F6; border: 2.5px solid var(--border-color); padding: 12px; border-radius: 12px; font-weight: 800; outline: none; width: 100%; color: var(--text-main); font-size: 16px !important;
         }
         .btn-action {
             background: var(--accent-terracotta); color: #fff; border: 2.5px solid var(--border-color);
             padding: 0.85rem 1.6rem; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 2px 2px 0px var(--border-color);
-            transition: transform 0.15s, box-shadow 0.15s; text-decoration: none; display: inline-block;
+            transition: transform 0.15s, box-shadow 0.15s; text-decoration: none; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em;
         }
         .btn-action:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0px var(--border-color); }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.88rem; }
@@ -53,12 +53,19 @@
 
         #proModalOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px);
+            background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(6px);
             display: none; justify-content: center; align-items: center; z-index: 9999; padding: 1rem;
         }
         #proModalBox {
             background: #FAF9F6; border: 3.5px solid var(--border-color); border-radius: 20px;
-            padding: 2rem; max-width: 420px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--border-color);
+            padding: 2.2rem; max-width: 420px; width: 100%; text-align: center; box-shadow: 8px 8px 0px var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1.2rem 1rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .admin-section { padding: 1.5rem; }
+            .admin-header { padding: 1.2rem; }
         }
     </style>
 </head>
@@ -69,7 +76,7 @@
         <div id="authBox">
             <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem; border:none;">🔐 Store Admin Access</h2>
             <p style="font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 1.5rem;">Enter your owner password to access the Hoknex Store Command Center.</p>
-            <input type="password" id="adminPasswordInput" placeholder="Enter owner password..." style="background:#fff; border:2.5px solid var(--border-color); padding:12px; border-radius:10px; font-weight:800; width:100%; margin-bottom:1rem; outline:none; text-align:center;">
+            <input type="password" id="adminPasswordInput" placeholder="Enter owner password..." style="background:#fff; border:2.5px solid var(--border-color); padding:12px; border-radius:10px; font-weight:800; width:100%; margin-bottom:1rem; outline:none; text-align:center; font-size:16px !important;">
             <button onclick="verifyAdminPassword()" class="btn-action" style="width:100%;">Unlock Store Dashboard 🔓</button>
         </div>
     </div>
@@ -77,7 +84,7 @@
     <!-- Modern Notification Modal -->
     <div id="proModalOverlay">
         <div id="proModalBox">
-            <h3 id="proModalTitle" style="font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem;">Hoknex Admin</h3>
+            <h3 id="proModalTitle" style="font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem; font-family:'Playfair Display',serif;">Hoknex Admin</h3>
             <p id="proModalMessage" style="font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1.5rem;"></p>
             <div id="proModalButtons" style="display:flex; gap:10px; justify-content:center;">
                 <button onclick="closeProModal()" class="btn-action" style="padding: 0.6rem 1.5rem;">Okay 👍</button>
@@ -88,20 +95,31 @@
     <div class="admin-container" id="adminMainContent">
         <div class="admin-header">
             <div>
-                <h1 style="font-size: 1.8rem; font-weight: 900;">⚡ Hoknex Professional Store Command Center</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage store announcements, campaigns, upcoming drops, store QR codes, products, orders, and leads.</p>
+                <h1 style="font-size: 1.8rem; font-weight: 900; font-family:'Playfair Display',serif;">⚡ Hoknex Professional Store Command Center</h1>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage store hero banners, announcements, campaigns, upcoming drops, store QR codes, and products.</p>
             </div>
-            <div style="display:flex; gap:10px;">
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
                 <a href="store.html" class="btn-action" style="background:var(--accent-ochre);">View Store 🛍️</a>
                 <a href="magazine-admin.html" class="btn-action" style="background:#232D2F;">Zine Admin 📰</a>
             </div>
+        </div>
+
+        <!-- 0. Store Hero Banner Uploader -->
+        <div class="admin-section" style="background:#FAF9F6; border-color:#232D2F;">
+            <h2>🖼️ 0. Store Hero Banner Uploader</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Upload the full-size cinematic image for the store hero banner section.</p>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1rem;">
+                <input type="file" id="heroBannerFile" accept="image/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:12px; font-weight:800; flex:1; min-width:280px; font-size:16px !important;">
+                <button onclick="uploadStoreHeroBanner()" class="btn-action" style="background:#111827;">Upload Hero Banner 🚀</button>
+            </div>
+            <div id="currentHeroPreview" style="margin-top:1rem;"></div>
         </div>
 
         <!-- 1. Store Announcement Banner -->
         <div class="admin-section">
             <h2>📢 1. Store Announcement Banner</h2>
             <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-                <input type="text" id="announcementInput" placeholder="Enter new banner notice..." style="flex:1; min-width:280px; background:#FAF9F6; border:2.5px solid var(--border-color); padding:12px; border-radius:12px; font-weight:800; outline:none;">
+                <input type="text" id="announcementInput" placeholder="Enter new banner notice..." style="flex:1; min-width:280px; background:#FAF9F6; border:2.5px solid var(--border-color); padding:12px; border-radius:12px; font-weight:800; outline:none; font-size:16px !important;">
                 <button onclick="updateAnnouncement()" class="btn-action">Publish Notice 🚀</button>
             </div>
         </div>
@@ -138,7 +156,7 @@
         <div class="admin-section">
             <h2>📷 4. Store QR Code Manager</h2>
             <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1.5rem;">
-                <input type="file" id="newQrFile" accept="image/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800;">
+                <input type="file" id="newQrFile" accept="image/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:10px; font-weight:800; font-size:16px !important;">
                 <button onclick="uploadNewQrCode()" class="btn-action">Upload QR Code ➕</button>
             </div>
             <div id="qrListContainer" style="display:flex; gap:1rem; flex-wrap:wrap;"></div>
@@ -183,9 +201,9 @@
         const API_URL = 'https://hoknex-backend.onrender.com';
         const OWNER_PASSWORD = 'hoknex2026';
 
-        // --- DIRECT CLOUDINARY CONFIGURATION (Bypasses Render Bandwidth 100%) ---
+        // --- DIRECT CLOUDINARY CONFIGURATION ---
         const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
-        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads'; // ✅ Fixed (all caps PRESET)
+        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads';
 
         async function uploadDirectToCloudinary(file) {
             const formData = new FormData();
@@ -245,6 +263,34 @@
             document.getElementById('proModalOverlay').style.display = 'flex';
         }
         function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
+
+        // --- Hero Banner Uploader Logic ---
+        async function uploadStoreHeroBanner() {
+            const fileInput = document.getElementById('heroBannerFile');
+            if (fileInput.files && fileInput.files[0]) {
+                try {
+                    showProModal('Uploading...', 'Uploading hero banner to Cloudinary...');
+                    const bannerUrl = await uploadDirectToCloudinary(fileInput.files[0]);
+                    localStorage.setItem('hoknex_store_hero_banner', bannerUrl);
+                    renderHeroPreview();
+                    showProModal('Success!', 'Store hero banner updated successfully! It will now appear on your store page.');
+                } catch(e) {
+                    showProModal('Error', 'Hero banner upload failed.');
+                }
+            } else {
+                showProModal('Notice', 'Please select an image file first.');
+            }
+        }
+
+        function renderHeroPreview() {
+            const currentUrl = localStorage.getItem('hoknex_store_hero_banner');
+            const previewDiv = document.getElementById('currentHeroPreview');
+            if (currentUrl) {
+                previewDiv.innerHTML = `<p style="font-size:0.8rem; font-weight:800; margin-bottom:6px;">Current Hero Banner Preview:</p><img src="${currentUrl}" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px; border:2px solid var(--border-color);">`;
+            } else {
+                previewDiv.innerHTML = `<p style="font-size:0.8rem; font-weight:800; color:var(--text-muted);">No custom banner uploaded yet. Using default fallback asset.</p>`;
+            }
+        }
 
         document.getElementById('announcementInput').value = localStorage.getItem('hoknex_announcement') || '';
         function updateAnnouncement() {
@@ -568,6 +614,7 @@
         }
 
         function loadAllAdminData() {
+            renderHeroPreview();
             renderCampaignManager();
             renderComingSoonManager();
             renderQrManager();
