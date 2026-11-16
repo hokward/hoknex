@@ -84,16 +84,28 @@
         }
         .mob-nav-item span.icon { font-size: 1.2rem; }
 
-        /* Full-Bleed Immersive Hero Banner (Exact Image Display with Zero Text Overlay) */
+        /* Full-Bleed Immersive Hero Banner (Flush against navbar, zero extra gaps) */
         .store-hero-banner {
-            width: 100%; overflow: hidden; background: #111;
-            border-bottom: 1px solid var(--border-color); line-height: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            background: #FAF6F0;
+            border-bottom: 1px solid var(--border-color);
+            margin: 0;
+            padding: 0;
         }
         .store-hero-banner img {
-            width: 100%; height: auto; max-height: 560px; object-fit: cover; display: block;
+            width: 100%;
+            height: auto;
+            max-height: 520px;
+            object-fit: cover;
+            display: block;
         }
         @media (max-width: 768px) {
-            .store-hero-banner img { max-height: 280px; object-fit: cover; }
+            .store-hero-banner img {
+                max-height: 240px;
+                object-fit: cover;
+            }
         }
 
         .coming-soon-container { padding: 2rem; max-width: 1400px; margin: 0 auto; }
@@ -284,9 +296,9 @@
         <button onclick="openTrackModal()" class="mob-nav-item"><span class="icon">📦</span>Track</button>
     </nav>
 
-    <!-- Full-Bleed Immersive Hero Banner (Exact Image Display with Zero Text Overlay) -->
+    <!-- Full-Bleed Immersive Hero Banner (Dynamically loaded from Admin Upload or Fallback) -->
     <section class="store-hero-banner">
-        <img src="1794789114701~2.jpg.jpeg" alt="Atelier Hero Banner">
+        <img id="storeHeroBannerImg" src="1794789114701~2.jpg.jpeg" alt="Atelier Hero Banner">
     </section>
 
     <!-- Coming Soon Section -->
@@ -453,6 +465,13 @@
 
     <script>
         const API_URL = 'https://hoknex-backend.onrender.com';
+
+        // --- Load Custom Hero Banner from Admin Upload ---
+        const savedHeroBanner = localStorage.getItem('hoknex_store_hero_banner');
+        if (savedHeroBanner) {
+            const heroImgEl = document.getElementById('storeHeroBannerImg');
+            if (heroImgEl) heroImgEl.src = savedHeroBanner;
+        }
 
         const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
         const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads';
