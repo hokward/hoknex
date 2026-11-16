@@ -84,22 +84,24 @@
         }
         .mob-nav-item span.icon { font-size: 1.2rem; }
 
-        /* Full-Bleed Immersive Hero Banner (Clean Image with Zero Text Overlay) */
+        /* Full-Bleed Immersive Hero Banner (Exact Image Display with Zero Text Overlay) */
         .store-hero-banner {
-            width: 100%; height: 520px; background-image: url('1794789114701~2.jpg.jpeg');
-            background-size: cover; background-position: center; background-repeat: no-repeat;
-            position: relative; border-bottom: 1px solid var(--border-color);
+            width: 100%; overflow: hidden; background: #111;
+            border-bottom: 1px solid var(--border-color); line-height: 0;
+        }
+        .store-hero-banner img {
+            width: 100%; height: auto; max-height: 560px; object-fit: cover; display: block;
         }
         @media (max-width: 768px) {
-            .store-hero-banner { height: 280px; }
+            .store-hero-banner img { max-height: 280px; object-fit: cover; }
         }
 
         .coming-soon-container { padding: 2rem; max-width: 1400px; margin: 0 auto; }
         .coming-soon-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem 1.5rem; text-align: center; }
         .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
         .drop-preview-card { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 1rem; text-align: left; }
-        .drop-media { width: 100%; height: 260px; background: #E5E0D8; border-radius: 4px; overflow: hidden; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
-        .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: contain; background: #FAF6F0; }
+        .drop-media { width: 100%; height: 260px; background: #FAF6F0; border-radius: 4px; overflow: hidden; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
+        .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: contain; }
 
         .product-catalog-section { padding: 2.5rem 2rem; max-width: 1400px; margin: 0 auto; }
         .catalog-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 2rem; }
@@ -143,8 +145,8 @@
         .campaign-header p { color: var(--text-muted); font-weight: 300; font-size: 0.9rem; }
         .campaign-grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
         .campaign-tile { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; position: relative; }
-        .campaign-img-wrap { width: 100%; height: 300px; background: #E5E0D8; overflow: hidden; cursor: zoom-in; }
-        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: contain; background: #FAF6F0; filter: grayscale(15%); }
+        .campaign-img-wrap { width: 100%; height: 300px; background: #FAF6F0; overflow: hidden; cursor: zoom-in; }
+        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: contain; padding: 10px; filter: grayscale(15%); }
         .campaign-caption { padding: 1.2rem; text-align: left; }
         .campaign-caption h4 { font-size: 1.05rem; font-weight: 500; margin-bottom: 0.3rem; font-family: 'Playfair Display', serif; }
         .campaign-caption p { font-size: 0.8rem; color: var(--text-muted); font-weight: 300; }
@@ -163,7 +165,7 @@
         }
         .lightbox-panel img {
             max-width: 90vw; max-height: 75vh; object-fit: contain;
-            border: 2px solid var(--border-color); border-radius: 8px; background: #FAF6F0;
+            border: 2px solid var(--border-color); border-radius: 8px; background: #FAF6F0; padding: 10px;
         }
         .lightbox-caption { color: #FAF6F0; margin-top: 1rem; font-family: 'Playfair Display', serif; font-size: 1.1rem; }
         .lightbox-close {
@@ -225,7 +227,7 @@
             .mobile-bottom-bar { display: flex; }
             .product-catalog-section, .coming-soon-container, .campaign-showcase-section, .store-footer { padding: 2rem 1.2rem; }
             .catalog-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
-            .prod-img-box { height: 210px; font-size: 2.2rem; }
+            .prod-img-box { height: 220px; font-size: 2.5rem; }
             .campaign-grid-layout { grid-template-columns: 1fr; }
             .modal-panel { padding: 1.5rem; max-height: 92vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; width: 100%; max-width: 100% !important; animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
             @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -276,14 +278,16 @@
     <!-- Mobile App Bottom Navigation Bar -->
     <nav class="mobile-bottom-bar">
         <a href="index.html" class="mob-nav-item"><span class="icon">🏠</span>Hub</a>
-        <button onclick="filterCategory('all', event); window.scrollTo({top: 400, behavior: 'smooth'});" class="mob-nav-item"><span class="icon">🛍️</span>Store</button>
+        <button onclick="filterCategory('all', event); window.scrollTo({top: 500, behavior: 'smooth'});" class="mob-nav-item"><span class="icon">🛍️</span>Store</button>
         <button onclick="openWishlistModal()" class="mob-nav-item"><span class="icon">❤️</span>Wishlist</button>
         <button onclick="openCartModal()" class="mob-nav-item"><span class="icon">🛒</span>Bag</button>
         <button onclick="openTrackModal()" class="mob-nav-item"><span class="icon">📦</span>Track</button>
     </nav>
 
-    <!-- Full-Bleed Immersive Hero Banner (No Text Overlay) -->
-    <section class="store-hero-banner"></section>
+    <!-- Full-Bleed Immersive Hero Banner (Exact Image Display with Zero Text Overlay) -->
+    <section class="store-hero-banner">
+        <img src="1794789114701~2.jpg.jpeg" alt="Atelier Hero Banner">
+    </section>
 
     <!-- Coming Soon Section -->
     <section class="coming-soon-container" id="comingSoonSection" style="display:none;">
