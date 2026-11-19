@@ -440,6 +440,7 @@ app.post('/api/messages/send', async (req, res) => {
 
 const StoreHeroBannerSchema = new mongoose.Schema({
     imageUrl: { type: String, required: true },
+    mediaType: { type: String, default: 'image' }, // 'image' or 'video'
     updatedAt: { type: Date, default: Date.now }
 });
 const StoreHeroBanner = mongoose.models.StoreHeroBanner || mongoose.model('StoreHeroBanner', StoreHeroBannerSchema);
@@ -447,7 +448,9 @@ const StoreHeroBanner = mongoose.models.StoreHeroBanner || mongoose.model('Store
 app.get('/api/store/hero-banner', async (req, res) => {
     try {
         const banner = await StoreHeroBanner.findOne().sort({ updatedAt: -1 });
-        res.json(banner || {});
+        if (!banner) return res.json({});
+        const detectedType = banner.mediaType || (/\.(mp4|webm|mov)(\?|$)/i.test(banner.imageUrl || '') ? 'video' : 'image');
+        res.json({ ...banner.toObject(), mediaType: detectedType });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -455,10 +458,15 @@ app.get('/api/store/hero-banner', async (req, res) => {
 
 app.post('/api/store/hero-banner', async (req, res) => {
     try {
-        const { imageUrl } = req.body;
+        const { imageUrl, mediaType } = req.body;
         if (!imageUrl) return res.status(400).json({ error: 'Banner imageUrl is required.' });
+        const resolvedType = mediaType || (/\.(mp4|webm|mov)(\?|$)/i.test(imageUrl) ? 'video' : 'image');
         await StoreHeroBanner.deleteMany({});
-        const banner = new StoreHeroBanner({ imageUrl, updatedAt: new Date() });
+        const banner = new StoreHeroBanner({
+            imageUrl,
+            mediaType: resolvedType,
+            updatedAt: new Date()
+        });
         await banner.save();
         res.json({ success: true, banner });
     } catch (err) {
