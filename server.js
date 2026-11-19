@@ -486,9 +486,88 @@ const ProductSchema = new mongoose.Schema({
     sizes: { type: [String], default: ['S', 'M', 'L', 'XL'] },
     ratings: [Number],
     votes: { type: Number, default: 0 },
-    badge: { type: String, default: 'New Arrival' }
+    badge: { type: String, default: 'New Arrival' },
+    reviews: [{
+        reviewerName: String,
+        rating: Number,
+        comment: String,
+        photoUrl: String,
+        date: String
+    }],
+    faqs: [{
+        q: String,
+        a: String
+    }]
 });
 const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
+
+// --- Product Customer Reviews & Photos Endpoints ---
+app.get('/api/store/products/:id/reviews', async (req, res) => {
+    try {
+        const prod = await Product.findById(req.params.id).select('reviews ratings');
+        if (!prod) return res.status(404).json({ error: 'Product not found' });
+        res.json({ reviews: prod.reviews || [], ratings: prod.ratings || [] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/store/products/:id/reviews', async (req, res) => {
+    try {
+        const { reviewerName, rating, comment, photoUrl, date } = req.body;
+        const prod = await Product.findById(req.params.id);
+        if (!prod) return res.status(404).json({ error: 'Product not found' });
+
+        if (!prod.reviews) prod.reviews = [];
+        const newReview = {
+            reviewerName: reviewerName || 'Customer',
+            rating: Number(rating) || 5,
+            comment: comment || '',
+            photoUrl: photoUrl || '',
+            date: date || new Date().toLocaleDateString()
+        };
+        prod.reviews.unshift(newReview);
+
+        if (!prod.ratings) prod.ratings = [];
+        prod.ratings.push(Number(rating) || 5);
+
+        await prod.save();
+        res.status(201).json({ success: true, review: newReview, reviews: prod.reviews, ratings: prod.ratings });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Product FAQ Endpoints ---
+app.get('/api/store/products/:id/faqs', async (req, res) => {
+    try {
+        const prod = await Product.findById(req.params.id).select('faqs');
+        if (!prod) return res.status(404).json({ error: 'Product not found' });
+        res.json({ faqs: prod.faqs || [] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/store/products/:id/faqs', async (req, res) => {
+    try {
+        const { q, a } = req.body;
+        if (!q) return res.status(400).json({ error: 'Question is required' });
+        const prod = await Product.findById(req.params.id);
+        if (!prod) return res.status(404).json({ error: 'Product not found' });
+
+        if (!prod.faqs) prod.faqs = [];
+        const newFaq = {
+            q,
+            a: a || 'Submitted! Our team will update the answer shortly.'
+        };
+        prod.faqs.push(newFaq);
+        await prod.save();
+        res.status(201).json({ success: true, faq: newFaq, faqs: prod.faqs });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 const StoreOrderSchema = new mongoose.Schema({
     orderId: String,
