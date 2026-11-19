@@ -178,7 +178,7 @@
             <div id="qrListContainer" style="display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 5. Launch Product -->
+        <!-- 5. Launch Product (Images + Optional Video) -->
         <div class="admin-section">
             <h2>📦 5. Launch Product</h2>
             <form onsubmit="handleNewProduct(event)">
@@ -187,7 +187,8 @@
                     <div class="form-group"><label>Category</label><select id="prodCategory"><option value="Apparel">Apparel</option><option value="Footwear">Footwear & Gear</option></select></div>
                     <div class="form-group"><label>Price (₹)</label><input type="number" id="prodPrice" placeholder="1499" required></div>
                     <div class="form-group"><label>Delivery Charge (₹)</label><input type="number" id="prodDelivery" placeholder="49" value="0" required></div>
-                    <div class="form-group" style="grid-column: span 2;"><label>Gallery Images</label><input type="file" id="prodGalleryFiles" accept="image/*" multiple required style="background:#fff;"></div>
+                    <div class="form-group"><label>Gallery Images</label><input type="file" id="prodGalleryFiles" accept="image/*" multiple required style="background:#fff;"></div>
+                    <div class="form-group"><label>Product Showcase Video (Optional)</label><input type="file" id="prodVideoFile" accept="video/*" style="background:#fff;"></div>
                     <div class="form-group" style="grid-column: span 2;"><label>Description</label><textarea id="prodDesc" rows="2" placeholder="Description..." required></textarea></div>
                 </div>
                 <button type="submit" class="btn-action">Publish Product ✨</button>
@@ -198,6 +199,13 @@
         <div class="admin-section">
             <h2>🗂️ 6. Catalog Stock, Sizes & Demand Voting Manager</h2>
             <div id="productsTableWrap" style="overflow-x:auto;"><p>Loading catalog...</p></div>
+        </div>
+
+        <!-- 6.2. Product Order History & Customer Taste Analytics -->
+        <div class="admin-section" style="background:#FAF9F6; border-color:#232D2F;">
+            <h2>📈 6.2. Product Order History & Customer Taste Analytics</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1rem;">Track which products get the most orders, units sold, and revenue to spot customer preferences.</p>
+            <div id="productTasteAnalyticsWrap" style="overflow-x:auto;"><p style="color:var(--text-muted); font-weight:800;">Loading product order history...</p></div>
         </div>
 
         <!-- 6.5. Product FAQ Manager -->
@@ -220,7 +228,7 @@
 
         <!-- 7. Customer Orders -->
         <div class="admin-section">
-            <h2>🚚 7. Customer Orders & Invoices</h2>
+            <h2>🚚 7. Customer Orders, Payment Proofs & Invoices</h2>
             <div id="ordersTableWrap" style="overflow-x:auto;"><p>Loading orders...</p></div>
         </div>
 
@@ -240,6 +248,7 @@
         const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads';
 
         let adminCatalogCache = [];
+        let adminOrdersCache = [];
 
         async function uploadDirectToCloudinary(file) {
             const maxMb = 25;
@@ -538,7 +547,7 @@
             });
         }
 
-        // Products
+        // Products (Images + Optional Video)
         async function handleNewProduct(e) {
             e.preventDefault();
             const name = document.getElementById('prodName').value;
@@ -547,6 +556,7 @@
             const deliveryFee = Number(document.getElementById('prodDelivery').value);
             const description = document.getElementById('prodDesc').value;
             const fileInput = document.getElementById('prodGalleryFiles');
+            const videoInput = document.getElementById('prodVideoFile');
 
             if (fileInput.files && fileInput.files.length > 0) {
                 let uploadedUrls = [];
@@ -555,14 +565,22 @@
                     uploadedUrls.push(fileUrl);
                 }
 
+                let videoUrl = '';
+                if (videoInput && videoInput.files && videoInput.files[0]) {
+                    videoUrl = await uploadDirectToCloudinary(videoInput.files[0]);
+                    uploadedUrls.push(videoUrl);
+                }
+
                 const newProd = {
                     name, category, price, deliveryFee, description,
                     image: uploadedUrls[0],
+                    video: videoUrl,
                     galleryImages: uploadedUrls,
                     inStock: true,
                     sizes: ['S', 'M', 'L', 'XL'],
                     ratings: [5],
                     votes: 0,
+                    wishlistCount: 0,
                     badge: 'New Arrival'
                 };
 
@@ -581,6 +599,7 @@
                 const catalog = await res.json();
                 adminCatalogCache = catalog || [];
                 populateFaqProductSelect(adminCatalogCache);
+                renderProductTasteAnalytics();
 
                 document.getElementById('productsTableWrap').innerHTML = `
                     <table>
@@ -597,7 +616,7 @@
                                         </select>
                                     </td>
                                     <td><input type="text" value="${(p.sizes || ['S','M','L','XL']).join(',')}" onchange="updateSizes('${p._id}', this.value)" style="padding:4px; width:100px;"></td>
-                                    <td>🔥 ${p.votes || 0} user votes</td>
+                                    <td>🔥 ${p.votes || 0} user votes • ❤️ ${p.wishlistCount || 0}</td>
                                     <td><button onclick="deleteProduct('${p._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button></td>
                                 </tr>
                             `).join('')}
@@ -605,6 +624,72 @@
                     </table>
                 `;
             } catch(e) { console.error(e); }
+        }
+
+        // --- Product Order History & Customer Taste Analytics ---
+        function renderProductTasteAnalytics() {
+            const wrap = document.getElementById('productTasteAnalyticsWrap');
+            if (!wrap) return;
+
+            const statsMap = {};
+            (adminCatalogCache || []).forEach(p => {
+                const key = p.name;
+                statsMap[key] = {
+                    name: p.name,
+                    category: p.category || 'Atelier',
+                    image: p.image || '',
+                    ordersCount: 0,
+                    unitsSold: 0,
+                    revenue: 0,
+                    votes: p.votes || 0
+                };
+            });
+
+            (adminOrdersCache || []).forEach(order => {
+                (order.items || []).forEach(item => {
+                    const key = item.name || 'Item';
+                    if (!statsMap[key]) {
+                        statsMap[key] = {
+                            name: key,
+                            category: item.category || 'Atelier',
+                            image: item.image || '',
+                            ordersCount: 0,
+                            unitsSold: 0,
+                            revenue: 0,
+                            votes: 0
+                        };
+                    }
+                    const qty = Number(item.qty || 1);
+                    const unitPrice = Number(item.price || 0);
+                    statsMap[key].ordersCount += 1;
+                    statsMap[key].unitsSold += qty;
+                    statsMap[key].revenue += unitPrice * qty;
+                });
+            });
+
+            const sorted = Object.values(statsMap).sort((a, b) => b.unitsSold - a.unitsSold || b.ordersCount - a.ordersCount);
+            if (sorted.length === 0) {
+                wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No product order data available yet.</p>`;
+                return;
+            }
+
+            wrap.innerHTML = `
+                <table>
+                    <thead><tr><th>Product</th><th>Category</th><th>Orders</th><th>Units Sold</th><th>Revenue</th><th>Demand Votes</th></tr></thead>
+                    <tbody>
+                        ${sorted.map((s, idx) => `
+                            <tr>
+                                <td><b>${idx === 0 && s.unitsSold > 0 ? '🏆 ' : ''}${s.name}</b></td>
+                                <td>${s.category}</td>
+                                <td>${s.ordersCount}</td>
+                                <td><b>${s.unitsSold}</b></td>
+                                <td>₹${s.revenue}</td>
+                                <td>🔥 ${s.votes}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
         }
 
         // --- Product FAQ Manager ---
@@ -705,29 +790,42 @@
             });
         }
 
-        // Orders
+        // Orders, Payment Proof Preview, Fake Payment Warning & Invoices
         async function renderOrdersTable() {
             try {
                 const res = await fetch(`${API_URL}/api/store/orders`);
                 const orders = await res.json();
+                adminOrdersCache = orders || [];
+                renderProductTasteAnalytics();
+
                 const wrap = document.getElementById('ordersTableWrap');
-                if(!orders || orders.length === 0) { wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No customer orders yet.</p>`; return; }
+                if(!adminOrdersCache || adminOrdersCache.length === 0) { wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No customer orders yet.</p>`; return; }
                 wrap.innerHTML = `
                     <table>
-                        <thead><tr><th>ID</th><th>Customer</th><th>Summary</th><th>Status</th><th>Custom Tracker Message</th><th>Actions</th></tr></thead>
+                        <thead><tr><th>ID</th><th>Customer</th><th>Payment Proof</th><th>Summary</th><th>Status</th><th>Custom Tracker Message</th><th>Actions</th></tr></thead>
                         <tbody>
-                            ${orders.map((o, idx) => `
+                            ${adminOrdersCache.map((o, idx) => {
+                                const proofSrc = o.customImage || o.paymentProofUrl || o.proofUrl || '';
+                                const safeOrderJson = encodeURIComponent(JSON.stringify(o));
+                                return `
                                 <tr>
-                                    <td><b>#${o.orderId}</b></td><td>${o.name}<br><small>${o.phone}</small></td>
-                                    <td>₹${o.total}.00 (${o.items.length} items)</td>
+                                    <td><b>#${o.orderId}</b><br><small>${o.date || ''}</small></td>
+                                    <td><b>${o.name}</b><br><small>${o.phone}</small><br><small>${o.email || 'No email'}</small></td>
+                                    <td style="text-align:center;">
+                                        ${proofSrc
+                                            ? `<img src="${proofSrc}" onclick="window.open('${proofSrc}', '_blank')" title="Click to open full proof" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid var(--border-color);cursor:pointer;">`
+                                            : `<span style="font-size:0.75rem;color:var(--text-muted);">${o.payMode || 'N/A'}</span>`}
+                                    </td>
+                                    <td>₹${o.total}.00 (${(o.items || []).length} items)</td>
                                     <td>
                                         <select onchange="updateOrderStatus('${o._id}', this.value)" style="padding:6px; font-weight:800; border-radius:8px;">
-                                            <option value="Order Placed & Awaiting Owner Approval ⏳" ${o.status.includes('Awaiting')?'selected':''}>Awaiting Approval</option>
-                                            <option value="Confirmed & Preparing for Campus Delivery 🚚" ${o.status.includes('Confirmed')?'selected':''}>Confirmed & Preparing</option>
-                                            <option value="Dispatched 📦" ${o.status.includes('Dispatched')?'selected':''}>Dispatched</option>
-                                            <option value="At Nearest Hub 📍" ${o.status.includes('Nearest Hub')?'selected':''}>At Nearest Hub</option>
-                                            <option value="Out for Delivery 🚀" ${o.status.includes('Out for Delivery')?'selected':''}>Out for Delivery</option>
-                                            <option value="Delivery Completed Successfully 🎉" ${o.status.includes('Completed')?'selected':''}>Delivery Completed 🎉</option>
+                                            <option value="Order Placed & Awaiting Owner Approval ⏳" ${String(o.status||'').includes('Awaiting')?'selected':''}>Awaiting Approval</option>
+                                            <option value="Confirmed & Preparing for Campus Delivery 🚚" ${String(o.status||'').includes('Confirmed')?'selected':''}>Confirmed & Preparing</option>
+                                            <option value="Dispatched 📦" ${String(o.status||'').includes('Dispatched')?'selected':''}>Dispatched</option>
+                                            <option value="At Nearest Hub 📍" ${String(o.status||'').includes('Nearest Hub')?'selected':''}>At Nearest Hub</option>
+                                            <option value="Out for Delivery 🚀" ${String(o.status||'').includes('Out for Delivery')?'selected':''}>Out for Delivery</option>
+                                            <option value="Delivery Completed Successfully 🎉" ${String(o.status||'').includes('Completed')?'selected':''}>Delivery Completed 🎉</option>
+                                            <option value="Flagged: Fake Payment Screenshot ⚠️" ${String(o.status||'').includes('Fake Payment')?'selected':''}>Fake Payment Flagged ⚠️</option>
                                         </select>
                                     </td>
                                     <td>
@@ -735,15 +833,63 @@
                                         <button onclick="saveCustomMsg('${o._id}', ${idx})" class="btn-action" style="padding:2px 6px; font-size:0.7rem; margin-top:2px;">Send Msg</button>
                                     </td>
                                     <td style="display:flex; gap:4px; flex-direction:column;">
-                                        <button onclick='exportInvoice(${JSON.stringify(o)})' class="btn-action" style="background:#D9822B; padding:4px 8px; font-size:0.75rem;">Invoice 📄</button>
+                                        <button onclick="exportInvoiceFromEncoded('${safeOrderJson}')" class="btn-action" style="background:#D9822B; padding:4px 8px; font-size:0.75rem;">Invoice 📄</button>
+                                        <button onclick="exportDeliveryLabelFromEncoded('${safeOrderJson}')" class="btn-action" style="background:#232D2F; padding:4px 8px; font-size:0.75rem;">Delivery Slip 🏷️</button>
+                                        <button onclick="reportFakePaymentFromEncoded('${safeOrderJson}')" class="btn-action" style="background:#991B1B; padding:4px 8px; font-size:0.75rem;">Report Fake Proof ⚠️</button>
                                         <button onclick="deleteOrder('${o._id}')" class="btn-action" style="background:#C27D65; padding:4px 8px; font-size:0.75rem;">Delete</button>
                                     </td>
                                 </tr>
-                            `).join('')}
+                            `;
+                            }).join('')}
                         </tbody>
                     </table>
                 `;
             } catch(e) { console.error(e); }
+        }
+
+        function exportInvoiceFromEncoded(encoded) {
+            exportInvoice(JSON.parse(decodeURIComponent(encoded)));
+        }
+        function exportDeliveryLabelFromEncoded(encoded) {
+            exportDeliveryLabel(JSON.parse(decodeURIComponent(encoded)));
+        }
+        function reportFakePaymentFromEncoded(encoded) {
+            reportFakePayment(JSON.parse(decodeURIComponent(encoded)));
+        }
+
+        async function reportFakePayment(o) {
+            if (!o || !o.email) {
+                showProModal('Missing Email', 'This order does not have a customer email address.');
+                return;
+            }
+            showProModal('Report Fake Screenshot', `Send a formal warning email from hoknex.in@gmail.com to ${o.email} regarding Order #${o.orderId}?`, async () => {
+                try {
+                    await fetch(`${API_URL}/api/store/report-fake-payment`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            orderId: o.orderId,
+                            customerName: o.name,
+                            customerEmail: o.email,
+                            fromEmail: 'hoknex.in@gmail.com'
+                        })
+                    });
+                    if (o._id) {
+                        await fetch(`${API_URL}/api/store/orders/${o._id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                status: 'Flagged: Fake Payment Screenshot ⚠️',
+                                customMessage: 'Warning sent to your registered email regarding payment verification.'
+                            })
+                        });
+                    }
+                    renderOrdersTable();
+                    showProModal('Warning Sent', `Warning notice dispatched to ${o.email} for Order #${o.orderId}.`);
+                } catch (err) {
+                    showProModal('Error', 'Could not send warning report.');
+                }
+            });
         }
 
         async function updateOrderStatus(id, newStatus) {
@@ -769,24 +915,72 @@
         function exportInvoice(o) {
             let invWindow = window.open('', '_blank');
             invWindow.document.write(`
-                <html><head><title>Invoice #${o.orderId}</title></head>
-                <body style="font-family:'Plus Jakarta Sans',sans-serif; padding:2rem; color:#4C5844;">
-                    <h2>HOKNEX OFFICIAL INVOICE</h2>
-                    <p><b>Order ID:</b> #${o.orderId} | <b>Date:</b> ${o.date}</p>
-                    <hr style="margin:1rem 0;">
-                    <p><b>Customer Name:</b> ${o.name}</p>
-                    <p><b>Phone & Email:</b> ${o.phone} | ${o.email||'N/A'}</p>
-                    <p><b>Delivery Address:</b> ${o.address}</p>
-                    <p><b>Payment Mode:</b> ${o.payMode}</p>
-                    <hr style="margin:1rem 0;">
-                    <h3>Ordered Items:</h3>
-                    <ul>${o.items.map(i=>`<li>${i.name} (Size: ${i.size}) — Qty: ${i.qty} — ₹${i.price} each</li>`).join('')}</ul>
-                    <h3>Subtotal: ₹${o.subtotal} | Delivery: ₹${o.deliveryFee} | Final Total: ₹${o.total}</h3>
-                    <p style="margin-top:2rem; font-weight:bold;">Thank you for shopping with Hoknex!</p>
+                <html><head><title>Hoknex Invoice #${o.orderId}</title></head>
+                <body style="font-family:'Plus Jakarta Sans',sans-serif; padding:2.5rem; color:#2C1E16; background:#FAF6F0;">
+                    <div style="max-width:720px; margin:0 auto; background:#FFFFFF; border:2px solid #2C1E16; padding:2rem; border-radius:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #2C1E16; padding-bottom:1rem;">
+                            <div>
+                                <h1 style="font-family:'Playfair Display',serif; margin:0;">HOKNEX OFFICIAL TAX / ORDER INVOICE</h1>
+                                <small>Support: hoknex.in@gmail.com</small>
+                            </div>
+                            <div style="text-align:right;">
+                                <b>Order ID:</b> #${o.orderId}<br>
+                                <b>Date:</b> ${o.date || 'N/A'}<br>
+                                <b>Status:</b> ${o.status || 'Processing'}
+                            </div>
+                        </div>
+                        <div style="margin:1.2rem 0; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                            <div>
+                                <b>Billed / Shipped To:</b><br>
+                                Name: ${o.name}<br>
+                                Phone: ${o.phone}<br>
+                                Email: ${o.email || 'N/A'}
+                            </div>
+                            <div>
+                                <b>Shipping Address:</b><br>
+                                ${o.address || 'N/A'}<br>
+                                <b>Payment Mode:</b> ${o.payMode || 'N/A'}
+                            </div>
+                        </div>
+                        <hr style="margin:1rem 0;">
+                        <h3>Ordered Items:</h3>
+                        <ul style="padding-left:1.2rem; line-height:1.7;">${(o.items||[]).map(i=>`<li><b>${i.name}</b> (Size: ${i.size || 'STD'}) — Qty: ${i.qty || 1} × ₹${i.price} = ₹${(i.qty||1)*(i.price||0)}</li>`).join('')}</ul>
+                        <hr style="margin:1rem 0;">
+                        <p style="font-size:0.95rem;"><b>Subtotal:</b> ₹${o.subtotal || 0} &nbsp;|&nbsp; <b>Delivery Fee:</b> ₹${o.deliveryFee || 0}</p>
+                        <h3 style="margin-top:0.5rem;">Grand Total: ₹${o.total || 0}.00</h3>
+                        <p style="margin-top:2rem; font-weight:bold;">Thank you for shopping with Hoknex!</p>
+                    </div>
                 </body></html>
             `);
             invWindow.document.close();
             invWindow.print();
+        }
+
+        function exportDeliveryLabel(o) {
+            let lblWindow = window.open('', '_blank');
+            lblWindow.document.write(`
+                <html><head><title>Delivery Slip #${o.orderId}</title></head>
+                <body style="font-family:'Plus Jakarta Sans',sans-serif; padding:1.5rem; color:#111;">
+                    <div style="max-width:420px; margin:0 auto; border:3px dashed #111; padding:1.4rem; border-radius:6px;">
+                        <div style="display:flex; justify-content:space-between; border-bottom:2px solid #111; padding-bottom:8px; margin-bottom:10px;">
+                            <b>HOKNEX PARCEL SLIP</b>
+                            <b>#${o.orderId}</b>
+                        </div>
+                        <p style="margin-bottom:6px;"><b>DELIVER TO:</b><br>${o.name}<br>Phone: <b>${o.phone}</b><br>Email: ${o.email || 'N/A'}</p>
+                        <p style="margin-bottom:10px;"><b>ADDRESS:</b><br>${o.address || 'N/A'}</p>
+                        <div style="border-top:1.5px solid #111; padding-top:8px; margin-bottom:8px;">
+                            <b>CONTENTS (${(o.items||[]).reduce((a,b)=>a+(b.qty||1),0)} pcs):</b><br>
+                            ${(o.items||[]).map(i=>`• ${i.name} [${i.size||'STD'}] × ${i.qty||1}`).join('<br>')}
+                        </div>
+                        <div style="border-top:2px solid #111; padding-top:8px; display:flex; justify-content:space-between;">
+                            <span><b>MODE:</b> ${o.payMode || 'N/A'}</span>
+                            <span><b>COLLECT:</b> ${o.payMode === 'COD' ? '₹' + (o.total || 0) : 'PAID'}</span>
+                        </div>
+                    </div>
+                </body></html>
+            `);
+            lblWindow.document.close();
+            lblWindow.print();
         }
 
         function deleteOrder(id) {
