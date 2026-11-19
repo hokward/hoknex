@@ -264,27 +264,50 @@
         }
         function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
 
-        // --- Hero Banner Uploader Logic ---
+        // --- Hero Banner Uploader Logic (Persisted in MongoDB + LocalStorage) ---
         async function uploadStoreHeroBanner() {
             const fileInput = document.getElementById('heroBannerFile');
             if (fileInput.files && fileInput.files[0]) {
                 try {
                     showProModal('Uploading...', 'Uploading hero banner to Cloudinary...');
                     const bannerUrl = await uploadDirectToCloudinary(fileInput.files[0]);
+
+                    const res = await fetch(`${API_URL}/api/store/hero-banner`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ imageUrl: bannerUrl })
+                    });
+                    const data = await res.json();
+                    if (!res.ok || !data.success) {
+                        throw new Error(data.error || 'Failed to save hero banner to database');
+                    }
+
                     localStorage.setItem('hoknex_store_hero_banner', bannerUrl);
-                    renderHeroPreview();
-                    showProModal('Success!', 'Store hero banner updated successfully! It will now appear on your store page.');
+                    renderHeroPreview(bannerUrl);
+                    showProModal('Success!', 'Store hero banner saved globally! It is now visible to everyone on the store page.');
                 } catch(e) {
-                    showProModal('Error', 'Hero banner upload failed.');
+                    showProModal('Error', e.message || 'Hero banner upload failed.');
                 }
             } else {
                 showProModal('Notice', 'Please select an image file first.');
             }
         }
 
-        function renderHeroPreview() {
-            const currentUrl = localStorage.getItem('hoknex_store_hero_banner');
+        async function renderHeroPreview(overrideUrl = null) {
             const previewDiv = document.getElementById('currentHeroPreview');
+            let currentUrl = overrideUrl || localStorage.getItem('hoknex_store_hero_banner') || '';
+
+            try {
+                const res = await fetch(`${API_URL}/api/store/hero-banner`);
+                const data = await res.json();
+                if (data && data.imageUrl) {
+                    currentUrl = data.imageUrl;
+                    localStorage.setItem('hoknex_store_hero_banner', currentUrl);
+                }
+            } catch (e) {
+                console.warn('Could not fetch hero banner preview from server:', e);
+            }
+
             if (currentUrl) {
                 previewDiv.innerHTML = `<p style="font-size:0.8rem; font-weight:800; margin-bottom:6px;">Current Hero Banner Preview:</p><img src="${currentUrl}" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px; border:2px solid var(--border-color);">`;
             } else {
