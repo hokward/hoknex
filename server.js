@@ -589,28 +589,53 @@ app.post('/api/store/send-drop-launch-email', async (req, res) => {
 
 app.post('/api/store/report-fake-payment', async (req, res) => {
     try {
-        const { orderId, customerName, customerEmail } = req.body;
+        const { orderId, customerName, customerEmail, proofUrl } = req.body;
         if (!customerEmail) {
             return res.status(400).json({ error: 'Customer email is required.' });
         }
 
         const safeOrderId = orderId || 'N/A';
-        const safeName = customerName || 'Customer';
+        const safeName = customerName || 'Valued Customer';
+        const safeProofUrl = String(proofUrl || '').trim();
+
+        const attachmentBlock = safeProofUrl
+            ? `
+                <div style="margin:18px 0; padding:12px; background:#F2ECE1; border:1px solid #E2DBD0; border-radius:6px;">
+                    <p style="margin:0 0 8px 0; font-size:12px; font-weight:700; color:#2C1E16; text-transform:uppercase; letter-spacing:1px;">Submitted Payment Screenshot</p>
+                    <img src="${safeProofUrl}" alt="Submitted Payment Proof" style="max-width:100%; max-height:260px; border-radius:4px; border:1px solid #E2DBD0; display:block;">
+                    <p style="margin:8px 0 0 0; font-size:12px;"><a href="${safeProofUrl}" target="_blank" style="color:#C05621; font-weight:600; text-decoration:none;">Open Full Screenshot ↗</a></p>
+                </div>
+            `
+            : '';
 
         const htmlContent = `
-            <div style="font-family:sans-serif; max-width:560px; margin:0 auto; padding:24px; background:#FAF6F0; color:#2C1E16; border:1px solid #C05621; border-radius:8px;">
-                <p style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#991B1B; font-weight:700;">Hoknex Payment Verification Notice</p>
-                <h2 style="margin:6px 0 10px 0;">Action Required for Order #${safeOrderId}</h2>
-                <p style="line-height:1.6;">Hello ${safeName},</p>
-                <p style="line-height:1.6; color:#6E5D52;">During verification of Order <strong>#${safeOrderId}</strong>, our team could not validate the uploaded payment screenshot as a genuine completed transaction. Please upload a clear, authentic payment confirmation screenshot or contact Hoknex Support immediately so your order is not cancelled.</p>
-                <p style="font-size:12px; color:#6E5D52; margin-top:16px;">Official Support: hoknex.in@gmail.com</p>
+            <div style="font-family:'Plus Jakarta Sans',Arial,sans-serif; max-width:580px; margin:0 auto; background:#FAF6F0; color:#2C1E16; border:1px solid #E2DBD0; border-radius:10px; overflow:hidden;">
+                <div style="background:#2C1E16; color:#FAF6F0; padding:18px 24px;">
+                    <div style="font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:#E5C158; font-weight:700;">Hoknex Atelier • Payment Verification</div>
+                    <h2 style="margin:6px 0 0 0; font-size:20px; font-weight:600; color:#FAF6F0;">Payment Proof Requires Attention — Order #${safeOrderId}</h2>
+                </div>
+                <div style="padding:24px; line-height:1.65; font-size:14px;">
+                    <p style="margin:0 0 12px 0;">Hello <strong>${safeName}</strong>,</p>
+                    <p style="margin:0 0 12px 0; color:#6E5D52;">
+                        Our verification desk reviewed the payment proof submitted for Order <strong>#${safeOrderId}</strong> and could not confirm a valid, completed settlement matching your order.
+                    </p>
+                    ${attachmentBlock}
+                    <p style="margin:0 0 12px 0; color:#6E5D52;">
+                        If you completed the payment via UPI, please reply to <strong>hoknex.in@gmail.com</strong> with a clear, unedited transaction receipt/UTR reference so we can verify and process your order smoothly. Submitting invalid or altered payment proofs may result in order cancellation.
+                    </p>
+                    <div style="margin-top:20px; padding-top:14px; border-top:1px solid #E2DBD0; font-size:12px; color:#6E5D52;">
+                        Warm regards,<br>
+                        <strong style="color:#2C1E16;">Hoknex Official Store Team</strong> • hoknex.in@gmail.com
+                    </div>
+                </div>
             </div>
         `;
-        const textContent = `Hoknex Payment Verification Warning (hoknex.in@gmail.com)\n\nHello ${safeName},\n\nThe payment screenshot submitted for Order #${safeOrderId} could not be verified as genuine. Please provide valid payment proof or contact hoknex.in@gmail.com.`;
+
+        const textContent = `Hoknex Official Store (hoknex.in@gmail.com)\n\nHello ${safeName},\n\nWe could not verify the payment screenshot for Order #${safeOrderId}. Please reply to hoknex.in@gmail.com with a valid payment receipt or UTR details.\n${safeProofUrl ? `Submitted Proof: ${safeProofUrl}` : ''}`;
 
         const result = await sendStoreEmailViaBrevo({
             toEmails: [customerEmail],
-            subject: `Payment Verification Warning — Order #${safeOrderId} (Hoknex)`,
+            subject: `Payment Verification Notice — Order #${safeOrderId} | Hoknex Store`,
             htmlContent,
             textContent
         });
