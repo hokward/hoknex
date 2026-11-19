@@ -153,6 +153,54 @@
             cursor: pointer; position: absolute; top: 12px; right: 12px; z-index: 5; box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
         }
 
+        /* --- AMAZON / FLIPKART STYLE WISHLIST CARDS --- */
+        .wishlist-card-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .wishlist-card-row:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-terracotta);
+        }
+        .wishlist-thumb-box {
+            width: 72px;
+            height: 72px;
+            flex-shrink: 0;
+            background: #FAF6F0;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-size: 2rem;
+        }
+        .wishlist-thumb-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+        .wishlist-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .wishlist-card-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+
         .campaign-showcase-section { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
         .campaign-header { text-align: center; margin-bottom: 2.5rem; }
         .campaign-header h2 { font-size: 2.2rem; font-weight: 400; margin-bottom: 0.4rem; }
@@ -419,7 +467,7 @@
 
     <!-- Wishlist Modal -->
     <div id="wishlistModal" class="modal-overlay" onclick="if(event.target === this) closeModal('wishlistModal')">
-        <div class="modal-panel" style="max-width: 450px;"><button onclick="closeModal('wishlistModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:var(--text-main); border:none; font-size:1.2rem; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 400; margin-bottom: 1.2rem; font-family:'Playfair Display',serif;">Wishlist</h2><div id="wishlistItemsList" style="max-height: 280px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0; font-weight: 300;">Your wishlist is empty.</p></div><button onclick="closeModal('wishlistModal')" class="btn-primary" style="margin-top:0;">Continue Shopping</button></div>
+        <div class="modal-panel" style="max-width: 520px;"><button onclick="closeModal('wishlistModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:var(--text-main); border:none; font-size:1.2rem; cursor:pointer;">&times;</button><h2 style="font-size: 1.4rem; font-weight: 400; margin-bottom: 0.3rem; font-family:'Playfair Display',serif;">Wishlist</h2><p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:1rem;">Tap any product to open its full page.</p><div id="wishlistItemsList" style="max-height: 340px; overflow-y: auto; margin-bottom: 1.5rem;"><p style="color: var(--text-muted); text-align: center; margin: 2rem 0; font-weight: 300;">Your wishlist is empty.</p></div><button onclick="closeModal('wishlistModal')" class="btn-primary" style="margin-top:0;">Continue Shopping</button></div>
     </div>
 
     <!-- Cart Modal -->
@@ -718,15 +766,26 @@
             }
             list.innerHTML = wishlist.map((item, index) => {
                 const itemId = item._id || item.id;
+                const liveItem = catalog.find(c => (c._id === itemId || c.id === itemId)) || item;
+                const thumbContent = liveItem.image
+                    ? `<img src="${liveItem.image}" alt="${liveItem.name}">`
+                    : (liveItem.emoji || '📦');
+                const stockLabel = liveItem.inStock === false
+                    ? `<span style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Sold Out</span>`
+                    : `<button onclick="event.stopPropagation(); addToBag('${itemId}'); closeModal('wishlistModal'); openCartModal();" class="btn-add-bag">Add to Bag</button>`;
+
                 return `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-body); border:1px solid var(--border-color); padding:10px 14px; border-radius:2px; margin-bottom:8px;">
-                        <div>
-                            <div style="font-weight:500; font-size:0.85rem; color:var(--text-main); font-family:'Playfair Display',serif;">${item.name}</div>
-                            <div style="font-size:0.75rem; color:var(--accent-terracotta); font-weight:500;">₹${item.price}</div>
+                    <div class="wishlist-card-row" onclick="closeModal('wishlistModal'); openPdpModal('${itemId}');">
+                        <div class="wishlist-thumb-box">${thumbContent}</div>
+                        <div class="wishlist-card-info">
+                            <div class="prod-category" style="margin-bottom:2px;">${liveItem.category || 'Atelier'}</div>
+                            <div style="font-weight:600; font-size:0.92rem; color:var(--text-main); font-family:'Playfair Display',serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${liveItem.name}</div>
+                            <div style="font-size:0.82rem; color:var(--accent-terracotta); font-weight:600; margin-top:2px;">₹${liveItem.price}.00</div>
+                            <div style="font-size:0.68rem; color:var(--text-muted); margin-top:2px;">Tap to view details</div>
                         </div>
-                        <div style="display:flex; gap:8px;">
-                            <button onclick="addToBag('${itemId}'); closeModal('wishlistModal'); openCartModal();" class="btn-add-bag">Add</button>
-                            <button onclick="removeWishlistItem(${index})" style="background:transparent; color:var(--text-muted); border:none; cursor:pointer; font-size:0.9rem;">✕</button>
+                        <div class="wishlist-card-actions" onclick="event.stopPropagation();">
+                            <button onclick="removeWishlistItem(${index})" title="Remove from wishlist" style="background:transparent; color:var(--text-muted); border:none; cursor:pointer; font-size:0.9rem; padding:2px 4px;">✕</button>
+                            ${stockLabel}
                         </div>
                     </div>
                 `;
@@ -739,7 +798,10 @@
             renderCatalog(catalog);
         }
 
-        function openWishlistModal() { document.getElementById('wishlistModal').style.display = 'flex'; }
+        function openWishlistModal() {
+            updateWishlistUI();
+            document.getElementById('wishlistModal').style.display = 'flex';
+        }
 
         function openPdpModal(id) {
             currentPdpItem = catalog.find(i => (i._id === id || i.id === id));
