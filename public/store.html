@@ -94,7 +94,8 @@
             margin: 0;
             padding: 0;
         }
-        .store-hero-banner img {
+        .store-hero-banner img,
+        .store-hero-banner video {
             width: 100%;
             height: auto;
             max-height: 520px;
@@ -102,7 +103,8 @@
             display: block;
         }
         @media (max-width: 768px) {
-            .store-hero-banner img {
+            .store-hero-banner img,
+            .store-hero-banner video {
                 max-height: 240px;
                 object-fit: cover;
             }
@@ -297,7 +299,7 @@
     </nav>
 
     <!-- Full-Bleed Immersive Hero Banner (Loaded from Backend DB, LocalStorage, or Fallback) -->
-    <section class="store-hero-banner">
+    <section class="store-hero-banner" id="storeHeroBannerContainer">
         <img id="storeHeroBannerImg" src="1794789114701~2.jpg.jpeg" alt="Atelier Hero Banner">
     </section>
 
@@ -466,22 +468,38 @@
     <script>
         const API_URL = 'https://hoknex-backend.onrender.com';
 
-        // --- Load Custom Hero Banner from MongoDB (with LocalStorage & Fallback) ---
-        async function loadStoreHeroBanner() {
-            const heroImgEl = document.getElementById('storeHeroBannerImg');
-            if (!heroImgEl) return;
-
-            const cachedBanner = localStorage.getItem('hoknex_store_hero_banner');
-            if (cachedBanner) {
-                heroImgEl.src = cachedBanner;
+        // --- Load Custom Hero Banner (Image or Video) from MongoDB (with LocalStorage & Fallback) ---
+        function renderStoreHeroMedia(url, type) {
+            const container = document.getElementById('storeHeroBannerContainer');
+            if (!container || !url) return;
+            const isVideo = type === 'video' || /\.(mp4|webm|mov)(\?|$)/i.test(url);
+            if (isVideo) {
+                container.innerHTML = `<video src="${url}" autoplay muted loop playsinline></video>`;
+            } else {
+                container.innerHTML = `<img id="storeHeroBannerImg" src="${url}" alt="Atelier Hero Banner">`;
             }
+        }
+
+        async function loadStoreHeroBanner() {
+            const container = document.getElementById('storeHeroBannerContainer');
+            if (!container) return;
+
+            try {
+                const cached = JSON.parse(localStorage.getItem('hoknex_store_hero_banner') || '{}');
+                if (cached.imageUrl) {
+                    renderStoreHeroMedia(cached.imageUrl, cached.mediaType);
+                }
+            } catch (e) {}
 
             try {
                 const res = await fetch(`${API_URL}/api/store/hero-banner`);
                 const data = await res.json();
                 if (data && data.imageUrl) {
-                    heroImgEl.src = data.imageUrl;
-                    localStorage.setItem('hoknex_store_hero_banner', data.imageUrl);
+                    renderStoreHeroMedia(data.imageUrl, data.mediaType);
+                    localStorage.setItem('hoknex_store_hero_banner', JSON.stringify({
+                        imageUrl: data.imageUrl,
+                        mediaType: data.mediaType || 'image'
+                    }));
                 }
             } catch (e) {
                 console.warn('Could not load hero banner from server:', e);
