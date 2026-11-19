@@ -511,6 +511,34 @@ app.post('/api/store/hero-banner', async (req, res) => {
     }
 });
 
+const StoreDropCountdownSchema = new mongoose.Schema({
+    targetDate: { type: String, required: true },
+    updatedAt: { type: Date, default: Date.now }
+});
+const StoreDropCountdown = mongoose.models.StoreDropCountdown || mongoose.model('StoreDropCountdown', StoreDropCountdownSchema);
+
+app.get('/api/store/drop-countdown', async (req, res) => {
+    try {
+        const cfg = await StoreDropCountdown.findOne().sort({ updatedAt: -1 });
+        res.json(cfg || {});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/store/drop-countdown', async (req, res) => {
+    try {
+        const { targetDate } = req.body;
+        if (!targetDate) return res.status(400).json({ error: 'targetDate is required.' });
+        await StoreDropCountdown.deleteMany({});
+        const cfg = new StoreDropCountdown({ targetDate, updatedAt: new Date() });
+        await cfg.save();
+        res.json({ success: true, targetDate: cfg.targetDate });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 const StoreDropAlertSchema = new mongoose.Schema({
     email: { type: String, required: true },
     productId: String,
