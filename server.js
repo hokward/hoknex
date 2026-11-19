@@ -474,6 +474,41 @@ app.post('/api/store/hero-banner', async (req, res) => {
     }
 });
 
+const StoreDropAlertSchema = new mongoose.Schema({
+    email: { type: String, required: true },
+    productId: String,
+    productTitle: String,
+    date: { type: String, default: () => new Date().toLocaleString() },
+    createdAt: { type: Date, default: Date.now }
+});
+const StoreDropAlert = mongoose.models.StoreDropAlert || mongoose.model('StoreDropAlert', StoreDropAlertSchema);
+
+app.get('/api/store/drop-alerts', async (req, res) => {
+    try {
+        const alerts = await StoreDropAlert.find().sort({ createdAt: -1 });
+        res.json(alerts);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/store/drop-alerts', async (req, res) => {
+    try {
+        const { email, productId, productTitle, date } = req.body;
+        if (!email) return res.status(400).json({ error: 'Email is required.' });
+        const alert = new StoreDropAlert({
+            email,
+            productId: productId || '',
+            productTitle: productTitle || 'Upcoming Release',
+            date: date || new Date().toLocaleString()
+        });
+        await alert.save();
+        res.status(201).json({ success: true, alert });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 const ProductSchema = new mongoose.Schema({
     name: { type: String, required: true },
     category: { type: String, required: true },
