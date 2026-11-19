@@ -438,6 +438,34 @@ app.post('/api/messages/send', async (req, res) => {
 // --- STORE, ADMIN & CAMPAIGNS SCHEMAS & API ROUTES ---
 // ==========================================
 
+const StoreHeroBannerSchema = new mongoose.Schema({
+    imageUrl: { type: String, required: true },
+    updatedAt: { type: Date, default: Date.now }
+});
+const StoreHeroBanner = mongoose.models.StoreHeroBanner || mongoose.model('StoreHeroBanner', StoreHeroBannerSchema);
+
+app.get('/api/store/hero-banner', async (req, res) => {
+    try {
+        const banner = await StoreHeroBanner.findOne().sort({ updatedAt: -1 });
+        res.json(banner || {});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/store/hero-banner', async (req, res) => {
+    try {
+        const { imageUrl } = req.body;
+        if (!imageUrl) return res.status(400).json({ error: 'Banner imageUrl is required.' });
+        await StoreHeroBanner.deleteMany({});
+        const banner = new StoreHeroBanner({ imageUrl, updatedAt: new Date() });
+        await banner.save();
+        res.json({ success: true, banner });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 const ProductSchema = new mongoose.Schema({
     name: { type: String, required: true },
     category: { type: String, required: true },
@@ -688,7 +716,7 @@ app.post('/api/magazine/trending', async (req, res) => {
         if(config) { config.headlines = headlines; await config.save(); }
         else { config = await TrendingConfig.create({ headlines }); }
         res.json({ success: true, config });
-    } catch(e) { res.status(500).json({ error: err.message }); }
+    } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
 // --- Store Products Endpoints ---
