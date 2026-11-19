@@ -111,6 +111,43 @@ app.use(async (req, res, next) => {
     next();
 });
 
+// Helper to send store emails via Brevo HTTP API with safe fallback
+async function sendStoreEmailViaBrevo({ toEmails, subject, htmlContent, textContent }) {
+    const cleanRecipients = Array.from(new Set((toEmails || []).map(e => String(e || '').trim()).filter(Boolean)));
+    if (cleanRecipients.length === 0) {
+        return { sent: false, reason: 'No recipient emails provided' };
+    }
+
+    const apiKey = process.env.BREVO_API_KEY;
+    if (!apiKey) {
+        console.log(`📧 [DEV FALLBACK] BREVO_API_KEY missing. Subject: "${subject}" -> To: ${cleanRecipients.join(', ')}`);
+        return { sent: true, fallback: true };
+    }
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+            'accept': 'application/json',
+            'api-key': apiKey,
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+            sender: { name: 'Hoknex Official Store', email: 'hoknex.in@gmail.com' },
+            to: cleanRecipients.map(email => ({ email })),
+            subject,
+            htmlContent,
+            textContent
+        })
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        console.error('Brevo Store Email Error:', data);
+        return { sent: false, error: data };
+    }
+    return { sent: true, data };
+}
+
 // ==========================================
 // --- DIAGNOSTIC DEBUG ROUTE ---
 // ==========================================
@@ -478,6 +515,7 @@ const StoreDropAlertSchema = new mongoose.Schema({
     email: { type: String, required: true },
     productId: String,
     productTitle: String,
+    productImage: String,
     date: { type: String, default: () => new Date().toLocaleString() },
     createdAt: { type: Date, default: Date.now }
 });
@@ -494,16 +532,90 @@ app.get('/api/store/drop-alerts', async (req, res) => {
 
 app.post('/api/store/drop-alerts', async (req, res) => {
     try {
-        const { email, productId, productTitle, date } = req.body;
+        const { email, productId, productTitle, productImage, date } = req.body;
         if (!email) return res.status(400).json({ error: 'Email is required.' });
         const alert = new StoreDropAlert({
             email,
             productId: productId || '',
             productTitle: productTitle || 'Upcoming Release',
+            productImage: productImage || '',
             date: date || new Date().toLocaleString()
         });
         await alert.save();
         res.status(201).json({ success: true, alert });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/store/send-drop-launch-email', async (req, res) => {
+    try {
+        const { recipients, productTitle, productDesc, productImage } = req.body;
+        const dbAlerts = await StoreDropAlert.find({ productTitle: productTitle || '' });
+        const combinedRecipients = [
+            ...(Array.isArray(recipients) ? recipients : []),
+            ...dbAlerts.map(a => a.email)
+        ];
+
+        const title = productTitle || 'Hoknex Atelier Drop';
+        const desc = productDesc || 'Your requested upcoming release is now live at the Hoknex Store.';
+        const imgBlock = (productImage && !/\.(mp4|webm|mov)(\?|$)/i.test(productImage))
+            ? `<img src="${productImage}" alt="${title}" style="max-width:100%; max-height:280px; border-radius:8px; margin:12px 0; display:block;">`
+            : '';
+
+        const htmlContent = `
+            <div style="font-family:sans-serif; max-width:560px; margin:0 auto; padding:24px; background:#FAF6F0; color:#2C1E16; border:1px solid #E2DBD0; border-radius:8px;">
+                <p style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#C05621; font-weight:700;">Hoknex Atelier Release</p>
+                <h2 style="margin:6px 0 10px 0;">${title} Is Now Live</h2>
+                <p style="color:#6E5D52; line-height:1.6;">${desc}</p>
+                ${imgBlock}
+                <p style="font-size:12px; color:#6E5D52; margin-top:16px;">Sent by Hoknex Official Store (hoknex.in@gmail.com)</p>
+            </div>
+        `;
+        const textContent = `Hoknex Official Store (hoknex.in@gmail.com)\n\n${title} Is Now Live!\n${desc}\n${productImage ? `Preview: ${productImage}` : ''}`;
+
+        const result = await sendStoreEmailViaBrevo({
+            toEmails: combinedRecipients,
+            subject: `Now Live: ${title} — Hoknex Store`,
+            htmlContent,
+            textContent
+        });
+
+        res.json({ success: true, result });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/store/report-fake-payment', async (req, res) => {
+    try {
+        const { orderId, customerName, customerEmail } = req.body;
+        if (!customerEmail) {
+            return res.status(400).json({ error: 'Customer email is required.' });
+        }
+
+        const safeOrderId = orderId || 'N/A';
+        const safeName = customerName || 'Customer';
+
+        const htmlContent = `
+            <div style="font-family:sans-serif; max-width:560px; margin:0 auto; padding:24px; background:#FAF6F0; color:#2C1E16; border:1px solid #C05621; border-radius:8px;">
+                <p style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#991B1B; font-weight:700;">Hoknex Payment Verification Notice</p>
+                <h2 style="margin:6px 0 10px 0;">Action Required for Order #${safeOrderId}</h2>
+                <p style="line-height:1.6;">Hello ${safeName},</p>
+                <p style="line-height:1.6; color:#6E5D52;">During verification of Order <strong>#${safeOrderId}</strong>, our team could not validate the uploaded payment screenshot as a genuine completed transaction. Please upload a clear, authentic payment confirmation screenshot or contact Hoknex Support immediately so your order is not cancelled.</p>
+                <p style="font-size:12px; color:#6E5D52; margin-top:16px;">Official Support: hoknex.in@gmail.com</p>
+            </div>
+        `;
+        const textContent = `Hoknex Payment Verification Warning (hoknex.in@gmail.com)\n\nHello ${safeName},\n\nThe payment screenshot submitted for Order #${safeOrderId} could not be verified as genuine. Please provide valid payment proof or contact hoknex.in@gmail.com.`;
+
+        const result = await sendStoreEmailViaBrevo({
+            toEmails: [customerEmail],
+            subject: `Payment Verification Warning — Order #${safeOrderId} (Hoknex)`,
+            htmlContent,
+            textContent
+        });
+
+        res.json({ success: true, result });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -516,11 +628,13 @@ const ProductSchema = new mongoose.Schema({
     deliveryFee: { type: Number, default: 0 },
     description: String,
     image: String,
+    video: { type: String, default: '' },
     galleryImages: [String],
     inStock: { type: Boolean, default: true },
     sizes: { type: [String], default: ['S', 'M', 'L', 'XL'] },
     ratings: [Number],
     votes: { type: Number, default: 0 },
+    wishlistCount: { type: Number, default: 0 },
     badge: { type: String, default: 'New Arrival' },
     reviews: [{
         reviewerName: String,
@@ -535,6 +649,21 @@ const ProductSchema = new mongoose.Schema({
     }]
 });
 const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
+
+// --- Product Wishlist Count Endpoint ---
+app.put('/api/store/products/:id/wishlist', async (req, res) => {
+    try {
+        const delta = Number(req.body.delta);
+        const step = delta === -1 ? -1 : 1;
+        const prod = await Product.findById(req.params.id);
+        if (!prod) return res.status(404).json({ error: 'Product not found' });
+        prod.wishlistCount = Math.max(0, Number(prod.wishlistCount || 0) + step);
+        await prod.save();
+        res.json({ success: true, wishlistCount: prod.wishlistCount });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // --- Product Customer Reviews & Photos Endpoints ---
 app.get('/api/store/products/:id/reviews', async (req, res) => {
@@ -619,6 +748,7 @@ const StoreOrderSchema = new mongoose.Schema({
     timeline: Array,
     customMessage: String,
     customImage: String,
+    paymentProofUrl: String,
     date: String
 });
 const StoreOrder = mongoose.models.StoreOrder || mongoose.model('StoreOrder', StoreOrderSchema);
