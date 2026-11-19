@@ -51,6 +51,11 @@
         th, td { border: 2.5px solid var(--border-color); padding: 12px; text-align: left; font-weight: 800; }
         th { background: #FAF9F6; font-weight: 900; }
 
+        .faq-admin-card {
+            background: #FAF9F6; border: 2px solid var(--border-color); border-radius: 12px;
+            padding: 12px 16px; margin-bottom: 10px;
+        }
+
         #proModalOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(6px);
@@ -96,7 +101,7 @@
         <div class="admin-header">
             <div>
                 <h1 style="font-size: 1.8rem; font-weight: 900; font-family:'Playfair Display',serif;">⚡ Hoknex Professional Store Command Center</h1>
-                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage store hero banners, announcements, campaigns, upcoming drops, store QR codes, and products.</p>
+                <p style="color: var(--text-muted); font-weight: 700; margin-top: 4px;">Manage store hero banners, announcements, campaigns, upcoming drops, store QR codes, products, and FAQs.</p>
             </div>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
                 <a href="store.html" class="btn-action" style="background:var(--accent-ochre);">View Store 🛍️</a>
@@ -184,6 +189,24 @@
             <div id="productsTableWrap" style="overflow-x:auto;"><p>Loading catalog...</p></div>
         </div>
 
+        <!-- 6.5. Product FAQ Manager -->
+        <div class="admin-section" style="background:#FAF9F6; border-color:#232D2F;">
+            <h2>❓ 6.5. Product FAQ Manager</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.2rem;">Add and manage Frequently Asked Questions for any product in your store.</p>
+            <div class="form-group">
+                <label>Select Product</label>
+                <select id="faqProductSelect" onchange="loadSelectedProductFaqs()"></select>
+            </div>
+            <form onsubmit="handleAdminFaqSubmit(event)">
+                <div class="form-grid">
+                    <div class="form-group"><label>Question</label><input type="text" id="adminFaqQuestion" placeholder="e.g. Is this oversized tee pre-shrunk?" required></div>
+                    <div class="form-group"><label>Answer</label><input type="text" id="adminFaqAnswer" placeholder="e.g. Yes, made with 100% pre-shrunk heavyweight cotton." required></div>
+                </div>
+                <button type="submit" class="btn-action" style="background:#111827;">Add Product FAQ ➕</button>
+            </form>
+            <div id="adminFaqListWrap" style="margin-top:1.5rem;"><p style="color:var(--text-muted); font-weight:800;">Select a product to view FAQs.</p></div>
+        </div>
+
         <!-- 7. Customer Orders -->
         <div class="admin-section">
             <h2>🚚 7. Customer Orders & Invoices</h2>
@@ -205,7 +228,14 @@
         const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
         const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads';
 
+        let adminCatalogCache = [];
+
         async function uploadDirectToCloudinary(file) {
+            const maxMb = 25;
+            if (file.size > maxMb * 1024 * 1024) {
+                throw new Error(`File is too large (${(file.size / (1024 * 1024)).toFixed(1)} MB). Please compress or choose a file under ${maxMb} MB.`);
+            }
+
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
@@ -214,12 +244,14 @@
                 method: 'POST',
                 body: formData
             });
-            const data = await res.json();
-            if (data.secure_url) {
-                return data.secure_url;
-            } else {
-                throw new Error('Cloudinary direct upload failed');
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.secure_url) {
+                const msg = (data && data.error && data.error.message)
+                    ? data.error.message
+                    : `Upload failed with status ${res.status} (check file size or Cloudinary preset).`;
+                throw new Error(msg);
             }
+            return data.secure_url;
         }
 
         // 25-Minute Session Persistence Check
@@ -471,11 +503,14 @@
             try {
                 const res = await fetch(`${API_URL}/api/store/products`);
                 const catalog = await res.json();
+                adminCatalogCache = catalog || [];
+                populateFaqProductSelect(adminCatalogCache);
+
                 document.getElementById('productsTableWrap').innerHTML = `
                     <table>
                         <thead><tr><th>Preview</th><th>Name</th><th>Stock Status</th><th>Sizes Available</th><th>Demand Votes</th><th>Action</th></tr></thead>
                         <tbody>
-                            ${catalog.map((p) => `
+                            ${adminCatalogCache.map((p) => `
                                 <tr>
                                     <td style="width:50px; text-align:center;"><img src="${p.image}" style="width:35px;height:35px;object-fit:cover;border-radius:6px;"></td>
                                     <td><b>${p.name}</b><br><small>₹${p.price} | Del: ₹${p.deliveryFee || 0}</small></td>
@@ -494,6 +529,77 @@
                     </table>
                 `;
             } catch(e) { console.error(e); }
+        }
+
+        // --- Product FAQ Manager ---
+        function populateFaqProductSelect(products) {
+            const select = document.getElementById('faqProductSelect');
+            if (!select) return;
+            const prevVal = select.value;
+            if (!products || products.length === 0) {
+                select.innerHTML = `<option value="">No products available</option>`;
+                document.getElementById('adminFaqListWrap').innerHTML = `<p style="color:var(--text-muted); font-weight:800;">Launch a product first to add FAQs.</p>`;
+                return;
+            }
+            select.innerHTML = products.map(p => `<option value="${p._id}">${p.name} (${p.category})</option>`).join('');
+            if (prevVal && products.some(p => p._id === prevVal)) {
+                select.value = prevVal;
+            }
+            loadSelectedProductFaqs();
+        }
+
+        async function loadSelectedProductFaqs() {
+            const prodId = document.getElementById('faqProductSelect').value;
+            const wrap = document.getElementById('adminFaqListWrap');
+            if (!prodId) return;
+
+            let faqs = [];
+            try {
+                const res = await fetch(`${API_URL}/api/store/products/${prodId}/faqs`);
+                const data = await res.json();
+                faqs = data.faqs || [];
+            } catch (e) {
+                const localProd = adminCatalogCache.find(p => p._id === prodId);
+                faqs = (localProd && localProd.faqs) ? localProd.faqs : [];
+            }
+
+            if (faqs.length === 0) {
+                wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No FAQs added for this product yet.</p>`;
+                return;
+            }
+
+            wrap.innerHTML = faqs.map((f, idx) => `
+                <div class="faq-admin-card">
+                    <div style="font-weight:900; font-size:0.9rem; margin-bottom:4px;">Q${idx + 1}: ${f.q}</div>
+                    <div style="font-weight:700; font-size:0.84rem; color:var(--text-muted);">A: ${f.a}</div>
+                </div>
+            `).join('');
+        }
+
+        async function handleAdminFaqSubmit(e) {
+            e.preventDefault();
+            const prodId = document.getElementById('faqProductSelect').value;
+            const q = document.getElementById('adminFaqQuestion').value.trim();
+            const a = document.getElementById('adminFaqAnswer').value.trim();
+            if (!prodId || !q || !a) return;
+
+            try {
+                const res = await fetch(`${API_URL}/api/store/products/${prodId}/faqs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ q, a })
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    throw new Error(data.error || 'Could not save FAQ');
+                }
+                document.getElementById('adminFaqQuestion').value = '';
+                document.getElementById('adminFaqAnswer').value = '';
+                await loadSelectedProductFaqs();
+                showProModal('FAQ Saved', 'Question and answer added to the product!');
+            } catch (err) {
+                showProModal('Error', err.message || 'Failed to save FAQ.');
+            }
         }
 
         async function toggleStock(id, val) {
