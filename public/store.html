@@ -110,12 +110,66 @@
             }
         }
 
-        .coming-soon-container { padding: 2rem; max-width: 1400px; margin: 0 auto; }
-        .coming-soon-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem 1.5rem; text-align: center; }
-        .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
-        .drop-preview-card { background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 6px; padding: 1rem; text-align: left; }
-        .drop-media { width: 100%; height: 260px; background: #FAF6F0; border-radius: 4px; overflow: hidden; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; cursor: zoom-in; }
-        .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: contain; }
+        /* --- HIGH-TECH LUXURY UPCOMING RELEASES SECTION --- */
+        .coming-soon-container { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+        .coming-soon-card {
+            background: linear-gradient(145deg, #241913 0%, #17100C 100%);
+            color: #FAF6F0;
+            border: 1px solid rgba(184, 134, 11, 0.35);
+            border-radius: 12px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 20px 50px rgba(44, 30, 22, 0.14);
+        }
+        .drop-top-bar {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+            border-bottom: 1px solid rgba(250, 246, 240, 0.12); padding-bottom: 1.4rem;
+        }
+        .drop-live-pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(184, 134, 11, 0.16); border: 1px solid rgba(184, 134, 11, 0.45);
+            color: #F3D27A; padding: 6px 12px; border-radius: 999px;
+            font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em;
+        }
+        .pulse-dot {
+            width: 7px; height: 7px; border-radius: 50%; background: #F3D27A;
+            box-shadow: 0 0 10px #F3D27A;
+        }
+        .drop-spotlight-stage {
+            display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; align-items: center;
+            margin-top: 1.8rem; background: rgba(250, 246, 240, 0.03);
+            border: 1px solid rgba(250, 246, 240, 0.1); border-radius: 10px; padding: 1.4rem;
+        }
+        .drop-stage-media {
+            width: 100%; height: 320px; border-radius: 8px; overflow: hidden;
+            background: #100B08; border: 1px solid rgba(250, 246, 240, 0.12); cursor: zoom-in;
+        }
+        .drop-stage-media img, .drop-stage-media video { width: 100%; height: 100%; object-fit: cover; }
+        .drop-countdown-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 1.1rem 0;
+        }
+        .countdown-box {
+            background: rgba(250, 246, 240, 0.06); border: 1px solid rgba(250, 246, 240, 0.14);
+            border-radius: 6px; padding: 8px 6px; text-align: center;
+        }
+        .countdown-num { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: #FAF6F0; }
+        .countdown-lbl { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.14em; color: #D1C7BD; }
+
+        .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.4rem; margin-top: 1.8rem; }
+        .drop-preview-card {
+            background: rgba(250, 246, 240, 0.04); border: 1px solid rgba(250, 246, 240, 0.14);
+            border-radius: 8px; padding: 0.9rem; text-align: left; cursor: pointer;
+            transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+        }
+        .drop-preview-card:hover, .drop-preview-card.selected {
+            transform: translateY(-4px); border-color: var(--accent-gold); background: rgba(250, 246, 240, 0.08);
+        }
+        .drop-media { width: 100%; height: 220px; background: #140E0B; border-radius: 6px; overflow: hidden; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; }
+        .drop-media img, .drop-media video { width: 100%; height: 100%; object-fit: cover; }
+
+        @media (max-width: 860px) {
+            .drop-spotlight-stage { grid-template-columns: 1fr; }
+            .drop-stage-media { height: 220px; }
+        }
 
         .product-catalog-section { padding: 2.5rem 2rem; max-width: 1400px; margin: 0 auto; }
         .catalog-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 2rem; }
@@ -201,17 +255,28 @@
             flex-shrink: 0;
         }
 
-        .campaign-showcase-section { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+        /* --- EDITORIAL VISUAL ARCHIVE --- */
+        .campaign-showcase-section { padding: 3.5rem 2rem; max-width: 1400px; margin: 0 auto; }
         .campaign-header { text-align: center; margin-bottom: 2.5rem; }
-        .campaign-header h2 { font-size: 2.2rem; font-weight: 400; margin-bottom: 0.4rem; }
-        .campaign-header p { color: var(--text-muted); font-weight: 300; font-size: 0.9rem; }
-        .campaign-grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-        .campaign-tile { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; position: relative; }
-        .campaign-img-wrap { width: 100%; height: 300px; background: #FAF6F0; overflow: hidden; cursor: zoom-in; }
-        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: contain; padding: 10px; filter: grayscale(15%); }
-        .campaign-caption { padding: 1.2rem; text-align: left; }
-        .campaign-caption h4 { font-size: 1.05rem; font-weight: 500; margin-bottom: 0.3rem; font-family: 'Playfair Display', serif; }
-        .campaign-caption p { font-size: 0.8rem; color: var(--text-muted); font-weight: 300; }
+        .campaign-header h2 { font-size: 2.3rem; font-weight: 400; margin-bottom: 0.4rem; }
+        .campaign-header p { color: var(--text-muted); font-weight: 300; font-size: 0.92rem; }
+        .campaign-grid-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8rem; }
+        .campaign-tile {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px;
+            overflow: hidden; position: relative; cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .campaign-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 30px rgba(44, 30, 22, 0.08);
+            border-color: var(--accent-terracotta);
+        }
+        .campaign-img-wrap { width: 100%; height: 320px; background: #EDE6DA; overflow: hidden; cursor: zoom-in; position: relative; }
+        .campaign-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease, filter 0.35s ease; filter: contrast(1.03); }
+        .campaign-tile:hover .campaign-img-wrap img { transform: scale(1.05); }
+        .campaign-caption { padding: 1.25rem 1.4rem; text-align: left; background: var(--bg-card); }
+        .campaign-caption h4 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.35rem; font-family: 'Playfair Display', serif; }
+        .campaign-caption p { font-size: 0.82rem; color: var(--text-muted); font-weight: 400; line-height: 1.5; }
 
         /* Full Card Lightbox Modal */
         .lightbox-overlay {
@@ -280,7 +345,7 @@
         .pdp-slide-item.active { border-color: var(--accent-terracotta); box-shadow: 0 0 0 2px rgba(192,86,33,0.2); }
         .pdp-slide-item img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
 
-        /* --- CUSTOMER REVIEWS & FAQ INSIDE PDP --- */
+        /* --- CUSTOMER REVIEWS & READ-ONLY FAQ INSIDE PDP --- */
         .pdp-extra-section {
             margin-top: 1.8rem; border-top: 1px solid var(--border-color); padding-top: 1.4rem;
         }
@@ -305,15 +370,15 @@
         }
         .faq-item-box {
             background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 6px; margin-bottom: 8px; overflow: hidden;
+            border-radius: 6px; margin-bottom: 10px; overflow: hidden;
         }
         .faq-question-btn {
-            width: 100%; background: transparent; border: none; padding: 10px 12px;
+            width: 100%; background: transparent; border: none; padding: 12px 14px;
             display: flex; justify-content: space-between; align-items: center; text-align: left;
-            font-size: 0.84rem; font-weight: 600; color: var(--text-main); cursor: pointer;
+            font-size: 0.85rem; font-weight: 600; color: var(--text-main); cursor: pointer;
         }
         .faq-answer-panel {
-            display: none; padding: 0 12px 12px 12px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;
+            display: none; padding: 0 14px 12px 14px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.55;
         }
         .faq-item-box.open .faq-answer-panel { display: block; }
 
@@ -408,11 +473,36 @@
         <img id="storeHeroBannerImg" src="1794789114701~2.jpg.jpeg" alt="Atelier Hero Banner">
     </section>
 
-    <!-- Coming Soon Section -->
+    <!-- High-Tech Upcoming Releases Section -->
     <section class="coming-soon-container" id="comingSoonSection" style="display:none;">
         <div class="coming-soon-card">
-            <h2 style="font-size: 1.8rem; font-weight: 400; letter-spacing: -0.01em; margin-bottom: 0.3rem;">Upcoming Releases</h2>
-            <p style="font-size: 0.75rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-gold); margin-bottom: 1rem;">Limited Allocation</p>
+            <div class="drop-top-bar">
+                <div>
+                    <div class="drop-live-pill"><span class="pulse-dot"></span> Limited Allocation • Atelier Vault</div>
+                    <h2 style="font-size: 2rem; font-weight: 500; color: #FAF6F0; margin-top: 0.5rem;">Upcoming Releases</h2>
+                </div>
+                <p style="font-size: 0.8rem; color: #D1C7BD; font-weight: 300; max-width: 360px;">Select any upcoming piece to inspect in the spotlight stage or lock in release alerts.</p>
+            </div>
+
+            <div class="drop-spotlight-stage" id="dropSpotlightStage">
+                <div class="drop-stage-media" id="dropStageMedia" onclick="openSpotlightLightbox()"></div>
+                <div>
+                    <span style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; color: #F3D27A; font-weight: 700;">Featured Drop Preview</span>
+                    <h3 id="dropStageTitle" style="font-size: 1.55rem; color: #FAF6F0; margin: 0.4rem 0;"></h3>
+                    <p id="dropStageDesc" style="font-size: 0.86rem; color: #D1C7BD; line-height: 1.6; font-weight: 300;"></p>
+                    <div class="drop-countdown-grid">
+                        <div class="countdown-box"><div class="countdown-num" id="cdDays">03</div><div class="countdown-lbl">Days</div></div>
+                        <div class="countdown-box"><div class="countdown-num" id="cdHours">14</div><div class="countdown-lbl">Hours</div></div>
+                        <div class="countdown-box"><div class="countdown-num" id="cdMins">42</div><div class="countdown-lbl">Mins</div></div>
+                        <div class="countdown-box"><div class="countdown-num" id="cdSecs">19</div><div class="countdown-lbl">Secs</div></div>
+                    </div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:0.8rem;">
+                        <button type="button" id="dropAlertBtn" onclick="toggleDropAlert()" class="btn-add-bag" style="color:#FAF6F0; border-color:#F3D27A; padding:8px 16px;">Notify Me at Drop</button>
+                        <button type="button" onclick="openSpotlightLightbox()" class="btn-add-bag" style="color:#D1C7BD; border-color:rgba(250,246,240,0.35); padding:8px 14px;">Inspect Full Frame</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="coming-soon-grid" id="comingSoonGrid"></div>
         </div>
     </section>
@@ -428,11 +518,11 @@
         <div class="catalog-grid" id="catalogGrid"></div>
     </section>
 
-    <!-- Visual Campaign Showcase Segment -->
+    <!-- Editorial Visual Archive Showcase -->
     <section class="campaign-showcase-section">
         <div class="campaign-header">
             <h2>The Visual Archive</h2>
-            <p>Glimpses into our studio spaces and material craftsmanship.</p>
+            <p>Glimpses into our studio spaces, silhouettes, and material craftsmanship.</p>
         </div>
         <div class="campaign-grid-layout" id="campaignGridContainer"></div>
     </section>
@@ -494,7 +584,7 @@
         <div class="footer-watermark">hoknex</div>
     </footer>
 
-    <!-- PDP Modal with Mobile/Desktop Swipe Gallery, Reviews with Photos & FAQ -->
+    <!-- PDP Modal with Mobile/Desktop Swipe Gallery, Reviews with Photos & Read-Only FAQ -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
         <div class="modal-panel" style="max-width: 880px;">
             <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:var(--text-main); border:none; width:36px; height:36px; font-size:1.2rem; cursor:pointer;">&times;</button>
@@ -524,7 +614,7 @@
                 </div>
             </div>
 
-            <!-- Customer Reviews & Product FAQ Tabs -->
+            <!-- Customer Reviews & Read-Only Product FAQ Tabs -->
             <div class="pdp-extra-section">
                 <div class="pdp-extra-tabs">
                     <button type="button" id="subtab-reviews" class="pdp-subtab-btn active" onclick="switchPdpSubtab('reviews')">Customer Reviews & Photos</button>
@@ -555,14 +645,9 @@
                     <div id="pdpReviewsList"></div>
                 </div>
 
-                <!-- FAQ Panel -->
+                <!-- Read-Only FAQ Panel (Customers can only view FAQs) -->
                 <div id="pdpFaqPanel" style="display:none;">
-                    <div id="pdpFaqList" style="margin-bottom:1rem;"></div>
-                    <form onsubmit="submitProductQuestion(event)" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; padding:1rem; display:flex; flex-direction:column; gap:0.6rem;">
-                        <h4 style="font-size:0.95rem; font-weight:600;">Have a Question About This Product?</h4>
-                        <input type="text" id="faqQuestionInput" placeholder="Ask about sizing, fabric, wash care, or delivery..." required style="padding:8px 10px; border-radius:4px; border:1px solid var(--border-color); background:var(--bg-body); color:var(--text-main); font-size:0.82rem;">
-                        <button type="submit" class="btn-add-bag" style="padding:8px 14px; align-self:flex-start;">Submit Question</button>
-                    </form>
+                    <div id="pdpFaqList"></div>
                 </div>
             </div>
         </div>
@@ -725,10 +810,12 @@
         ];
 
         let catalog = [];
+        let dropsCache = [];
+        let activeDropIndex = 0;
+        let dropAlerts = JSON.parse(localStorage.getItem('hoknex_drop_alerts') || '[]');
         let wishlist = JSON.parse(localStorage.getItem('hoknex_wishlist') || '[]');
         let bag = JSON.parse(localStorage.getItem('hoknex_persistent_cart') || '[]');
         let customReviewsMap = JSON.parse(localStorage.getItem('hoknex_product_reviews') || '{}');
-        let customFaqsMap = JSON.parse(localStorage.getItem('hoknex_product_faqs') || '{}');
 
         let currentPdpItem = null;
         let currentPdpImages = [];
@@ -760,20 +847,92 @@
             }
         }
 
+        function startDropCountdown() {
+            const updateTimer = () => {
+                const now = new Date();
+                const end = new Date(now.getTime() + (3 * 86400 + 14 * 3600 + 42 * 60 + 19) * 1000);
+                const diff = Math.max(0, end - now);
+                const d = String(Math.floor(diff / 86400000)).padStart(2, '0');
+                const h = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
+                const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+                const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+                const elD = document.getElementById('cdDays');
+                if (elD) {
+                    elD.innerText = d;
+                    document.getElementById('cdHours').innerText = h;
+                    document.getElementById('cdMins').innerText = m;
+                    document.getElementById('cdSecs').innerText = s;
+                }
+            };
+            updateTimer();
+            if (!window._hoknexDropTimer) {
+                window._hoknexDropTimer = setInterval(updateTimer, 1000);
+            }
+        }
+
+        function renderDropSpotlight(idx) {
+            if (!dropsCache || dropsCache.length === 0) return;
+            activeDropIndex = (idx + dropsCache.length) % dropsCache.length;
+            const d = dropsCache[activeDropIndex];
+            const isVid = d.image.includes('data:video') || d.image.includes('.mp4');
+            document.getElementById('dropStageMedia').innerHTML = isVid
+                ? `<video src="${d.image}" autoplay loop muted playsinline></video>`
+                : `<img src="${d.image}" alt="${d.title}">`;
+            document.getElementById('dropStageTitle').innerText = d.title;
+            document.getElementById('dropStageDesc').innerText = d.desc;
+
+            const key = d._id || d.title;
+            const alertBtn = document.getElementById('dropAlertBtn');
+            const alerted = dropAlerts.includes(key);
+            alertBtn.innerText = alerted ? 'Alert Enabled ✓' : 'Notify Me at Drop';
+            alertBtn.style.background = alerted ? 'var(--accent-gold)' : 'transparent';
+            alertBtn.style.color = alerted ? '#2C1E16' : '#FAF6F0';
+
+            document.querySelectorAll('#comingSoonGrid .drop-preview-card').forEach((card, i) => {
+                card.classList.toggle('selected', i === activeDropIndex);
+            });
+        }
+
+        function toggleDropAlert() {
+            const d = dropsCache[activeDropIndex];
+            if (!d) return;
+            const key = d._id || d.title;
+            const idx = dropAlerts.indexOf(key);
+            if (idx > -1) {
+                dropAlerts.splice(idx, 1);
+                showProModal('Drop Alert', `Removed alert for "${d.title}".`);
+            } else {
+                dropAlerts.push(key);
+                showProModal('Drop Alert Set', `You will be notified when "${d.title}" releases.`);
+            }
+            localStorage.setItem('hoknex_drop_alerts', JSON.stringify(dropAlerts));
+            renderDropSpotlight(activeDropIndex);
+        }
+
+        function openSpotlightLightbox() {
+            const d = dropsCache[activeDropIndex];
+            if (d && d.image) openLightbox(d.image, d.title);
+        }
+
         function renderComingSoon(drops) {
             const section = document.getElementById('comingSoonSection');
             const grid = document.getElementById('comingSoonGrid');
             if(!drops || drops.length === 0) { section.style.display = 'none'; return; }
+            dropsCache = drops;
             section.style.display = 'block';
-            grid.innerHTML = drops.map(d => `
-                <div class="drop-preview-card" onclick="openLightbox('${d.image}', '${d.title}')">
+            startDropCountdown();
+
+            grid.innerHTML = drops.map((d, idx) => `
+                <div class="drop-preview-card ${idx === activeDropIndex ? 'selected' : ''}" onclick="renderDropSpotlight(${idx})">
                     <div class="drop-media">
                         ${d.image.includes('data:video') || d.image.includes('.mp4') ? `<video src="${d.image}" autoplay loop muted style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${d.image}" alt="Drop">`}
                     </div>
-                    <h4 style="font-weight:500; font-size:0.95rem; margin-bottom:4px; color:var(--text-main); font-family:'Playfair Display',serif;">${d.title}</h4>
-                    <p style="font-size:0.78rem; color:var(--text-muted); font-weight:300;">${d.desc}</p>
+                    <h4 style="font-weight:500; font-size:0.95rem; margin-bottom:4px; color:#FAF6F0; font-family:'Playfair Display',serif;">${d.title}</h4>
+                    <p style="font-size:0.78rem; color:#D1C7BD; font-weight:300;">${d.desc}</p>
                 </div>
             `).join('');
+
+            renderDropSpotlight(activeDropIndex);
         }
 
         function renderCampaignShowcase(camps) {
@@ -1096,43 +1255,38 @@
             document.getElementById('pdpRatingDisplay').innerText = `⭐ ${avgRating} (${(currentPdpItem.ratings || []).length} reviews)`;
         }
 
-        function renderPdpFaqs(itemId) {
+        // --- Read-Only Product FAQ (Customers can only view) ---
+        async function renderPdpFaqs(itemId) {
             const listEl = document.getElementById('pdpFaqList');
-            const baseFaqs = currentPdpItem && currentPdpItem.faqs ? currentPdpItem.faqs : [
-                { q: "What is the return / exchange policy?", a: "Eligible unused items in original packaging can be requested for support via our tracking/support channels." },
-                { q: "How long does delivery take?", a: "Orders are processed promptly and dispatched to your shipping address with live order ID tracking." }
-            ];
-            const extraFaqs = customFaqsMap[itemId] || [];
-            const allFaqs = [...baseFaqs, ...extraFaqs];
+            let faqs = (currentPdpItem && Array.isArray(currentPdpItem.faqs)) ? currentPdpItem.faqs : [];
 
-            listEl.innerHTML = allFaqs.map((f, idx) => `
+            try {
+                const res = await fetch(`${API_URL}/api/store/products/${itemId}/faqs`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data.faqs)) {
+                        faqs = data.faqs;
+                        if (currentPdpItem) currentPdpItem.faqs = faqs;
+                    }
+                }
+            } catch (e) {}
+
+            if (!faqs || faqs.length === 0) {
+                faqs = [
+                    { q: "What is the return / exchange policy?", a: "Eligible unused items in original packaging can be requested for support via our tracking/support channels." },
+                    { q: "How long does delivery take?", a: "Orders are processed promptly and dispatched to your shipping address with live order ID tracking." }
+                ];
+            }
+
+            listEl.innerHTML = faqs.map((f, idx) => `
                 <div class="faq-item-box ${idx === 0 ? 'open' : ''}">
                     <button type="button" class="faq-question-btn" onclick="this.parentElement.classList.toggle('open')">
                         <span>Q: ${f.q}</span>
                         <span>▾</span>
                     </button>
-                    <div class="faq-answer-panel">A: ${f.a}</div>
+                    <div class="faq-answer-panel">A: ${f.a || 'Details available from our atelier team.'}</div>
                 </div>
             `).join('');
-        }
-
-        function submitProductQuestion(e) {
-            e.preventDefault();
-            if (!currentPdpItem) return;
-            const itemId = currentPdpItem._id || currentPdpItem.id;
-            const qInput = document.getElementById('faqQuestionInput');
-            const questionText = qInput.value.trim();
-            if (!questionText) return;
-
-            if (!customFaqsMap[itemId]) customFaqsMap[itemId] = [];
-            customFaqsMap[itemId].push({
-                q: questionText,
-                a: "Submitted! Our team will update the answer shortly."
-            });
-            localStorage.setItem('hoknex_product_faqs', JSON.stringify(customFaqsMap));
-            qInput.value = '';
-            renderPdpFaqs(itemId);
-            showProModal('Question Submitted', 'Your question has been added to this product\'s FAQ.');
         }
 
         function openPdpModal(id) {
