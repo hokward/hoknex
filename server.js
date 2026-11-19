@@ -548,31 +548,134 @@ app.post('/api/store/drop-alerts', async (req, res) => {
     }
 });
 
+const ProductSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    category: { type: String, required: true },
+    price: { type: Number, required: true },
+    deliveryFee: { type: Number, default: 0 },
+    description: String,
+    image: String,
+    video: { type: String, default: '' },
+    galleryImages: [String],
+    inStock: { type: Boolean, default: true },
+    sizes: { type: [String], default: ['S', 'M', 'L', 'XL'] },
+    ratings: [Number],
+    votes: { type: Number, default: 0 },
+    wishlistCount: { type: Number, default: 0 },
+    badge: { type: String, default: 'New Arrival' },
+    reviews: [{
+        reviewerName: String,
+        rating: Number,
+        comment: String,
+        photoUrl: String,
+        date: String
+    }],
+    faqs: [{
+        q: String,
+        a: String
+    }]
+});
+const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
+
+const StoreOrderSchema = new mongoose.Schema({
+    orderId: String,
+    name: String,
+    phone: String,
+    email: String,
+    address: String,
+    payMode: String,
+    items: Array,
+    subtotal: Number,
+    deliveryFee: Number,
+    total: Number,
+    status: String,
+    timeline: Array,
+    customMessage: String,
+    customImage: String,
+    paymentProofUrl: String,
+    date: String
+});
+const StoreOrder = mongoose.models.StoreOrder || mongoose.model('StoreOrder', StoreOrderSchema);
+
+const StoreSubscriberSchema = new mongoose.Schema({
+    email: String,
+    date: String
+});
+const StoreSubscriber = mongoose.models.StoreSubscriber || mongoose.model('StoreSubscriber', StoreSubscriberSchema);
+
+const StoreQRSchema = new mongoose.Schema({
+    imageUrl: String
+});
+const StoreQR = mongoose.models.StoreQR || mongoose.model('StoreQR', StoreQRSchema);
+
+const ComingSoonDropSchema = new mongoose.Schema({
+    title: String,
+    desc: String,
+    image: String
+});
+const ComingSoonDrop = mongoose.models.ComingSoonDrop || mongoose.model('ComingSoonDrop', ComingSoonDropSchema);
+
+const CampaignSchema = new mongoose.Schema({
+    title: String,
+    desc: String,
+    image: String
+});
+const Campaign = mongoose.models.Campaign || mongoose.model('Campaign', CampaignSchema);
+
 app.post('/api/store/send-drop-launch-email', async (req, res) => {
     try {
         const { recipients, productTitle, productDesc, productImage } = req.body;
-        const dbAlerts = await StoreDropAlert.find({ productTitle: productTitle || '' });
+        const title = productTitle || 'Hoknex Atelier Drop';
+        const desc = productDesc || 'Your requested upcoming release is now live at the Hoknex Store.';
+
+        const dbAlerts = await StoreDropAlert.find({ productTitle: title });
         const combinedRecipients = [
             ...(Array.isArray(recipients) ? recipients : []),
             ...dbAlerts.map(a => a.email)
         ];
 
-        const title = productTitle || 'Hoknex Atelier Drop';
-        const desc = productDesc || 'Your requested upcoming release is now live at the Hoknex Store.';
-        const imgBlock = (productImage && !/\.(mp4|webm|mov)(\?|$)/i.test(productImage))
-            ? `<img src="${productImage}" alt="${title}" style="max-width:100%; max-height:280px; border-radius:8px; margin:12px 0; display:block;">`
+        let resolvedImg = String(productImage || '').trim();
+        if (!/^https:\/\//i.test(resolvedImg)) {
+            const matchedDrop = await ComingSoonDrop.findOne({ title });
+            if (matchedDrop && /^https:\/\//i.test(String(matchedDrop.image || '').trim())) {
+                resolvedImg = String(matchedDrop.image).trim();
+            } else {
+                const matchedProd = await Product.findOne({ name: title });
+                if (matchedProd && /^https:\/\//i.test(String(matchedProd.image || '').trim())) {
+                    resolvedImg = String(matchedProd.image).trim();
+                } else {
+                    const alertWithImg = dbAlerts.find(a => /^https:\/\//i.test(String(a.productImage || '').trim()));
+                    if (alertWithImg) resolvedImg = String(alertWithImg.productImage).trim();
+                }
+            }
+        }
+
+        const isHttpImage = /^https:\/\//i.test(resolvedImg) && !/\.(mp4|webm|mov)(\?|$)/i.test(resolvedImg);
+        const imgBlock = isHttpImage
+            ? `
+                <div style="margin:16px 0; text-align:center; background:#F2ECE1; padding:12px; border-radius:8px; border:1px solid #E2DBD0;">
+                    <img src="${resolvedImg}" alt="${title}" style="max-width:100%; max-height:300px; border-radius:6px; display:inline-block;">
+                    <div style="margin-top:8px; font-size:12px;"><a href="${resolvedImg}" target="_blank" style="color:#C05621; font-weight:600; text-decoration:none;">View Product Photo ↗</a></div>
+                </div>
+            `
             : '';
 
         const htmlContent = `
-            <div style="font-family:sans-serif; max-width:560px; margin:0 auto; padding:24px; background:#FAF6F0; color:#2C1E16; border:1px solid #E2DBD0; border-radius:8px;">
-                <p style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#C05621; font-weight:700;">Hoknex Atelier Release</p>
-                <h2 style="margin:6px 0 10px 0;">${title} Is Now Live</h2>
-                <p style="color:#6E5D52; line-height:1.6;">${desc}</p>
-                ${imgBlock}
-                <p style="font-size:12px; color:#6E5D52; margin-top:16px;">Sent by Hoknex Official Store (hoknex.in@gmail.com)</p>
+            <div style="font-family:'Plus Jakarta Sans',Arial,sans-serif; max-width:580px; margin:0 auto; background:#FAF6F0; color:#2C1E16; border:1px solid #E2DBD0; border-radius:10px; overflow:hidden;">
+                <div style="background:#2C1E16; color:#FAF6F0; padding:18px 24px;">
+                    <div style="font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:#E5C158; font-weight:700;">Hoknex Official Store • Drop Launched</div>
+                    <h2 style="margin:6px 0 0 0; font-size:20px; font-weight:600; color:#FAF6F0;">${title} Is Now Live</h2>
+                </div>
+                <div style="padding:24px; line-height:1.65; font-size:14px;">
+                    <p style="margin:0 0 12px 0; color:#6E5D52;">${desc}</p>
+                    ${imgBlock}
+                    <div style="margin-top:20px; padding-top:14px; border-top:1px solid #E2DBD0; font-size:12px; color:#6E5D52;">
+                        Sent by <strong style="color:#2C1E16;">Hoknex Official Store</strong> • hoknex.in@gmail.com
+                    </div>
+                </div>
             </div>
         `;
-        const textContent = `Hoknex Official Store (hoknex.in@gmail.com)\n\n${title} Is Now Live!\n${desc}\n${productImage ? `Preview: ${productImage}` : ''}`;
+        const textContent = `Hoknex Official Store (hoknex.in@gmail.com)\n\n${title} Is Now Live!\n${desc}\n${isHttpImage ? `Product Image: ${resolvedImg}` : ''}`;
 
         const result = await sendStoreEmailViaBrevo({
             toEmails: combinedRecipients,
@@ -598,7 +701,7 @@ app.post('/api/store/report-fake-payment', async (req, res) => {
         const safeName = customerName || 'Valued Customer';
         const safeProofUrl = String(proofUrl || '').trim();
 
-        const attachmentBlock = safeProofUrl
+        const attachmentBlock = /^https?:\/\//i.test(safeProofUrl)
             ? `
                 <div style="margin:18px 0; padding:12px; background:#F2ECE1; border:1px solid #E2DBD0; border-radius:6px;">
                     <p style="margin:0 0 8px 0; font-size:12px; font-weight:700; color:#2C1E16; text-transform:uppercase; letter-spacing:1px;">Submitted Payment Screenshot</p>
@@ -645,35 +748,6 @@ app.post('/api/store/report-fake-payment', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
-const ProductSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    category: { type: String, required: true },
-    price: { type: Number, required: true },
-    deliveryFee: { type: Number, default: 0 },
-    description: String,
-    image: String,
-    video: { type: String, default: '' },
-    galleryImages: [String],
-    inStock: { type: Boolean, default: true },
-    sizes: { type: [String], default: ['S', 'M', 'L', 'XL'] },
-    ratings: [Number],
-    votes: { type: Number, default: 0 },
-    wishlistCount: { type: Number, default: 0 },
-    badge: { type: String, default: 'New Arrival' },
-    reviews: [{
-        reviewerName: String,
-        rating: Number,
-        comment: String,
-        photoUrl: String,
-        date: String
-    }],
-    faqs: [{
-        q: String,
-        a: String
-    }]
-});
-const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
 
 // --- Product Wishlist Count Endpoint ---
 app.put('/api/store/products/:id/wishlist', async (req, res) => {
@@ -757,51 +831,6 @@ app.post('/api/store/products/:id/faqs', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
-const StoreOrderSchema = new mongoose.Schema({
-    orderId: String,
-    name: String,
-    phone: String,
-    email: String,
-    address: String,
-    payMode: String,
-    items: Array,
-    subtotal: Number,
-    deliveryFee: Number,
-    total: Number,
-    status: String,
-    timeline: Array,
-    customMessage: String,
-    customImage: String,
-    paymentProofUrl: String,
-    date: String
-});
-const StoreOrder = mongoose.models.StoreOrder || mongoose.model('StoreOrder', StoreOrderSchema);
-
-const StoreSubscriberSchema = new mongoose.Schema({
-    email: String,
-    date: String
-});
-const StoreSubscriber = mongoose.models.StoreSubscriber || mongoose.model('StoreSubscriber', StoreSubscriberSchema);
-
-const StoreQRSchema = new mongoose.Schema({
-    imageUrl: String
-});
-const StoreQR = mongoose.models.StoreQR || mongoose.model('StoreQR', StoreQRSchema);
-
-const ComingSoonDropSchema = new mongoose.Schema({
-    title: String,
-    desc: String,
-    image: String
-});
-const ComingSoonDrop = mongoose.models.ComingSoonDrop || mongoose.model('ComingSoonDrop', ComingSoonDropSchema);
-
-const CampaignSchema = new mongoose.Schema({
-    title: String,
-    desc: String,
-    image: String
-});
-const Campaign = mongoose.models.Campaign || mongoose.model('Campaign', CampaignSchema);
 
 // ==========================================
 // --- DEDICATED DONATION & CERTIFICATE ROUTES ---
