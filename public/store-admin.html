@@ -106,10 +106,10 @@
 
         <!-- 0. Store Hero Banner Uploader -->
         <div class="admin-section" style="background:#FAF9F6; border-color:#232D2F;">
-            <h2>🖼️ 0. Store Hero Banner Uploader</h2>
-            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Upload the full-size cinematic image for the store hero banner section.</p>
+            <h2>🖼️ 0. Store Hero Banner Uploader (Photo or Video)</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:1.5rem;">Upload a full-size image or video for the store hero banner section.</p>
             <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-bottom:1rem;">
-                <input type="file" id="heroBannerFile" accept="image/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:12px; font-weight:800; flex:1; min-width:280px; font-size:16px !important;">
+                <input type="file" id="heroBannerFile" accept="image/*,video/*" style="background:#FAF9F6; border:2.5px solid var(--border-color); padding:10px; border-radius:12px; font-weight:800; flex:1; min-width:280px; font-size:16px !important;">
                 <button onclick="uploadStoreHeroBanner()" class="btn-action" style="background:#111827;">Upload Hero Banner 🚀</button>
             </div>
             <div id="currentHeroPreview" style="margin-top:1rem;"></div>
@@ -210,7 +210,7 @@
             formData.append('file', file);
             formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
-            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, {
                 method: 'POST',
                 body: formData
             });
@@ -264,52 +264,62 @@
         }
         function closeProModal() { document.getElementById('proModalOverlay').style.display = 'none'; }
 
-        // --- Hero Banner Uploader Logic (Persisted in MongoDB + LocalStorage) ---
+        // --- Hero Banner Uploader Logic (Image & Video Persisted in MongoDB + LocalStorage) ---
         async function uploadStoreHeroBanner() {
             const fileInput = document.getElementById('heroBannerFile');
             if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+
                 try {
-                    showProModal('Uploading...', 'Uploading hero banner to Cloudinary...');
-                    const bannerUrl = await uploadDirectToCloudinary(fileInput.files[0]);
+                    showProModal('Uploading...', `Uploading hero ${mediaType} to Cloudinary...`);
+                    const bannerUrl = await uploadDirectToCloudinary(file);
 
                     const res = await fetch(`${API_URL}/api/store/hero-banner`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ imageUrl: bannerUrl })
+                        body: JSON.stringify({ imageUrl: bannerUrl, mediaType })
                     });
                     const data = await res.json();
                     if (!res.ok || !data.success) {
                         throw new Error(data.error || 'Failed to save hero banner to database');
                     }
 
-                    localStorage.setItem('hoknex_store_hero_banner', bannerUrl);
-                    renderHeroPreview(bannerUrl);
-                    showProModal('Success!', 'Store hero banner saved globally! It is now visible to everyone on the store page.');
+                    localStorage.setItem('hoknex_store_hero_banner', JSON.stringify({ imageUrl: bannerUrl, mediaType }));
+                    renderHeroPreview(bannerUrl, mediaType);
+                    showProModal('Success!', `Store hero ${mediaType} saved globally! It is now visible to everyone on the store page.`);
                 } catch(e) {
                     showProModal('Error', e.message || 'Hero banner upload failed.');
                 }
             } else {
-                showProModal('Notice', 'Please select an image file first.');
+                showProModal('Notice', 'Please select an image or video file first.');
             }
         }
 
-        async function renderHeroPreview(overrideUrl = null) {
+        async function renderHeroPreview(overrideUrl = null, overrideType = null) {
             const previewDiv = document.getElementById('currentHeroPreview');
-            let currentUrl = overrideUrl || localStorage.getItem('hoknex_store_hero_banner') || '';
+            let saved = {};
+            try { saved = JSON.parse(localStorage.getItem('hoknex_store_hero_banner') || '{}'); } catch(e) {}
+            let currentUrl = overrideUrl || saved.imageUrl || '';
+            let currentType = overrideType || saved.mediaType || 'image';
 
             try {
                 const res = await fetch(`${API_URL}/api/store/hero-banner`);
                 const data = await res.json();
                 if (data && data.imageUrl) {
                     currentUrl = data.imageUrl;
-                    localStorage.setItem('hoknex_store_hero_banner', currentUrl);
+                    currentType = data.mediaType || (/\.(mp4|webm|mov)(\?|$)/i.test(currentUrl) ? 'video' : 'image');
+                    localStorage.setItem('hoknex_store_hero_banner', JSON.stringify({ imageUrl: currentUrl, mediaType: currentType }));
                 }
             } catch (e) {
                 console.warn('Could not fetch hero banner preview from server:', e);
             }
 
             if (currentUrl) {
-                previewDiv.innerHTML = `<p style="font-size:0.8rem; font-weight:800; margin-bottom:6px;">Current Hero Banner Preview:</p><img src="${currentUrl}" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px; border:2px solid var(--border-color);">`;
+                const mediaHtml = currentType === 'video'
+                    ? `<video src="${currentUrl}" autoplay muted loop playsinline style="width:100%; max-height:180px; object-fit:cover; border-radius:8px; border:2px solid var(--border-color);"></video>`
+                    : `<img src="${currentUrl}" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px; border:2px solid var(--border-color);">`;
+                previewDiv.innerHTML = `<p style="font-size:0.8rem; font-weight:800; margin-bottom:6px;">Current Hero Banner Preview (${currentType.toUpperCase()}):</p>${mediaHtml}`;
             } else {
                 previewDiv.innerHTML = `<p style="font-size:0.8rem; font-weight:800; color:var(--text-muted);">No custom banner uploaded yet. Using default fallback asset.</p>`;
             }
