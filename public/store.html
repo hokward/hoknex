@@ -84,7 +84,7 @@
         }
         .mob-nav-item span.icon { font-size: 1.2rem; }
 
-        /* Full-Bleed Immersive Hero Banner (Flush against navbar, zero extra gaps) */
+        /* Full-Bleed Immersive Hero Banner */
         .store-hero-banner {
             width: 100%;
             overflow: hidden;
@@ -240,13 +240,33 @@
         @keyframes fadeInLightbox { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scaleUpLightbox { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* Enhanced Interactive Zoom Container & Mobile Swipe Slider */
+        /* Enhanced Interactive Zoom Container & Swipe Controls (Mobile + Desktop) */
         .zoomable-container {
-            position: relative; overflow: hidden; cursor: zoom-in;
+            position: relative; overflow: hidden; cursor: grab; user-select: none;
             border-radius: 4px; background: #FAF6F0; border: 1px solid var(--border-color); height: 360px; display: flex; align-items: center; justify-content: center;
         }
-        .zoomable-container img { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); width: 100%; height: 100%; object-fit: contain; padding: 10px; }
-        .zoomable-container.zoomed img { transform: scale(2.5); cursor: zoom-out; }
+        .zoomable-container:active { cursor: grabbing; }
+        .zoomable-container img { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); width: 100%; height: 100%; object-fit: contain; padding: 10px; pointer-events: none; }
+        .zoomable-container.zoomed { cursor: zoom-out; }
+        .zoomable-container.zoomed img { transform: scale(2.5); }
+
+        .swipe-arrow-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(250, 246, 240, 0.9); border: 1px solid var(--border-color);
+            color: var(--text-main); width: 32px; height: 32px; border-radius: 50%;
+            font-size: 1rem; font-weight: 700; cursor: pointer; z-index: 4;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+        .swipe-arrow-btn.prev { left: 10px; }
+        .swipe-arrow-btn.next { right: 10px; }
+
+        .pdp-media-bar {
+            display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 6px;
+        }
+        .pdp-dots { display: flex; gap: 5px; }
+        .pdp-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-color); cursor: pointer; }
+        .pdp-dot.active { background: var(--accent-terracotta); }
 
         /* Mobile Swipe Carousel for PDP Gallery */
         .pdp-slider-track {
@@ -259,6 +279,43 @@
         }
         .pdp-slide-item.active { border-color: var(--accent-terracotta); box-shadow: 0 0 0 2px rgba(192,86,33,0.2); }
         .pdp-slide-item img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+
+        /* --- CUSTOMER REVIEWS & FAQ INSIDE PDP --- */
+        .pdp-extra-section {
+            margin-top: 1.8rem; border-top: 1px solid var(--border-color); padding-top: 1.4rem;
+        }
+        .pdp-extra-tabs {
+            display: flex; gap: 10px; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.6rem;
+        }
+        .pdp-subtab-btn {
+            background: transparent; border: 1px solid var(--border-color); color: var(--text-muted);
+            padding: 6px 14px; border-radius: 4px; font-size: 0.72rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer;
+        }
+        .pdp-subtab-btn.active {
+            background: var(--text-main); color: #FAF6F0; border-color: var(--text-main);
+        }
+        .review-card-box {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 6px; padding: 12px; margin-bottom: 10px;
+        }
+        .review-photo-thumb {
+            width: 68px; height: 68px; object-fit: cover; border-radius: 4px;
+            border: 1px solid var(--border-color); margin-top: 8px; margin-right: 6px; cursor: zoom-in;
+        }
+        .faq-item-box {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 6px; margin-bottom: 8px; overflow: hidden;
+        }
+        .faq-question-btn {
+            width: 100%; background: transparent; border: none; padding: 10px 12px;
+            display: flex; justify-content: space-between; align-items: center; text-align: left;
+            font-size: 0.84rem; font-weight: 600; color: var(--text-main); cursor: pointer;
+        }
+        .faq-answer-panel {
+            display: none; padding: 0 12px 12px 12px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;
+        }
+        .faq-item-box.open .faq-answer-panel { display: block; }
 
         .store-footer { background: #2C1E16; color: #FAF6F0; padding: 4rem 2rem 3rem 2rem; margin-top: 4rem; border-top: 1px solid var(--border-color); position: relative; }
         .footer-newsletter { max-width: 700px; margin-bottom: 3rem; padding-bottom: 2.5rem; border-bottom: 1px solid rgba(250,246,240,0.15); }
@@ -437,17 +494,22 @@
         <div class="footer-watermark">hoknex</div>
     </footer>
 
-    <!-- PDP Modal with Mobile Slide Carousel & Enhanced Zoom -->
+    <!-- PDP Modal with Mobile/Desktop Swipe Gallery, Reviews with Photos & FAQ -->
     <div id="pdpModal" class="modal-overlay" onclick="if(event.target === this) closeModal('pdpModal')">
-        <div class="modal-panel" style="max-width: 850px;">
+        <div class="modal-panel" style="max-width: 880px;">
             <button onclick="closeModal('pdpModal')" style="position:absolute; top:20px; right:20px; background:transparent; color:var(--text-main); border:none; width:36px; height:36px; font-size:1.2rem; cursor:pointer;">&times;</button>
             <div style="display:flex; gap:2.5rem; flex-wrap:wrap;">
                 <div style="flex:1; min-width:260px; text-align:center;">
-                    <div id="pdpMainBox" class="zoomable-container" onclick="toggleZoom(this)">
-                        <span id="pdpMainEmoji" style="font-size:5rem;">🧥</span>
+                    <div id="pdpMainBox" class="zoomable-container" onclick="handlePdpBoxClick(event, this)">
+                        <button type="button" class="swipe-arrow-btn prev" onclick="event.stopPropagation(); stepPdpSlide(-1)">‹</button>
+                        <div id="pdpSlideContent" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"><span id="pdpMainEmoji" style="font-size:5rem;">🧥</span></div>
+                        <button type="button" class="swipe-arrow-btn next" onclick="event.stopPropagation(); stepPdpSlide(1)">›</button>
                     </div>
-                    <p style="font-size:0.7rem; color:var(--text-muted); margin-top:6px; letter-spacing:0.05em;">Tap image to Zoom In / Out</p>
-                    <div class="pdp-slider-track" id="pdpThumbnails" style="margin-top:12px;"></div>
+                    <div class="pdp-media-bar">
+                        <p style="font-size:0.7rem; color:var(--text-muted); letter-spacing:0.04em;">Swipe or drag to slide • Tap to Zoom</p>
+                        <div class="pdp-dots" id="pdpSlideDots"></div>
+                    </div>
+                    <div class="pdp-slider-track" id="pdpThumbnails" style="margin-top:10px;"></div>
                 </div>
                 <div style="flex:1; min-width:260px;">
                     <span id="pdpBadge" style="font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.2em; color:var(--accent-terracotta);">Atelier Exclusive</span>
@@ -459,7 +521,48 @@
                     <div id="pdpSizeSection"><div style="font-size:0.75rem; font-weight:600; color:var(--text-main); text-transform:uppercase; margin-bottom:0.5rem; letter-spacing:0.15em;">Select Size</div><div style="display:flex; gap:8px; margin-bottom:1.2rem; flex-wrap:wrap;" id="sizeGroup"></div></div>
                     <div id="pdpStockSection" style="display:none; margin-bottom:1.2rem;"><p style="color:var(--accent-terracotta); font-weight:600; font-size:0.85rem; margin-bottom:8px;">Currently Unavailable</p><button onclick="voteForStock()" class="btn-primary" style="background:#2C1E16; color:#FAF6F0;">Register Interest (<span id="voteCountDisplay">0</span>)</button></div>
                     <button id="pdpAddBtn" onclick="addPdpToBag()" class="btn-primary">Add to Bag</button>
-                    <div style="margin-top:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;"><label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.15em;">Rate this piece:</label><select id="userRatingSelect" onchange="submitUserRating()" style="margin-top:6px; padding:8px; font-weight:400; border-radius:2px; background:var(--bg-body); color:var(--text-main); border:1px solid var(--border-color); width:100%; outline:none;"><option value="5">⭐⭐⭐⭐⭐ (5/5)</option><option value="4">⭐⭐⭐⭐ (4/5)</option><option value="3">⭐⭐⭐ (3/5)</option><option value="2">⭐⭐ (2/5)</option><option value="1">⭐ (1/5)</option></select></div>
+                </div>
+            </div>
+
+            <!-- Customer Reviews & Product FAQ Tabs -->
+            <div class="pdp-extra-section">
+                <div class="pdp-extra-tabs">
+                    <button type="button" id="subtab-reviews" class="pdp-subtab-btn active" onclick="switchPdpSubtab('reviews')">Customer Reviews & Photos</button>
+                    <button type="button" id="subtab-faq" class="pdp-subtab-btn" onclick="switchPdpSubtab('faq')">Product FAQ</button>
+                </div>
+
+                <!-- Reviews Panel -->
+                <div id="pdpReviewsPanel">
+                    <form onsubmit="submitCustomerReview(event)" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; padding:1rem; margin-bottom:1.2rem; display:flex; flex-direction:column; gap:0.7rem;">
+                        <h4 style="font-size:1rem; font-weight:600;">Write a Review & Share Your Photo</h4>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <input type="text" id="reviewerNameInput" placeholder="Your Name" required style="padding:8px 10px; border-radius:4px; border:1px solid var(--border-color); background:var(--bg-body); color:var(--text-main); font-size:0.82rem;">
+                            <select id="reviewStarInput" style="padding:8px 10px; border-radius:4px; border:1px solid var(--border-color); background:var(--bg-body); color:var(--text-main); font-size:0.82rem;">
+                                <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                                <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                                <option value="3">⭐⭐⭐ (3/5)</option>
+                                <option value="2">⭐⭐ (2/5)</option>
+                                <option value="1">⭐ (1/5)</option>
+                            </select>
+                        </div>
+                        <textarea id="reviewCommentInput" rows="2" placeholder="Share how the fit, fabric, or product quality feels..." required style="padding:8px 10px; border-radius:4px; border:1px solid var(--border-color); background:var(--bg-body); color:var(--text-main); font-size:0.82rem; resize:vertical;"></textarea>
+                        <div>
+                            <label style="font-size:0.7rem; font-weight:600; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.1em;">Upload Experience Photo (Optional)</label>
+                            <input type="file" id="reviewPhotoInput" accept="image/*" style="width:100%; margin-top:4px; font-size:0.78rem; color:var(--text-main);">
+                        </div>
+                        <button type="submit" class="btn-add-bag" style="padding:8px 14px; align-self:flex-start;">Post Review</button>
+                    </form>
+                    <div id="pdpReviewsList"></div>
+                </div>
+
+                <!-- FAQ Panel -->
+                <div id="pdpFaqPanel" style="display:none;">
+                    <div id="pdpFaqList" style="margin-bottom:1rem;"></div>
+                    <form onsubmit="submitProductQuestion(event)" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; padding:1rem; display:flex; flex-direction:column; gap:0.6rem;">
+                        <h4 style="font-size:0.95rem; font-weight:600;">Have a Question About This Product?</h4>
+                        <input type="text" id="faqQuestionInput" placeholder="Ask about sizing, fabric, wash care, or delivery..." required style="padding:8px 10px; border-radius:4px; border:1px solid var(--border-color); background:var(--bg-body); color:var(--text-main); font-size:0.82rem;">
+                        <button type="submit" class="btn-add-bag" style="padding:8px 14px; align-self:flex-start;">Submit Question</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -563,7 +666,7 @@
             formData.append('file', file);
             formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
-            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, {
                 method: 'POST',
                 body: formData
             });
@@ -598,21 +701,40 @@
             }
         }
 
-        // --- PDP Enhanced Interactive Zoom Toggle ---
-        function toggleZoom(container) {
-            container.classList.toggle('zoomed');
-        }
-
         let defaultCatalog = [
-            { id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49, emoji: "🧥", badge: "New Drop", inStock: true, sizes: ['S', 'M', 'L', 'XL'], ratings: [5, 5, 4], votes: 12, description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.", galleryImages: ["🧥", "👔", "🔎"] },
-            { id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99, emoji: "👟", badge: "Best Seller", inStock: true, sizes: ['7', '8', '9', '10'], ratings: [5, 5, 5], votes: 8, description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.", galleryImages: ["👟", "🥾", "🔎"] }
+            {
+                id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49,
+                emoji: "🧥", badge: "New Drop", inStock: true, sizes: ['S', 'M', 'L', 'XL'], ratings: [5, 5, 4], votes: 12,
+                description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.",
+                galleryImages: ["🧥", "👔", "🔎"],
+                faqs: [
+                    { q: "What GSM / fabric weight is this sweatshirt?", a: "Crafted from heavyweight organic cotton with structured ribbed collar and cuffs." },
+                    { q: "Should I size up for a relaxed fit?", a: "True to size for a standard fit; pick one size up for an oversized streetwear look." }
+                ]
+            },
+            {
+                id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99,
+                emoji: "👟", badge: "Best Seller", inStock: true, sizes: ['7', '8', '9', '10'], ratings: [5, 5, 5], votes: 8,
+                description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.",
+                galleryImages: ["👟", "🥾", "🔎"],
+                faqs: [
+                    { q: "Are these comfortable for all-day campus walking?", a: "Yes, designed with cushioned insoles and reinforced stitching for everyday wear." },
+                    { q: "How should I clean leather panels?", a: "Wipe gently with a damp soft cloth and avoid direct heat drying." }
+                ]
+            }
         ];
 
         let catalog = [];
         let wishlist = JSON.parse(localStorage.getItem('hoknex_wishlist') || '[]');
         let bag = JSON.parse(localStorage.getItem('hoknex_persistent_cart') || '[]');
+        let customReviewsMap = JSON.parse(localStorage.getItem('hoknex_product_reviews') || '{}');
+        let customFaqsMap = JSON.parse(localStorage.getItem('hoknex_product_faqs') || '{}');
+
         let currentPdpItem = null;
+        let currentPdpImages = [];
+        let currentSlideIndex = 0;
         let selectedSize = 'S';
+        let didSwipeMove = false;
 
         async function fetchStoreData() {
             try {
@@ -803,33 +925,240 @@
             document.getElementById('wishlistModal').style.display = 'flex';
         }
 
+        // --- Swipe / Drag Image Gallery & Zoom ---
+        function attachSwipeListeners() {
+            const box = document.getElementById('pdpMainBox');
+            if (!box || box.dataset.swipeBound) return;
+            box.dataset.swipeBound = 'true';
+
+            let startX = 0;
+            let isDragging = false;
+
+            box.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                didSwipeMove = false;
+            }, { passive: true });
+
+            box.addEventListener('touchmove', (e) => {
+                if (Math.abs(e.touches[0].clientX - startX) > 12) didSwipeMove = true;
+            }, { passive: true });
+
+            box.addEventListener('touchend', (e) => {
+                const diffX = e.changedTouches[0].clientX - startX;
+                if (Math.abs(diffX) > 40) {
+                    didSwipeMove = true;
+                    stepPdpSlide(diffX < 0 ? 1 : -1);
+                }
+            });
+
+            box.addEventListener('mousedown', (e) => {
+                if (e.target.closest('.swipe-arrow-btn')) return;
+                isDragging = true;
+                startX = e.clientX;
+                didSwipeMove = false;
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                if (Math.abs(e.clientX - startX) > 10) didSwipeMove = true;
+            });
+
+            window.addEventListener('mouseup', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                const diffX = e.clientX - startX;
+                if (Math.abs(diffX) > 45) {
+                    didSwipeMove = true;
+                    stepPdpSlide(diffX < 0 ? 1 : -1);
+                }
+            });
+        }
+
+        function handlePdpBoxClick(event, container) {
+            if (event.target.closest('.swipe-arrow-btn')) return;
+            if (didSwipeMove) {
+                didSwipeMove = false;
+                return;
+            }
+            container.classList.toggle('zoomed');
+        }
+
+        function renderPdpSlideAt(index) {
+            if (!currentPdpImages || currentPdpImages.length === 0) return;
+            currentSlideIndex = (index + currentPdpImages.length) % currentPdpImages.length;
+            const img = currentPdpImages[currentSlideIndex];
+
+            const box = document.getElementById('pdpMainBox');
+            const slideContent = document.getElementById('pdpSlideContent');
+            box.classList.remove('zoomed');
+            slideContent.innerHTML = img.startsWith('data:') || img.startsWith('http')
+                ? `<img src="${img}" alt="Preview">`
+                : `<span style="font-size:5rem;">${img}</span>`;
+
+            document.querySelectorAll('.pdp-slide-item').forEach((el, idx) => {
+                el.classList.toggle('active', idx === currentSlideIndex);
+            });
+
+            const dotsWrap = document.getElementById('pdpSlideDots');
+            if (dotsWrap) {
+                dotsWrap.innerHTML = currentPdpImages.map((_, idx) =>
+                    `<span class="pdp-dot ${idx === currentSlideIndex ? 'active' : ''}" onclick="event.stopPropagation(); renderPdpSlideAt(${idx})"></span>`
+                ).join('');
+            }
+        }
+
+        function stepPdpSlide(delta) {
+            renderPdpSlideAt(currentSlideIndex + delta);
+        }
+
+        function switchPdpImage(img, el) {
+            const idx = currentPdpImages.indexOf(img);
+            renderPdpSlideAt(idx >= 0 ? idx : 0);
+        }
+
+        function switchPdpSubtab(tab) {
+            document.getElementById('subtab-reviews').classList.toggle('active', tab === 'reviews');
+            document.getElementById('subtab-faq').classList.toggle('active', tab === 'faq');
+            document.getElementById('pdpReviewsPanel').style.display = tab === 'reviews' ? 'block' : 'none';
+            document.getElementById('pdpFaqPanel').style.display = tab === 'faq' ? 'block' : 'none';
+        }
+
+        function renderPdpReviews(itemId) {
+            const listEl = document.getElementById('pdpReviewsList');
+            const reviews = customReviewsMap[itemId] || [];
+            if (reviews.length === 0) {
+                listEl.innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted); font-weight:300;">No customer reviews yet. Be the first to share your experience and photo.</p>`;
+                return;
+            }
+            listEl.innerHTML = reviews.map(r => `
+                <div class="review-card-box">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <strong style="font-size:0.84rem; color:var(--text-main);">${r.reviewerName}</strong>
+                        <span style="font-size:0.76rem; color:var(--accent-gold);">⭐ ${r.rating}.0</span>
+                    </div>
+                    <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">${r.comment}</p>
+                    ${r.photoUrl ? `<img src="${r.photoUrl}" class="review-photo-thumb" alt="Customer photo" onclick="openLightbox('${r.photoUrl}', '${r.reviewerName} — Customer Experience')">` : ''}
+                    <div style="font-size:0.68rem; color:var(--text-muted); margin-top:6px;">${r.date}</div>
+                </div>
+            `).join('');
+        }
+
+        async function submitCustomerReview(e) {
+            e.preventDefault();
+            if (!currentPdpItem) return;
+            const itemId = currentPdpItem._id || currentPdpItem.id;
+            const reviewerName = document.getElementById('reviewerNameInput').value.trim();
+            const ratingVal = Number(document.getElementById('reviewStarInput').value);
+            const comment = document.getElementById('reviewCommentInput').value.trim();
+            const photoInput = document.getElementById('reviewPhotoInput');
+
+            let photoUrl = '';
+            if (photoInput.files && photoInput.files[0]) {
+                try {
+                    photoUrl = await uploadDirectToCloudinary(photoInput.files[0]);
+                } catch (err) {
+                    photoUrl = URL.createObjectURL(photoInput.files[0]);
+                }
+            }
+
+            if (!customReviewsMap[itemId]) customReviewsMap[itemId] = [];
+            customReviewsMap[itemId].unshift({
+                reviewerName, rating: ratingVal, comment, photoUrl,
+                date: new Date().toLocaleDateString()
+            });
+            localStorage.setItem('hoknex_product_reviews', JSON.stringify(customReviewsMap));
+
+            if (!currentPdpItem.ratings) currentPdpItem.ratings = [];
+            currentPdpItem.ratings.push(ratingVal);
+
+            try {
+                await fetch(`${API_URL}/api/store/products/${itemId}/rate`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rating: ratingVal })
+                });
+            } catch (err) {}
+
+            document.getElementById('reviewerNameInput').value = '';
+            document.getElementById('reviewCommentInput').value = '';
+            photoInput.value = '';
+            renderPdpReviews(itemId);
+            updatePdpRatingBadge();
+            showProModal('Review Posted', 'Thank you for sharing your review!');
+        }
+
+        function updatePdpRatingBadge() {
+            if (!currentPdpItem) return;
+            let avgRating = 5.0;
+            if (currentPdpItem.ratings && currentPdpItem.ratings.length > 0) {
+                avgRating = (currentPdpItem.ratings.reduce((a, b) => a + b, 0) / currentPdpItem.ratings.length).toFixed(1);
+            }
+            document.getElementById('pdpRatingDisplay').innerText = `⭐ ${avgRating} (${(currentPdpItem.ratings || []).length} reviews)`;
+        }
+
+        function renderPdpFaqs(itemId) {
+            const listEl = document.getElementById('pdpFaqList');
+            const baseFaqs = currentPdpItem && currentPdpItem.faqs ? currentPdpItem.faqs : [
+                { q: "What is the return / exchange policy?", a: "Eligible unused items in original packaging can be requested for support via our tracking/support channels." },
+                { q: "How long does delivery take?", a: "Orders are processed promptly and dispatched to your shipping address with live order ID tracking." }
+            ];
+            const extraFaqs = customFaqsMap[itemId] || [];
+            const allFaqs = [...baseFaqs, ...extraFaqs];
+
+            listEl.innerHTML = allFaqs.map((f, idx) => `
+                <div class="faq-item-box ${idx === 0 ? 'open' : ''}">
+                    <button type="button" class="faq-question-btn" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Q: ${f.q}</span>
+                        <span>▾</span>
+                    </button>
+                    <div class="faq-answer-panel">A: ${f.a}</div>
+                </div>
+            `).join('');
+        }
+
+        function submitProductQuestion(e) {
+            e.preventDefault();
+            if (!currentPdpItem) return;
+            const itemId = currentPdpItem._id || currentPdpItem.id;
+            const qInput = document.getElementById('faqQuestionInput');
+            const questionText = qInput.value.trim();
+            if (!questionText) return;
+
+            if (!customFaqsMap[itemId]) customFaqsMap[itemId] = [];
+            customFaqsMap[itemId].push({
+                q: questionText,
+                a: "Submitted! Our team will update the answer shortly."
+            });
+            localStorage.setItem('hoknex_product_faqs', JSON.stringify(customFaqsMap));
+            qInput.value = '';
+            renderPdpFaqs(itemId);
+            showProModal('Question Submitted', 'Your question has been added to this product\'s FAQ.');
+        }
+
         function openPdpModal(id) {
             currentPdpItem = catalog.find(i => (i._id === id || i.id === id));
             if (!currentPdpItem) return;
 
-            const imgs = currentPdpItem.galleryImages && currentPdpItem.galleryImages.length > 0 ? currentPdpItem.galleryImages : [currentPdpItem.image || currentPdpItem.emoji || '📦'];
-            
-            const mainBox = document.getElementById('pdpMainBox');
-            mainBox.classList.remove('zoomed');
-            mainBox.innerHTML = imgs[0].startsWith('data:') || imgs[0].startsWith('http') ? `<img src="${imgs[0]}" alt="${currentPdpItem.name}">` : `<span style="font-size:5rem;">${imgs[0]}</span>`;
-            
-            document.getElementById('pdpThumbnails').innerHTML = imgs.map((img, idx) => `
+            const itemId = currentPdpItem._id || currentPdpItem.id;
+            currentPdpImages = currentPdpItem.galleryImages && currentPdpItem.galleryImages.length > 0
+                ? currentPdpItem.galleryImages
+                : [currentPdpItem.image || currentPdpItem.emoji || '📦'];
+
+            document.getElementById('pdpThumbnails').innerHTML = currentPdpImages.map((img, idx) => `
                 <div class="pdp-slide-item ${idx===0?'active':''}" onclick="switchPdpImage('${img}', this)">
                     ${img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" alt="Thumb">` : img}
                 </div>
             `).join('');
+
+            renderPdpSlideAt(0);
+            attachSwipeListeners();
 
             document.getElementById('pdpBadge').innerText = currentPdpItem.badge || 'Atelier Exclusive';
             document.getElementById('pdpTitle').innerText = currentPdpItem.name;
             document.getElementById('pdpPrice').innerText = '₹' + currentPdpItem.price + '.00';
             document.getElementById('pdpDeliveryNote').innerText = `Delivery Fee: ₹${currentPdpItem.deliveryFee || 0}`;
             document.getElementById('pdpDesc').innerText = currentPdpItem.description;
-
-            let avgRating = 5.0;
-            if(currentPdpItem.ratings && currentPdpItem.ratings.length > 0) {
-                avgRating = (currentPdpItem.ratings.reduce((a,b)=>a+b,0)/currentPdpItem.ratings.length).toFixed(1);
-            }
-            document.getElementById('pdpRatingDisplay').innerText = `⭐ ${avgRating} (${(currentPdpItem.ratings || []).length} reviews)`;
+            updatePdpRatingBadge();
 
             const sizeSec = document.getElementById('pdpSizeSection');
             const stockSec = document.getElementById('pdpStockSection');
@@ -851,16 +1180,11 @@
                 document.getElementById('voteCountDisplay').innerText = currentPdpItem.votes || 0;
             }
 
+            switchPdpSubtab('reviews');
+            renderPdpReviews(itemId);
+            renderPdpFaqs(itemId);
+
             document.getElementById('pdpModal').style.display = 'flex';
-        }
-
-        function switchPdpImage(img, el) {
-            document.querySelectorAll('.pdp-slide-item').forEach(el => el.classList.remove('active'));
-            if(el) el.classList.add('active');
-
-            const mainBox = document.getElementById('pdpMainBox');
-            mainBox.classList.remove('zoomed');
-            mainBox.innerHTML = img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" alt="Preview">` : `<span style="font-size:5rem;">${img}</span>`;
         }
 
         function selectSize(size, el) {
@@ -880,24 +1204,6 @@
                     showProModal('Interest Registered', 'Our studio has recorded your request.');
                 }
             } catch(e) { showProModal('Error', 'Could not record interest.'); }
-        }
-
-        async function submitUserRating() {
-            const itemId = currentPdpItem._id || currentPdpItem.id;
-            const ratingVal = Number(document.getElementById('userRatingSelect').value);
-            try {
-                const res = await fetch(`${API_URL}/api/store/products/${itemId}/rate`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ rating: ratingVal })
-                });
-                const data = await res.json();
-                if(data.success) {
-                    currentPdpItem.ratings = data.ratings;
-                    showProModal('Review Submitted', 'Thank you for your feedback.');
-                    openPdpModal(itemId);
-                }
-            } catch(e) { showProModal('Error', 'Could not submit review.'); }
         }
 
         function addPdpToBag() {
