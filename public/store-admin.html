@@ -143,9 +143,16 @@
             <div id="campaignListContainer" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;"></div>
         </div>
 
-        <!-- 3. Upcoming Drops -->
+        <!-- 3. Upcoming Drops & Countdown Control -->
         <div class="admin-section">
-            <h2>🚀 3. Upcoming Drops ("Coming Soon")</h2>
+            <h2>🚀 3. Upcoming Drops ("Coming Soon") & Countdown</h2>
+            <div style="background:#FAF9F6; border:2.5px solid var(--border-color); border-radius:14px; padding:1.2rem; margin-bottom:1.5rem;">
+                <label style="font-size:0.8rem; font-weight:900; text-transform:uppercase; display:block; margin-bottom:0.5rem;">Drop Release Countdown Target (Date & Time)</label>
+                <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+                    <input type="datetime-local" id="dropCountdownTargetInput" style="flex:1; min-width:240px; background:#fff; border:2.5px solid var(--border-color); padding:10px 12px; border-radius:10px; font-weight:800; color:var(--text-main); font-size:16px !important;">
+                    <button type="button" onclick="saveDropCountdownTarget()" class="btn-action" style="background:var(--accent-ochre);">Save Countdown ⏳</button>
+                </div>
+            </div>
             <form onsubmit="handleComingSoonUpload(event)">
                 <div class="form-grid">
                     <div class="form-group"><label>Title</label><input type="text" id="dropTitle" placeholder="Title" required></div>
@@ -155,6 +162,10 @@
                 <button type="submit" class="btn-action">Publish Drop ✨</button>
             </form>
             <div id="comingSoonListContainer" style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;"></div>
+            <div style="margin-top:1.8rem;">
+                <h3 style="font-size:1.1rem; font-weight:900; margin-bottom:0.5rem;">🔔 Drop Alert Emails & Requested Products</h3>
+                <div id="dropAlertsListWrap" style="overflow-x:auto;"><p style="color:var(--text-muted); font-weight:800;">Loading drop alerts...</p></div>
+            </div>
         </div>
 
         <!-- 4. QR Code Manager -->
@@ -392,7 +403,72 @@
             renderCampaignManager();
         }
 
-        // Coming Soon Drops
+        // Coming Soon Drops, Countdown & Drop Alert Subscribers
+        function initDropCountdownInput() {
+            const input = document.getElementById('dropCountdownTargetInput');
+            if (!input) return;
+            const saved = localStorage.getItem('hoknex_drop_countdown_target');
+            if (saved) {
+                input.value = saved;
+            } else {
+                const defaultDate = new Date(Date.now() + 3 * 86400 * 1000);
+                defaultDate.setMinutes(defaultDate.getMinutes() - defaultDate.getTimezoneOffset());
+                input.value = defaultDate.toISOString().slice(0, 16);
+            }
+        }
+
+        function saveDropCountdownTarget() {
+            const input = document.getElementById('dropCountdownTargetInput');
+            if (!input || !input.value) return;
+            localStorage.setItem('hoknex_drop_countdown_target', input.value);
+            showProModal('Countdown Saved', 'Upcoming release countdown target updated!');
+        }
+
+        async function renderDropAlertsManager() {
+            const wrap = document.getElementById('dropAlertsListWrap');
+            if (!wrap) return;
+            let alerts = [];
+            try {
+                const res = await fetch(`${API_URL}/api/store/drop-alerts`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data)) alerts = data;
+                }
+            } catch (e) {}
+
+            if (!alerts || alerts.length === 0) {
+                try {
+                    const subRes = await fetch(`${API_URL}/api/store/subscribers`);
+                    const subs = await subRes.json();
+                    alerts = (subs || []).filter(s => String(s.date || '').includes('Alert:')).map(s => ({
+                        email: s.email,
+                        productTitle: String(s.date).split('Alert:')[1]?.trim() || 'Upcoming Drop',
+                        date: s.date
+                    }));
+                } catch (e) {}
+            }
+
+            if (!alerts || alerts.length === 0) {
+                wrap.innerHTML = `<p style="color:var(--text-muted); font-weight:800;">No drop alert requests recorded yet.</p>`;
+                return;
+            }
+
+            wrap.innerHTML = `
+                <table>
+                    <thead><tr><th>Customer Email</th><th>Drop Product</th><th>Recorded At</th></tr></thead>
+                    <tbody>
+                        ${alerts.map(a => `
+                            <tr>
+                                <td><b>${a.email}</b></td>
+                                <td>${a.productTitle || 'Upcoming Release'}</td>
+                                <td>${a.date || ''}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
         async function renderComingSoonManager() {
             const res = await fetch(`${API_URL}/api/store/drops`);
             const drops = await res.json();
@@ -754,8 +830,10 @@
 
         function loadAllAdminData() {
             renderHeroPreview();
+            initDropCountdownInput();
             renderCampaignManager();
             renderComingSoonManager();
+            renderDropAlertsManager();
             renderQrManager();
             renderProductsTable();
             renderOrdersTable();
