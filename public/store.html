@@ -18,7 +18,7 @@
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
         body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; overflow-x: hidden; padding-bottom: env(safe-area-inset-bottom); }
 
         h1, h2, h3, h4, .store-logo-brand {
@@ -68,6 +68,45 @@
         .search-box-wrap input::placeholder { color: var(--text-muted); }
         .icon-btn { background: transparent; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-main); transition: opacity 0.2s; position: relative; padding: 4px; }
         .icon-btn:hover { opacity: 0.7; }
+
+        /* Mobile Quick Filter & Search Strip */
+        .mobile-store-toolbar {
+            display: none;
+            padding: 0.65rem 1rem;
+            background: #FAF6F0;
+            border-bottom: 1px solid var(--border-color);
+            gap: 8px;
+            flex-direction: column;
+        }
+        .mobile-cat-pills {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .mobile-cat-pills::-webkit-scrollbar { display: none; }
+        .mob-pill-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .mob-search-input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 7px 10px;
+            color: var(--text-main);
+            outline: none;
+        }
 
         /* Mobile App Bottom Navigation Bar */
         .mobile-bottom-bar {
@@ -197,12 +236,12 @@
         }
         .countdown-box {
             background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 6px; padding: 8px 6px; text-align: center;
+            border-radius: 6px; padding: 8px 4px; text-align: center; min-width: 0;
         }
-        .countdown-num { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
-        .countdown-lbl { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted); }
+        .countdown-num { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--text-main); }
+        .countdown-lbl { font-size: 0.56rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
 
-        .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.4rem; margin-top: 1.8rem; }
+        .coming-soon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.4rem; margin-top: 1.8rem; }
         .drop-preview-card {
             background: #FAF6F0; border: 1px solid var(--border-color);
             border-radius: 8px; padding: 0.9rem; text-align: left; cursor: pointer;
@@ -227,8 +266,8 @@
         }
 
         @media (max-width: 860px) {
-            .drop-spotlight-stage { grid-template-columns: 1fr; }
-            .drop-stage-media { height: 220px; }
+            .drop-spotlight-stage { grid-template-columns: 1fr; padding: 1rem; gap: 1.2rem; }
+            .drop-stage-media { height: 210px; }
         }
 
         .product-catalog-section { padding: 2.5rem 2rem; max-width: 1400px; margin: 0 auto; }
@@ -238,7 +277,7 @@
         .product-card {
             background: transparent; border: none; border-radius: 0;
             padding: 0; display: flex; flex-direction: column; justify-content: space-between;
-            position: relative; cursor: pointer; text-align: left;
+            position: relative; cursor: pointer; text-align: left; min-width: 0;
         }
 
         .prod-img-box {
@@ -251,7 +290,7 @@
 
         .prod-title { font-size: 0.95rem; font-weight: 500; margin-bottom: 0.2rem; letter-spacing: 0.04em; font-family: 'Playfair Display', serif; color: var(--text-main); }
         .prod-category { font-size: 0.6rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 0.3rem; }
-        .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; }
+        .prod-bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; gap: 6px; }
         .prod-price { font-size: 0.9rem; font-weight: 500; color: var(--accent-terracotta); font-variant-numeric: tabular-nums; }
 
         .btn-add-bag { 
@@ -262,9 +301,9 @@
         .btn-add-bag:hover { background: var(--accent-terracotta); border-color: var(--accent-terracotta); color: #fff; }
         
         .btn-wishlist { 
-            background: rgba(250, 246, 240, 0.94); border: 1px solid var(--border-color); height: 34px; padding: 0 10px;
-            border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.78rem; font-weight: 600;
-            color: var(--text-main); cursor: pointer; position: absolute; top: 12px; right: 12px; z-index: 5; box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            background: rgba(250, 246, 240, 0.94); border: 1px solid var(--border-color); height: 32px; padding: 0 9px;
+            border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.75rem; font-weight: 600;
+            color: var(--text-main); cursor: pointer; position: absolute; top: 10px; right: 10px; z-index: 5; box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
         }
 
         /* --- AMAZON / FLIPKART STYLE WISHLIST CARDS --- */
@@ -468,15 +507,22 @@
 
         /* --- MOBILE RESPONSIVENESS & APP-LIKE ADAPTATIONS --- */
         @media (max-width: 768px) {
-            body { padding-bottom: 70px; }
-            .store-navbar { padding: 1rem 1.2rem; }
+            body { padding-bottom: 76px; }
+            .store-navbar { padding: 0.9rem 1rem; }
             .nav-left-links, .search-box-wrap { display: none; }
+            .mobile-store-toolbar { display: flex; }
             .mobile-bottom-bar { display: flex; }
-            .product-catalog-section, .coming-soon-container, .campaign-showcase-section, .store-footer { padding: 2rem 1.2rem; }
-            .catalog-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
-            .prod-img-box { height: 220px; font-size: 2.5rem; }
-            .campaign-grid-layout { grid-template-columns: 1fr; }
-            .modal-panel { padding: 1.5rem; max-height: 92vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; width: 100%; max-width: 100% !important; animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+            .product-catalog-section, .coming-soon-container, .campaign-showcase-section, .store-footer { padding: 1.4rem 1rem; }
+            .coming-soon-card { padding: 1.4rem 1rem; }
+            .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem; margin-top: 1.2rem; }
+            .prod-img-box { height: 190px; font-size: 2.2rem; }
+            .prod-title { font-size: 0.84rem; }
+            .prod-price { font-size: 0.82rem; }
+            .btn-add-bag { padding: 5px 8px; font-size: 0.65rem; }
+            .countdown-num { font-size: 1rem; }
+            .campaign-grid-layout { grid-template-columns: 1fr; gap: 1.1rem; }
+            .campaign-img-wrap { height: 220px; }
+            .modal-panel { padding: 1.3rem 1rem 1.8rem 1rem; max-height: 90vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; width: 100%; max-width: 100% !important; animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
             @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
             input, select, textarea { font-size: 16px !important; }
         }
@@ -536,6 +582,16 @@
             <button class="icon-btn" onclick="openCartModal()" title="Shopping Bag">🛒<span style="font-size:0.65rem; margin-left:2px; color:var(--accent-terracotta);" id="bagCount">0</span></button>
         </div>
     </header>
+
+    <!-- Mobile Quick Category & Search Strip -->
+    <div class="mobile-store-toolbar">
+        <div class="mobile-cat-pills">
+            <button type="button" class="mob-pill-btn" onclick="filterCategory('all', event)">Featured</button>
+            <button type="button" class="mob-pill-btn" onclick="filterCategory('Apparel', event)">Apparel</button>
+            <button type="button" class="mob-pill-btn" onclick="filterCategory('Footwear', event)">Footwear & Gear</button>
+        </div>
+        <input type="text" class="mob-search-input" placeholder="Search products..." oninput="filterCatalogSearch(this.value)">
+    </div>
 
     <!-- Mobile App Bottom Navigation Bar -->
     <nav class="mobile-bottom-bar">
@@ -918,7 +974,20 @@
         let selectedSize = 'S';
         let didSwipeMove = false;
 
+        async function syncServerDropCountdown() {
+            try {
+                const res = await fetch(`${API_URL}/api/store/drop-countdown`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.targetDate) {
+                        localStorage.setItem('hoknex_drop_countdown_target', data.targetDate);
+                    }
+                }
+            } catch (e) {}
+        }
+
         async function fetchStoreData() {
+            await syncServerDropCountdown();
             try {
                 const [prodRes, dropRes, campRes] = await Promise.all([
                     fetch(`${API_URL}/api/store/products`),
