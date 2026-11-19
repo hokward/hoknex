@@ -213,9 +213,9 @@
         .btn-add-bag:hover { background: var(--accent-terracotta); border-color: var(--accent-terracotta); color: #fff; }
         
         .btn-wishlist { 
-            background: rgba(250, 246, 240, 0.9); border: none; width: 34px; height: 34px; 
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; 
-            cursor: pointer; position: absolute; top: 12px; right: 12px; z-index: 5; box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            background: rgba(250, 246, 240, 0.94); border: 1px solid var(--border-color); height: 34px; padding: 0 10px;
+            border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.78rem; font-weight: 600;
+            color: var(--text-main); cursor: pointer; position: absolute; top: 12px; right: 12px; z-index: 5; box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
         }
 
         /* --- AMAZON / FLIPKART STYLE WISHLIST CARDS --- */
@@ -322,7 +322,9 @@
             border-radius: 4px; background: #FAF6F0; border: 1px solid var(--border-color); height: 360px; display: flex; align-items: center; justify-content: center;
         }
         .zoomable-container:active { cursor: grabbing; }
-        .zoomable-container img { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); width: 100%; height: 100%; object-fit: contain; padding: 10px; pointer-events: none; }
+        .zoomable-container img,
+        .zoomable-container video { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+        .zoomable-container img { pointer-events: none; }
         .zoomable-container.zoomed { cursor: zoom-out; }
         .zoomable-container.zoomed img { transform: scale(2.5); }
 
@@ -354,7 +356,8 @@
             display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; scroll-snap-align: start; transition: border-color 0.2s;
         }
         .pdp-slide-item.active { border-color: var(--accent-terracotta); box-shadow: 0 0 0 2px rgba(192,86,33,0.2); }
-        .pdp-slide-item img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+        .pdp-slide-item img,
+        .pdp-slide-item video { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
 
         /* --- CUSTOMER REVIEWS & READ-ONLY FAQ INSIDE PDP --- */
         .pdp-extra-section {
@@ -517,10 +520,10 @@
                     <h3 id="dropStageTitle" style="font-size: 1.55rem; margin: 0.4rem 0;"></h3>
                     <p id="dropStageDesc" style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.6; font-weight: 400;"></p>
                     <div class="drop-countdown-grid">
-                        <div class="countdown-box"><div class="countdown-num" id="cdDays">03</div><div class="countdown-lbl">Days</div></div>
-                        <div class="countdown-box"><div class="countdown-num" id="cdHours">14</div><div class="countdown-lbl">Hours</div></div>
-                        <div class="countdown-box"><div class="countdown-num" id="cdMins">42</div><div class="countdown-lbl">Mins</div></div>
-                        <div class="countdown-box"><div class="countdown-num" id="cdSecs">19</div><div class="countdown-lbl">Secs</div></div>
+                        <div class="countdown-box"><div class="countdown-num" id="cdDays">00</div><div class="countdown-lbl">Days</div></div>
+                        <div class="countdown-box"><div class="countdown-num" id="cdHours">00</div><div class="countdown-lbl">Hours</div></div>
+                        <div class="countdown-box"><div class="countdown-num" id="cdMins">00</div><div class="countdown-lbl">Mins</div></div>
+                        <div class="countdown-box"><div class="countdown-num" id="cdSecs">00</div><div class="countdown-lbl">Secs</div></div>
                     </div>
                     <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:0.8rem;">
                         <button type="button" id="dropAlertBtn" onclick="toggleDropAlert()" class="btn-add-bag" style="padding:8px 16px;">Alert Enabled</button>
@@ -730,11 +733,15 @@
     <script>
         const API_URL = 'https://hoknex-backend.onrender.com';
 
+        function isVideoMedia(src) {
+            return typeof src === 'string' && (src.includes('data:video') || /\.(mp4|webm|mov)(\?|$)/i.test(src));
+        }
+
         // --- Load Custom Hero Banner (Image or Video) from MongoDB (with LocalStorage & Fallback) ---
         function renderStoreHeroMedia(url, type) {
             const container = document.getElementById('storeHeroBannerContainer');
             if (!container || !url) return;
-            const isVideo = type === 'video' || /\.(mp4|webm|mov)(\?|$)/i.test(url);
+            const isVideo = type === 'video' || isVideoMedia(url);
             if (isVideo) {
                 container.innerHTML = `<video src="${url}" autoplay muted loop playsinline></video>`;
             } else {
@@ -815,7 +822,7 @@
         let defaultCatalog = [
             {
                 id: '1', name: "Hoknex Ribbed Collar Sweatshirt", category: "Apparel", price: 4499, deliveryFee: 49,
-                emoji: "🧥", badge: "New Drop", inStock: true, sizes: ['S', 'M', 'L', 'XL'], ratings: [5, 5, 4], votes: 12,
+                emoji: "🧥", badge: "New Drop", inStock: true, sizes: ['S', 'M', 'L', 'XL'], ratings: [5, 5, 4], votes: 12, wishlistCount: 18,
                 description: "Heavyweight organic cotton sweatshirt with custom collegiate ribbing.",
                 galleryImages: ["🧥", "👔", "🔎"],
                 faqs: [
@@ -825,7 +832,7 @@
             },
             {
                 id: '2', name: "Hoknex Seam XVIII X Sneaker", category: "Footwear", price: 6999, deliveryFee: 99,
-                emoji: "👟", badge: "Best Seller", inStock: true, sizes: ['7', '8', '9', '10'], ratings: [5, 5, 5], votes: 8,
+                emoji: "👟", badge: "Best Seller", inStock: true, sizes: ['7', '8', '9', '10'], ratings: [5, 5, 5], votes: 8, wishlistCount: 24,
                 description: "Hand-stitched premium leather lifestyle sneakers built for campus creators.",
                 galleryImages: ["👟", "🥾", "🔎"],
                 faqs: [
@@ -838,6 +845,7 @@
         let catalog = [];
         let dropsCache = [];
         let activeDropIndex = 0;
+        let launchEmailsSent = JSON.parse(localStorage.getItem('hoknex_launch_emails_sent') || '[]');
         let savedAlertEmail = localStorage.getItem('hoknex_alert_email') || '';
         let dropAlerts = JSON.parse(localStorage.getItem('hoknex_drop_alerts') || '[]');
         let wishlist = JSON.parse(localStorage.getItem('hoknex_wishlist') || '[]');
@@ -874,11 +882,52 @@
             }
         }
 
+        function getDropTargetDate() {
+            const saved = localStorage.getItem('hoknex_drop_countdown_target');
+            if (saved) {
+                const parsed = new Date(saved);
+                if (!isNaN(parsed.getTime())) return parsed;
+            }
+            if (!window._hoknexDefaultDropEnd) {
+                window._hoknexDefaultDropEnd = new Date(Date.now() + (3 * 86400 + 14 * 3600 + 42 * 60 + 19) * 1000);
+            }
+            return window._hoknexDefaultDropEnd;
+        }
+
+        async function triggerDropLaunchEmailIfNeeded() {
+            const d = dropsCache[activeDropIndex];
+            if (!d) return;
+            const dropKey = `${d._id || d.title}_${getDropTargetDate().getTime()}`;
+            if (launchEmailsSent.includes(dropKey)) return;
+
+            const recipients = Array.from(new Set([
+                ...(savedAlertEmail ? [savedAlertEmail] : [])
+            ]));
+            if (recipients.length === 0) return;
+
+            launchEmailsSent.push(dropKey);
+            localStorage.setItem('hoknex_launch_emails_sent', JSON.stringify(launchEmailsSent));
+
+            try {
+                await fetch(`${API_URL}/api/store/send-drop-launch-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fromEmail: 'hoknex.in@gmail.com',
+                        recipients,
+                        productTitle: d.title,
+                        productDesc: d.desc,
+                        productImage: d.image
+                    })
+                });
+            } catch (e) {}
+        }
+
         function startDropCountdown() {
             const updateTimer = () => {
                 const now = new Date();
-                const end = new Date(now.getTime() + (3 * 86400 + 14 * 3600 + 42 * 60 + 19) * 1000);
-                const diff = Math.max(0, end - now);
+                const end = getDropTargetDate();
+                const diff = Math.max(0, end.getTime() - now.getTime());
                 const d = String(Math.floor(diff / 86400000)).padStart(2, '0');
                 const h = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
                 const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
@@ -889,6 +938,9 @@
                     document.getElementById('cdHours').innerText = h;
                     document.getElementById('cdMins').innerText = m;
                     document.getElementById('cdSecs').innerText = s;
+                }
+                if (diff === 0) {
+                    triggerDropLaunchEmailIfNeeded();
                 }
             };
             updateTimer();
@@ -901,7 +953,7 @@
             if (!dropsCache || dropsCache.length === 0) return;
             activeDropIndex = (idx + dropsCache.length) % dropsCache.length;
             const d = dropsCache[activeDropIndex];
-            const isVid = d.image.includes('data:video') || d.image.includes('.mp4');
+            const isVid = isVideoMedia(d.image);
             document.getElementById('dropStageMedia').innerHTML = isVid
                 ? `<video src="${d.image}" autoplay loop muted playsinline></video>`
                 : `<img src="${d.image}" alt="${d.title}">`;
@@ -925,6 +977,7 @@
                 email,
                 productId: dropItem._id || dropItem.id || '',
                 productTitle: dropItem.title || 'Upcoming Release',
+                productImage: dropItem.image || '',
                 date: new Date().toLocaleString()
             };
             try {
@@ -971,7 +1024,7 @@
             closeDropEmailPrompt();
             renderDropSpotlight(activeDropIndex);
             await syncDropAlertToAdmin(d, email);
-            showProModal('Alert Enabled', `Email saved (${email})! Future release alerts will activate automatically, and we will notify you when "${d.title}" drops.`);
+            showProModal('Alert Enabled', `Email saved (${email})! Future release alerts will activate automatically, and we will send an email from hoknex.in@gmail.com when "${d.title}" launches.`);
         }
 
         async function toggleDropAlert() {
@@ -1017,7 +1070,7 @@
             grid.innerHTML = drops.map((d, idx) => `
                 <div class="drop-preview-card ${idx === activeDropIndex ? 'selected' : ''}" onclick="renderDropSpotlight(${idx})">
                     <div class="drop-media">
-                        ${d.image.includes('data:video') || d.image.includes('.mp4') ? `<video src="${d.image}" autoplay loop muted style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${d.image}" alt="Drop">`}
+                        ${isVideoMedia(d.image) ? `<video src="${d.image}" autoplay loop muted style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${d.image}" alt="Drop">`}
                     </div>
                     <h4 style="font-weight:500; font-size:0.95rem; margin-bottom:4px; color:var(--text-main); font-family:'Playfair Display',serif;">${d.title}</h4>
                     <p style="font-size:0.78rem; color:var(--text-muted); font-weight:400;">${d.desc}</p>
@@ -1060,6 +1113,8 @@
             grid.innerHTML = items.map(item => {
                 const itemId = item._id || item.id;
                 const isWishlisted = wishlist.some(w => (w._id === itemId || w.id === itemId));
+                const baseWishCount = Number(item.wishlistCount || 0);
+                const displayWishCount = Math.max(0, baseWishCount + (isWishlisted ? 1 : 0));
                 let avgRating = 5.0;
                 if(item.ratings && item.ratings.length > 0) {
                     avgRating = (item.ratings.reduce((a,b)=>a+b,0)/item.ratings.length).toFixed(1);
@@ -1068,7 +1123,7 @@
                 const titleStr = item.name;
                 return `
                     <div class="product-card" onclick="openPdpModal('${itemId}')">
-                        <button class="btn-wishlist" onclick="event.stopPropagation(); toggleWishlist('${itemId}')">${isWishlisted ? '❤️' : '🤍'}</button>
+                        <button class="btn-wishlist" title="Wishlist count" onclick="event.stopPropagation(); toggleWishlist('${itemId}')">${isWishlisted ? '❤️' : '🤍'} <span>${displayWishCount}</span></button>
                         <span style="position:absolute; top:12px; left:12px; background:#FAF6F0; color:var(--accent-terracotta); padding:2px 6px; font-size:0.55rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; border:1px solid var(--border-color);">${item.badge || 'Atelier'}</span>
                         <div>
                             <div class="prod-img-box" onclick="event.stopPropagation(); openLightbox('${imgSrc || ''}', '${titleStr}')">
@@ -1116,17 +1171,30 @@
             renderCatalog(filtered);
         }
 
-        function toggleWishlist(id) {
+        async function toggleWishlist(id) {
             const item = catalog.find(i => (i._id === id || i.id === id));
             const idx = wishlist.findIndex(w => (w._id === id || w.id === id));
+            let delta = 1;
             if(idx > -1) {
                 wishlist.splice(idx, 1);
+                delta = -1;
                 showProModal('Wishlist', `Removed item from wishlist.`);
             } else {
-                wishlist.push(item);
+                if (item) wishlist.push(item);
                 showProModal('Wishlist', `Added item to wishlist!`);
             }
             localStorage.setItem('hoknex_wishlist', JSON.stringify(wishlist));
+            try {
+                const res = await fetch(`${API_URL}/api/store/products/${id}/wishlist`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ delta })
+                });
+                if (res.ok && item) {
+                    const data = await res.json();
+                    if (typeof data.wishlistCount === 'number') item.wishlistCount = data.wishlistCount;
+                }
+            } catch (e) {}
             renderCatalog(catalog);
         }
 
@@ -1225,13 +1293,26 @@
             });
         }
 
+        function renderSlideMediaHtml(media, isThumb = false) {
+            if (isVideoMedia(media)) {
+                return `<video src="${media}" ${isThumb ? 'muted playsinline' : 'controls autoplay loop playsinline'}></video>`;
+            }
+            if (typeof media === 'string' && (media.startsWith('data:') || media.startsWith('http'))) {
+                return `<img src="${media}" alt="Preview">`;
+            }
+            return `<span style="font-size:${isThumb ? '1.3rem' : '5rem'};">${media}</span>`;
+        }
+
         function handlePdpBoxClick(event, container) {
-            if (event.target.closest('.swipe-arrow-btn')) return;
+            if (event.target.closest('.swipe-arrow-btn') || event.target.tagName === 'VIDEO') return;
             if (didSwipeMove) {
                 didSwipeMove = false;
                 return;
             }
-            container.classList.toggle('zoomed');
+            const currentMedia = currentPdpImages[currentSlideIndex];
+            if (!isVideoMedia(currentMedia)) {
+                container.classList.toggle('zoomed');
+            }
         }
 
         function renderPdpSlideAt(index) {
@@ -1242,9 +1323,7 @@
             const box = document.getElementById('pdpMainBox');
             const slideContent = document.getElementById('pdpSlideContent');
             box.classList.remove('zoomed');
-            slideContent.innerHTML = img.startsWith('data:') || img.startsWith('http')
-                ? `<img src="${img}" alt="Preview">`
-                : `<span style="font-size:5rem;">${img}</span>`;
+            slideContent.innerHTML = renderSlideMediaHtml(img, false);
 
             document.querySelectorAll('.pdp-slide-item').forEach((el, idx) => {
                 el.classList.toggle('active', idx === currentSlideIndex);
@@ -1386,13 +1465,17 @@
             if (!currentPdpItem) return;
 
             const itemId = currentPdpItem._id || currentPdpItem.id;
-            currentPdpImages = currentPdpItem.galleryImages && currentPdpItem.galleryImages.length > 0
-                ? currentPdpItem.galleryImages
+            const baseGallery = currentPdpItem.galleryImages && currentPdpItem.galleryImages.length > 0
+                ? [...currentPdpItem.galleryImages]
                 : [currentPdpItem.image || currentPdpItem.emoji || '📦'];
+            if (currentPdpItem.video && !baseGallery.includes(currentPdpItem.video)) {
+                baseGallery.push(currentPdpItem.video);
+            }
+            currentPdpImages = baseGallery;
 
             document.getElementById('pdpThumbnails').innerHTML = currentPdpImages.map((img, idx) => `
                 <div class="pdp-slide-item ${idx===0?'active':''}" onclick="switchPdpImage('${img}', this)">
-                    ${img.startsWith('data:') || img.startsWith('http') ? `<img src="${img}" alt="Thumb">` : img}
+                    ${renderSlideMediaHtml(img, true)}
                 </div>
             `).join('');
 
@@ -1601,6 +1684,7 @@
                 status: 'Order Placed & Awaiting Verification ⏳',
                 timeline: [{ title: 'Order Placed & Awaiting Verification', time: new Date().toLocaleString() }],
                 customImage: proofUrl,
+                paymentProofUrl: proofUrl,
                 date: new Date().toLocaleDateString()
             };
 
