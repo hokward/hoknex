@@ -296,7 +296,7 @@
         <button onclick="openTrackModal()" class="mob-nav-item"><span class="icon">📦</span>Track</button>
     </nav>
 
-    <!-- Full-Bleed Immersive Hero Banner (Dynamically loaded from Admin Upload or Fallback) -->
+    <!-- Full-Bleed Immersive Hero Banner (Loaded from Backend DB, LocalStorage, or Fallback) -->
     <section class="store-hero-banner">
         <img id="storeHeroBannerImg" src="1794789114701~2.jpg.jpeg" alt="Atelier Hero Banner">
     </section>
@@ -466,12 +466,28 @@
     <script>
         const API_URL = 'https://hoknex-backend.onrender.com';
 
-        // --- Load Custom Hero Banner from Admin Upload ---
-        const savedHeroBanner = localStorage.getItem('hoknex_store_hero_banner');
-        if (savedHeroBanner) {
+        // --- Load Custom Hero Banner from MongoDB (with LocalStorage & Fallback) ---
+        async function loadStoreHeroBanner() {
             const heroImgEl = document.getElementById('storeHeroBannerImg');
-            if (heroImgEl) heroImgEl.src = savedHeroBanner;
+            if (!heroImgEl) return;
+
+            const cachedBanner = localStorage.getItem('hoknex_store_hero_banner');
+            if (cachedBanner) {
+                heroImgEl.src = cachedBanner;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/api/store/hero-banner`);
+                const data = await res.json();
+                if (data && data.imageUrl) {
+                    heroImgEl.src = data.imageUrl;
+                    localStorage.setItem('hoknex_store_hero_banner', data.imageUrl);
+                }
+            } catch (e) {
+                console.warn('Could not load hero banner from server:', e);
+            }
         }
+        loadStoreHeroBanner();
 
         const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
         const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads';
