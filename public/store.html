@@ -113,12 +113,45 @@
         /* --- COOL & DECENT ATELIER UPCOMING RELEASES SECTION --- */
         .coming-soon-container { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
         .coming-soon-card {
+            position: relative;
+            overflow: hidden;
             background: linear-gradient(155deg, #F4EFE6 0%, #EAE2D3 100%);
             color: var(--text-main);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 2.5rem 2rem;
             box-shadow: 0 12px 32px rgba(44, 30, 22, 0.06);
+        }
+        .celebration-banner {
+            display: none;
+            margin-top: 1.2rem;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: linear-gradient(90deg, rgba(192, 86, 33, 0.14), rgba(184, 134, 11, 0.18));
+            border: 1px solid var(--accent-terracotta);
+            color: var(--text-main);
+            font-size: 0.84rem;
+            font-weight: 600;
+            animation: celebPop 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes celebPop {
+            0% { transform: scale(0.95); opacity: 0; }
+            70% { transform: scale(1.02); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .confetti-piece {
+            position: absolute;
+            top: -12px;
+            width: 8px;
+            height: 14px;
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 20;
+            animation: confettiFall 2.4s ease-out forwards;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+            100% { transform: translateY(380px) rotate(540deg) scale(0.8); opacity: 0; }
         }
         .drop-top-bar {
             display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
@@ -504,13 +537,17 @@
 
     <!-- Cool & Decent Upcoming Releases Section -->
     <section class="coming-soon-container" id="comingSoonSection" style="display:none;">
-        <div class="coming-soon-card">
+        <div class="coming-soon-card" id="comingSoonCardBox">
             <div class="drop-top-bar">
                 <div>
                     <div class="drop-live-pill"><span class="pulse-dot"></span> Limited Allocation • Atelier Vault</div>
                     <h2 style="font-size: 2rem; font-weight: 500; margin-top: 0.5rem;">Upcoming Releases</h2>
                 </div>
                 <p style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400; max-width: 360px;">Select any upcoming piece to inspect in the spotlight stage or lock in instant email alerts.</p>
+            </div>
+
+            <div class="celebration-banner" id="dropCelebrationBanner">
+                ✨ Launch Celebration! This release is now live—alert notifications have been dispatched from hoknex.in@gmail.com.
             </div>
 
             <div class="drop-spotlight-stage" id="dropSpotlightStage">
@@ -846,6 +883,7 @@
         let dropsCache = [];
         let activeDropIndex = 0;
         let launchEmailsSent = JSON.parse(localStorage.getItem('hoknex_launch_emails_sent') || '[]');
+        let celebrationsShown = [];
         let savedAlertEmail = localStorage.getItem('hoknex_alert_email') || '';
         let dropAlerts = JSON.parse(localStorage.getItem('hoknex_drop_alerts') || '[]');
         let wishlist = JSON.parse(localStorage.getItem('hoknex_wishlist') || '[]');
@@ -894,10 +932,37 @@
             return window._hoknexDefaultDropEnd;
         }
 
-        async function triggerDropLaunchEmailIfNeeded() {
+        function spawnConfettiBurst() {
+            const card = document.getElementById('comingSoonCardBox');
+            if (!card) return;
+            const colors = ['#C05621', '#B8860B', '#2C1E16', '#D9822B', '#E5C158'];
+            for (let i = 0; i < 28; i++) {
+                const piece = document.createElement('span');
+                piece.className = 'confetti-piece';
+                piece.style.left = `${Math.random() * 96 + 2}%`;
+                piece.style.background = colors[i % colors.length];
+                piece.style.animationDelay = `${Math.random() * 0.45}s`;
+                card.appendChild(piece);
+                setTimeout(() => piece.remove(), 2900);
+            }
+        }
+
+        async function triggerDropCelebrationAndEmail() {
             const d = dropsCache[activeDropIndex];
             if (!d) return;
             const dropKey = `${d._id || d.title}_${getDropTargetDate().getTime()}`;
+
+            const banner = document.getElementById('dropCelebrationBanner');
+            if (banner) {
+                banner.style.display = 'block';
+                banner.innerText = `✨ Launch Celebration! "${d.title}" is now live — release email sent from hoknex.in@gmail.com.`;
+            }
+
+            if (!celebrationsShown.includes(dropKey)) {
+                celebrationsShown.push(dropKey);
+                spawnConfettiBurst();
+            }
+
             if (launchEmailsSent.includes(dropKey)) return;
 
             const recipients = Array.from(new Set([
@@ -908,6 +973,10 @@
             launchEmailsSent.push(dropKey);
             localStorage.setItem('hoknex_launch_emails_sent', JSON.stringify(launchEmailsSent));
 
+            const absoluteImg = d.image && d.image.startsWith('http')
+                ? d.image
+                : (d.image ? new URL(d.image, window.location.origin).href : '');
+
             try {
                 await fetch(`${API_URL}/api/store/send-drop-launch-email`, {
                     method: 'POST',
@@ -917,7 +986,7 @@
                         recipients,
                         productTitle: d.title,
                         productDesc: d.desc,
-                        productImage: d.image
+                        productImage: absoluteImg
                     })
                 });
             } catch (e) {}
@@ -939,8 +1008,11 @@
                     document.getElementById('cdMins').innerText = m;
                     document.getElementById('cdSecs').innerText = s;
                 }
+                const banner = document.getElementById('dropCelebrationBanner');
                 if (diff === 0) {
-                    triggerDropLaunchEmailIfNeeded();
+                    triggerDropCelebrationAndEmail();
+                } else if (banner) {
+                    banner.style.display = 'none';
                 }
             };
             updateTimer();
