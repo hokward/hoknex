@@ -3,211 +3,296 @@
 <head>
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#008080">
     <title>Hoknex — Connect Every Campus in the World</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-silk: #F5F2EB;
-            --bg-porcelain: #FFFFFF;
-            --cashmere: #DFD9CE;
-            --espresso: #1C1915;
-            --warm-stone: #6B655E;
-            --obsidian: #141413;
-            --border-subtle: rgba(28, 25, 21, 0.12);
-            --shadow-card: 0 10px 30px rgba(28, 25, 21, 0.05);
+            --bg-soft-white: #F9F9F9;
+            --bg-surface: #FFFFFF;
+            --teal-primary: #008080;
+            --teal-dark: #006666;
+            --teal-tint: rgba(0, 128, 128, 0.08);
+            --coral-accent: #FF6F61;
+            --coral-tint: rgba(255, 111, 97, 0.12);
+            --ink-dark: #142222;
+            --ink-muted: #526363;
+            --border-light: rgba(0, 128, 128, 0.15);
+            --shadow-card: 0 12px 32px rgba(0, 128, 128, 0.07);
+            --shadow-float: 0 10px 25px rgba(255, 111, 97, 0.25);
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         html { scroll-behavior: smooth; }
-        body { background-color: var(--bg-silk); color: var(--espresso); min-height: 100vh; overflow-x: hidden; padding-bottom: env(safe-area-inset-bottom); }
+        body {
+            background-color: var(--bg-soft-white);
+            color: var(--ink-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: env(safe-area-inset-bottom);
+            -webkit-font-smoothing: antialiased;
+        }
 
         /* Navbar */
         .hoknex-navbar {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 1.2rem 3rem; background: var(--bg-porcelain); border-bottom: 1px solid var(--cashmere);
-            position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(28,25,21,0.03);
+            padding: 1rem 3rem;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid var(--border-light);
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 128, 128, 0.04);
         }
-        .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 900; color: var(--espresso); text-decoration: none; font-family: 'Playfair Display', serif; }
-        .logo-badge img { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; border: 1px solid var(--cashmere); }
+        .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 1.35rem; font-weight: 900; color: var(--teal-primary); text-decoration: none; font-family: 'Playfair Display', serif; }
+        .logo-badge img { width: 36px; height: 36px; border-radius: 10px; object-fit: cover; border: 1.5px solid var(--teal-primary); }
         .nav-links { display: flex; gap: 2rem; align-items: center; }
-        .nav-links a { color: var(--warm-stone); text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: color 0.2s; text-transform: uppercase; letter-spacing: 0.05em; }
-        .nav-links a:hover { color: var(--espresso); }
-        .btn-join { background: var(--obsidian); color: var(--bg-silk); padding: 0.6rem 1.4rem; border-radius: 8px; font-weight: 800; text-decoration: none; transition: opacity 0.2s; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.8rem; }
-        .btn-join:hover { opacity: 0.85; }
+        .nav-links a { color: var(--ink-muted); text-decoration: none; font-weight: 700; font-size: 0.88rem; transition: color 0.2s; text-transform: uppercase; letter-spacing: 0.05em; }
+        .nav-links a:hover { color: var(--teal-primary); }
+        .btn-join {
+            background: var(--coral-accent); color: #FFFFFF; padding: 0.65rem 1.45rem;
+            border-radius: 12px; font-weight: 800; text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s; text-transform: uppercase;
+            letter-spacing: 0.06em; font-size: 0.8rem;
+            box-shadow: var(--shadow-float);
+        }
+        .btn-join:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(255, 111, 97, 0.35); }
+        .btn-join:active { transform: scale(0.97); }
 
         /* Mobile App Bottom Navigation Bar */
         .mobile-bottom-bar {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%;
-            background: var(--bg-porcelain); border-top: 1px solid var(--cashmere);
-            padding: 10px 1rem; z-index: 25000; justify-content: space-around; align-items: center;
-            box-shadow: 0 -4px 15px rgba(28,25,21,0.06);
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-light);
+            padding: 8px 0.75rem calc(8px + env(safe-area-inset-bottom));
+            z-index: 25000; justify-content: space-around; align-items: center;
+            box-shadow: 0 -6px 24px rgba(0, 128, 128, 0.08);
         }
         .mob-nav-item {
-            display: flex; flex-direction: column; align-items: center; gap: 2px;
-            background: none; border: none; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
-            color: var(--espresso); cursor: pointer; text-decoration: none;
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+            background: none; border: none; font-size: 0.66rem; font-weight: 800; text-transform: uppercase;
+            color: var(--ink-muted); cursor: pointer; text-decoration: none; padding: 4px 10px; border-radius: 12px;
+            transition: all 0.2s ease;
         }
-        .mob-nav-item span.icon { font-size: 1.2rem; }
+        .mob-nav-item.active { color: var(--teal-primary); background: var(--teal-tint); }
+        .mob-nav-item span.icon { font-size: 1.25rem; }
 
-        /* Hero Section (Warm Silk Cream Background) */
+        /* Hero Section */
         .hoknex-hero {
-            background: var(--bg-silk); color: var(--espresso);
-            padding: 5rem 3rem; display: flex; align-items: center; justify-content: space-between; gap: 3rem;
-            position: relative; overflow: hidden; border-bottom: 1px solid var(--cashmere);
+            background: radial-gradient(circle at top right, rgba(0, 128, 128, 0.08), transparent 45%),
+                        radial-gradient(circle at bottom left, rgba(255, 111, 97, 0.08), transparent 45%),
+                        var(--bg-soft-white);
+            color: var(--ink-dark);
+            padding: 4.5rem 3rem; display: flex; align-items: center; justify-content: space-between; gap: 3rem;
+            position: relative; overflow: hidden; border-bottom: 1px solid var(--border-light);
         }
         .hero-left { flex: 1; max-width: 650px; }
-        .pill-badge { display: inline-block; background: rgba(28, 25, 21, 0.06); color: var(--espresso); border: 1px solid var(--cashmere); padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.2rem; }
-        .hero-left h1 { font-family: 'Playfair Display', serif; font-size: 3.8rem; font-weight: 900; line-height: 1.12; color: var(--espresso); margin-bottom: 1.2rem; }
-        .hero-left h1 span { color: var(--warm-stone); font-style: italic; }
-        .hero-subtitle { color: var(--warm-stone); font-size: 1.05rem; font-weight: 600; line-height: 1.6; margin-bottom: 2rem; }
+        .pill-badge {
+            display: inline-block; background: var(--teal-tint); color: var(--teal-primary);
+            border: 1px solid rgba(0, 128, 128, 0.25); padding: 7px 16px; border-radius: 30px;
+            font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1.2rem;
+        }
+        .hero-left h1 { font-family: 'Playfair Display', serif; font-size: 3.7rem; font-weight: 900; line-height: 1.12; color: var(--ink-dark); margin-bottom: 1.2rem; }
+        .hero-left h1 span { color: var(--teal-primary); font-style: italic; }
+        .hero-subtitle { color: var(--ink-muted); font-size: 1.05rem; font-weight: 600; line-height: 1.65; margin-bottom: 2rem; }
 
         /* Live Stats */
-        .live-stats { display: flex; gap: 2.5rem; margin-top: 2.5rem; }
-        .stat-box h3 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900; color: var(--espresso); }
-        .stat-box p { font-size: 0.78rem; font-weight: 700; color: var(--warm-stone); text-transform: uppercase; letter-spacing: 0.08em; }
+        .live-stats { display: flex; gap: 1.5rem; margin-top: 2rem; flex-wrap: wrap; }
+        .stat-box {
+            background: var(--bg-surface); border: 1px solid var(--border-light);
+            padding: 1rem 1.4rem; border-radius: 16px; box-shadow: var(--shadow-card);
+            min-width: 130px;
+        }
+        .stat-box h3 { font-family: 'Playfair Display', serif; font-size: 1.9rem; font-weight: 900; color: var(--teal-primary); }
+        .stat-box p { font-size: 0.75rem; font-weight: 800; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
 
-        /* Right Form Card (Pure Porcelain Surface with Ultra-Thin Border) */
+        /* Right Form Card */
         .hero-right {
-            background: var(--bg-porcelain) !important; color: var(--espresso) !important;
-            border-radius: 16px; padding: 2.5rem; box-shadow: var(--shadow-card);
-            border: 1px solid var(--cashmere) !important; width: 100%; max-width: 440px;
+            background: var(--bg-surface) !important; color: var(--ink-dark) !important;
+            border-radius: 24px; padding: 2.4rem; box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-light) !important; width: 100%; max-width: 440px;
+            position: relative;
+        }
+        .hero-right::before {
+            content: ''; position: absolute; top: 0; left: 24px; right: 24px; height: 4px;
+            background: linear-gradient(90deg, var(--teal-primary), var(--coral-accent));
+            border-radius: 0 0 6px 6px;
         }
         .auth-tabs {
-            background: var(--bg-silk); border: 1px solid var(--cashmere);
-            border-radius: 10px; padding: 4px; display: flex; margin-bottom: 1.5rem;
+            background: var(--bg-soft-white); border: 1px solid var(--border-light);
+            border-radius: 14px; padding: 5px; display: flex; margin-bottom: 1.5rem;
         }
-        .tab-btn { flex: 1; background: transparent; border: none; padding: 10px; font-weight: 800; color: var(--warm-stone); cursor: pointer; border-radius: 8px; transition: all 0.2s; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        .tab-btn.active { background: var(--obsidian) !important; color: var(--bg-silk) !important; }
+        .tab-btn {
+            flex: 1; background: transparent; border: none; padding: 11px; font-weight: 800;
+            color: var(--ink-muted); cursor: pointer; border-radius: 10px; transition: all 0.25s ease;
+            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .tab-btn.active {
+            background: var(--teal-primary) !important; color: #FFFFFF !important;
+            box-shadow: 0 4px 12px rgba(0, 128, 128, 0.25);
+        }
 
-        .auth-form { display: flex; flex-direction: column; gap: 1.2rem; }
-        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-        .form-group label { font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: var(--warm-stone); letter-spacing: 0.08em; }
+        .auth-form { display: flex; flex-direction: column; gap: 1.15rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; text-align: left; }
+        .form-group label { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; color: var(--ink-muted); letter-spacing: 0.07em; }
         .form-group input {
-            background: var(--bg-silk) !important; border: 1px solid var(--cashmere) !important;
-            padding: 12px 14px; border-radius: 10px; font-size: 16px !important; font-weight: 800; outline: none; color: var(--espresso) !important; width: 100%;
+            background: var(--bg-soft-white) !important; border: 1.5px solid var(--border-light) !important;
+            padding: 13px 15px; border-radius: 12px; font-size: 16px !important; font-weight: 700;
+            outline: none; color: var(--ink-dark) !important; width: 100%; transition: all 0.2s ease;
         }
-        .form-group input:focus { border-color: var(--espresso) !important; box-shadow: 0 0 0 3px rgba(28, 25, 21, 0.08); }
+        .form-group input:focus {
+            border-color: var(--teal-primary) !important;
+            background: #FFFFFF !important;
+            box-shadow: 0 0 0 4px rgba(0, 128, 128, 0.12);
+        }
         .btn-primary {
-            background: var(--obsidian); color: var(--bg-silk); border: none; padding: 0.95rem;
-            border-radius: 10px; font-weight: 900; cursor: pointer; width: 100%;
-            text-transform: uppercase; letter-spacing: 0.08em; transition: opacity 0.2s;
-            box-shadow: none;
+            background: var(--coral-accent); color: #FFFFFF; border: none; padding: 1rem;
+            border-radius: 14px; font-weight: 800; cursor: pointer; width: 100%;
+            text-transform: uppercase; letter-spacing: 0.07em; font-size: 0.92rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: var(--shadow-float);
         }
-        .btn-primary:hover { opacity: 0.85; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(255, 111, 97, 0.35); }
+        .btn-primary:active { transform: scale(0.98); }
 
         /* Showcase Vision Section */
         .hoknex-showcase { padding: 5rem 3rem; max-width: 1300px; margin: 0 auto; text-align: center; }
-        .showcase-header h2 { font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 900; color: var(--espresso); margin-bottom: 0.5rem; }
-        .showcase-header h2 span { color: var(--warm-stone); font-style: italic; }
-        .showcase-header p { color: var(--warm-stone); font-size: 1rem; font-weight: 700; margin-bottom: 3rem; }
-        .showcase-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem; text-align: left; }
+        .showcase-header h2 { font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 900; color: var(--ink-dark); margin-bottom: 0.5rem; }
+        .showcase-header h2 span { color: var(--coral-accent); font-style: italic; }
+        .showcase-header p { color: var(--ink-muted); font-size: 1rem; font-weight: 600; margin-bottom: 3rem; }
+        .showcase-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.8rem; text-align: left; }
         .showcase-card {
-            background: var(--bg-porcelain); border: 1px solid var(--cashmere); border-radius: 16px;
-            padding: 2.2rem; box-shadow: var(--shadow-card); transition: transform 0.25s ease, border-color 0.25s ease;
+            background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 20px;
+            padding: 2rem; box-shadow: var(--shadow-card); transition: transform 0.25s ease, border-color 0.25s ease;
         }
-        .showcase-card:hover { transform: translateY(-4px); border-color: var(--espresso); }
-        .card-tag { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1rem; }
-        .showcase-card h3 { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 900; color: var(--espresso); margin-bottom: 0.6rem; }
-        .showcase-card p { font-size: 0.9rem; font-weight: 700; color: var(--warm-stone); line-height: 1.5; }
+        .showcase-card:hover { transform: translateY(-5px); border-color: var(--teal-primary); }
+        .showcase-card:active { transform: scale(0.98); }
+        .card-tag {
+            display: inline-block; padding: 5px 12px; border-radius: 8px;
+            font-size: 0.72rem; font-weight: 800; text-transform: uppercase; margin-bottom: 1rem;
+            background: var(--teal-tint); color: var(--teal-primary);
+        }
+        .card-tag.coral { background: var(--coral-tint); color: var(--coral-accent); }
+        .showcase-card h3 { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 900; color: var(--ink-dark); margin-bottom: 0.6rem; }
+        .showcase-card p { font-size: 0.92rem; font-weight: 600; color: var(--ink-muted); line-height: 1.55; }
 
         /* Founder Section */
         .hoknex-founder-section { padding: 3rem; max-width: 1200px; margin: 0 auto; }
         .founder-card-box {
-            background: var(--bg-porcelain); border: 1px solid var(--cashmere); border-radius: 20px;
+            background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 24px;
             padding: 3.5rem; display: flex; align-items: center; gap: 3.5rem; box-shadow: var(--shadow-card);
         }
-        .founder-image-wrapper img { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 3px solid var(--cashmere); box-shadow: 0 10px 25px rgba(28,25,21,0.1); }
-        .founder-content .founder-tag { color: var(--warm-stone); font-size: 0.78rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; display: inline-block; margin-bottom: 0.5rem; }
-        .founder-content h3 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; color: var(--espresso); margin-bottom: 1rem; line-height: 1.2; }
-        .founder-content h3 span { color: var(--warm-stone); font-style: italic; }
-        .founder-quote { font-size: 1.05rem; font-weight: 700; font-style: italic; color: var(--warm-stone); line-height: 1.7; margin-bottom: 1.5rem; }
-        .founder-signature { font-weight: 900; font-size: 1.1rem; color: var(--espresso); font-family: 'Playfair Display', serif; }
-        .founder-signature span { display: block; font-size: 0.8rem; font-weight: 700; color: var(--warm-stone); margin-top: 2px; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .founder-image-wrapper img {
+            width: 180px; height: 180px; border-radius: 50%; object-fit: cover;
+            border: 4px solid var(--teal-primary); box-shadow: 0 12px 28px rgba(0, 128, 128, 0.18);
+        }
+        .founder-content .founder-tag { color: var(--coral-accent); font-size: 0.78rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; display: inline-block; margin-bottom: 0.5rem; }
+        .founder-content h3 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; color: var(--ink-dark); margin-bottom: 1rem; line-height: 1.2; }
+        .founder-content h3 span { color: var(--teal-primary); font-style: italic; }
+        .founder-quote { font-size: 1.05rem; font-weight: 600; font-style: italic; color: var(--ink-muted); line-height: 1.7; margin-bottom: 1.5rem; }
+        .founder-signature { font-weight: 900; font-size: 1.15rem; color: var(--ink-dark); font-family: 'Playfair Display', serif; }
+        .founder-signature span { display: block; font-size: 0.82rem; font-weight: 700; color: var(--teal-primary); margin-top: 2px; font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        /* Multi-Column Footer (Deep Midnight) */
+        /* Multi-Column Footer (Deep Teal Theme) */
         .hoknex-footer-multi {
-            background: var(--espresso); color: var(--bg-silk);
-            padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 1px solid var(--cashmere);
+            background: var(--teal-dark); color: var(--bg-soft-white);
+            padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 4px solid var(--coral-accent);
             position: relative; overflow: hidden; text-align: left;
         }
-        .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(245, 242, 235, 0.15); position: relative; z-index: 2; }
-        .footer-newsletter h3 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: var(--bg-silk); }
-        .footer-newsletter p { color: var(--cashmere); font-size: 0.95rem; font-weight: 700; margin-bottom: 1.5rem; }
-        .newsletter-input-group { display: flex; gap: 1rem; max-width: 600px; flex-wrap: wrap; }
+        .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(249, 249, 249, 0.18); position: relative; z-index: 2; }
+        .footer-newsletter h3 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FFFFFF; }
+        .footer-newsletter p { color: rgba(249, 249, 249, 0.82); font-size: 0.95rem; font-weight: 600; margin-bottom: 1.5rem; }
+        .newsletter-input-group { display: flex; gap: 0.85rem; max-width: 600px; flex-wrap: wrap; }
         .newsletter-input-group input {
-            flex: 1; min-width: 220px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(245, 242, 235, 0.2);
-            padding: 12px 16px; border-radius: 8px; color: var(--bg-silk); font-weight: 800; outline: none; font-size: 16px !important;
+            flex: 1; min-width: 220px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 13px 16px; border-radius: 12px; color: #FFFFFF; font-weight: 700; outline: none; font-size: 16px !important;
         }
+        .newsletter-input-group input::placeholder { color: rgba(255, 255, 255, 0.65); }
         .btn-newsletter {
-            background: var(--bg-silk); color: var(--espresso); border: none; padding: 0 2rem;
-            border-radius: 8px; font-weight: 900; cursor: pointer; transition: opacity 0.2s; text-transform: uppercase; font-size: 0.8rem;
+            background: var(--coral-accent); color: #FFFFFF; border: none; padding: 13px 2rem;
+            border-radius: 12px; font-weight: 800; cursor: pointer; transition: opacity 0.2s; text-transform: uppercase; font-size: 0.82rem;
         }
-        .btn-newsletter:hover { opacity: 0.85; }
+        .btn-newsletter:hover { opacity: 0.9; }
 
         .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5rem; font-size: 0.88rem; position: relative; z-index: 2; }
-        .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: var(--bg-silk); text-transform: uppercase; letter-spacing: 1px; }
-        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
-        .footer-col a { color: var(--cashmere); text-decoration: none; font-weight: 700; cursor: pointer; transition: color 0.2s; }
-        .footer-col a:hover { color: var(--bg-silk); }
-        .footer-col p { color: var(--cashmere); font-size: 0.9rem; font-weight: 600; line-height: 1.5; }
+        .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FFFFFF; text-transform: uppercase; letter-spacing: 1px; }
+        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+        .footer-col a { color: rgba(249, 249, 249, 0.8); text-decoration: none; font-weight: 600; cursor: pointer; transition: color 0.2s; }
+        .footer-col a:hover { color: var(--coral-accent); }
+        .footer-col p { color: rgba(249, 249, 249, 0.8); font-size: 0.9rem; font-weight: 600; line-height: 1.55; }
         .footer-watermark {
             position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
-            font-size: 15vw; font-weight: 900; color: rgba(245, 242, 235, 0.03); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; font-family: 'Playfair Display', serif;
+            font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.04); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; font-family: 'Playfair Display', serif;
         }
 
-        /* Modals & Popups */
+        /* Modals & Bottom Sheets */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(28, 25, 21, 0.8); backdrop-filter: blur(8px);
+            background: rgba(20, 34, 34, 0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
             display: none; justify-content: center; align-items: center; z-index: 40000; padding: 1.5rem;
         }
         .modal-content {
-            background: var(--bg-porcelain); border: 1px solid var(--cashmere); border-radius: 16px;
-            padding: 2.5rem; width: 100%; max-width: 600px; position: relative; box-shadow: var(--shadow-card);
-            color: var(--espresso); max-height: 85vh; overflow-y: auto; text-align: left;
+            background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 24px;
+            padding: 2.5rem; width: 100%; max-width: 560px; position: relative; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+            color: var(--ink-dark); max-height: 85vh; overflow-y: auto; text-align: left;
         }
-        .modal-content h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: var(--espresso); margin-bottom: 1rem; }
-        .modal-content p, .modal-content li { font-size: 0.95rem; font-weight: 700; color: var(--warm-stone); line-height: 1.7; margin-bottom: 0.8rem; }
+        .sheet-handle {
+            display: none; width: 42px; height: 5px; background: rgba(0, 128, 128, 0.2);
+            border-radius: 10px; margin: 0 auto 1.2rem auto;
+        }
+        .modal-content h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: var(--teal-primary); margin-bottom: 1rem; }
+        .modal-content p, .modal-content li { font-size: 0.95rem; font-weight: 600; color: var(--ink-muted); line-height: 1.7; margin-bottom: 0.8rem; }
         .modal-content ul { padding-left: 20px; margin-bottom: 1rem; }
         .close-modal {
-            position: absolute; top: 20px; right: 20px; background: var(--bg-silk); color: var(--espresso);
-            border: 1px solid var(--cashmere); width: 36px; height: 36px; border-radius: 50%; font-weight: 900; cursor: pointer;
+            position: absolute; top: 18px; right: 18px; background: var(--bg-soft-white); color: var(--ink-dark);
+            border: 1px solid var(--border-light); width: 36px; height: 36px; border-radius: 50%; font-weight: 900; cursor: pointer;
             display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
         }
 
-        /* Premium Toast Notification */
+        /* Toast Notification */
         #hoknexToastContainer { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
         .hoknex-toast {
-            background: rgba(28, 25, 21, 0.95); backdrop-filter: blur(16px);
-            border: 1px solid rgba(245, 242, 235, 0.2); color: var(--bg-silk); padding: 14px 20px;
-            border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); display: flex; align-items: center;
-            gap: 12px; font-size: 0.95rem; font-weight: 700; pointer-events: auto;
+            background: var(--teal-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2); color: #FFFFFF; padding: 14px 20px;
+            border-radius: 14px; box-shadow: 0 15px 35px rgba(0, 128, 128, 0.3); display: flex; align-items: center;
+            gap: 12px; font-size: 0.92rem; font-weight: 700; pointer-events: auto;
             animation: slideInToast 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; max-width: 380px;
         }
         @keyframes slideInToast { from { transform: translateX(100%) scale(0.9); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
 
-        /* --- MOBILE RESPONSIVENESS & APP-LIKE ADAPTATIONS --- */
+        /* Mobile App Adaptations */
         @media (max-width: 968px) {
-            body { padding-bottom: 75px; }
-            .hoknex-navbar { padding: 1rem 1.2rem !important; }
+            body { padding-bottom: calc(78px + env(safe-area-inset-bottom)); }
+            .hoknex-navbar { padding: 0.9rem 1.2rem !important; }
             .nav-links { display: none !important; }
             .mobile-bottom-bar { display: flex !important; }
-            .hoknex-hero { flex-direction: column !important; padding: 3rem 1.2rem !important; gap: 2.5rem !important; text-align: center; }
+            .hoknex-hero { flex-direction: column !important; padding: 2.2rem 1.2rem !important; gap: 2rem !important; text-align: center; }
             .hero-left { max-width: 100% !important; display: flex; flex-direction: column; align-items: center; }
-            .hero-left h1 { font-size: 2.4rem !important; }
-            .hero-right { max-width: 100% !important; padding: 2rem 1.2rem !important; }
-            .hoknex-showcase, .hoknex-founder-section, .hoknex-footer-multi { padding: 3rem 1.2rem !important; }
-            .founder-card-box { flex-direction: column !important; padding: 2rem 1.2rem !important; gap: 1.5rem !important; text-align: center; }
-            .founder-image-wrapper { margin: 0 auto; }
-            .footer-grid { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
-            
-            /* App-like Bottom Sheet Modals on Mobile */
+            .hero-left h1 { font-size: 2.3rem !important; }
+            .live-stats { justify-content: center; gap: 0.85rem; }
+            .stat-box { min-width: 100px; padding: 0.85rem 1rem; }
+            .stat-box h3 { font-size: 1.5rem; }
+            .hero-right { max-width: 100% !important; padding: 1.8rem 1.25rem !important; border-radius: 22px; }
+            .hoknex-showcase, .hoknex-founder-section { padding: 2.5rem 1.2rem !important; }
+            .hoknex-footer-multi { padding: 3rem 1.2rem 2rem 1.2rem !important; }
+            .founder-card-box { flex-direction: column !important; padding: 2rem 1.25rem !important; gap: 1.5rem !important; text-align: center; }
+            .founder-image-wrapper img { width: 140px; height: 140px; }
+            .footer-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+
+            /* Native App Bottom Sheet Modals on Mobile */
+            .modal-overlay { padding: 0; align-items: flex-end; }
             .modal-content {
-                padding: 1.8rem 1.2rem; max-height: 92vh;
-                border-radius: 20px 20px 0 0; position: fixed; bottom: 0; left: 0; width: 100%; max-width: 100% !important;
-                animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                padding: 1.2rem 1.4rem calc(2rem + env(safe-area-inset-bottom));
+                max-height: 90vh;
+                border-radius: 26px 26px 0 0; width: 100%; max-width: 100% !important;
+                animation: slideUpSheet 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             }
+            .sheet-handle { display: block; }
             @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
         }
     </style>
@@ -219,9 +304,9 @@
 
     <!-- Navbar -->
     <header class="hoknex-navbar">
-        <div class="nav-brand">
+        <a href="index.html" class="nav-brand">
             <span class="logo-badge"><img src="hoknexlogo.png.jpeg" alt="Logo"></span> <strong>Hoknex</strong>
-        </div>
+        </a>
         <nav class="nav-links">
             <a href="store.html">Store 🛍️</a>
             <a href="magazine.html">Magazine 📖</a>
@@ -232,10 +317,11 @@
 
     <!-- Mobile App Bottom Navigation Bar -->
     <nav class="mobile-bottom-bar">
-        <a href="index.html" class="mob-nav-item" style="color:var(--espresso);"><span class="icon">🏠</span>Hub</a>
+        <a href="index.html" class="mob-nav-item active"><span class="icon">🏠</span>Hub</a>
         <a href="store.html" class="mob-nav-item"><span class="icon">🛍️</span>Store</a>
         <a href="magazine.html" class="mob-nav-item"><span class="icon">📰</span>Zine</a>
-        <a href="donation.html" class="mob-nav-item"><span class="icon">☕</span>Support</a>
+        <a href="donation.html" class="mob-nav-item"><span class="icon">💖</span>Support</a>
+        <a href="#auth-box" class="mob-nav-item"><span class="icon">👤</span>Account</a>
     </nav>
 
     <!-- Hero Section -->
@@ -245,12 +331,12 @@
             <h1>Where students and creators <span>shape the world.</span></h1>
             <p class="hero-subtitle">Hoknex is the ultimate global student network. Bringing together colleges, schools, and campus communities from every corner of the planet into one powerful platform.</p>
             
-            <!-- Cartoon Animal Mascot Widget (Raccoon Hacker Theme) -->
-            <div class="mascot-container" style="display:flex; align-items:center; gap:14px; background:var(--bg-porcelain); border:1px solid var(--cashmere); padding:14px 18px; border-radius:14px; box-shadow:var(--shadow-card); width:fit-content; margin-bottom:2rem; color:var(--espresso);">
+            <!-- Mascot Widget -->
+            <div class="mascot-container" style="display:flex; align-items:center; gap:14px; background:var(--bg-surface); border:1px solid var(--border-light); padding:14px 18px; border-radius:16px; box-shadow:var(--shadow-card); width:fit-content; margin-bottom:1.5rem; color:var(--ink-dark);">
                 <div class="mascot-avatar" style="font-size:2.2rem;">🦝</div>
-                <div class="mascot-text">
-                    <p style="font-weight:900; font-size:0.98rem; color:var(--espresso);">Raccoon Hacker says hello! 🦝✨</p>
-                    <span style="font-size:0.82rem; color:var(--warm-stone); font-weight:800;">Your campus mascot guiding global student builders</span>
+                <div class="mascot-text" style="text-align:left;">
+                    <p style="font-weight:900; font-size:0.96rem; color:var(--teal-primary);">Raccoon Hacker says hello! 🦝✨</p>
+                    <span style="font-size:0.82rem; color:var(--ink-muted); font-weight:700;">Your campus mascot guiding global student builders</span>
                 </div>
             </div>
 
@@ -272,8 +358,8 @@
 
         <div class="hero-right" id="auth-box">
             <div class="auth-tabs">
-                <button class="tab-btn active" onclick="switchTab('signin')">Sign In</button>
-                <button class="tab-btn" onclick="switchTab('signup')">Create Account</button>
+                <button type="button" class="tab-btn active" id="tabSignIn" onclick="switchTab('signin', this)">Sign In</button>
+                <button type="button" class="tab-btn" id="tabSignUp" onclick="switchTab('signup', this)">Create Account</button>
             </div>
 
             <!-- Sign In Form -->
@@ -286,8 +372,8 @@
                     <label>Password</label>
                     <input type="password" id="loginPassword" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="btn-primary">Sign In 🚀</button>
-                <p id="loginError" class="error-msg" style="color:#b91c1c; font-size:0.85rem; margin-top:5px; font-weight:800;"></p>
+                <button type="submit" class="btn-primary" id="signInBtn">Sign In 🚀</button>
+                <p id="loginError" class="error-msg" style="color:var(--coral-accent); font-size:0.85rem; margin-top:4px; font-weight:800;"></p>
             </form>
 
             <!-- Create Account Form -->
@@ -311,11 +397,11 @@
                 
                 <!-- OTP Input (Hidden by default) -->
                 <div class="form-group" id="otpGroup" style="display:none;">
-                    <label style="color: var(--espresso); font-weight: bold;">Enter 6-Digit OTP from Email</label>
-                    <input type="text" id="otpInput" placeholder="123456" maxlength="6">
+                    <label style="color: var(--teal-primary); font-weight: 800;">Enter 6-Digit OTP from Email</label>
+                    <input type="text" id="otpInput" placeholder="123456" maxlength="6" inputmode="numeric">
                 </div>
 
-                <button type="submit" id="createAccountBtn" class="btn-primary" style="width:100%; margin-top:10px;">Create Account</button>
+                <button type="submit" id="createAccountBtn" class="btn-primary" style="width:100%; margin-top:6px;">Create Account</button>
             </form>
         </div>
     </section>
@@ -329,22 +415,22 @@
 
         <div class="showcase-grid">
             <div class="showcase-card" onclick="window.location.href='store.html'" style="cursor:pointer;">
-                <span class="card-tag" style="background:#FEF3C7; color:#B45309;">🛍️ Hoknex Store</span>
+                <span class="card-tag coral">🛍️ Hoknex Store</span>
                 <h3>Campus Swag & Tech Kits</h3>
                 <p>Grab official Hoknex hoodies, developer stickers, hardware prototyping kits, and custom student merchandise.</p>
             </div>
             <div class="showcase-card" onclick="window.location.href='magazine.html'" style="cursor:pointer;">
-                <span class="card-tag" style="background:#E0F2FE; color:#0369A1;">📖 Hoknex Magazine</span>
+                <span class="card-tag">📖 Hoknex Magazine</span>
                 <h3>Global Student Stories</h3>
                 <p>Read cutting-edge articles, student startup spotlights, indie game showcases, and technical engineering deep-dives.</p>
             </div>
             <div class="showcase-card" onclick="window.location.href='donation.html'" style="cursor:pointer;">
-                <span class="card-tag" style="background:#FCE7F3; color:#BE185D;">💖 Hoknex Fund</span>
+                <span class="card-tag coral">💖 Hoknex Fund</span>
                 <h3>Crowdfund & Donate</h3>
                 <p>Support student innovators, fund open-source campus hackathons, and back peer-led community projects.</p>
             </div>
             <div class="showcase-card" onclick="openFeaturesModal()" style="cursor:pointer;">
-                <span class="card-tag" style="background:#EDE9FE; color:#6D28D9;">⚡ Platform Core</span>
+                <span class="card-tag">⚡ Platform Core</span>
                 <h3>The Social Network</h3>
                 <p>Real-time campus feeds, project launchpads, club management, and global student chat rooms.</p>
             </div>
@@ -385,7 +471,7 @@
         <div class="footer-grid">
             <div class="footer-col">
                 <div class="nav-brand" style="margin-bottom: 1rem; color: #fff;">
-                    <span class="logo-badge" style="background:var(--cashmere); color:var(--espresso); padding:6px 10px; border-radius:8px; font-weight:900;">H</span> <strong style="color:#fff; font-size:1.1rem;">Hoknex</strong>
+                    <span class="logo-badge" style="background:var(--coral-accent); color:#fff; padding:6px 12px; border-radius:10px; font-weight:900;">H</span> <strong style="color:#fff; font-size:1.15rem;">Hoknex</strong>
                 </div>
                 <p>Run by students, for students. Hoknex connects every school and college campus in the world into a single student network.</p>
             </div>
@@ -414,9 +500,9 @@
                 </ul>
             </div>
         </div>
-        <div style="margin-top: 3rem; border-top: 1px solid rgba(245,242,235,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--cashmere); position: relative; z-index: 2; flex-wrap: wrap; gap: 10px;">
+        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.82rem; color: rgba(255,255,255,0.8); position: relative; z-index: 2; flex-wrap: wrap; gap: 10px;">
             <span>&copy; 2026 Hoknex Platform. All rights reserved. Built for global campus connectivity.</span>
-            <span>System Status: <span style="color:#22c55e;">● Live & Connected</span></span>
+            <span>System Status: <span style="color:#4ade80;">● Live & Connected</span></span>
         </div>
         <div class="footer-watermark">hoknex</div>
     </footer>
@@ -424,10 +510,11 @@
     <!-- Universal Modern Centered Notification / Popup Modal -->
     <div id="hoknexPopupModal" class="modal-overlay" onclick="if(event.target === this) closePopupModal()">
         <div class="modal-content" style="max-width: 420px; text-align: center;">
+            <div class="sheet-handle"></div>
             <button class="close-modal" onclick="closePopupModal()">&times;</button>
             <div id="popupModalEmoji" style="font-size: 3rem; margin-bottom: 0.5rem;">✨</div>
             <h2 id="popupModalTitle" style="font-size: 1.6rem; margin-bottom: 0.75rem;">Notice</h2>
-            <p id="popupModalText" style="margin-bottom: 1.8rem; font-size: 0.98rem; line-height: 1.6; color: var(--warm-stone);">Message goes here...</p>
+            <p id="popupModalText" style="margin-bottom: 1.8rem; font-size: 0.98rem; line-height: 1.6; color: var(--ink-muted);">Message goes here...</p>
             <button class="btn-primary" onclick="closePopupModal()" style="width: 100%; padding: 0.9rem;">Got it!</button>
         </div>
     </div>
@@ -435,6 +522,7 @@
     <!-- Modals for Features, Privacy, Terms, and Support -->
     <div id="featuresModal" class="modal-overlay" onclick="if(event.target === this) closeModal('featuresModal')">
         <div class="modal-content">
+            <div class="sheet-handle"></div>
             <button class="close-modal" onclick="closeModal('featuresModal')">&times;</button>
             <h2>🚀 Hoknex Platform Features</h2>
             <p>Explore what makes Hoknex the ultimate global campus network:</p>
@@ -450,6 +538,7 @@
 
     <div id="privacyModal" class="modal-overlay" onclick="if(event.target === this) closeModal('privacyModal')">
         <div class="modal-content">
+            <div class="sheet-handle"></div>
             <button class="close-modal" onclick="closeModal('privacyModal')">&times;</button>
             <h2>🔒 Hoknex Privacy Policy</h2>
             <p>Last updated: 2026</p>
@@ -462,6 +551,7 @@
 
     <div id="termsModal" class="modal-overlay" onclick="if(event.target === this) closeModal('termsModal')">
         <div class="modal-content">
+            <div class="sheet-handle"></div>
             <button class="close-modal" onclick="closeModal('termsModal')">&times;</button>
             <h2>📜 Hoknex Terms of Service</h2>
             <p>Welcome to Hoknex! By registering and using our platform, you agree to the following guidelines:</p>
@@ -473,34 +563,32 @@
 
     <div id="supportModal" class="modal-overlay" onclick="if(event.target === this) closeModal('supportModal')">
         <div class="modal-content">
+            <div class="sheet-handle"></div>
             <button class="close-modal" onclick="closeModal('supportModal')">&times;</button>
             <h2>🛠️ Hoknex Platform Support</h2>
             <p>Need assistance or have queries? Reach out to our official team directly:</p>
-            <p>📧 <strong>Official Email:</strong> <a href="mailto:support@hoknex.edu" style="color: var(--espresso); text-decoration: underline;">support@hoknex.edu</a></p>
+            <p>📧 <strong>Official Email:</strong> <a href="mailto:support@hoknex.edu" style="color: var(--teal-primary); text-decoration: underline;">support@hoknex.edu</a></p>
             <p>📞 <strong>Send Message:</strong> In Queries Section (Mon-Fri, 9 AM - 6 PM)</p>
             
-            <hr style="border: 0; border-top: 1px solid var(--cashmere); margin: 1.5rem 0;">
+            <hr style="border: 0; border-top: 1px solid var(--border-light); margin: 1.5rem 0;">
 
-            <h3 style="font-size: 1.1rem; color: var(--espresso); margin-bottom: 0.75rem; font-family:'Playfair Display',serif;">Send a query directly to the Hoknex team</h3>
+            <h3 style="font-size: 1.1rem; color: var(--ink-dark); margin-bottom: 0.75rem; font-family:'Playfair Display',serif;">Send a query directly to the Hoknex team</h3>
             <form onsubmit="handleSupportSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem;">
                 <div class="form-group">
                     <label>Describe your problem or feedback</label>
-                    <textarea id="supportDesc" rows="3" placeholder="Tell us what's going wrong or what feature you need..." required style="background:var(--bg-silk); border:1px solid var(--cashmere); padding:12px; border-radius:10px; color:var(--espresso); outline:none; resize:vertical; font-family:'Plus Jakarta Sans',sans-serif; font-size:16px;"></textarea>
+                    <textarea id="supportDesc" rows="3" placeholder="Tell us what's going wrong or what feature you need..." required style="background:var(--bg-soft-white); border:1.5px solid var(--border-light); padding:12px; border-radius:12px; color:var(--ink-dark); outline:none; resize:vertical; font-family:'Plus Jakarta Sans',sans-serif; font-size:16px;"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Attach screenshot (Optional)</label>
-                    <input type="file" id="supportScreenshot" accept="image/*" style="color:var(--espresso); font-size:0.85rem;">
+                    <input type="file" id="supportScreenshot" accept="image/*" style="color:var(--ink-dark); font-size:0.85rem;">
                 </div>
                 <button type="submit" class="btn-primary">Submit to Hoknex Team 🚀</button>
             </form>
         </div>
     </div>
 
-    <!-- Script to Handle Modern Custom Popups, Modals, & Auth Logic -->
     <script>
         const API_URL = 'https://hoknex-backend.onrender.com';
-
-        // --- DIRECT CLOUDINARY CONFIGURATION ---
         const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
         const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads';
 
@@ -521,7 +609,6 @@
             }
         }
 
-        // Premium Toast Notification System
         function showHoknexToast(message, emoji = '✨') {
             const container = document.getElementById('hoknexToastContainer');
             const toast = document.createElement('div');
@@ -536,7 +623,6 @@
             }, 3500);
         }
 
-        // Custom Modern Centered Modal Handler
         function showHoknexPopup(title, message, emoji = '✨') {
             document.getElementById('popupModalTitle').innerText = title;
             document.getElementById('popupModalText').innerText = message;
@@ -548,25 +634,23 @@
             document.getElementById('hoknexPopupModal').style.display = 'none';
         }
 
-        function switchTab(tab) {
+        function switchTab(tab, btnEl) {
             const loginForm = document.getElementById('signinForm');
             const signupForm = document.getElementById('signupForm');
             const btns = document.querySelectorAll('.tab-btn');
 
             btns.forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
 
-            if(tab === 'signin') {
+            if (tab === 'signin') {
                 loginForm.style.display = 'flex';
                 signupForm.style.display = 'none';
-                event.target.classList.add('active');
             } else {
                 loginForm.style.display = 'none';
                 signupForm.style.display = 'flex';
-                event.target.classList.add('active');
             }
         }
 
-        // Modal Controllers
         function openFeaturesModal() { document.getElementById('featuresModal').style.display = 'flex'; }
         function openPrivacyModal() { document.getElementById('privacyModal').style.display = 'flex'; }
         function openTermsModal() { document.getElementById('termsModal').style.display = 'flex'; }
@@ -577,7 +661,6 @@
             e.preventDefault();
             const description = document.getElementById('supportDesc').value;
             const screenshotInput = document.getElementById('supportScreenshot');
-            
             const username = localStorage.getItem('hoknex_user') || 'Student';
 
             let screenshotUrl = '';
@@ -617,7 +700,6 @@
             }
         }
 
-        // Fetch Real Database Stats
         async function fetchLiveStats() {
             try {
                 const res = await fetch(`${API_URL}/api/stats`);
@@ -629,13 +711,15 @@
         }
         fetchLiveStats();
 
-        // Handle Login API
         async function handleLogin(e) {
             e.preventDefault();
             const identifier = document.getElementById('loginIdentifier').value;
             const password = document.getElementById('loginPassword').value;
             const err = document.getElementById('loginError');
+            const btn = document.getElementById('signInBtn');
             err.innerText = '';
+            btn.innerText = 'Signing In...';
+            btn.disabled = true;
 
             try {
                 const res = await fetch(`${API_URL}/api/login`, {
@@ -654,9 +738,12 @@
                     err.innerText = data.error || 'Login failed';
                     showHoknexToast(data.error || 'Login failed', '⚠️');
                 }
-            } catch(err) {
+            } catch(error) {
                 err.innerText = 'Connection error.';
                 showHoknexToast('Connection error.', '❌');
+            } finally {
+                btn.innerText = 'Sign In 🚀';
+                btn.disabled = false;
             }
         }
 
@@ -664,7 +751,6 @@
 
         async function handleCreateAccountSubmit(event) {
             event.preventDefault();
-
             const btn = document.getElementById('createAccountBtn');
 
             if (!pendingVerificationEmail) {
@@ -674,6 +760,7 @@
                 const password = document.getElementById('regPassword').value;
 
                 btn.innerText = "Sending Code...";
+                btn.disabled = true;
 
                 try {
                     const res = await fetch(`${API_URL}/api/send-otp`, {
@@ -702,6 +789,8 @@
                 } catch (e) {
                     showHoknexPopup('Connection Error', 'Error connecting to server.', '❌');
                     btn.innerText = "Create Account";
+                } finally {
+                    btn.disabled = false;
                 }
             } else {
                 const otp = document.getElementById('otpInput').value;
@@ -711,6 +800,7 @@
                 }
 
                 btn.innerText = "Verifying...";
+                btn.disabled = true;
 
                 try {
                     const res = await fetch(`${API_URL}/api/verify-otp`, {
@@ -734,6 +824,8 @@
                 } catch (e) {
                     showHoknexPopup('Error', 'Error verifying code.', '❌');
                     btn.innerText = "Verify OTP & Create Account";
+                } finally {
+                    btn.disabled = false;
                 }
             }
         }
