@@ -1,1320 +1,1393 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="gallery">
 <head>
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#008080">
-    <title>Hoknex — Connect Every Campus in the World</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Hoknex Studio — AI Certificate, Poster & Creative Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- Fabric.js Vector & Raster Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <!-- jsPDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- PDF.js Original Document Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
     <style>
-        :root {
-            --bg-soft-white: #F9F9F9;
+        /* ==========================================================================
+           60-30-10 DESIGN SYSTEM ACROSS ALL 3 CURATED PALETTES
+           ========================================================================== */
+        :root, [data-theme="gallery"] {
+            /* 60% Background */
+            --bg-main: #FAF9F6;
+            /* 30% Surface & Text */
             --bg-surface: #FFFFFF;
-            --teal-primary: #008080;
-            --teal-dark: #006666;
-            --teal-light: #00A3A3;
-            --teal-tint: rgba(0, 128, 128, 0.08);
-            --coral-accent: #FF6F61;
-            --coral-hover: #FF5545;
-            --coral-tint: rgba(255, 111, 97, 0.12);
-            --ink-dark: #142222;
-            --ink-muted: #526363;
-            --border-light: rgba(0, 128, 128, 0.15);
-            --shadow-card: 0 16px 40px rgba(0, 128, 128, 0.08);
-            --shadow-float: 0 10px 25px rgba(255, 111, 97, 0.32);
+            --bg-surface-alt: #F3F2EE;
+            --ink-primary: #18181B;
+            --ink-muted: #71717A;
+            --border-subtle: rgba(24, 24, 27, 0.1);
+            /* 10% Accent */
+            --accent: #2563EB;
+            --accent-secondary: #0D9488;
+            --accent-tint: rgba(37, 99, 235, 0.09);
+            --accent-contrast: #FFFFFF;
+            --shadow-card: 0 16px 40px rgba(24, 24, 27, 0.06);
+            --shadow-cta: 0 10px 25px rgba(37, 99, 235, 0.28);
+            --footer-bg: #18181B;
+            --footer-ink: #FAF9F6;
+        }
+
+        [data-theme="editorial"] {
+            /* 60% Background */
+            --bg-main: #111111;
+            /* 30% Surface & Text */
+            --bg-surface: #1E1E1E;
+            --bg-surface-alt: #27272A;
+            --ink-primary: #F4F4F5;
+            --ink-muted: #A1A1AA;
+            --border-subtle: rgba(244, 244, 245, 0.11);
+            /* 10% Accent */
+            --accent: #F59E0B;
+            --accent-secondary: #A855F7;
+            --accent-tint: rgba(245, 158, 11, 0.14);
+            --accent-contrast: #111111;
+            --shadow-card: 0 20px 50px rgba(0, 0, 0, 0.45);
+            --shadow-cta: 0 10px 28px rgba(245, 158, 11, 0.3);
+            --footer-bg: #09090B;
+            --footer-ink: #F4F4F5;
+        }
+
+        [data-theme="tactile"] {
+            /* 60% Background */
+            --bg-main: #FBF7F2;
+            /* 30% Surface & Text */
+            --bg-surface: #FFFFFF;
+            --bg-surface-alt: #E6CCB2;
+            --ink-primary: #27221F;
+            --ink-muted: #6B5E55;
+            --border-subtle: rgba(39, 34, 31, 0.12);
+            /* 10% Accent */
+            --accent: #B45309;
+            --accent-secondary: #A3B18A;
+            --accent-tint: rgba(180, 83, 9, 0.1);
+            --accent-contrast: #FFFFFF;
+            --shadow-card: 0 16px 40px rgba(39, 34, 31, 0.07);
+            --shadow-cta: 0 10px 25px rgba(180, 83, 9, 0.28);
+            --footer-bg: #27221F;
+            --footer-ink: #FBF7F2;
+        }
+
+        :root {
             --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
             --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         html { scroll-behavior: smooth; }
         body {
-            background-color: var(--bg-soft-white);
-            color: var(--ink-dark);
+            background-color: var(--bg-main);
+            color: var(--ink-primary);
             min-height: 100vh;
             overflow-x: hidden;
-            padding-bottom: env(safe-area-inset-bottom);
+            transition: background-color 0.35s ease, color 0.35s ease;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Keyframe Animations */
         @keyframes fadeUpIn {
-            from { opacity: 0; transform: translateY(24px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-7px) rotate(2deg); }
-        }
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 128, 128, 0.25); }
-            50% { box-shadow: 0 0 0 10px rgba(0, 128, 128, 0); }
-        }
-        @keyframes shimmerBg {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        @keyframes popDigit {
-            0% { transform: scale(0.8); }
-            60% { transform: scale(1.12); }
-            100% { transform: scale(1); }
-        }
-        @keyframes shakeError {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-6px); }
-            40%, 80% { transform: translateX(6px); }
-        }
-        @keyframes slideInToast {
-            from { transform: translateX(110%) scale(0.9); opacity: 0; }
-            to { transform: translateX(0) scale(1); opacity: 1; }
-        }
-        @keyframes slideUpSheet {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
         }
 
-        .reveal {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 0.65s var(--ease-smooth), transform 0.65s var(--ease-smooth);
-        }
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Navbar */
+        /* ==========================================================================
+           STICKY NAVBAR (Matches index.html Architecture)
+           ========================================================================== */
         .hoknex-navbar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 1rem 3rem;
-            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.95rem 3rem;
+            background: color-mix(in srgb, var(--bg-surface) 88%, transparent);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(18px);
-            border-bottom: 1px solid var(--border-light);
-            position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 4px 20px rgba(0, 128, 128, 0.04);
-            animation: fadeUpIn 0.5s var(--ease-smooth);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
+
         .nav-brand {
-            display: flex; align-items: center; gap: 10px; font-size: 1.4rem;
-            font-weight: 900; color: var(--teal-primary); text-decoration: none;
-            font-family: 'Playfair Display', serif; transition: transform 0.25s var(--ease-spring);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--ink-primary);
+            text-decoration: none;
+            font-family: 'Playfair Display', serif;
         }
-        .nav-brand:hover { transform: scale(1.03); }
-        .logo-badge img {
-            width: 38px; height: 38px; border-radius: 10px; object-fit: cover;
-            border: 2px solid var(--teal-primary); transition: transform 0.35s var(--ease-spring);
+
+        .logo-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--accent);
+            color: var(--accent-contrast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            font-size: 1.1rem;
         }
-        .nav-brand:hover .logo-badge img { transform: rotate(-6deg) scale(1.06); }
-        .nav-links { display: flex; gap: 2rem; align-items: center; }
+
+        .nav-links {
+            display: flex;
+            gap: 1.75rem;
+            align-items: center;
+        }
+
         .nav-links a {
-            color: var(--ink-muted); text-decoration: none; font-weight: 700; font-size: 0.88rem;
-            transition: color 0.2s, transform 0.2s; text-transform: uppercase; letter-spacing: 0.05em;
-            position: relative; padding: 4px 0;
+            color: var(--ink-muted);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.84rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: color 0.2s;
         }
-        .nav-links a::after {
-            content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2.5px;
-            background: var(--coral-accent); border-radius: 2px; transition: width 0.28s var(--ease-smooth);
-        }
-        .nav-links a:hover { color: var(--teal-primary); transform: translateY(-1px); }
-        .nav-links a:hover::after { width: 100%; }
 
-        .btn-join {
-            background: linear-gradient(135deg, var(--coral-accent), #FF8A7A);
-            background-size: 200% 200%;
-            color: #FFFFFF; padding: 0.68rem 1.5rem;
-            border-radius: 12px; font-weight: 800; text-decoration: none;
-            transition: transform 0.25s var(--ease-spring), box-shadow 0.25s ease;
-            text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.8rem;
-            box-shadow: var(--shadow-float);
-            position: relative; overflow: hidden;
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--accent);
         }
-        .btn-join:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 14px 28px rgba(255, 111, 97, 0.4); }
-        .btn-join:active { transform: scale(0.95); }
 
-        /* Mobile App Bottom Navigation Bar */
-        .mobile-bottom-bar {
-            display: none; position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
-            border-top: 1px solid var(--border-light);
-            padding: 8px 0.5rem calc(8px + env(safe-area-inset-bottom));
-            z-index: 25000; justify-content: space-around; align-items: center;
-            box-shadow: 0 -6px 24px rgba(0, 128, 128, 0.09);
+        /* Theme Switcher Pill */
+        .theme-switcher {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-surface-alt);
+            padding: 4px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
         }
-        .mob-nav-item {
-            display: flex; flex-direction: column; align-items: center; gap: 3px;
-            background: none; border: none; font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
-            color: var(--ink-muted); cursor: pointer; text-decoration: none; padding: 6px 12px; border-radius: 14px;
+
+        .theme-pill {
+            border: none;
+            background: transparent;
+            color: var(--ink-muted);
+            padding: 5px 11px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
             transition: all 0.25s var(--ease-spring);
         }
-        .mob-nav-item.active { color: var(--teal-primary); background: var(--teal-tint); transform: translateY(-2px); }
-        .mob-nav-item:active { transform: scale(0.9); }
-        .mob-nav-item span.icon { font-size: 1.25rem; transition: transform 0.25s var(--ease-spring); }
-        .mob-nav-item.active span.icon { transform: scale(1.15); }
 
-        /* Hero Section */
-        .hoknex-hero {
-            background: radial-gradient(circle at top right, rgba(0, 128, 128, 0.1), transparent 48%),
-                        radial-gradient(circle at bottom left, rgba(255, 111, 97, 0.1), transparent 48%),
-                        var(--bg-soft-white);
-            color: var(--ink-dark);
-            padding: 4.5rem 3rem; display: flex; align-items: center; justify-content: space-between; gap: 3.5rem;
-            position: relative; overflow: hidden; border-bottom: 1px solid var(--border-light);
+        .theme-pill.active {
+            background: var(--bg-surface);
+            color: var(--ink-primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        .hero-left { flex: 1; max-width: 650px; animation: fadeUpIn 0.65s var(--ease-smooth) both; }
+
+        .swatch {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .btn-cta {
+            background: var(--accent);
+            color: var(--accent-contrast);
+            padding: 0.65rem 1.35rem;
+            border-radius: 12px;
+            font-weight: 800;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.78rem;
+            box-shadow: var(--shadow-cta);
+            transition: transform 0.25s var(--ease-spring), opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-2px);
+            opacity: 0.94;
+        }
+
+        /* ==========================================================================
+           INDEX-STYLE HERO LAUNCHPAD (60% BG / 30% SURFACE / 10% ACCENT)
+           ========================================================================== */
+        .studio-hero {
+            padding: 3.5rem 3rem 2.5rem;
+            max-width: 1380px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            animation: fadeUpIn 0.6s var(--ease-smooth);
+        }
+
         .pill-badge {
-            display: inline-block; background: var(--teal-tint); color: var(--teal-primary);
-            border: 1px solid rgba(0, 128, 128, 0.25); padding: 7px 16px; border-radius: 30px;
-            font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1.2rem;
-            animation: pulseGlow 3s infinite;
-        }
-        .hero-left h1 { font-family: 'Playfair Display', serif; font-size: 3.7rem; font-weight: 900; line-height: 1.12; color: var(--ink-dark); margin-bottom: 1.2rem; }
-        .hero-left h1 span { color: var(--teal-primary); font-style: italic; }
-        .hero-subtitle { color: var(--ink-muted); font-size: 1.05rem; font-weight: 600; line-height: 1.65; margin-bottom: 2rem; }
-
-        /* Mascot Widget */
-        .mascot-container {
-            display: flex; align-items: center; gap: 14px; background: var(--bg-surface);
-            border: 1px solid var(--border-light); padding: 14px 18px; border-radius: 18px;
-            box-shadow: var(--shadow-card); width: fit-content; margin-bottom: 1.5rem;
-            transition: transform 0.3s var(--ease-spring), box-shadow 0.3s ease;
-        }
-        .mascot-container:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 18px 36px rgba(0, 128, 128, 0.12); }
-        .mascot-avatar { font-size: 2.3rem; animation: floatSlow 3.5s ease-in-out infinite; }
-
-        /* Live Stats */
-        .live-stats { display: flex; gap: 1.25rem; margin-top: 2rem; flex-wrap: wrap; }
-        .stat-box {
-            background: var(--bg-surface); border: 1px solid var(--border-light);
-            padding: 1.1rem 1.45rem; border-radius: 18px; box-shadow: var(--shadow-card);
-            min-width: 135px; transition: transform 0.3s var(--ease-spring), border-color 0.25s ease;
-        }
-        .stat-box:hover { transform: translateY(-5px); border-color: var(--teal-primary); }
-        .stat-box h3 { font-family: 'Playfair Display', serif; font-size: 1.95rem; font-weight: 900; color: var(--teal-primary); }
-        .stat-box p { font-size: 0.74rem; font-weight: 800; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
-
-        /* Animated Login / Auth Portal Card */
-        .hero-right {
-            background: var(--bg-surface) !important; color: var(--ink-dark) !important;
-            border-radius: 26px; padding: 2.5rem;
-            box-shadow: 0 24px 54px rgba(0, 128, 128, 0.12), 0 4px 16px rgba(255, 111, 97, 0.06);
-            border: 1px solid var(--border-light) !important; width: 100%; max-width: 445px;
-            position: relative; overflow: hidden;
-            animation: fadeUpIn 0.75s var(--ease-smooth) 0.12s both;
-        }
-        .hero-right::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
-            background: linear-gradient(90deg, var(--teal-primary), var(--coral-accent), var(--teal-primary));
-            background-size: 200% 200%;
-            animation: shimmerBg 4s ease infinite;
-        }
-        .portal-header {
-            text-align: center; margin-bottom: 1.35rem;
-        }
-        .portal-header h3 {
-            font-family: 'Playfair Display', serif; font-size: 1.55rem; font-weight: 900; color: var(--ink-dark);
-        }
-        .portal-header p {
-            font-size: 0.82rem; font-weight: 600; color: var(--ink-muted); margin-top: 3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-tint);
+            color: var(--accent);
+            border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+            padding: 6px 15px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 1.1rem;
         }
 
-        /* Animated Sliding Pill Tabs */
-        .auth-tabs {
-            background: var(--bg-soft-white); border: 1px solid var(--border-light);
-            border-radius: 14px; padding: 5px; display: flex; margin-bottom: 1.5rem;
+        .studio-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.35rem;
+            font-weight: 900;
+            line-height: 1.12;
+            color: var(--ink-primary);
+            margin-bottom: 1rem;
+        }
+
+        .studio-hero h1 span {
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .studio-hero p.lead {
+            color: var(--ink-muted);
+            font-size: 1.02rem;
+            font-weight: 600;
+            line-height: 1.65;
+            margin-bottom: 1.75rem;
+            max-width: 580px;
+        }
+
+        /* Quick Launch AI Prompt Box on Front Page */
+        .hero-ai-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 22px;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .hero-ai-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-bottom: 0.35rem;
+        }
+
+        .hero-ai-box p {
+            font-size: 0.84rem;
+            color: var(--ink-muted);
+            font-weight: 600;
+            margin-bottom: 1.1rem;
+        }
+
+        .quick-formats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .fmt-chip {
+            background: var(--bg-main);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 10px 6px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.74rem;
+            font-weight: 800;
+            color: var(--ink-muted);
+            transition: all 0.2s var(--ease-spring);
+        }
+
+        .fmt-chip i {
+            display: block;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+            color: var(--ink-primary);
+        }
+
+        .fmt-chip.active, .fmt-chip:hover {
+            border-color: var(--accent);
+            background: var(--accent-tint);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .fmt-chip.active i, .fmt-chip:hover i {
+            color: var(--accent);
+        }
+
+        .hero-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            background: var(--bg-main);
+            border: 1.5px solid var(--border-subtle);
+            color: var(--ink-primary);
+            border-radius: 12px;
+            padding: 11px 14px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+        }
+
+        /* ==========================================================================
+           ALL-IN-ONE ACTION CARDS (Matches index.html Ecosystem Grid)
+           ========================================================================== */
+        .quick-modes-strip {
+            max-width: 1380px;
+            margin: 0 auto 2.5rem;
+            padding: 0 3rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+        }
+
+        .mode-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            padding: 1.35rem;
+            box-shadow: var(--shadow-card);
+            cursor: pointer;
+            transition: transform 0.3s var(--ease-spring), border-color 0.2s;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .mode-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 7px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: var(--accent-tint);
+            color: var(--accent);
+            margin-bottom: 0.65rem;
+        }
+
+        .mode-card h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 900;
+            margin-bottom: 0.3rem;
+        }
+
+        .mode-card p {
+            font-size: 0.82rem;
+            color: var(--ink-muted);
+            font-weight: 600;
+            line-height: 1.45;
+        }
+
+        /* ==========================================================================
+           HIGH-TECH INTERACTIVE STUDIO WORKSPACE
+           ========================================================================== */
+        .studio-section {
+            max-width: 1440px;
+            margin: 0 auto 4rem;
+            padding: 0 2rem;
+        }
+
+        .studio-shell {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 24px;
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Studio Top Action Bar */
+        .studio-toolbar {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            background: var(--bg-surface);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            background: var(--bg-main);
+            color: var(--ink-primary);
+            border: 1px solid var(--border-subtle);
+            padding: 7px 12px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover, .tool-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-tint);
+        }
+
+        /* 3-Column Studio Grid */
+        .studio-grid {
+            display: grid;
+            grid-template-columns: 290px 1fr 270px;
+            min-height: 680px;
+        }
+
+        .panel-left, .panel-right {
+            padding: 16px;
+            background: var(--bg-surface);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+        }
+
+        .panel-left { border-right: 1px solid var(--border-subtle); }
+        .panel-right { border-left: 1px solid var(--border-subtle); }
+
+        .panel-box {
+            background: var(--bg-main);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        .panel-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 9px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .adobe-tools-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+        }
+
+        .adobe-tile {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 9px 4px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--ink-muted);
+            transition: 0.2s;
+        }
+
+        .adobe-tile i {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            color: var(--ink-primary);
+        }
+
+        .adobe-tile:hover, .adobe-tile.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-tint);
+        }
+
+        .adobe-tile:hover i, .adobe-tile.active i {
+            color: var(--accent);
+        }
+
+        /* Center Canvas Viewport */
+        .canvas-stage {
+            background: var(--bg-main);
+            background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px);
+            background-size: 18px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            overflow: auto;
             position: relative;
         }
-        .tab-glider {
-            position: absolute; top: 5px; left: 5px;
-            width: calc(50% - 5px); height: calc(100% - 10px);
-            background: var(--teal-primary);
-            border-radius: 10px;
-            box-shadow: 0 4px 14px rgba(0, 128, 128, 0.28);
-            transition: transform 0.35s var(--ease-spring);
-            z-index: 1;
-        }
-        .auth-tabs.signup-mode .tab-glider {
-            transform: translateX(100%);
-        }
-        .tab-btn {
-            flex: 1; background: transparent !important; border: none; padding: 11px; font-weight: 800;
-            color: var(--ink-muted); cursor: pointer; border-radius: 10px; transition: color 0.25s ease;
-            font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.05em;
-            position: relative; z-index: 2;
-        }
-        .tab-btn.active { color: #FFFFFF !important; }
 
-        .auth-form {
-            display: flex; flex-direction: column; gap: 1.1rem;
-            animation: fadeUpIn 0.35s var(--ease-smooth);
-        }
-        .form-group { display: flex; flex-direction: column; gap: 0.4rem; text-align: left; }
-        .form-group label {
-            font-size: 0.74rem; font-weight: 800; text-transform: uppercase;
-            color: var(--ink-muted); letter-spacing: 0.07em; transition: color 0.2s;
-        }
-        .form-group:focus-within label { color: var(--teal-primary); }
-
-        .input-wrapper { position: relative; display: flex; align-items: center; }
-        .form-group input {
-            background: var(--bg-soft-white) !important; border: 1.5px solid var(--border-light) !important;
-            padding: 13px 15px; border-radius: 13px; font-size: 16px !important; font-weight: 700;
-            outline: none; color: var(--ink-dark) !important; width: 100%;
-            transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s var(--ease-spring), background 0.2s;
-        }
-        .form-group input:focus {
-            border-color: var(--teal-primary) !important;
-            background: #FFFFFF !important;
-            box-shadow: 0 0 0 4px rgba(0, 128, 128, 0.12);
-            transform: translateY(-1px);
-        }
-        .toggle-pass-btn {
-            position: absolute; right: 14px; background: none; border: none;
-            cursor: pointer; font-size: 1.05rem; color: var(--ink-muted); padding: 4px;
-            transition: transform 0.2s var(--ease-spring);
-        }
-        .toggle-pass-btn:hover { transform: scale(1.15); }
-
-        /* Animated 6-Box OTP Input */
-        .otp-boxes-wrapper {
-            display: flex; gap: 8px; justify-content: space-between; margin-top: 4px;
-        }
-        .otp-digit {
-            width: 46px !important; height: 54px !important; text-align: center !important;
-            font-size: 1.35rem !important; font-weight: 900 !important; padding: 0 !important;
-            border-radius: 14px !important; border: 2px solid var(--border-light) !important;
-            background: var(--bg-soft-white) !important; color: var(--teal-primary) !important;
-            transition: all 0.25s var(--ease-spring) !important;
-        }
-        .otp-digit:focus {
-            border-color: var(--coral-accent) !important;
-            background: #FFFFFF !important;
-            box-shadow: 0 6px 16px rgba(255, 111, 97, 0.2) !important;
-            transform: translateY(-4px) scale(1.06) !important;
-        }
-        .otp-digit.filled {
-            border-color: var(--teal-primary) !important;
-            background: var(--teal-tint) !important;
-            animation: popDigit 0.28s var(--ease-spring);
+        .canvas-frame {
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            overflow: hidden;
         }
 
-        /* Animated Primary Button with Shine Sweep */
-        .btn-primary {
-            background: linear-gradient(135deg, var(--coral-accent), #FF8375);
-            color: #FFFFFF; border: none; padding: 1.05rem;
-            border-radius: 14px; font-weight: 800; cursor: pointer; width: 100%;
-            text-transform: uppercase; letter-spacing: 0.07em; font-size: 0.92rem;
-            transition: transform 0.25s var(--ease-spring), box-shadow 0.25s ease;
-            box-shadow: var(--shadow-float);
-            position: relative; overflow: hidden;
-        }
-        .btn-primary::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.32), transparent);
-            transform: skewX(-22deg); transition: left 0.55s ease;
-        }
-        .btn-primary:hover::after { left: 140%; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(255, 111, 97, 0.4); }
-        .btn-primary:active { transform: scale(0.97); }
-        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-
-        .shake { animation: shakeError 0.4s ease; }
-
-        /* Showcase Vision Section */
-        .hoknex-showcase { padding: 5rem 3rem; max-width: 1300px; margin: 0 auto; text-align: center; }
-        .showcase-header h2 { font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 900; color: var(--ink-dark); margin-bottom: 0.5rem; }
-        .showcase-header h2 span { color: var(--coral-accent); font-style: italic; }
-        .showcase-header p { color: var(--ink-muted); font-size: 1rem; font-weight: 600; margin-bottom: 3rem; }
-        .showcase-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.8rem; text-align: left; }
-        .showcase-card {
-            background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 22px;
-            padding: 2.1rem; box-shadow: var(--shadow-card);
-            transition: transform 0.35s var(--ease-spring), border-color 0.25s ease, box-shadow 0.35s ease;
-            position: relative; overflow: hidden;
-        }
-        .showcase-card:hover {
-            transform: translateY(-8px) scale(1.01);
-            border-color: var(--teal-primary);
-            box-shadow: 0 22px 44px rgba(0, 128, 128, 0.13);
-        }
-        .showcase-card:active { transform: scale(0.98); }
-        .card-tag {
-            display: inline-block; padding: 5px 12px; border-radius: 8px;
-            font-size: 0.72rem; font-weight: 800; text-transform: uppercase; margin-bottom: 1rem;
-            background: var(--teal-tint); color: var(--teal-primary);
-            transition: transform 0.25s var(--ease-spring);
-        }
-        .showcase-card:hover .card-tag { transform: scale(1.05); }
-        .card-tag.coral { background: var(--coral-tint); color: var(--coral-accent); }
-        .showcase-card h3 { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 900; color: var(--ink-dark); margin-bottom: 0.6rem; }
-        .showcase-card p { font-size: 0.92rem; font-weight: 600; color: var(--ink-muted); line-height: 1.55; }
-
-        /* Founder Section — Square Founder Picture */
-        .hoknex-founder-section { padding: 3rem; max-width: 1200px; margin: 0 auto; }
-        .founder-card-box {
-            background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 26px;
-            padding: 3.5rem; display: flex; align-items: center; gap: 3.5rem; box-shadow: var(--shadow-card);
-            transition: transform 0.35s var(--ease-spring), box-shadow 0.35s ease;
-        }
-        .founder-card-box:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 24px 48px rgba(0, 128, 128, 0.12);
-        }
-        .founder-image-wrapper {
-            position: relative; flex-shrink: 0;
-        }
-        .founder-image-wrapper::after {
-            content: ''; position: absolute; inset: -8px;
-            border: 2px dashed var(--coral-accent); border-radius: 26px;
-            opacity: 0.55; pointer-events: none;
-            transition: transform 0.4s var(--ease-spring);
-        }
-        .founder-card-box:hover .founder-image-wrapper::after {
-            transform: rotate(3deg) scale(1.03);
-        }
-        .founder-image-wrapper img {
-            width: 210px;
-            height: 210px;
-            aspect-ratio: 1 / 1;
-            border-radius: 20px; /* Crisp rounded square frame */
-            object-fit: cover;
-            display: block;
-            border: 4px solid var(--teal-primary);
-            box-shadow: 0 14px 32px rgba(0, 128, 128, 0.22);
-            transition: transform 0.4s var(--ease-spring);
-        }
-        .founder-card-box:hover .founder-image-wrapper img {
-            transform: scale(1.03);
-        }
-        .founder-content .founder-tag { color: var(--coral-accent); font-size: 0.78rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; display: inline-block; margin-bottom: 0.5rem; }
-        .founder-content h3 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; color: var(--ink-dark); margin-bottom: 1rem; line-height: 1.2; }
-        .founder-content h3 span { color: var(--teal-primary); font-style: italic; }
-        .founder-quote { font-size: 1.05rem; font-weight: 600; font-style: italic; color: var(--ink-muted); line-height: 1.7; margin-bottom: 1.5rem; }
-        .founder-signature { font-weight: 900; font-size: 1.15rem; color: var(--ink-dark); font-family: 'Playfair Display', serif; }
-        .founder-signature span { display: block; font-size: 0.82rem; font-weight: 700; color: var(--teal-primary); margin-top: 2px; font-family: 'Plus Jakarta Sans', sans-serif; }
-
-        /* Multi-Column Footer (Deep Teal Theme) */
-        .hoknex-footer-multi {
-            background: var(--teal-dark); color: var(--bg-soft-white);
-            padding: 5rem 4rem 3rem 4rem; margin-top: 4rem; border-top: 4px solid var(--coral-accent);
-            position: relative; overflow: hidden; text-align: left;
-        }
-        .footer-newsletter { max-width: 800px; margin-bottom: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(249, 249, 249, 0.18); position: relative; z-index: 2; }
-        .footer-newsletter h3 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; color: #FFFFFF; }
-        .footer-newsletter p { color: rgba(249, 249, 249, 0.82); font-size: 0.95rem; font-weight: 600; margin-bottom: 1.5rem; }
-        .newsletter-input-group { display: flex; gap: 0.85rem; max-width: 600px; flex-wrap: wrap; }
-        .newsletter-input-group input {
-            flex: 1; min-width: 220px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 13px 16px; border-radius: 12px; color: #FFFFFF; font-weight: 700; outline: none; font-size: 16px !important;
-            transition: border-color 0.25s, background 0.25s;
-        }
-        .newsletter-input-group input:focus { border-color: var(--coral-accent); background: rgba(255, 255, 255, 0.18); }
-        .newsletter-input-group input::placeholder { color: rgba(255, 255, 255, 0.65); }
-        .btn-newsletter {
-            background: var(--coral-accent); color: #FFFFFF; border: none; padding: 13px 2rem;
-            border-radius: 12px; font-weight: 800; cursor: pointer;
-            transition: transform 0.25s var(--ease-spring), opacity 0.2s; text-transform: uppercase; font-size: 0.82rem;
-        }
-        .btn-newsletter:hover { transform: translateY(-2px); opacity: 0.95; }
-        .btn-newsletter:active { transform: scale(0.96); }
-
-        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5rem; font-size: 0.88rem; position: relative; z-index: 2; }
-        .footer-col h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 1.2rem; color: #FFFFFF; text-transform: uppercase; letter-spacing: 1px; }
-        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
-        .footer-col a { color: rgba(249, 249, 249, 0.8); text-decoration: none; font-weight: 600; cursor: pointer; transition: color 0.2s, transform 0.2s; display: inline-block; }
-        .footer-col a:hover { color: var(--coral-accent); transform: translateX(4px); }
-        .footer-col p { color: rgba(249, 249, 249, 0.8); font-size: 0.9rem; font-weight: 600; line-height: 1.55; }
-        .footer-watermark {
-            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
-            font-size: 15vw; font-weight: 900; color: rgba(255, 255, 255, 0.04); white-space: nowrap; pointer-events: none; z-index: 1; letter-spacing: -5px; font-family: 'Playfair Display', serif;
+        .prop-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--ink-muted);
+            margin-bottom: 8px;
         }
 
-        /* Modals & Bottom Sheets */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(20, 34, 34, 0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            display: none; justify-content: center; align-items: center; z-index: 40000; padding: 1.5rem;
+        input[type="color"] {
+            width: 34px;
+            height: 26px;
+            border: none;
+            background: none;
+            cursor: pointer;
         }
-        .modal-content {
-            background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 24px;
-            padding: 2.5rem; width: 100%; max-width: 560px; position: relative; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
-            color: var(--ink-dark); max-height: 85vh; overflow-y: auto; text-align: left;
+
+        input[type="range"] {
+            width: 115px;
+            accent-color: var(--accent);
+        }
+
+        /* Footer (Matches index.html) */
+        .hoknex-footer {
+            background: var(--footer-bg);
+            color: var(--footer-ink);
+            padding: 3.5rem 3rem 2rem;
+            border-top: 3px solid var(--accent);
+        }
+
+        .footer-inner {
+            max-width: 1380px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--footer-ink);
+            opacity: 0.8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--accent);
+        }
+
+        /* Mobile App Bottom Bar */
+        .mobile-bottom-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-subtle);
+            padding: 8px 0.5rem calc(8px + env(safe-area-inset-bottom));
+            z-index: 25000;
+            justify-content: space-around;
+        }
+
+        .mob-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 12px;
+        }
+
+        .mob-nav-item.active {
+            color: var(--accent);
+            background: var(--accent-tint);
+        }
+
+        /* Toast */
+        #hoknexToastContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .hoknex-toast {
+            background: var(--accent);
+            color: var(--accent-contrast);
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 0.86rem;
+            font-weight: 800;
+            box-shadow: var(--shadow-cta);
             animation: fadeUpIn 0.3s var(--ease-spring);
         }
-        .sheet-handle {
-            display: none; width: 42px; height: 5px; background: rgba(0, 128, 128, 0.22);
-            border-radius: 10px; margin: 0 auto 1.2rem auto;
-        }
-        .modal-content h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: var(--teal-primary); margin-bottom: 1rem; }
-        .modal-content p, .modal-content li { font-size: 0.95rem; font-weight: 600; color: var(--ink-muted); line-height: 1.7; margin-bottom: 0.8rem; }
-        .modal-content ul { padding-left: 20px; margin-bottom: 1rem; }
-        .close-modal {
-            position: absolute; top: 18px; right: 18px; background: var(--bg-soft-white); color: var(--ink-dark);
-            border: 1px solid var(--border-light); width: 36px; height: 36px; border-radius: 50%; font-weight: 900; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
-            transition: transform 0.25s var(--ease-spring), background 0.2s, color 0.2s;
-        }
-        .close-modal:hover { transform: rotate(90deg) scale(1.08); background: var(--coral-accent); color: #FFFFFF; }
 
-        /* Toast Notification */
-        #hoknexToastContainer { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .hoknex-toast {
-            background: var(--teal-primary);
-            border: 1px solid rgba(255, 255, 255, 0.25); color: #FFFFFF; padding: 14px 20px;
-            border-radius: 14px; box-shadow: 0 15px 35px rgba(0, 128, 128, 0.32); display: flex; align-items: center;
-            gap: 12px; font-size: 0.92rem; font-weight: 700; pointer-events: auto;
-            animation: slideInToast 0.35s var(--ease-spring) forwards; max-width: 380px;
-        }
-
-        /* Mobile App Adaptations */
-        @media (max-width: 968px) {
-            body { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
-            .hoknex-navbar { padding: 0.9rem 1.2rem !important; }
-            .nav-links { display: none !important; }
-            .mobile-bottom-bar { display: flex !important; }
-            .hoknex-hero { flex-direction: column !important; padding: 2.2rem 1.2rem !important; gap: 2rem !important; text-align: center; }
-            .hero-left { max-width: 100% !important; display: flex; flex-direction: column; align-items: center; }
-            .hero-left h1 { font-size: 2.3rem !important; }
-            .live-stats { justify-content: center; gap: 0.85rem; }
-            .stat-box { min-width: 100px; padding: 0.85rem 1rem; }
-            .stat-box h3 { font-size: 1.5rem; }
-            .hero-right { max-width: 100% !important; padding: 1.8rem 1.25rem !important; border-radius: 24px; }
-            .otp-digit { width: 42px !important; height: 50px !important; }
-            .hoknex-showcase, .hoknex-founder-section { padding: 2.5rem 1.2rem !important; }
-            .hoknex-footer-multi { padding: 3rem 1.2rem 2rem 1.2rem !important; }
-            .founder-card-box { flex-direction: column !important; padding: 2rem 1.25rem !important; gap: 1.5rem !important; text-align: center; }
-            .founder-image-wrapper img { width: 165px; height: 165px; border-radius: 18px; }
-            .footer-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
-
-            /* Native App Bottom Sheet Modals on Mobile */
-            .modal-overlay { padding: 0; align-items: flex-end; }
-            .modal-content {
-                padding: 1.2rem 1.4rem calc(2rem + env(safe-area-inset-bottom));
-                max-height: 90vh;
-                border-radius: 26px 26px 0 0; width: 100%; max-width: 100% !important;
-                animation: slideUpSheet 0.35s var(--ease-smooth) forwards;
-            }
-            .sheet-handle { display: block; }
+        @media (max-width: 1080px) {
+            .studio-hero { grid-template-columns: 1fr; padding: 2rem 1.25rem; }
+            .studio-hero h1 { font-size: 2.35rem; }
+            .quick-modes-strip { grid-template-columns: repeat(2, 1fr); padding: 0 1.25rem; }
+            .studio-grid { grid-template-columns: 1fr; }
+            .panel-left, .panel-right { border: none; border-bottom: 1px solid var(--border-subtle); }
+            .hoknex-navbar { padding: 0.85rem 1.2rem; }
+            .nav-links { display: none; }
+            .mobile-bottom-bar { display: flex; }
+            body { padding-bottom: 75px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Toast Notification Container -->
     <div id="hoknexToastContainer"></div>
 
-    <!-- Navbar -->
+    <!-- Top Navbar (Mirrors index.html + Theme Switcher) -->
     <header class="hoknex-navbar">
         <a href="index.html" class="nav-brand">
-            <span class="logo-badge"><img src="hoknexlogo.png.jpeg" alt="Logo"></span> <strong>Hoknex</strong>
+            <span class="logo-badge">H</span> <strong>Hoknex</strong> <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.75rem; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.08em;">Studio</span>
         </a>
+
         <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="feed.html">Campus Feed</a>
             <a href="store.html">Store 🛍️</a>
             <a href="magazine.html">Magazine 📖</a>
-            <a href="donation.html">Support & Fund 💖</a>
-            <a href="studio.html">Design Studio</a>
+            <a href="donation.html">Fund 💖</a>
+            <a href="studio.html" class="active">AI Studio ✨</a>
         </nav>
-        <a href="#auth-box" class="btn-join">Join Network</a>
+
+        <div style="display:flex; align-items:center; gap:12px;">
+            <!-- 3-Theme Switcher -->
+            <div class="theme-switcher" title="Switch 60-30-10 Color Theme">
+                <button class="theme-pill active" onclick="setStudioTheme('gallery', this)">
+                    <span class="swatch" style="background:#FAF9F6; border:1px solid #2563EB;"></span> Minimal
+                </button>
+                <button class="theme-pill" onclick="setStudioTheme('editorial', this)">
+                    <span class="swatch" style="background:#111111; border:1px solid #F59E0B;"></span> Dark
+                </button>
+                <button class="theme-pill" onclick="setStudioTheme('tactile', this)">
+                    <span class="swatch" style="background:#FBF7F2; border:1px solid #B45309;"></span> Tactile
+                </button>
+            </div>
+            <a href="#studio-workspace" class="btn-cta">Open Canvas 🚀</a>
+        </div>
     </header>
 
-    <!-- Mobile App Bottom Navigation Bar -->
-    <nav class="mobile-bottom-bar">
-        <a href="index.html" class="mob-nav-item active"><span class="icon">🏠</span>Hub</a>
-        <a href="store.html" class="mob-nav-item"><span class="icon">🛍️</span>Store</a>
-        <a href="magazine.html" class="mob-nav-item"><span class="icon">📰</span>Zine</a>
-        <a href="donation.html" class="mob-nav-item"><span class="icon">💖</span>Support</a>
-        <a href="#auth-box" class="mob-nav-item"><span class="icon">👤</span>Account</a>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hoknex-hero">
-        <div class="hero-left">
-            <span class="pill-badge">✨ Connect All College & School Campuses Globally</span>
-            <h1>Where students and creators <span>shape the world.</span></h1>
-            <p class="hero-subtitle">Hoknex is the ultimate global student network. Bringing together colleges, schools, and campus communities from every corner of the planet into one powerful platform.</p>
-            
-            <!-- Mascot Widget -->
-            <div class="mascot-container">
-                <div class="mascot-avatar">🦝</div>
-                <div class="mascot-text" style="text-align:left;">
-                    <p style="font-weight:900; font-size:0.96rem; color:var(--teal-primary);">Raccoon Hacker says hello! 🦝✨</p>
-                    <span style="font-size:0.82rem; color:var(--ink-muted); font-weight:700;">Your campus mascot guiding global student builders</span>
-                </div>
-            </div>
-
-            <div class="live-stats">
-                <div class="stat-box">
-                    <h3 id="statPeople">0</h3>
-                    <p>Global Students</p>
-                </div>
-                <div class="stat-box">
-                    <h3 id="statPosts">0</h3>
-                    <p>Campus Posts</p>
-                </div>
-                <div class="stat-box">
-                    <h3 id="statClubs">0</h3>
-                    <p>Active Clubs</p>
-                </div>
+    <!-- Front-Page Hero Section (Matches index.html Layout) -->
+    <section class="studio-hero">
+        <div>
+            <span class="pill-badge">✨ AI-Loaded Hoknex Creative & Credential Engine</span>
+            <h1>Design certificates, posters & banners <span>in seconds.</span></h1>
+            <p class="lead">
+                Generate verifiable Hoknex certificates from a single AI prompt, craft high-impact event posters & YouTube thumbnails, draw freehand like Adobe Express, or upload and edit your own original PDF & image documents.
+            </p>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <a href="#studio-workspace" class="btn-cta" style="padding:0.85rem 1.6rem; font-size:0.84rem;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Start Creating Free
+                </a>
+                <button class="tool-btn" style="padding:0.85rem 1.4rem; border-radius:12px; font-size:0.84rem;" onclick="document.getElementById('docUpload').click()">
+                    <i class="fa-solid fa-file-arrow-up"></i> Edit Original PDF / Image
+                </button>
             </div>
         </div>
 
-        <!-- Animated Login & OTP Portal -->
-        <div class="hero-right" id="auth-box">
-            <div class="portal-header">
-                <h3 id="portalTitle">Welcome Back ✨</h3>
-                <p id="portalSubtitle">Sign in to access your campus network</p>
+        <!-- Front-Page AI Prompt & Instant Launch Card -->
+        <div class="hero-ai-box">
+            <h3>AI Prompt Studio ⚡</h3>
+            <p>Pick a format, tell the AI what you need, and launch directly onto the canvas.</p>
+
+            <div class="quick-formats">
+                <div class="fmt-chip active" data-fmt="certificate" onclick="selectHeroFormat('certificate', this)">
+                    <i class="fa-solid fa-award"></i>Certificate
+                </div>
+                <div class="fmt-chip" data-fmt="poster" onclick="selectHeroFormat('poster', this)">
+                    <i class="fa-solid fa-file-image"></i>Poster
+                </div>
+                <div class="fmt-chip" data-fmt="banner" onclick="selectHeroFormat('banner', this)">
+                    <i class="fa-solid fa-panorama"></i>Banner
+                </div>
+                <div class="fmt-chip" data-fmt="thumbnail" onclick="selectHeroFormat('thumbnail', this)">
+                    <i class="fa-brands fa-youtube"></i>Thumbnail
+                </div>
             </div>
 
-            <div class="auth-tabs" id="authTabsContainer">
-                <div class="tab-glider"></div>
-                <button type="button" class="tab-btn active" id="tabSignIn" onclick="switchTab('signin', this)">Sign In</button>
-                <button type="button" class="tab-btn" id="tabSignUp" onclick="switchTab('signup', this)">Create Account</button>
+            <div class="hero-input-row">
+                <input type="text" id="heroRecipient" placeholder="Recipient or Subtitle (e.g. Aditya Kumar)">
             </div>
+            <textarea id="heroPrompt" rows="2" placeholder="Describe your design... e.g. 'National Hackathon 2026 Winner Certificate with gold seal'"></textarea>
 
-            <!-- Sign In Form -->
-            <form id="signinForm" class="auth-form" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label>Username or Email</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="loginIdentifier" placeholder="e.g. alex_student" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="loginPassword" placeholder="••••••••" required>
-                        <button type="button" class="toggle-pass-btn" onclick="togglePasswordVisibility('loginPassword', this)" aria-label="Show password">👁️</button>
-                    </div>
-                </div>
-                <button type="submit" class="btn-primary" id="signInBtn">Sign In 🚀</button>
-                <p id="loginError" class="error-msg" style="color:var(--coral-accent); font-size:0.85rem; margin-top:2px; font-weight:800; text-align:center;"></p>
-            </form>
-
-            <!-- Create Account & Animated OTP Form -->
-            <form id="signupForm" class="auth-form" style="display:none;" onsubmit="handleCreateAccountSubmit(event)">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="regName" placeholder="Alex Morgan" required>
-                </div>
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" id="regUsername" placeholder="alex_morgan" required>
-                </div>
-                <div class="form-group">
-                    <label>Campus Email</label>
-                    <input type="email" id="regEmail" placeholder="alex@university.edu" required>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="regPassword" placeholder="••••••••" required>
-                        <button type="button" class="toggle-pass-btn" onclick="togglePasswordVisibility('regPassword', this)" aria-label="Show password">👁️</button>
-                    </div>
-                </div>
-                
-                <!-- Animated 6-Digit OTP Box Group -->
-                <div class="form-group" id="otpGroup" style="display:none; animation: fadeUpIn 0.4s var(--ease-spring);">
-                    <label style="color: var(--teal-primary); font-weight: 800; text-align:center; margin-bottom:4px;">Enter 6-Digit OTP Sent to Your Email</label>
-                    <div class="otp-boxes-wrapper" id="otpBoxesWrapper">
-                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
-                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-                        <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-                    </div>
-                    <input type="hidden" id="otpInput">
-                </div>
-
-                <button type="submit" id="createAccountBtn" class="btn-primary" style="width:100%; margin-top:6px;">Create Account ✨</button>
-            </form>
+            <button class="btn-cta" style="width:100%; justify-content:center; padding:0.95rem; margin-top:8px;" onclick="launchFromHeroPrompt()">
+                <i class="fa-solid fa-sparkles"></i> Generate & Open in Canvas
+            </button>
         </div>
     </section>
 
-    <!-- Scrollable Showcase Vision -->
-    <section class="hoknex-showcase reveal" id="vision">
-        <div class="showcase-header">
-            <h2>Explore the <span>Hoknex Ecosystem:</span></h2>
-            <p>Built by students for students across global campuses. Discover our flagship platform extensions:</p>
+    <!-- 4-Card Ecosystem Strip (All Tools Accessible From Front Page) -->
+    <section class="quick-modes-strip">
+        <div class="mode-card" onclick="quickStartMode('certificate')">
+            <span class="mode-tag">🎓 Credentials</span>
+            <h4>AI Certificate Maker</h4>
+            <p>Auto-generate verifiable Hoknex certificates with unique IDs, seals, and custom signatures.</p>
         </div>
-
-        <div class="showcase-grid">
-            <div class="showcase-card" onclick="window.location.href='store.html'" style="cursor:pointer;">
-                <span class="card-tag coral">🛍️ Hoknex Store</span>
-                <h3>Campus Swag & Tech Kits</h3>
-                <p>Grab official Hoknex hoodies, developer stickers, hardware prototyping kits, and custom student merchandise.</p>
-            </div>
-            <div class="showcase-card" onclick="window.location.href='magazine.html'" style="cursor:pointer;">
-                <span class="card-tag">📖 Hoknex Magazine</span>
-                <h3>Global Student Stories</h3>
-                <p>Read cutting-edge articles, student startup spotlights, indie game showcases, and technical engineering deep-dives.</p>
-            </div>
-            <div class="showcase-card" onclick="window.location.href='donation.html'" style="cursor:pointer;">
-                <span class="card-tag coral">💖 Hoknex Fund</span>
-                <h3>Crowdfund & Donate</h3>
-                <p>Support student innovators, fund open-source campus hackathons, and back peer-led community projects.</p>
-            </div>
-            <div class="showcase-card" onclick="openFeaturesModal()" style="cursor:pointer;">
-                <span class="card-tag">⚡ Platform Core</span>
-                <h3>The Social Network</h3>
-                <p>Real-time campus feeds, project launchpads, club management, and global student chat rooms.</p>
-            </div>
+        <div class="mode-card" onclick="quickStartMode('poster')">
+            <span class="mode-tag">🎨 Print & Events</span>
+            <h4>Poster & Banner Studio</h4>
+            <p>Build A4 event posters, campus hackathon flyers, and wide LinkedIn/web banners.</p>
+        </div>
+        <div class="mode-card" onclick="quickStartMode('thumbnail')">
+            <span class="mode-tag">🎬 Creator Suite</span>
+            <h4>Thumbnail Generator</h4>
+            <p>1280×720 high-contrast YouTube & reel thumbnails with bold typography and filters.</p>
+        </div>
+        <div class="mode-card" onclick="document.getElementById('docUpload').click()">
+            <span class="mode-tag">📄 Document Editor</span>
+            <h4>Edit Original Docs</h4>
+            <p>Import any existing PDF, scan, or image to draw, annotate, erase, or stamp over it.</p>
         </div>
     </section>
 
-    <!-- Founder's Note Section (Square Founder Photo) -->
-    <section class="hoknex-founder-section reveal">
-        <div class="founder-card-box">
-            <div class="founder-image-wrapper">
-                <img src="founder.png" alt="Aditya Kumar - Founder of Hoknex">
+    <!-- Full High-Tech Interactive Studio Workspace -->
+    <section class="studio-section" id="studio-workspace">
+        <div class="studio-shell">
+            <!-- Studio Top Bar -->
+            <div class="studio-toolbar">
+                <div class="toolbar-group">
+                    <select id="formatSelect" style="width:auto; padding:7px 12px; font-size:0.8rem;" onchange="changeCanvasFormat()">
+                        <option value="certificate">Certificate (1120 × 790)</option>
+                        <option value="poster">Event Poster A4 (794 × 1123)</option>
+                        <option value="banner">Web / LinkedIn Banner (1584 × 396)</option>
+                        <option value="thumbnail">YouTube Thumbnail (1280 × 720)</option>
+                        <option value="square">Instagram / Feed Square (1080 × 1080)</option>
+                    </select>
+                    <button class="tool-btn" onclick="undo()"><i class="fa-solid fa-rotate-left"></i> Undo</button>
+                    <button class="tool-btn" onclick="redo()"><i class="fa-solid fa-rotate-right"></i> Redo</button>
+                    <button class="tool-btn" onclick="bringForward()"><i class="fa-solid fa-layer-group"></i> Front</button>
+                    <button class="tool-btn" onclick="sendBackward()"><i class="fa-solid fa-arrow-down"></i> Back</button>
+                    <button class="tool-btn" style="color:#dc2626;" onclick="deleteSelected()"><i class="fa-solid fa-trash"></i> Delete</button>
+                </div>
+
+                <div class="toolbar-group">
+                    <button class="tool-btn" onclick="saveProjectToServer()"><i class="fa-solid fa-cloud-arrow-up"></i> Save Cloud</button>
+                    <button class="tool-btn" onclick="exportPNG()"><i class="fa-solid fa-image"></i> Export PNG</button>
+                    <button class="btn-cta" onclick="exportPDF()"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+                </div>
             </div>
-            <div class="founder-content">
-                <span class="founder-tag">Visionary Statement ⚡</span>
-                <h3>Building a borderless <span>student ecosystem</span> for the world.</h3>
-                <p class="founder-quote">
-                    "When we started Hoknex, the goal was simple: break down the walls between college campuses and give every student, creator, and innovator a unified space to launch ideas, find true collaborators, and build real-world projects together."
-                </p>
-                <div class="founder-signature">
-                    Aditya Kumar
-                    <span>Founder & Lead Architect, Hoknex</span>
+
+            <!-- 3-Column Canvas Workspace -->
+            <div class="studio-grid">
+                <!-- Left Panel: AI Generator, Document Upload & Adobe Drawing Tools -->
+                <div class="panel-left">
+                    <div class="panel-box">
+                        <div class="panel-label"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Prompt Regenerate</div>
+                        <input type="text" id="recipientInput" placeholder="Recipient / Subtitle" style="margin-bottom:7px;">
+                        <textarea id="promptInput" rows="2" placeholder="Describe changes or new design..."></textarea>
+                        <button class="btn-cta" style="width:100%; justify-content:center; margin-top:7px;" onclick="generateFromPrompt()">
+                            <i class="fa-solid fa-bolt"></i> Generate with AI
+                        </button>
+                    </div>
+
+                    <div class="panel-box">
+                        <div class="panel-label"><i class="fa-solid fa-file-import"></i> Original PDF / Image</div>
+                        <input type="file" id="docUpload" accept="image/*,.pdf" style="display:none" onchange="handleDocumentUpload(event)" />
+                        <button class="tool-btn" style="width:100%; justify-content:center;" onclick="document.getElementById('docUpload').click()">
+                            <i class="fa-solid fa-upload"></i> Upload Document to Edit
+                        </button>
+                    </div>
+
+                    <div class="panel-box">
+                        <div class="panel-label"><i class="fa-solid fa-pen-nib"></i> Adobe-Style Tools</div>
+                        <div class="adobe-tools-grid">
+                            <div class="adobe-tile active" id="toolSelect" onclick="setMode('select')">
+                                <i class="fa-solid fa-arrow-pointer"></i>Select
+                            </div>
+                            <div class="adobe-tile" id="toolDraw" onclick="setMode('draw')">
+                                <i class="fa-solid fa-paintbrush"></i>Draw
+                            </div>
+                            <div class="adobe-tile" id="toolErase" onclick="setMode('erase')">
+                                <i class="fa-solid fa-eraser"></i>Cover/Erase
+                            </div>
+                            <div class="adobe-tile" onclick="addText('Double-click to edit', 36)">
+                                <i class="fa-solid fa-font"></i>Text
+                            </div>
+                            <div class="adobe-tile" onclick="addRect()">
+                                <i class="fa-regular fa-square"></i>Shape
+                            </div>
+                            <div class="adobe-tile" onclick="addCircle()">
+                                <i class="fa-regular fa-circle"></i>Badge
+                            </div>
+                            <div class="adobe-tile" onclick="addOfficialSeal()">
+                                <i class="fa-solid fa-certificate"></i>Hoknex Seal
+                            </div>
+                            <div class="adobe-tile" onclick="addSignatureLine()">
+                                <i class="fa-solid fa-signature"></i>Signature
+                            </div>
+                            <div class="adobe-tile" onclick="clearCanvas()">
+                                <i class="fa-solid fa-broom"></i>Clear
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center Interactive Canvas -->
+                <div class="canvas-stage">
+                    <div class="canvas-frame">
+                        <canvas id="hoknexCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Color, Brush & Typography Inspector -->
+                <div class="panel-right">
+                    <div class="panel-box">
+                        <div class="panel-label"><i class="fa-solid fa-palette"></i> Surface & Brush</div>
+                        <div class="prop-row">
+                            <span>Canvas Background</span>
+                            <input type="color" id="bgColorPicker" value="#FAF9F6" onchange="updateCanvasBg(this.value)" />
+                        </div>
+                        <div class="prop-row">
+                            <span>Fill / Brush Color</span>
+                            <input type="color" id="fillColorPicker" value="#2563EB" onchange="updateObjectColor(this.value)" />
+                        </div>
+                        <div class="prop-row">
+                            <span>Border / Stroke</span>
+                            <input type="color" id="strokeColorPicker" value="#18181B" onchange="updateStrokeColor(this.value)" />
+                        </div>
+                        <div class="prop-row">
+                            <span>Brush Thickness</span>
+                            <input type="range" id="brushSize" min="1" max="45" value="4" oninput="updateBrushSize(this.value)" />
+                        </div>
+                        <div class="prop-row">
+                            <span>Layer Opacity</span>
+                            <input type="range" id="opacitySlider" min="0.1" max="1" step="0.05" value="1" oninput="updateOpacity(this.value)" />
+                        </div>
+                    </div>
+
+                    <div class="panel-box">
+                        <div class="panel-label"><i class="fa-solid fa-text-height"></i> Typography</div>
+                        <select id="fontFamilySelect" style="margin-bottom:8px;" onchange="updateFontFamily(this.value)">
+                            <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+                            <option value="Playfair Display">Playfair Display (Editorial)</option>
+                            <option value="Cinzel">Cinzel (Royal Certificate)</option>
+                            <option value="Space Grotesk">Space Grotesk (Tech)</option>
+                        </select>
+                        <div class="prop-row">
+                            <span>Font Size</span>
+                            <input type="number" id="fontSizeInput" value="36" min="8" max="200" style="width:76px; padding:6px;" onchange="updateFontSize(this.value)" />
+                        </div>
+                        <div style="display:flex; gap:6px; margin-top:6px;">
+                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="toggleBold()"><i class="fa-solid fa-bold"></i></button>
+                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="toggleItalic()"><i class="fa-solid fa-italic"></i></button>
+                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="toggleUnderline()"><i class="fa-solid fa-underline"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="panel-box">
+                        <div class="panel-label"><i class="fa-solid fa-sliders"></i> Image Adjustments</div>
+                        <div style="display:flex; gap:6px;">
+                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('grayscale')">B&W</button>
+                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('sepia')">Warm</button>
+                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('reset')">Reset</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Multi-Column Footer with Join Movement -->
-    <footer class="hoknex-footer-multi reveal">
-        <div class="footer-newsletter">
-            <h3>Join the Hoknex movement</h3>
-            <p>Get exclusive drops, campus hackathon invites, and stories that fuel your next breakthrough - straight to your inbox.</p>
-            <div class="newsletter-input-group">
-                <input type="email" id="newsletterEmailInput" placeholder="Enter your email address">
-                <button class="btn-newsletter" onclick="submitIndexNewsletter()">Join</button>
+    <!-- Footer -->
+    <footer class="hoknex-footer">
+        <div class="footer-inner">
+            <div>
+                <strong style="font-family:'Playfair Display',serif; font-size:1.3rem;">Hoknex Studio</strong>
+                <p style="font-size:0.82rem; opacity:0.75; margin-top:4px;">AI Certificate, Poster, Banner & Document Creation Suite for Global Campuses.</p>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="feed.html">Campus Feed</a>
+                <a href="store.html">Store</a>
+                <a href="magazine.html">Magazine</a>
+                <a href="donation.html">Donations</a>
             </div>
         </div>
-
-        <div class="footer-grid">
-            <div class="footer-col">
-                <div class="nav-brand" style="margin-bottom: 1rem; color: #fff;">
-                    <span class="logo-badge" style="background:var(--coral-accent); color:#fff; padding:6px 12px; border-radius:10px; font-weight:900;">H</span> <strong style="color:#fff; font-size:1.15rem;">Hoknex</strong>
-                </div>
-                <p>Run by students, for students. Hoknex connects every school and college campus in the world into a single student network.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Ecosystem</h4>
-                <ul>
-                    <li><a href="store.html">Hoknex Store 🛍️</a></li>
-                    <li><a href="magazine.html">Hoknex Magazine 📖</a></li>
-                    <li><a href="donation.html">Hoknex Fund 💖</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Platform</h4>
-                <ul>
-                    <li><a href="#vision">Global Vision</a></li>
-                    <li><a onclick="openFeaturesModal()">Features</a></li>
-                    <li><a href="#auth-box">Sign In / Register</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Legal & Support</h4>
-                <ul>
-                    <li><a onclick="openPrivacyModal()">Privacy Policy</a></li>
-                    <li><a onclick="openTermsModal()">Terms of Service</a></li>
-                    <li><a onclick="openSupportModal()">Platform Support</a></li>
-                </ul>
-            </div>
-        </div>
-        <div style="margin-top: 3rem; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.82rem; color: rgba(255,255,255,0.8); position: relative; z-index: 2; flex-wrap: wrap; gap: 10px;">
-            <span>&copy; 2026 Hoknex Platform. All rights reserved. Built for global campus connectivity.</span>
-            <span>System Status: <span style="color:#4ade80;">● Live & Connected</span></span>
-        </div>
-        <div class="footer-watermark">hoknex</div>
     </footer>
 
-    <!-- Universal Modern Centered Notification / Popup Modal -->
-    <div id="hoknexPopupModal" class="modal-overlay" onclick="if(event.target === this) closePopupModal()">
-        <div class="modal-content" style="max-width: 420px; text-align: center;">
-            <div class="sheet-handle"></div>
-            <button class="close-modal" onclick="closePopupModal()">&times;</button>
-            <div id="popupModalEmoji" style="font-size: 3rem; margin-bottom: 0.5rem;">✨</div>
-            <h2 id="popupModalTitle" style="font-size: 1.6rem; margin-bottom: 0.75rem;">Notice</h2>
-            <p id="popupModalText" style="margin-bottom: 1.8rem; font-size: 0.98rem; line-height: 1.6; color: var(--ink-muted);">Message goes here...</p>
-            <button class="btn-primary" onclick="closePopupModal()" style="width: 100%; padding: 0.9rem;">Got it!</button>
-        </div>
-    </div>
-
-    <!-- Modals for Features, Privacy, Terms, and Support -->
-    <div id="featuresModal" class="modal-overlay" onclick="if(event.target === this) closeModal('featuresModal')">
-        <div class="modal-content">
-            <div class="sheet-handle"></div>
-            <button class="close-modal" onclick="closeModal('featuresModal')">&times;</button>
-            <h2>🚀 Hoknex Platform Features</h2>
-            <p>Explore what makes Hoknex the ultimate global campus network:</p>
-            <ul>
-                <li><strong>Live Campus Feed:</strong> Drop thoughts, like, repost, and reply with attributed author names.</li>
-                <li><strong>Project Launchpad:</strong> Pitch what you're building and recruit international student collaborators.</li>
-                <li><strong>Club Management:</strong> Create and discover student communities across departments.</li>
-                <li><strong>Profile Customization:</strong> Upload your display picture and banner directly to your student profile.</li>
-                <li><strong>Lost & Found:</strong> Coordinate with peers across campus to recover missing items.</li>
-            </ul>
-        </div>
-    </div>
-
-    <div id="privacyModal" class="modal-overlay" onclick="if(event.target === this) closeModal('privacyModal')">
-        <div class="modal-content">
-            <div class="sheet-handle"></div>
-            <button class="close-modal" onclick="closeModal('privacyModal')">&times;</button>
-            <h2>🔒 Hoknex Privacy Policy</h2>
-            <p>Last updated: 2026</p>
-            <p>At Hoknex, we prioritize the privacy and security of students across global campuses. Here is how we handle your data:</p>
-            <p><strong>1. Information Collection:</strong> We collect basic profile details (Name, Username, Department, and School Email) necessary to authenticate your student account and connect you with peers.</p>
-            <p><strong>2. Media Storage:</strong> Uploaded profile pictures and banner images are stored securely on our servers solely for personalizing your campus profile.</p>
-            <p><strong>3. Data Protection:</strong> We never sell student data to third parties. All passwords are encrypted securely using industry-standard hashing.</p>
-        </div>
-    </div>
-
-    <div id="termsModal" class="modal-overlay" onclick="if(event.target === this) closeModal('termsModal')">
-        <div class="modal-content">
-            <div class="sheet-handle"></div>
-            <button class="close-modal" onclick="closeModal('termsModal')">&times;</button>
-            <h2>📜 Hoknex Terms of Service</h2>
-            <p>Welcome to Hoknex! By registering and using our platform, you agree to the following guidelines:</p>
-            <p><strong>1. Student Community Standards:</strong> Hoknex is a collaborative platform for schools and colleges worldwide. Respect your fellow peers across all interactions, posts, and comments.</p>
-            <p><strong>2. Authentic Accounts:</strong> Users must register with valid student credentials or campus identifiers. Impersonation or malicious activity is strictly prohibited.</p>
-            <p><strong>3. Platform Availability:</strong> We strive to keep Hoknex online 24/7, connected globally to support student innovation, hackathons, and campus networking.</p>
-        </div>
-    </div>
-
-    <div id="supportModal" class="modal-overlay" onclick="if(event.target === this) closeModal('supportModal')">
-        <div class="modal-content">
-            <div class="sheet-handle"></div>
-            <button class="close-modal" onclick="closeModal('supportModal')">&times;</button>
-            <h2>🛠️ Hoknex Platform Support</h2>
-            <p>Need assistance or have queries? Reach out to our official team directly:</p>
-            <p>📧 <strong>Official Email:</strong> <a href="mailto:support@hoknex.edu" style="color: var(--teal-primary); text-decoration: underline;">support@hoknex.edu</a></p>
-            <p>📞 <strong>Send Message:</strong> In Queries Section (Mon-Fri, 9 AM - 6 PM)</p>
-            
-            <hr style="border: 0; border-top: 1px solid var(--border-light); margin: 1.5rem 0;">
-
-            <h3 style="font-size: 1.1rem; color: var(--ink-dark); margin-bottom: 0.75rem; font-family:'Playfair Display',serif;">Send a query directly to the Hoknex team</h3>
-            <form onsubmit="handleSupportSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem;">
-                <div class="form-group">
-                    <label>Describe your problem or feedback</label>
-                    <textarea id="supportDesc" rows="3" placeholder="Tell us what's going wrong or what feature you need..." required style="background:var(--bg-soft-white); border:1.5px solid var(--border-light); padding:12px; border-radius:12px; color:var(--ink-dark); outline:none; resize:vertical; font-family:'Plus Jakarta Sans',sans-serif; font-size:16px;"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Attach screenshot (Optional)</label>
-                    <input type="file" id="supportScreenshot" accept="image/*" style="color:var(--ink-dark); font-size:0.85rem;">
-                </div>
-                <button type="submit" class="btn-primary">Submit to Hoknex Team 🚀</button>
-            </form>
-        </div>
-    </div>
+    <!-- Mobile App Bottom Bar -->
+    <nav class="mobile-bottom-bar">
+        <a href="index.html" class="mob-nav-item"><span>🏠</span>Hub</a>
+        <a href="store.html" class="mob-nav-item"><span>🛍️</span>Store</a>
+        <a href="magazine.html" class="mob-nav-item"><span>📰</span>Zine</a>
+        <a href="donation.html" class="mob-nav-item"><span>💖</span>Fund</a>
+        <a href="studio.html" class="mob-nav-item active"><span>✨</span>Studio</a>
+    </nav>
 
     <script>
-        const API_URL = 'https://hoknex-backend.onrender.com';
-        const CLOUDINARY_CLOUD_NAME = 'wnnotcmw';
-        const CLOUDINARY_UPLOAD_PRESET = 'hoknex_uploads';
+        const STUDIO_API = 'http://localhost:5050/api/studio';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        // Scroll Reveal Observer
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.12 });
-        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+        const PALETTES = {
+            gallery:   { bg: '#FAF9F6', surface: '#FFFFFF', ink: '#18181B', muted: '#71717A', accent: '#2563EB', secondary: '#0D9488', badge: 'GALLERY MINIMAL EDITION' },
+            editorial: { bg: '#111111', surface: '#1E1E1E', ink: '#F4F4F5', muted: '#A1A1AA', accent: '#F59E0B', secondary: '#A855F7', badge: 'EDITORIAL DARK EDITION' },
+            tactile:   { bg: '#FBF7F2', surface: '#FFFFFF', ink: '#27221F', muted: '#6B5E55', accent: '#B45309', secondary: '#A3B18A', badge: 'WARM & TACTILE EDITION' }
+        };
 
-        // Animated Number Counter
-        function animateCounter(el, target) {
-            const duration = 1200;
-            const start = 0;
-            const startTime = performance.now();
-            function update(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const ease = 1 - Math.pow(1 - progress, 3);
-                el.innerText = Math.floor(start + (target - start) * ease);
-                if (progress < 1) requestAnimationFrame(update);
-                else el.innerText = target;
-            }
-            requestAnimationFrame(update);
-        }
+        let currentThemeKey = 'gallery';
 
-        // Toggle Password Visibility
-        function togglePasswordVisibility(inputId, btn) {
-            const input = document.getElementById(inputId);
-            if (input.type === 'password') {
-                input.type = 'text';
-                btn.innerText = '🙈';
-            } else {
-                input.type = 'password';
-                btn.innerText = '👁️';
-            }
-        }
+        const FORMATS = {
+            certificate: { w: 1120, h: 790, scale: 0.68 },
+            poster:      { w: 794,  h: 1123, scale: 0.52 },
+            banner:      { w: 1584, h: 396, scale: 0.48 },
+            thumbnail:   { w: 1280, h: 720, scale: 0.60 },
+            square:      { w: 1080, h: 1080, scale: 0.52 }
+        };
 
-        // Interactive 6-Box OTP Logic (Auto-advance, Backspace, Paste)
-        const otpDigits = document.querySelectorAll('.otp-digit');
-        const hiddenOtpInput = document.getElementById('otpInput');
-
-        function syncOtpValue() {
-            let code = '';
-            otpDigits.forEach(d => {
-                code += d.value;
-                if (d.value) d.classList.add('filled');
-                else d.classList.remove('filled');
-            });
-            hiddenOtpInput.value = code;
-        }
-
-        otpDigits.forEach((digit, idx) => {
-            digit.addEventListener('input', (e) => {
-                const val = e.target.value.replace(/\D/g, '');
-                e.target.value = val ? val[0] : '';
-                syncOtpValue();
-                if (val && idx < otpDigits.length - 1) {
-                    otpDigits[idx + 1].focus();
-                }
-            });
-
-            digit.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !e.target.value && idx > 0) {
-                    otpDigits[idx - 1].focus();
-                    otpDigits[idx - 1].value = '';
-                    syncOtpValue();
-                }
-            });
-
-            digit.addEventListener('paste', (e) => {
-                e.preventDefault();
-                const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
-                pasted.split('').forEach((char, i) => {
-                    if (otpDigits[i]) otpDigits[i].value = char;
-                });
-                syncOtpValue();
-                const focusIdx = Math.min(pasted.length, otpDigits.length - 1);
-                otpDigits[focusIdx].focus();
-            });
+        const canvas = new fabric.Canvas('hoknexCanvas', {
+            backgroundColor: PALETTES.gallery.bg,
+            preserveObjectStacking: true
         });
 
-        async function uploadDirectToCloudinary(file) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        let history = [];
+        let historyStep = -1;
+        let isRestoring = false;
 
-            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                method: 'POST',
-                body: formData
+        function showToast(msg) {
+            const c = document.getElementById('hoknexToastContainer');
+            const t = document.createElement('div');
+            t.className = 'hoknex-toast';
+            t.textContent = msg;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3200);
+        }
+
+        function setStudioTheme(themeKey, btn) {
+            currentThemeKey = themeKey;
+            document.documentElement.setAttribute('data-theme', themeKey);
+            document.querySelectorAll('.theme-pill').forEach(p => p.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            const pal = PALETTES[themeKey];
+            document.getElementById('bgColorPicker').value = pal.bg;
+            document.getElementById('fillColorPicker').value = pal.accent;
+            document.getElementById('strokeColorPicker').value = pal.ink;
+            applyDesignTemplate();
+            showToast(`Theme switched to ${themeKey.toUpperCase()}`);
+        }
+
+        function selectHeroFormat(fmt, el) {
+            document.querySelectorAll('.fmt-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('formatSelect').value = fmt;
+        }
+
+        function quickStartMode(fmt) {
+            document.getElementById('formatSelect').value = fmt;
+            changeCanvasFormat();
+            applyDesignTemplate();
+            document.getElementById('studio-workspace').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function launchFromHeroPrompt() {
+            document.getElementById('recipientInput').value = document.getElementById('heroRecipient').value;
+            document.getElementById('promptInput').value = document.getElementById('heroPrompt').value;
+            changeCanvasFormat();
+            generateFromPrompt();
+            document.getElementById('studio-workspace').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function saveHistory() {
+            if (isRestoring) return;
+            history = history.slice(0, historyStep + 1);
+            history.push(JSON.stringify(canvas.toJSON()));
+            historyStep++;
+        }
+
+        canvas.on('object:added', saveHistory);
+        canvas.on('object:modified', saveHistory);
+        canvas.on('object:removed', saveHistory);
+
+        function undo() {
+            if (historyStep > 0) {
+                isRestoring = true;
+                historyStep--;
+                canvas.loadFromJSON(history[historyStep], () => { canvas.renderAll(); isRestoring = false; });
+            }
+        }
+
+        function redo() {
+            if (historyStep < history.length - 1) {
+                isRestoring = true;
+                historyStep++;
+                canvas.loadFromJSON(history[historyStep], () => { canvas.renderAll(); isRestoring = false; });
+            }
+        }
+
+        function changeCanvasFormat() {
+            const fmt = FORMATS[document.getElementById('formatSelect').value];
+            canvas.setWidth(fmt.w * fmt.scale);
+            canvas.setHeight(fmt.h * fmt.scale);
+            canvas.setZoom(fmt.scale);
+            canvas.renderAll();
+        }
+
+        function setMode(mode) {
+            document.querySelectorAll('.adobe-tile').forEach(el => el.classList.remove('active'));
+            const pal = PALETTES[currentThemeKey];
+            if (mode === 'draw') {
+                canvas.isDrawingMode = true;
+                canvas.freeDrawingBrush.color = document.getElementById('fillColorPicker').value;
+                canvas.freeDrawingBrush.width = parseInt(document.getElementById('brushSize').value, 10);
+                document.getElementById('toolDraw').classList.add('active');
+            } else if (mode === 'erase') {
+                canvas.isDrawingMode = true;
+                canvas.freeDrawingBrush.color = canvas.backgroundColor || pal.bg;
+                canvas.freeDrawingBrush.width = 24;
+                document.getElementById('toolErase').classList.add('active');
+                showToast('Cover/Erase brush active (paints with canvas background)');
+            } else {
+                canvas.isDrawingMode = false;
+                document.getElementById('toolSelect').classList.add('active');
+            }
+        }
+
+        function addText(text, size = 36) {
+            setMode('select');
+            const pal = PALETTES[currentThemeKey];
+            const t = new fabric.IText(text, {
+                left: 300, top: 240, fontSize: size, fill: pal.ink, fontFamily: 'Plus Jakarta Sans', originX: 'center'
             });
-            const data = await res.json();
-            if (data.secure_url) {
-                return data.secure_url;
-            } else {
-                throw new Error('Cloudinary direct upload failed');
+            canvas.add(t);
+            canvas.setActiveObject(t);
+        }
+
+        function addRect() {
+            setMode('select');
+            const pal = PALETTES[currentThemeKey];
+            const rect = new fabric.Rect({
+                left: 220, top: 200, width: 220, height: 130,
+                fill: pal.surface, stroke: pal.accent, strokeWidth: 2, rx: 12, ry: 12
+            });
+            canvas.add(rect);
+            canvas.setActiveObject(rect);
+        }
+
+        function addCircle() {
+            setMode('select');
+            const pal = PALETTES[currentThemeKey];
+            const circle = new fabric.Circle({
+                left: 260, top: 220, radius: 65,
+                fill: pal.accent, opacity: 0.9
+            });
+            canvas.add(circle);
+            canvas.setActiveObject(circle);
+        }
+
+        function addOfficialSeal() {
+            setMode('select');
+            const pal = PALETTES[currentThemeKey];
+            const outer = new fabric.Circle({ radius: 52, fill: pal.surface, stroke: pal.accent, strokeWidth: 4, originX: 'center', originY: 'center' });
+            const inner = new fabric.Circle({ radius: 43, fill: 'transparent', stroke: pal.secondary, strokeWidth: 1.5, strokeDashArray: [4, 4], originX: 'center', originY: 'center' });
+            const label = new fabric.Text('HOKNEX\nVERIFIED', { fontSize: 12, fill: pal.ink, fontFamily: 'Space Grotesk', fontWeight: 'bold', textAlign: 'center', originX: 'center', originY: 'center' });
+            const group = new fabric.Group([outer, inner, label], { left: 850, top: 600 });
+            canvas.add(group);
+            canvas.setActiveObject(group);
+        }
+
+        function addSignatureLine() {
+            setMode('select');
+            const pal = PALETTES[currentThemeKey];
+            const line = new fabric.Line([0, 0, 200, 0], { stroke: pal.accent, strokeWidth: 2, originX: 'center' });
+            const label = new fabric.IText('Authorized Signatory\nHoknex Campus Network', { fontSize: 13, fill: pal.muted, top: 10, textAlign: 'center', originX: 'center', fontFamily: 'Plus Jakarta Sans' });
+            const group = new fabric.Group([line, label], { left: 260, top: 630 });
+            canvas.add(group);
+        }
+
+        function applyDesignTemplate(aiData = null) {
+            canvas.clear();
+            const fmtKey = document.getElementById('formatSelect').value;
+            const fmt = FORMATS[fmtKey];
+            const pal = aiData?.theme || PALETTES[currentThemeKey];
+
+            const headline = aiData?.content?.headline || (
+                fmtKey === 'certificate' ? 'CERTIFICATE OF EXCELLENCE' :
+                fmtKey === 'poster' ? 'GLOBAL CAMPUS SUMMIT 2026' :
+                fmtKey === 'banner' ? 'BUILDING THE FUTURE OF STUDENT INNOVATION' :
+                'HOW WE BUILT HOKNEX FROM ZERO'
+            );
+
+            const recipient = aiData?.content?.recipient || document.getElementById('recipientInput').value || 'Aditya Kumar';
+            const description = aiData?.content?.description || 'Awarded for outstanding leadership, creative engineering, and global campus collaboration on Hoknex.';
+            const certId = aiData?.certId || 'HKX-2026-8F4C2A';
+            const dateStr = aiData?.content?.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            // 60% Background
+            canvas.setBackgroundColor(pal.bg, canvas.renderAll.bind(canvas));
+            document.getElementById('bgColorPicker').value = pal.bg;
+
+            // 30% Surface Card Frame
+            canvas.add(new fabric.Rect({
+                left: 32, top: 32, width: fmt.w - 64, height: fmt.h - 64,
+                fill: pal.surface, stroke: pal.accent, strokeWidth: 2.5, rx: 16, ry: 16, selectable: false
+            }));
+
+            const cx = fmt.w / 2;
+
+            // 10% Accent Badge
+            canvas.add(new fabric.IText(`HOKNEX  •  ${pal.badge || 'VERIFIED STUDIO'}`, {
+                left: cx, top: fmtKey === 'banner' ? 58 : 88,
+                fontSize: 14, fill: pal.accent, fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center', charSpacing: 180
+            }));
+
+            canvas.add(new fabric.IText(headline, {
+                left: cx, top: fmtKey === 'banner' ? 115 : 155,
+                fontSize: fmtKey === 'banner' ? 34 : 44, fill: pal.ink, fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center'
+            }));
+
+            if (fmtKey === 'certificate') {
+                canvas.add(new fabric.IText('THIS CREDENTIAL IS PROUDLY PRESENTED TO', {
+                    left: cx, top: 242, fontSize: 13, fill: pal.muted, fontFamily: 'Plus Jakarta Sans', fontWeight: 'bold', originX: 'center', charSpacing: 140
+                }));
+
+                canvas.add(new fabric.IText(recipient, {
+                    left: cx, top: 292, fontSize: 54, fill: pal.accent, fontFamily: 'Playfair Display', fontStyle: 'italic', fontWeight: 'bold', originX: 'center'
+                }));
+
+                canvas.add(new fabric.Line([cx - 240, 372, cx + 240, 372], {
+                    stroke: pal.secondary || pal.accent, strokeWidth: 2
+                }));
             }
-        }
 
-        function showHoknexToast(message, emoji = '✨') {
-            const container = document.getElementById('hoknexToastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'hoknex-toast';
-            toast.innerHTML = `<span style="font-size: 1.3rem;">${emoji}</span> <span>${message}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(-15px)';
-                toast.style.transition = 'all 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
-        }
+            canvas.add(new fabric.Textbox(description, {
+                left: cx, top: fmtKey === 'certificate' ? 405 : (fmtKey === 'banner' ? 195 : 265),
+                width: fmt.w * 0.68, fontSize: 18, fill: pal.muted, fontFamily: 'Plus Jakarta Sans', textAlign: 'center', originX: 'center'
+            }));
 
-        function showHoknexPopup(title, message, emoji = '✨') {
-            document.getElementById('popupModalTitle').innerText = title;
-            document.getElementById('popupModalText').innerText = message;
-            document.getElementById('popupModalEmoji').innerText = emoji;
-            document.getElementById('hoknexPopupModal').style.display = 'flex';
-        }
+            canvas.add(new fabric.IText(`Issued: ${dateStr}   |   Verify ID: ${certId}`, {
+                left: cx, top: fmt.h - 75, fontSize: 13, fill: pal.muted, fontFamily: 'Space Grotesk', originX: 'center'
+            }));
 
-        function closePopupModal() {
-            document.getElementById('hoknexPopupModal').style.display = 'none';
-        }
-
-        function switchTab(tab, btnEl) {
-            const loginForm = document.getElementById('signinForm');
-            const signupForm = document.getElementById('signupForm');
-            const tabsContainer = document.getElementById('authTabsContainer');
-            const btns = document.querySelectorAll('.tab-btn');
-            const title = document.getElementById('portalTitle');
-            const subtitle = document.getElementById('portalSubtitle');
-
-            btns.forEach(b => b.classList.remove('active'));
-            if (btnEl) btnEl.classList.add('active');
-
-            if (tab === 'signin') {
-                tabsContainer.classList.remove('signup-mode');
-                loginForm.style.display = 'flex';
-                signupForm.style.display = 'none';
-                title.innerText = 'Welcome Back ✨';
-                subtitle.innerText = 'Sign in to access your campus network';
-            } else {
-                tabsContainer.classList.add('signup-mode');
-                loginForm.style.display = 'none';
-                signupForm.style.display = 'flex';
-                title.innerText = 'Join Hoknex 🚀';
-                subtitle.innerText = 'Create your global student & creator identity';
+            if (fmtKey === 'certificate') {
+                addOfficialSeal();
+                addSignatureLine();
             }
+            saveHistory();
         }
 
-        function openFeaturesModal() { document.getElementById('featuresModal').style.display = 'flex'; }
-        function openPrivacyModal() { document.getElementById('privacyModal').style.display = 'flex'; }
-        function openTermsModal() { document.getElementById('termsModal').style.display = 'flex'; }
-        function openSupportModal() { document.getElementById('supportModal').style.display = 'flex'; }
-        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+        async function generateFromPrompt() {
+            const prompt = document.getElementById('promptInput').value;
+            const recipient = document.getElementById('recipientInput').value || 'Aditya Kumar';
+            const format = document.getElementById('formatSelect').value;
 
-        async function handleSupportSubmit(e) {
-            e.preventDefault();
-            const description = document.getElementById('supportDesc').value;
-            const screenshotInput = document.getElementById('supportScreenshot');
-            const username = localStorage.getItem('hoknex_user') || 'Student';
-
-            let screenshotUrl = '';
-            if (screenshotInput.files && screenshotInput.files[0]) {
-                try {
-                    screenshotUrl = await uploadDirectToCloudinary(screenshotInput.files[0]);
-                } catch (err) {
-                    showHoknexPopup('Upload Error', 'Failed to upload screenshot image directly to Cloudinary.', '❌');
+            showToast('AI generating layout & verifiable ID...');
+            try {
+                const res = await fetch(`${STUDIO_API}/generate-from-prompt`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt, recipient, format, themeKey: currentThemeKey })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    applyDesignTemplate(data);
+                    showToast(`AI Design Ready! ID: ${data.certId}`);
                     return;
                 }
-            }
+            } catch (_) {}
 
+            // Client-side AI fallback if studio-server.js isn't running yet
+            const cleanHeadline = prompt.trim()
+                ? prompt.replace(/create|make|generate|a|an|for|certificate|poster|banner|thumbnail/gi, '').trim().toUpperCase()
+                : null;
+            applyDesignTemplate({
+                theme: PALETTES[currentThemeKey],
+                certId: `HKX-2026-${Math.random().toString(16).substring(2, 8).toUpperCase()}`,
+                content: {
+                    headline: cleanHeadline && cleanHeadline.length > 3 ? cleanHeadline : undefined,
+                    recipient,
+                    description: prompt || undefined
+                }
+            });
+            showToast('Generated with client AI engine!');
+        }
+
+        async function handleDocumentUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('studio-workspace').scrollIntoView({ behavior: 'smooth' });
+
+            if (file.type === 'application/pdf') {
+                showToast('Importing original PDF onto editable canvas...');
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 2 });
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = viewport.width;
+                tempCanvas.height = viewport.height;
+                await page.render({ canvasContext: tempCanvas.getContext('2d'), viewport }).promise;
+
+                fabric.Image.fromURL(tempCanvas.toDataURL('image/png'), (img) => {
+                    const fmt = FORMATS[document.getElementById('formatSelect').value];
+                    img.scaleToWidth(fmt.w);
+                    canvas.add(img);
+                    canvas.sendToBack(img);
+                    showToast('Original PDF loaded! Draw, cover/erase, or add text over it.');
+                });
+            } else {
+                const reader = new FileReader();
+                reader.onload = (f) => {
+                    fabric.Image.fromURL(f.target.result, (img) => {
+                        img.scaleToWidth(480);
+                        canvas.add(img);
+                        canvas.centerObject(img);
+                        canvas.setActiveObject(img);
+                        showToast('Image loaded onto canvas!');
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateCanvasBg(c) { canvas.setBackgroundColor(c, canvas.renderAll.bind(canvas)); }
+        function updateObjectColor(c) {
+            canvas.freeDrawingBrush.color = c;
+            const o = canvas.getActiveObject();
+            if (o) { o.set('fill', c); canvas.renderAll(); }
+        }
+        function updateStrokeColor(c) { const o = canvas.getActiveObject(); if (o) { o.set('stroke', c); canvas.renderAll(); } }
+        function updateBrushSize(v) { canvas.freeDrawingBrush.width = parseInt(v, 10); }
+        function updateOpacity(v) { const o = canvas.getActiveObject(); if (o) { o.set('opacity', parseFloat(v)); canvas.renderAll(); } }
+        function updateFontFamily(f) { const o = canvas.getActiveObject(); if (o && o.fontFamily) { o.set('fontFamily', f); canvas.renderAll(); } }
+        function updateFontSize(s) { const o = canvas.getActiveObject(); if (o && o.fontSize) { o.set('fontSize', parseInt(s, 10)); canvas.renderAll(); } }
+        function toggleBold() { const o = canvas.getActiveObject(); if (o) { o.set('fontWeight', o.fontWeight === 'bold' ? 'normal' : 'bold'); canvas.renderAll(); } }
+        function toggleItalic() { const o = canvas.getActiveObject(); if (o) { o.set('fontStyle', o.fontStyle === 'italic' ? 'normal' : 'italic'); canvas.renderAll(); } }
+        function toggleUnderline() { const o = canvas.getActiveObject(); if (o) { o.set('underline', !o.underline); canvas.renderAll(); } }
+        function bringForward() { const o = canvas.getActiveObject(); if (o) canvas.bringForward(o); }
+        function sendBackward() { const o = canvas.getActiveObject(); if (o) canvas.sendBackwards(o); }
+        function deleteSelected() {
+            const active = canvas.getActiveObjects();
+            if (active.length) {
+                active.forEach(o => canvas.remove(o));
+                canvas.discardActiveObject().renderAll();
+            }
+        }
+        function clearCanvas() { canvas.clear(); updateCanvasBg(PALETTES[currentThemeKey].bg); }
+
+        function applyImageFilter(type) {
+            const obj = canvas.getActiveObject();
+            if (!obj || obj.type !== 'image') return showToast('Click an uploaded image first');
+            obj.filters = [];
+            if (type === 'grayscale') obj.filters.push(new fabric.Image.filters.Grayscale());
+            if (type === 'sepia') obj.filters.push(new fabric.Image.filters.Sepia());
+            obj.applyFilters();
+            canvas.renderAll();
+        }
+
+        function exportPNG() {
+            const fmt = FORMATS[document.getElementById('formatSelect').value];
+            const dataURL = canvas.toDataURL({ format: 'png', multiplier: 1 / fmt.scale });
+            const a = document.createElement('a');
+            a.href = dataURL;
+            a.download = `hoknex-${document.getElementById('formatSelect').value}-${Date.now()}.png`;
+            a.click();
+        }
+
+        function exportPDF() {
+            const fmtKey = document.getElementById('formatSelect').value;
+            const fmt = FORMATS[fmtKey];
+            const imgData = canvas.toDataURL({ format: 'png', multiplier: 1 / fmt.scale });
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: fmt.w >= fmt.h ? 'landscape' : 'portrait', unit: 'px', format: [fmt.w, fmt.h] });
+            pdf.addImage(imgData, 'PNG', 0, 0, fmt.w, fmt.h);
+            pdf.save(`hoknex-${fmtKey}-${Date.now()}.pdf`);
+        }
+
+        async function saveProjectToServer() {
             try {
-                const res = await fetch(`${API_URL}/api/support`, {
+                const res = await fetch(`${STUDIO_API}/projects`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        username: username,
-                        query: description,
-                        screenshotUrl: screenshotUrl 
+                        name: document.getElementById('promptInput').value || 'Hoknex Studio Project',
+                        format: document.getElementById('formatSelect').value,
+                        theme: currentThemeKey,
+                        canvasJSON: canvas.toJSON()
                     })
                 });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    showHoknexPopup('Query Sent Successfully!', 'Your support ticket has been received by the Hoknex team. We will get back to you shortly!', '🎉');
-                    closeModal('supportModal');
-                    document.getElementById('supportDesc').value = '';
-                    if (screenshotInput) screenshotInput.value = '';
-                } else {
-                    showHoknexPopup('Submission Failed', data.error || 'Please try again.', '⚠️');
-                }
-            } catch (err) {
-                console.error('Support fetch error:', err);
-                showHoknexPopup('Network Error', 'Network error while submitting support ticket.', '❌');
-            }
+                if (res.ok) return showToast('Saved to studio-server.js!');
+            } catch (_) {}
+            localStorage.setItem('hoknex_studio_project', JSON.stringify(canvas.toJSON()));
+            showToast('Saved locally in browser!');
         }
 
-        async function fetchLiveStats() {
-            try {
-                const res = await fetch(`${API_URL}/api/stats`);
-                const data = await res.json();
-                animateCounter(document.getElementById('statPeople'), data.globalStudents || data.people || 1);
-                animateCounter(document.getElementById('statPosts'), data.campusPosts || data.posts || 0);
-                animateCounter(document.getElementById('statClubs'), data.activeClubs || data.clubs || 0);
-            } catch(e) { console.error('Stats error:', e); }
-        }
-        fetchLiveStats();
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const identifier = document.getElementById('loginIdentifier').value;
-            const password = document.getElementById('loginPassword').value;
-            const err = document.getElementById('loginError');
-            const btn = document.getElementById('signInBtn');
-            const card = document.getElementById('auth-box');
-            err.innerText = '';
-            btn.innerText = 'Signing In...';
-            btn.disabled = true;
-
-            try {
-                const res = await fetch(`${API_URL}/api/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ identifier, password })
-                });
-                const data = await res.json();
-                if(res.ok) {
-                    localStorage.setItem('hoknex_user', data.username || identifier);
-                    showHoknexToast('Login successful! Redirecting to feed...', '🚀');
-                    setTimeout(() => {
-                        window.location.href = 'feed.html';
-                    }, 1000);
-                } else {
-                    err.innerText = data.error || 'Login failed';
-                    card.classList.remove('shake');
-                    void card.offsetWidth;
-                    card.classList.add('shake');
-                    showHoknexToast(data.error || 'Login failed', '⚠️');
-                }
-            } catch(error) {
-                err.innerText = 'Connection error.';
-                showHoknexToast('Connection error.', '❌');
-            } finally {
-                btn.innerText = 'Sign In 🚀';
-                btn.disabled = false;
-            }
-        }
-
-        let pendingVerificationEmail = null;
-
-        async function handleCreateAccountSubmit(event) {
-            event.preventDefault();
-            const btn = document.getElementById('createAccountBtn');
-            const card = document.getElementById('auth-box');
-
-            if (!pendingVerificationEmail) {
-                const fullName = document.getElementById('regName').value;
-                const username = document.getElementById('regUsername').value;
-                const email = document.getElementById('regEmail').value;
-                const password = document.getElementById('regPassword').value;
-
-                btn.innerText = "Sending Code...";
-                btn.disabled = true;
-
-                try {
-                    const res = await fetch(`${API_URL}/api/send-otp`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ fullName, username, email, password })
-                    });
-
-                    const data = await res.json();
-
-                    if (data.success) {
-                        pendingVerificationEmail = email;
-                        showHoknexPopup('Verification Code Sent', 'A secure 6-digit code has been dispatched to your campus email address!', '✉️');
-
-                        document.getElementById('regName').parentElement.style.display = 'none';
-                        document.getElementById('regUsername').parentElement.style.display = 'none';
-                        document.getElementById('regPassword').closest('.form-group').style.display = 'none';
-                        document.getElementById('regEmail').parentElement.style.display = 'none';
-
-                        document.getElementById('portalTitle').innerText = 'Verify Email 🔐';
-                        document.getElementById('portalSubtitle').innerText = `Code sent to ${email}`;
-                        document.getElementById('otpGroup').style.display = 'flex';
-                        otpDigits[0].focus();
-                        btn.innerText = "Verify OTP & Create Account ✓";
-                    } else {
-                        showHoknexPopup('Registration Notice', data.error, '⚠️');
-                        btn.innerText = "Create Account ✨";
-                    }
-                } catch (e) {
-                    showHoknexPopup('Connection Error', 'Error connecting to server.', '❌');
-                    btn.innerText = "Create Account ✨";
-                } finally {
-                    btn.disabled = false;
-                }
-            } else {
-                const otp = document.getElementById('otpInput').value;
-                if (!otp || otp.length < 6) {
-                    card.classList.remove('shake');
-                    void card.offsetWidth;
-                    card.classList.add('shake');
-                    showHoknexToast('Please enter the 6-digit verification OTP!', '⚠️');
-                    return;
-                }
-
-                btn.innerText = "Verifying...";
-                btn.disabled = true;
-
-                try {
-                    const res = await fetch(`${API_URL}/api/verify-otp`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: pendingVerificationEmail, otp })
-                    });
-
-                    const data = await res.json();
-
-                    if (data.success) {
-                        localStorage.setItem('hoknex_user', document.getElementById('regUsername').value);
-                        showHoknexPopup('Welcome to Hoknex!', 'Your student account has been successfully verified and created.', '🎉');
-                        setTimeout(() => {
-                            window.location.href = 'feed.html';
-                        }, 1200);
-                    } else {
-                        card.classList.remove('shake');
-                        void card.offsetWidth;
-                        card.classList.add('shake');
-                        showHoknexPopup('Verification Failed', data.error, '❌');
-                        btn.innerText = "Verify OTP & Create Account ✓";
-                    }
-                } catch (e) {
-                    showHoknexPopup('Error', 'Error verifying code.', '❌');
-                    btn.innerText = "Verify OTP & Create Account ✓";
-                } finally {
-                    btn.disabled = false;
-                }
-            }
-        }
-
-        async function submitIndexNewsletter() {
-            const email = document.getElementById('newsletterEmailInput').value.trim();
-            if(!email) { showHoknexToast('Please enter a valid email address!', '⚠️'); return; }
-            try {
-                await fetch(`${API_URL}/api/store/subscribers`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, date: new Date().toLocaleString() })
-                });
-                showHoknexToast('Successfully joined the Hoknex movement! 🎉', '🦝');
-                document.getElementById('newsletterEmailInput').value = '';
-            } catch(e) {
-                showHoknexToast('Subscription failed. Try again later.', '❌');
-            }
-        }
+        changeCanvasFormat();
+        applyDesignTemplate();
     </script>
-
-    <!-- Start of Tawk.to Script + Long-Press Movable Widget -->
-    <script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-    (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/6af8c6556f8b143c3f931dc2/1k7dsdghh';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
-    })();
-
-    (function enableMovableTawkWidget() {
-        const LONG_PRESS_MS = 350;
-        let pressTimer = null;
-        let isDragging = false;
-        let startX = 0;
-        let startY = 0;
-        let currentLeft = null;
-        let currentTop = null;
-        let targetEl = null;
-
-        function findTawkBubble() {
-            const candidates = Array.from(document.querySelectorAll('iframe, div')).filter(el => {
-                const style = window.getComputedStyle(el);
-                const rect = el.getBoundingClientRect();
-                const isFixed = style.position === 'fixed';
-                const reasonableSize = rect.width >= 44 && rect.width <= 120 && rect.height >= 44 && rect.height <= 120;
-                const notOurBars = !el.closest('.mobile-bottom-bar') && !el.closest('.hoknex-navbar') && !el.closest('.modal-overlay');
-                return isFixed && reasonableSize && notOurBars && Number(style.zIndex || 0) >= 100;
-            });
-            return candidates[0] || null;
-        }
-
-        function attachDragHandlers(el) {
-            if (!el || el.dataset.hoknexDraggable === 'true') return;
-            el.dataset.hoknexDraggable = 'true';
-            el.style.touchAction = 'none';
-            el.style.transition = 'transform 0.15s ease, box-shadow 0.15s ease';
-
-            // Lift above mobile bottom bar on initial load if no saved position exists
-            const saved = localStorage.getItem('hoknex_tawk_pos');
-            if (saved) {
-                try {
-                    const pos = JSON.parse(saved);
-                    if (typeof pos.left === 'number' && typeof pos.top === 'number') {
-                        el.style.left = `${Math.max(8, Math.min(pos.left, window.innerWidth - 70))}px`;
-                        el.style.top = `${Math.max(8, Math.min(pos.top, window.innerHeight - 140))}px`;
-                        el.style.right = 'auto';
-                        el.style.bottom = 'auto';
-                    }
-                } catch (_) {}
-            } else if (window.innerWidth <= 968) {
-                el.style.bottom = '86px';
-            }
-
-            const onStart = (clientX, clientY) => {
-                clearTimeout(pressTimer);
-                isDragging = false;
-                const rect = el.getBoundingClientRect();
-                startX = clientX - rect.left;
-                startY = clientY - rect.top;
-
-                pressTimer = setTimeout(() => {
-                    isDragging = true;
-                    el.style.left = `${rect.left}px`;
-                    el.style.top = `${rect.top}px`;
-                    el.style.right = 'auto';
-                    el.style.bottom = 'auto';
-                    el.style.transform = 'scale(1.08)';
-                    el.style.boxShadow = '0 12px 28px rgba(0, 128, 128, 0.35)';
-                    if (navigator.vibrate) navigator.vibrate(25);
-                }, LONG_PRESS_MS);
-            };
-
-            const onMove = (clientX, clientY, e) => {
-                if (!isDragging) {
-                    clearTimeout(pressTimer);
-                    return;
-                }
-                e.preventDefault();
-                const maxX = window.innerWidth - el.offsetWidth - 8;
-                const maxY = window.innerHeight - el.offsetHeight - 8;
-                currentLeft = Math.max(8, Math.min(clientX - startX, maxX));
-                currentTop = Math.max(8, Math.min(clientY - startY, maxY));
-                el.style.left = `${currentLeft}px`;
-                el.style.top = `${currentTop}px`;
-            };
-
-            const onEnd = (e) => {
-                clearTimeout(pressTimer);
-                if (isDragging) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    el.style.transform = 'scale(1)';
-                    el.style.boxShadow = '';
-                    localStorage.setItem('hoknex_tawk_pos', JSON.stringify({ left: currentLeft, top: currentTop }));
-                    setTimeout(() => { isDragging = false; }, 50);
-                }
-            };
-
-            el.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 1) onStart(e.touches[0].clientX, e.touches[0].clientY);
-            }, { passive: true });
-
-            el.addEventListener('touchmove', (e) => {
-                if (e.touches.length === 1) onMove(e.touches[0].clientX, e.touches[0].clientY, e);
-            }, { passive: false });
-
-            el.addEventListener('touchend', onEnd, { passive: false });
-
-            el.addEventListener('mousedown', (e) => {
-                if (e.button === 0) onStart(e.clientX, e.clientY);
-            });
-            window.addEventListener('mousemove', (e) => {
-                if (isDragging) onMove(e.clientX, e.clientY, e);
-            });
-            window.addEventListener('mouseup', onEnd);
-        }
-
-        const watcher = setInterval(() => {
-            targetEl = findTawkBubble();
-            if (targetEl) {
-                attachDragHandlers(targetEl);
-                clearInterval(watcher);
-            }
-        }, 500);
-
-        setTimeout(() => clearInterval(watcher), 15000);
-    })();
-    </script>
-    <!-- End of Tawk.to Script -->
-
 </body>
 </html>
