@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hoknex Studio — Certificate, Poster & Banner Creator</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Fabric.js Canvas Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+  <!-- jsPDF for PDF Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- PDF.js for Importing & Editing Existing PDFs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <style>
+    :root {
+      --bg-obsidian: #08090d;
+      --bg-panel: rgba(16, 19, 28, 0.88);
+      --bg-card: rgba(25, 30, 44, 0.75);
+      --border-glass: rgba(255, 255, 255, 0.09);
+      --gold: #f5b942;
+      --gold-hover: #ffca5c;
+      --cyan: #00e5ff;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-obsidian);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Hoknex Navigation */
+    header {
+      height: 60px;
+      background: rgba(11, 13, 19, 0.95);
+      border-bottom: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      backdrop-filter: blur(14px);
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: 0.5px;
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    .brand span { color: #fff; font-weight: 500; font-size: 0.9rem; opacity: 0.8; }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-glass);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+    }
+
+    .btn:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-gold {
+      background: linear-gradient(135deg, #f5b942, #d99316);
+      color: #08090d;
+      border: none;
+    }
+    .btn-gold:hover { background: var(--gold-hover); color: #000; }
+
+    /* Main Workspace Layout */
+    .workspace {
+      display: grid;
+      grid-template-columns: 310px 1fr 270px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Left Panel: AI Prompt, Templates & Elements */
+    .sidebar-left {
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border-glass);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 16px;
+      gap: 16px;
+    }
+
+    .section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    select, input[type="text"], input[type="number"], textarea {
+      width: 100%;
+      background: rgba(8, 9, 13, 0.8);
+      border: 1px solid var(--border-glass);
+      color: var(--text-main);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.83rem;
+      font-family: inherit;
+      margin-bottom: 8px;
+    }
+
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .tool-tile {
+      background: rgba(8, 9, 13, 0.7);
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      transition: 0.2s;
+    }
+
+    .tool-tile i {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+      color: var(--text-main);
+    }
+
+    .tool-tile:hover, .tool-tile.active {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(245, 185, 66, 0.08);
+    }
+    .tool-tile:hover i, .tool-tile.active i { color: var(--gold); }
+
+    /* Center Stage: Canvas Viewport */
+    .stage-container {
+      background: radial-gradient(circle at center, #141824 0%, #07080b 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: auto;
+      padding: 24px;
+    }
+
+    .floating-bar {
+      position: absolute;
+      top: 14px;
+      background: rgba(16, 19, 28, 0.9);
+      border: 1px solid var(--border-glass);
+      border-radius: 999px;
+      padding: 6px 16px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+
+    .floating-bar button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: 0.2s;
+    }
+    .floating-bar button:hover { color: var(--gold); }
+
+    .canvas-wrapper {
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    /* Right Panel: Inspector & Adobe-style Properties */
+    .sidebar-right {
+      background: var(--bg-panel);
+      border-left: 1px solid var(--border-glass);
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .prop-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    input[type="color"] {
+      width: 36px;
+      height: 28px;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    input[type="range"] { width: 120px; accent-color: var(--gold); }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #111622;
+      border: 1px solid var(--gold);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.83rem;
+      display: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hoknex Unified Top Navigation -->
+  <header>
+    <a href="index.html" class="brand">
+      <i class="fa-solid fa-hexagon-nodes"></i> HOKNEX <span>STUDIO</span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="feed.html">Campus Feed</a>
+      <a href="store.html">Hoknex Store</a>
+      <a href="magazine.html">Magazine</a>
+      <a href="donation.html">Donations</a>
+      <a href="studio.html" class="active">Design Studio</a>
+    </nav>
+    <div class="header-actions">
+      <button class="btn" onclick="saveProjectToServer()"><i class="fa-solid fa-cloud-arrow-up"></i> Save</button>
+      <button class="btn" onclick="exportPNG()"><i class="fa-solid fa-image"></i> PNG</button>
+      <button class="btn btn-gold" onclick="exportPDF()"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <!-- LEFT SIDEBAR: Prompt AI, Canvas Format & Upload -->
+    <aside class="sidebar-left">
+      <!-- 1. Canvas Size / Format Selector -->
+      <div class="card-box">
+        <div class="section-title"><i class="fa-solid fa-crop-simple"></i> Canvas Format</div>
+        <select id="formatSelect" onchange="changeCanvasFormat()">
+          <option value="certificate">Certificate (Landscape 1120×790)</option>
+          <option value="poster">Event Poster (Portrait 794×1123)</option>
+          <option value="banner">Web / LinkedIn Banner (1584×396)</option>
+          <option value="thumbnail">YouTube Thumbnail (1280×720)</option>
+          <option value="square">Social / Feed Post (1080×1080)</option>
+        </select>
+      </div>
+
+      <!-- 2. Prompt-to-Design Generator -->
+      <div class="card-box">
+        <div class="section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate By Prompt</div>
+        <input type="text" id="recipientInput" placeholder="Recipient / Subtitle (e.g. Aditya Kumar)" />
+        <textarea id="promptInput" rows="3" placeholder="Describe your certificate, poster, banner, or thumbnail... e.g. 'Gold luxury hackathon winner certificate for AI Innovation'"></textarea>
+        <button class="btn btn-gold" style="width: 100%; justify-content: center;" onclick="generateFromPrompt()">
+          <i class="fa-solid fa-bolt"></i> Generate Design
+        </button>
+      </div>
+
+      <!-- 3. Upload & Edit Original Document (Image or PDF) -->
+      <div class="card-box">
+        <div class="section-title"><i class="fa-solid fa-file-import"></i> Edit Original Document</div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">
+          Upload an existing certificate, PDF, photo, or template to annotate, sign, or edit.
+        </p>
+        <input type="file" id="docUpload" accept="image/*,.pdf" style="display:none" onchange="handleDocumentUpload(event)" />
+        <button class="btn" style="width: 100%; justify-content: center;" onclick="document.getElementById('docUpload').click()">
+          <i class="fa-solid fa-upload"></i> Upload PDF / Image
+        </button>
+      </div>
+
+      <!-- 4. Adobe-Style Creation & Drawing Tools -->
+      <div class="card-box">
+        <div class="section-title"><i class="fa-solid fa-pen-nib"></i> Create & Draw Tools</div>
+        <div class="tool-grid">
+          <div class="tool-tile active" id="toolSelect" onclick="setMode('select')">
+            <i class="fa-solid fa-arrow-pointer"></i>Select
+          </div>
+          <div class="tool-tile" id="toolDraw" onclick="setMode('draw')">
+            <i class="fa-solid fa-paintbrush"></i>Brush
+          </div>
+          <div class="tool-tile" onclick="addText('Double-click to edit', 36, '#ffffff')">
+            <i class="fa-solid fa-font"></i>Add Text
+          </div>
+          <div class="tool-tile" onclick="addRect()">
+            <i class="fa-regular fa-square"></i>Box
+          </div>
+          <div class="tool-tile" onclick="addCircle()">
+            <i class="fa-regular fa-circle"></i>Circle
+          </div>
+          <div class="tool-tile" onclick="addGoldSeal()">
+            <i class="fa-solid fa-award"></i>Hoknex Seal
+          </div>
+          <div class="tool-tile" onclick="addSignatureLine()">
+            <i class="fa-solid fa-signature"></i>Signature
+          </div>
+          <div class="tool-tile" onclick="applyCertificateTemplate()">
+            <i class="fa-solid fa-scroll"></i>Cert Base
+          </div>
+          <div class="tool-tile" onclick="clearCanvas()">
+            <i class="fa-solid fa-trash"></i>Clear
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER STAGE -->
+    <main class="stage-container">
+      <div class="floating-bar">
+        <button onclick="undo()" title="Undo"><i class="fa-solid fa-rotate-left"></i> Undo</button>
+        <button onclick="redo()" title="Redo"><i class="fa-solid fa-rotate-right"></i> Redo</button>
+        <span style="color:var(--border-glass)">|</span>
+        <button onclick="bringForward()" title="Bring Forward"><i class="fa-solid fa-layer-group"></i> Front</button>
+        <button onclick="sendBackward()" title="Send Backward"><i class="fa-solid fa-arrow-down-short-wide"></i> Back</button>
+        <span style="color:var(--border-glass)">|</span>
+        <button onclick="deleteSelected()" style="color:#ff5c77;" title="Delete Selected"><i class="fa-solid fa-trash-can"></i> Delete</button>
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="hoknexCanvas"></canvas>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR: Properties & Brush Inspector -->
+    <aside class="sidebar-right">
+      <div class="card-box">
+        <div class="section-title"><i class="fa-solid fa-sliders"></i> Canvas & Brush</div>
+        <div class="prop-row">
+          <span>Canvas Background</span>
+          <input type="color" id="bgColorPicker" value="#0b0d13" onchange="updateCanvasBg(this.value)" />
+        </div>
+        <div class="prop-row">
+          <span>Brush / Fill Color</span>
+          <input type="color" id="fillColorPicker" value="#f5b942" onchange="updateObjectColor(this.value)" />
+        </div>
+        <div class="prop-row">
+          <span>Stroke / Border</span>
+          <input type="color" id="strokeColorPicker" value="#ffffff" onchange="updateStrokeColor(this.value)" />
+        </div>
+        <div class="prop-row">
+          <span>Brush Size</span>
+          <input type="range" id="brushSize" min="1" max="40" value="4" oninput="updateBrushSize(this.value)" />
+        </div>
+        <div class="prop-row">
+          <span>Opacity</span>
+          <input type="range" id="opacitySlider" min="0.1" max="1" step="0.05" value="1" oninput="updateOpacity(this.value)" />
+        </div>
+      </div>
+
+      <div class="card-box">
+        <div class="section-title"><i class="fa-solid fa-text-height"></i> Typography</div>
+        <select id="fontFamilySelect" onchange="updateFontFamily(this.value)">
+          <option value="Inter">Inter (Modern Sans)</option>
+          <option value="Cinzel">Cinzel (Classic Certificate)</option>
+          <option value="Playfair Display">Playfair Display (Editorial)</option>
+          <option value="Space Grotesk">Space Grotesk (Tech / Poster)</option>
+        </select>
+        <div class="prop-row">
+          <span>Font Size</span>
+          <input type="number" id="fontSizeInput" value="36" min="8" max="200" style="width: 80px; margin:0;" onchange="updateFontSize(this.value)" />
+        </div>
+        <div style="display:flex; gap:6px; margin-top:8px;">
+          <button class="btn" style="flex:1; justify-content:center;" onclick="toggleBold()"><i class="fa-solid fa-bold"></i></button>
+          <button class="btn" style="flex:1; justify-content:center;" onclick="toggleItalic()"><i class="fa-solid fa-italic"></i></button>
+          <button class="btn" style="flex:1; justify-content:center;" onclick="toggleUnderline()"><i class="fa-solid fa-underline"></i></button>
+        </div>
+      </div>
+
+      <div class="card-box">
+        <div class="section-title"><i class="fa-solid fa-wand-sparkles"></i> Image Filters</div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('grayscale')">B&W</button>
+          <button class="btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('sepia')">Vintage</button>
+          <button class="btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('reset')">Reset</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const STUDIO_API = 'http://localhost:5050/api/studio';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const FORMATS = {
+      certificate: { w: 1120, h: 790, scale: 0.72 },
+      poster:      { w: 794,  h: 1123, scale: 0.54 },
+      banner:      { w: 1584, h: 396, scale: 0.52 },
+      thumbnail:   { w: 1280, h: 720, scale: 0.65 },
+      square:      { w: 1080, h: 1080, scale: 0.55 }
+    };
+
+    const canvas = new fabric.Canvas('hoknexCanvas', {
+      backgroundColor: '#0b0d13',
+      preserveObjectStacking: true
+    });
+
+    let history = [];
+    let historyStep = -1;
+    let isRestoring = false;
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 3200);
+    }
+
+    function saveHistory() {
+      if (isRestoring) return;
+      history = history.slice(0, historyStep + 1);
+      history.push(JSON.stringify(canvas.toJSON()));
+      historyStep++;
+    }
+
+    canvas.on('object:added', saveHistory);
+    canvas.on('object:modified', saveHistory);
+    canvas.on('object:removed', saveHistory);
+
+    function undo() {
+      if (historyStep > 0) {
+        isRestoring = true;
+        historyStep--;
+        canvas.loadFromJSON(history[historyStep], () => {
+          canvas.renderAll();
+          isRestoring = false;
+        });
+      }
+    }
+
+    function redo() {
+      if (historyStep < history.length - 1) {
+        isRestoring = true;
+        historyStep++;
+        canvas.loadFromJSON(history[historyStep], () => {
+          canvas.renderAll();
+          isRestoring = false;
+        });
+      }
+    }
+
+    function changeCanvasFormat() {
+      const fmt = FORMATS[document.getElementById('formatSelect').value];
+      canvas.setWidth(fmt.w * fmt.scale);
+      canvas.setHeight(fmt.h * fmt.scale);
+      canvas.setZoom(fmt.scale);
+      canvas.renderAll();
+    }
+
+    // Mode Switching (Select vs Adobe-style Freehand Draw)
+    function setMode(mode) {
+      document.querySelectorAll('.tool-tile').forEach(el => el.classList.remove('active'));
+      if (mode === 'draw') {
+        canvas.isDrawingMode = true;
+        canvas.freeDrawingBrush.color = document.getElementById('fillColorPicker').value;
+        canvas.freeDrawingBrush.width = parseInt(document.getElementById('brushSize').value, 10);
+        document.getElementById('toolDraw').classList.add('active');
+      } else {
+        canvas.isDrawingMode = false;
+        document.getElementById('toolSelect').classList.add('active');
+      }
+    }
+
+    // Element Builders
+    function addText(text, size = 36, color = '#ffffff', font = 'Inter', top = 250, left = 250) {
+      setMode('select');
+      const t = new fabric.IText(text, {
+        left, top, fontSize: size, fill: color, fontFamily: font, originX: 'center'
+      });
+      canvas.add(t);
+      canvas.setActiveObject(t);
+    }
+
+    function addRect() {
+      setMode('select');
+      const rect = new fabric.Rect({
+        left: 200, top: 200, width: 220, height: 130,
+        fill: 'rgba(245, 185, 66, 0.15)', stroke: '#f5b942', strokeWidth: 2, rx: 10, ry: 10
+      });
+      canvas.add(rect);
+      canvas.setActiveObject(rect);
+    }
+
+    function addCircle() {
+      setMode('select');
+      const circle = new fabric.Circle({
+        left: 260, top: 220, radius: 70,
+        fill: 'rgba(0, 229, 255, 0.15)', stroke: '#00e5ff', strokeWidth: 2
+      });
+      canvas.add(circle);
+      canvas.setActiveObject(circle);
+    }
+
+    function addGoldSeal() {
+      setMode('select');
+      const outer = new fabric.Circle({ radius: 55, fill: '#111521', stroke: '#f5b942', strokeWidth: 4, originX: 'center', originY: 'center' });
+      const inner = new fabric.Circle({ radius: 46, fill: 'transparent', stroke: '#f5b942', strokeWidth: 1, strokeDashArray: [4, 4], originX: 'center', originY: 'center' });
+      const label = new fabric.Text('HOKNEX\nVERIFIED', { fontSize: 13, fill: '#f5b942', fontFamily: 'Cinzel', fontWeight: 'bold', textAlign: 'center', originX: 'center', originY: 'center' });
+      const group = new fabric.Group([outer, inner, label], { left: 860, top: 610 });
+      canvas.add(group);
+      canvas.setActiveObject(group);
+    }
+
+    function addSignatureLine() {
+      setMode('select');
+      const line = new fabric.Line([0, 0, 200, 0], { stroke: '#f5b942', strokeWidth: 2, originX: 'center' });
+      const label = new fabric.IText('Authorized Signatory\nHoknex Leadership', { fontSize: 14, fill: '#cbd5e1', top: 10, textAlign: 'center', originX: 'center', fontFamily: 'Inter' });
+      const group = new fabric.Group([line, label], { left: 260, top: 640 });
+      canvas.add(group);
+    }
+
+    // Default Certificate Layout
+    function applyCertificateTemplate(data = null) {
+      canvas.clear();
+      const fmtKey = document.getElementById('formatSelect').value;
+      const fmt = FORMATS[fmtKey];
+      const theme = data?.theme || { bg: '#0b0d13', accent: '#f5b942', secondary: '#141926', text: '#ffffff', subtext: '#94a3b8', badge: 'OFFICIAL CREDENTIAL' };
+      const content = data?.content || {
+        org: 'HOKNEX',
+        headline: 'CERTIFICATE OF ACHIEVEMENT',
+        recipient: document.getElementById('recipientInput').value || 'Aditya Kumar',
+        description: 'In recognition of exceptional dedication, innovation, and technical excellence.',
+        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      };
+      const certId = data?.certId || 'HKX-2026-9A4F1C';
+
+      canvas.setBackgroundColor(theme.bg, canvas.renderAll.bind(canvas));
+      document.getElementById('bgColorPicker').value = theme.bg;
+
+      // Double Ornate Border
+      canvas.add(new fabric.Rect({
+        left: 28, top: 28, width: fmt.w - 56, height: fmt.h - 56,
+        fill: 'transparent', stroke: theme.accent, strokeWidth: 3, selectable: false
+      }));
+      canvas.add(new fabric.Rect({
+        left: 40, top: 40, width: fmt.w - 80, height: fmt.h - 80,
+        fill: 'transparent', stroke: theme.accent, strokeWidth: 1, opacity: 0.5, selectable: false
+      }));
+
+      const cx = fmt.w / 2;
+      canvas.add(new fabric.IText(`${content.org} • ${theme.badge}`, {
+        left: cx, top: 90, fontSize: 16, fill: theme.accent, fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center', charSpacing: 220
+      }));
+
+      canvas.add(new fabric.IText(content.headline, {
+        left: cx, top: 155, fontSize: fmtKey === 'banner' ? 34 : 44, fill: theme.text, fontFamily: 'Cinzel', fontWeight: 'bold', originX: 'center'
+      }));
+
+      if (fmtKey === 'certificate') {
+        canvas.add(new fabric.IText('THIS CREDENTIAL IS PROUDLY PRESENTED TO', {
+          left: cx, top: 245, fontSize: 14, fill: theme.subtext, fontFamily: 'Inter', originX: 'center', charSpacing: 150
+        }));
+
+        canvas.add(new fabric.IText(content.recipient, {
+          left: cx, top: 300, fontSize: 56, fill: theme.accent, fontFamily: 'Playfair Display', fontStyle: 'italic', fontWeight: 'bold', originX: 'center'
+        }));
+
+        canvas.add(new fabric.Line([cx - 260, 380, cx + 260, 380], {
+          stroke: theme.accent, strokeWidth: 1.5, opacity: 0.6
+        }));
+      }
+
+      canvas.add(new fabric.Textbox(content.description, {
+        left: cx, top: fmtKey === 'certificate' ? 415 : 240, width: fmt.w * 0.68,
+        fontSize: 18, fill: theme.subtext, fontFamily: 'Inter', textAlign: 'center', originX: 'center'
+      }));
+
+      canvas.add(new fabric.IText(`Issued: ${content.date}   |   Verify ID: ${certId}`, {
+        left: cx, top: fmt.h - 90, fontSize: 13, fill: theme.subtext, fontFamily: 'Space Grotesk', originX: 'center'
+      }));
+
+      if (fmtKey === 'certificate') {
+        addGoldSeal();
+        addSignatureLine();
+      }
+      saveHistory();
+    }
+
+    // Prompt-to-Design API Call
+    async function generateFromPrompt() {
+      const prompt = document.getElementById('promptInput').value;
+      const recipient = document.getElementById('recipientInput').value || 'Aditya Kumar';
+      const format = document.getElementById('formatSelect').value;
+
+      showToast('Generating design from prompt...');
+      try {
+        const res = await fetch(`${STUDIO_API}/generate-from-prompt`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, recipient, format, org: 'HOKNEX' })
+        });
+        const data = await res.json();
+        if (data.success) {
+          applyCertificateTemplate(data);
+          showToast(`Generated! Verify ID: ${data.certId}`);
+        }
+      } catch (err) {
+        // Offline fallback if server isn't started yet
+        applyCertificateTemplate();
+        showToast('Generated locally (start studio-server.js for cloud IDs)');
+      }
+    }
+
+    // Upload & Edit Original Image or PDF Document
+    async function handleDocumentUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.type === 'application/pdf') {
+        showToast('Rendering PDF page onto editable canvas...');
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 2 });
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = viewport.width;
+        tempCanvas.height = viewport.height;
+        await page.render({ canvasContext: tempCanvas.getContext('2d'), viewport }).promise;
+
+        fabric.Image.fromURL(tempCanvas.toDataURL('image/png'), (img) => {
+          const fmt = FORMATS[document.getElementById('formatSelect').value];
+          img.scaleToWidth(fmt.w);
+          canvas.add(img);
+          canvas.sendToBack(img);
+          showToast('PDF loaded! Add text, draw, or place seals over it.');
+        });
+      } else {
+        const reader = new FileReader();
+        reader.onload = (f) => {
+          fabric.Image.fromURL(f.target.result, (img) => {
+            img.scaleToWidth(450);
+            canvas.add(img);
+            canvas.centerObject(img);
+            canvas.setActiveObject(img);
+            showToast('Image added to canvas!');
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Inspector Controls
+    function updateCanvasBg(color) { canvas.setBackgroundColor(color, canvas.renderAll.bind(canvas)); }
+    function updateObjectColor(color) {
+      canvas.freeDrawingBrush.color = color;
+      const obj = canvas.getActiveObject();
+      if (obj) { obj.set('fill', color); canvas.renderAll(); }
+    }
+    function updateStrokeColor(color) {
+      const obj = canvas.getActiveObject();
+      if (obj) { obj.set('stroke', color); canvas.renderAll(); }
+    }
+    function updateBrushSize(val) { canvas.freeDrawingBrush.width = parseInt(val, 10); }
+    function updateOpacity(val) {
+      const obj = canvas.getActiveObject();
+      if (obj) { obj.set('opacity', parseFloat(val)); canvas.renderAll(); }
+    }
+    function updateFontFamily(font) {
+      const obj = canvas.getActiveObject();
+      if (obj && obj.fontFamily) { obj.set('fontFamily', font); canvas.renderAll(); }
+    }
+    function updateFontSize(size) {
+      const obj = canvas.getActiveObject();
+      if (obj && obj.fontSize) { obj.set('fontSize', parseInt(size, 10)); canvas.renderAll(); }
+    }
+    function toggleBold() {
+      const obj = canvas.getActiveObject();
+      if (obj) { obj.set('fontWeight', obj.fontWeight === 'bold' ? 'normal' : 'bold'); canvas.renderAll(); }
+    }
+    function toggleItalic() {
+      const obj = canvas.getActiveObject();
+      if (obj) { obj.set('fontStyle', obj.fontStyle === 'italic' ? 'normal' : 'italic'); canvas.renderAll(); }
+    }
+    function toggleUnderline() {
+      const obj = canvas.getActiveObject();
+      if (obj) { obj.set('underline', !obj.underline); canvas.renderAll(); }
+    }
+    function bringForward() { const o = canvas.getActiveObject(); if (o) canvas.bringForward(o); }
+    function sendBackward() { const o = canvas.getActiveObject(); if (o) canvas.sendBackwards(o); }
+    function deleteSelected() {
+      const active = canvas.getActiveObjects();
+      if (active.length) {
+        active.forEach(o => canvas.remove(o));
+        canvas.discardActiveObject().renderAll();
+      }
+    }
+    function clearCanvas() { canvas.clear(); updateCanvasBg('#0b0d13'); }
+
+    function applyImageFilter(type) {
+      const obj = canvas.getActiveObject();
+      if (!obj || obj.type !== 'image') return showToast('Select an uploaded image first');
+      obj.filters = [];
+      if (type === 'grayscale') obj.filters.push(new fabric.Image.filters.Grayscale());
+      if (type === 'sepia') obj.filters.push(new fabric.Image.filters.Sepia());
+      obj.applyFilters();
+      canvas.renderAll();
+    }
+
+    // Export High-Res PNG & PDF
+    function exportPNG() {
+      const fmt = FORMATS[document.getElementById('formatSelect').value];
+      const dataURL = canvas.toDataURL({ format: 'png', multiplier: 1 / fmt.scale });
+      const a = document.createElement('a');
+      a.href = dataURL;
+      a.download = `hoknex-${document.getElementById('formatSelect').value}-${Date.now()}.png`;
+      a.click();
+    }
+
+    function exportPDF() {
+      const fmtKey = document.getElementById('formatSelect').value;
+      const fmt = FORMATS[fmtKey];
+      const imgData = canvas.toDataURL({ format: 'png', multiplier: 1 / fmt.scale });
+      const { jsPDF } = window.jspdf;
+      const orientation = fmt.w >= fmt.h ? 'landscape' : 'portrait';
+      const pdf = new jsPDF({ orientation, unit: 'px', format: [fmt.w, fmt.h] });
+      pdf.addImage(imgData, 'PNG', 0, 0, fmt.w, fmt.h);
+      pdf.save(`hoknex-${fmtKey}-${Date.now()}.pdf`);
+    }
+
+    async function saveProjectToServer() {
+      try {
+        const res = await fetch(`${STUDIO_API}/projects`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: document.getElementById('promptInput').value || 'Hoknex Studio Design',
+            format: document.getElementById('formatSelect').value,
+            canvasJSON: canvas.toJSON()
+          })
+        });
+        if (res.ok) showToast('Saved to Hoknex Studio Server!');
+      } catch {
+        localStorage.setItem('hoknex_studio_autosave', JSON.stringify(canvas.toJSON()));
+        showToast('Saved locally in browser!');
+      }
+    }
+
+    // Initialize default view
+    changeCanvasFormat();
+    applyCertificateTemplate();
+  </script>
+</body>
+</html>
