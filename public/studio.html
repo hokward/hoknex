@@ -1,819 +1,1393 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="gallery">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hoknex Studio — Certificate, Poster & Banner Creator</title>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-  <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <!-- Fabric.js Canvas Engine -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
-  <!-- jsPDF for PDF Export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <!-- PDF.js for Importing & Editing Existing PDFs -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Hoknex Studio — AI Certificate, Poster & Creative Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- Fabric.js Vector & Raster Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <!-- jsPDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- PDF.js Original Document Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <style>
-    :root {
-      --bg-obsidian: #08090d;
-      --bg-panel: rgba(16, 19, 28, 0.88);
-      --bg-card: rgba(25, 30, 44, 0.75);
-      --border-glass: rgba(255, 255, 255, 0.09);
-      --gold: #f5b942;
-      --gold-hover: #ffca5c;
-      --cyan: #00e5ff;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-    }
+    <style>
+        /* ==========================================================================
+           60-30-10 DESIGN SYSTEM ACROSS ALL 3 CURATED PALETTES
+           ========================================================================== */
+        :root, [data-theme="gallery"] {
+            /* 60% Background */
+            --bg-main: #FAF9F6;
+            /* 30% Surface & Text */
+            --bg-surface: #FFFFFF;
+            --bg-surface-alt: #F3F2EE;
+            --ink-primary: #18181B;
+            --ink-muted: #71717A;
+            --border-subtle: rgba(24, 24, 27, 0.1);
+            /* 10% Accent */
+            --accent: #2563EB;
+            --accent-secondary: #0D9488;
+            --accent-tint: rgba(37, 99, 235, 0.09);
+            --accent-contrast: #FFFFFF;
+            --shadow-card: 0 16px 40px rgba(24, 24, 27, 0.06);
+            --shadow-cta: 0 10px 25px rgba(37, 99, 235, 0.28);
+            --footer-bg: #18181B;
+            --footer-ink: #FAF9F6;
+        }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-obsidian);
-      color: var(--text-main);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+        [data-theme="editorial"] {
+            /* 60% Background */
+            --bg-main: #111111;
+            /* 30% Surface & Text */
+            --bg-surface: #1E1E1E;
+            --bg-surface-alt: #27272A;
+            --ink-primary: #F4F4F5;
+            --ink-muted: #A1A1AA;
+            --border-subtle: rgba(244, 244, 245, 0.11);
+            /* 10% Accent */
+            --accent: #F59E0B;
+            --accent-secondary: #A855F7;
+            --accent-tint: rgba(245, 158, 11, 0.14);
+            --accent-contrast: #111111;
+            --shadow-card: 0 20px 50px rgba(0, 0, 0, 0.45);
+            --shadow-cta: 0 10px 28px rgba(245, 158, 11, 0.3);
+            --footer-bg: #09090B;
+            --footer-ink: #F4F4F5;
+        }
 
-    /* Top Hoknex Navigation */
-    header {
-      height: 60px;
-      background: rgba(11, 13, 19, 0.95);
-      border-bottom: 1px solid var(--border-glass);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      backdrop-filter: blur(14px);
-      z-index: 20;
-    }
+        [data-theme="tactile"] {
+            /* 60% Background */
+            --bg-main: #FBF7F2;
+            /* 30% Surface & Text */
+            --bg-surface: #FFFFFF;
+            --bg-surface-alt: #E6CCB2;
+            --ink-primary: #27221F;
+            --ink-muted: #6B5E55;
+            --border-subtle: rgba(39, 34, 31, 0.12);
+            /* 10% Accent */
+            --accent: #B45309;
+            --accent-secondary: #A3B18A;
+            --accent-tint: rgba(180, 83, 9, 0.1);
+            --accent-contrast: #FFFFFF;
+            --shadow-card: 0 16px 40px rgba(39, 34, 31, 0.07);
+            --shadow-cta: 0 10px 25px rgba(180, 83, 9, 0.28);
+            --footer-bg: #27221F;
+            --footer-ink: #FBF7F2;
+        }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 1.2rem;
-      letter-spacing: 0.5px;
-      color: var(--gold);
-      text-decoration: none;
-    }
+        :root {
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
-    .brand span { color: #fff; font-weight: 500; font-size: 0.9rem; opacity: 0.8; }
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    .nav-links {
-      display: flex;
-      gap: 18px;
-      align-items: center;
-    }
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: var(--bg-main);
+            color: var(--ink-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.35s ease, color 0.35s ease;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 500;
-      transition: 0.2s;
-    }
+        @keyframes fadeUpIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
 
-    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+        /* ==========================================================================
+           STICKY NAVBAR (Matches index.html Architecture)
+           ========================================================================== */
+        .hoknex-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.95rem 3rem;
+            background: color-mix(in srgb, var(--bg-surface) 88%, transparent);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-    .header-actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--ink-primary);
+            text-decoration: none;
+            font-family: 'Playfair Display', serif;
+        }
 
-    .btn {
-      background: var(--bg-card);
-      color: var(--text-main);
-      border: 1px solid var(--border-glass);
-      padding: 7px 14px;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.2s;
-    }
+        .logo-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--accent);
+            color: var(--accent-contrast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+        }
 
-    .btn:hover { border-color: var(--gold); color: var(--gold); }
-    .btn-gold {
-      background: linear-gradient(135deg, #f5b942, #d99316);
-      color: #08090d;
-      border: none;
-    }
-    .btn-gold:hover { background: var(--gold-hover); color: #000; }
+        .nav-links {
+            display: flex;
+            gap: 1.75rem;
+            align-items: center;
+        }
 
-    /* Main Workspace Layout */
-    .workspace {
-      display: grid;
-      grid-template-columns: 310px 1fr 270px;
-      flex: 1;
-      overflow: hidden;
-    }
+        .nav-links a {
+            color: var(--ink-muted);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.84rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: color 0.2s;
+        }
 
-    /* Left Panel: AI Prompt, Templates & Elements */
-    .sidebar-left {
-      background: var(--bg-panel);
-      border-right: 1px solid var(--border-glass);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      padding: 16px;
-      gap: 16px;
-    }
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--accent);
+        }
 
-    .section-title {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: var(--gold);
-      font-weight: 700;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+        /* Theme Switcher Pill */
+        .theme-switcher {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-surface-alt);
+            padding: 4px;
+            border-radius: 999px;
+            border: 1px solid var(--border-subtle);
+        }
 
-    .card-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      border-radius: 12px;
-      padding: 12px;
-    }
+        .theme-pill {
+            border: none;
+            background: transparent;
+            color: var(--ink-muted);
+            padding: 5px 11px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.25s var(--ease-spring);
+        }
 
-    select, input[type="text"], input[type="number"], textarea {
-      width: 100%;
-      background: rgba(8, 9, 13, 0.8);
-      border: 1px solid var(--border-glass);
-      color: var(--text-main);
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 0.83rem;
-      font-family: inherit;
-      margin-bottom: 8px;
-    }
+        .theme-pill.active {
+            background: var(--bg-surface);
+            color: var(--ink-primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
 
-    select:focus, input:focus, textarea:focus {
-      outline: none;
-      border-color: var(--gold);
-    }
+        .swatch {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+        }
 
-    .tool-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
+        .btn-cta {
+            background: var(--accent);
+            color: var(--accent-contrast);
+            padding: 0.65rem 1.35rem;
+            border-radius: 12px;
+            font-weight: 800;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.78rem;
+            box-shadow: var(--shadow-cta);
+            transition: transform 0.25s var(--ease-spring), opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
 
-    .tool-tile {
-      background: rgba(8, 9, 13, 0.7);
-      border: 1px solid var(--border-glass);
-      border-radius: 8px;
-      padding: 10px 6px;
-      text-align: center;
-      cursor: pointer;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      transition: 0.2s;
-    }
+        .btn-cta:hover {
+            transform: translateY(-2px);
+            opacity: 0.94;
+        }
 
-    .tool-tile i {
-      display: block;
-      font-size: 1.1rem;
-      margin-bottom: 5px;
-      color: var(--text-main);
-    }
+        /* ==========================================================================
+           INDEX-STYLE HERO LAUNCHPAD (60% BG / 30% SURFACE / 10% ACCENT)
+           ========================================================================== */
+        .studio-hero {
+            padding: 3.5rem 3rem 2.5rem;
+            max-width: 1380px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            animation: fadeUpIn 0.6s var(--ease-smooth);
+        }
 
-    .tool-tile:hover, .tool-tile.active {
-      border-color: var(--gold);
-      color: var(--gold);
-      background: rgba(245, 185, 66, 0.08);
-    }
-    .tool-tile:hover i, .tool-tile.active i { color: var(--gold); }
+        .pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-tint);
+            color: var(--accent);
+            border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+            padding: 6px 15px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 1.1rem;
+        }
 
-    /* Center Stage: Canvas Viewport */
-    .stage-container {
-      background: radial-gradient(circle at center, #141824 0%, #07080b 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: auto;
-      padding: 24px;
-    }
+        .studio-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.35rem;
+            font-weight: 900;
+            line-height: 1.12;
+            color: var(--ink-primary);
+            margin-bottom: 1rem;
+        }
 
-    .floating-bar {
-      position: absolute;
-      top: 14px;
-      background: rgba(16, 19, 28, 0.9);
-      border: 1px solid var(--border-glass);
-      border-radius: 999px;
-      padding: 6px 16px;
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      backdrop-filter: blur(10px);
-      z-index: 10;
-    }
+        .studio-hero h1 span {
+            color: var(--accent);
+            font-style: italic;
+        }
 
-    .floating-bar button {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: 0.2s;
-    }
-    .floating-bar button:hover { color: var(--gold); }
+        .studio-hero p.lead {
+            color: var(--ink-muted);
+            font-size: 1.02rem;
+            font-weight: 600;
+            line-height: 1.65;
+            margin-bottom: 1.75rem;
+            max-width: 580px;
+        }
 
-    .canvas-wrapper {
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-    }
+        /* Quick Launch AI Prompt Box on Front Page */
+        .hero-ai-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 22px;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-card);
+        }
 
-    /* Right Panel: Inspector & Adobe-style Properties */
-    .sidebar-right {
-      background: var(--bg-panel);
-      border-left: 1px solid var(--border-glass);
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+        .hero-ai-box h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-bottom: 0.35rem;
+        }
 
-    .prop-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 8px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
+        .hero-ai-box p {
+            font-size: 0.84rem;
+            color: var(--ink-muted);
+            font-weight: 600;
+            margin-bottom: 1.1rem;
+        }
 
-    input[type="color"] {
-      width: 36px;
-      height: 28px;
-      border: none;
-      background: none;
-      cursor: pointer;
-    }
+        .quick-formats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
 
-    input[type="range"] { width: 120px; accent-color: var(--gold); }
+        .fmt-chip {
+            background: var(--bg-main);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 10px 6px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.74rem;
+            font-weight: 800;
+            color: var(--ink-muted);
+            transition: all 0.2s var(--ease-spring);
+        }
 
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #111622;
-      border: 1px solid var(--gold);
-      color: #fff;
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-size: 0.83rem;
-      display: none;
-      z-index: 100;
-    }
-  </style>
+        .fmt-chip i {
+            display: block;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+            color: var(--ink-primary);
+        }
+
+        .fmt-chip.active, .fmt-chip:hover {
+            border-color: var(--accent);
+            background: var(--accent-tint);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .fmt-chip.active i, .fmt-chip:hover i {
+            color: var(--accent);
+        }
+
+        .hero-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            background: var(--bg-main);
+            border: 1.5px solid var(--border-subtle);
+            color: var(--ink-primary);
+            border-radius: 12px;
+            padding: 11px 14px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+        }
+
+        /* ==========================================================================
+           ALL-IN-ONE ACTION CARDS (Matches index.html Ecosystem Grid)
+           ========================================================================== */
+        .quick-modes-strip {
+            max-width: 1380px;
+            margin: 0 auto 2.5rem;
+            padding: 0 3rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+        }
+
+        .mode-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            padding: 1.35rem;
+            box-shadow: var(--shadow-card);
+            cursor: pointer;
+            transition: transform 0.3s var(--ease-spring), border-color 0.2s;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .mode-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 7px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: var(--accent-tint);
+            color: var(--accent);
+            margin-bottom: 0.65rem;
+        }
+
+        .mode-card h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 900;
+            margin-bottom: 0.3rem;
+        }
+
+        .mode-card p {
+            font-size: 0.82rem;
+            color: var(--ink-muted);
+            font-weight: 600;
+            line-height: 1.45;
+        }
+
+        /* ==========================================================================
+           HIGH-TECH INTERACTIVE STUDIO WORKSPACE
+           ========================================================================== */
+        .studio-section {
+            max-width: 1440px;
+            margin: 0 auto 4rem;
+            padding: 0 2rem;
+        }
+
+        .studio-shell {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 24px;
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Studio Top Action Bar */
+        .studio-toolbar {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+            background: var(--bg-surface);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            background: var(--bg-main);
+            color: var(--ink-primary);
+            border: 1px solid var(--border-subtle);
+            padding: 7px 12px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover, .tool-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-tint);
+        }
+
+        /* 3-Column Studio Grid */
+        .studio-grid {
+            display: grid;
+            grid-template-columns: 290px 1fr 270px;
+            min-height: 680px;
+        }
+
+        .panel-left, .panel-right {
+            padding: 16px;
+            background: var(--bg-surface);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+        }
+
+        .panel-left { border-right: 1px solid var(--border-subtle); }
+        .panel-right { border-left: 1px solid var(--border-subtle); }
+
+        .panel-box {
+            background: var(--bg-main);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        .panel-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 9px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .adobe-tools-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+        }
+
+        .adobe-tile {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 9px 4px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--ink-muted);
+            transition: 0.2s;
+        }
+
+        .adobe-tile i {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            color: var(--ink-primary);
+        }
+
+        .adobe-tile:hover, .adobe-tile.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-tint);
+        }
+
+        .adobe-tile:hover i, .adobe-tile.active i {
+            color: var(--accent);
+        }
+
+        /* Center Canvas Viewport */
+        .canvas-stage {
+            background: var(--bg-main);
+            background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px);
+            background-size: 18px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            overflow: auto;
+            position: relative;
+        }
+
+        .canvas-frame {
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .prop-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--ink-muted);
+            margin-bottom: 8px;
+        }
+
+        input[type="color"] {
+            width: 34px;
+            height: 26px;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            width: 115px;
+            accent-color: var(--accent);
+        }
+
+        /* Footer (Matches index.html) */
+        .hoknex-footer {
+            background: var(--footer-bg);
+            color: var(--footer-ink);
+            padding: 3.5rem 3rem 2rem;
+            border-top: 3px solid var(--accent);
+        }
+
+        .footer-inner {
+            max-width: 1380px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--footer-ink);
+            opacity: 0.8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--accent);
+        }
+
+        /* Mobile App Bottom Bar */
+        .mobile-bottom-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-subtle);
+            padding: 8px 0.5rem calc(8px + env(safe-area-inset-bottom));
+            z-index: 25000;
+            justify-content: space-around;
+        }
+
+        .mob-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 12px;
+        }
+
+        .mob-nav-item.active {
+            color: var(--accent);
+            background: var(--accent-tint);
+        }
+
+        /* Toast */
+        #hoknexToastContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .hoknex-toast {
+            background: var(--accent);
+            color: var(--accent-contrast);
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 0.86rem;
+            font-weight: 800;
+            box-shadow: var(--shadow-cta);
+            animation: fadeUpIn 0.3s var(--ease-spring);
+        }
+
+        @media (max-width: 1080px) {
+            .studio-hero { grid-template-columns: 1fr; padding: 2rem 1.25rem; }
+            .studio-hero h1 { font-size: 2.35rem; }
+            .quick-modes-strip { grid-template-columns: repeat(2, 1fr); padding: 0 1.25rem; }
+            .studio-grid { grid-template-columns: 1fr; }
+            .panel-left, .panel-right { border: none; border-bottom: 1px solid var(--border-subtle); }
+            .hoknex-navbar { padding: 0.85rem 1.2rem; }
+            .nav-links { display: none; }
+            .mobile-bottom-bar { display: flex; }
+            body { padding-bottom: 75px; }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Hoknex Unified Top Navigation -->
-  <header>
-    <a href="index.html" class="brand">
-      <i class="fa-solid fa-hexagon-nodes"></i> HOKNEX <span>STUDIO</span>
-    </a>
-    <nav class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="feed.html">Campus Feed</a>
-      <a href="store.html">Hoknex Store</a>
-      <a href="magazine.html">Magazine</a>
-      <a href="donation.html">Donations</a>
-      <a href="studio.html" class="active">Design Studio</a>
+    <div id="hoknexToastContainer"></div>
+
+    <!-- Top Navbar (Mirrors index.html + Theme Switcher) -->
+    <header class="hoknex-navbar">
+        <a href="index.html" class="nav-brand">
+            <span class="logo-badge">H</span> <strong>Hoknex</strong> <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.75rem; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.08em;">Studio</span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="feed.html">Campus Feed</a>
+            <a href="store.html">Store 🛍️</a>
+            <a href="magazine.html">Magazine 📖</a>
+            <a href="donation.html">Fund 💖</a>
+            <a href="studio.html" class="active">AI Studio ✨</a>
+        </nav>
+
+        <div style="display:flex; align-items:center; gap:12px;">
+            <!-- 3-Theme Switcher -->
+            <div class="theme-switcher" title="Switch 60-30-10 Color Theme">
+                <button class="theme-pill active" onclick="setStudioTheme('gallery', this)">
+                    <span class="swatch" style="background:#FAF9F6; border:1px solid #2563EB;"></span> Minimal
+                </button>
+                <button class="theme-pill" onclick="setStudioTheme('editorial', this)">
+                    <span class="swatch" style="background:#111111; border:1px solid #F59E0B;"></span> Dark
+                </button>
+                <button class="theme-pill" onclick="setStudioTheme('tactile', this)">
+                    <span class="swatch" style="background:#FBF7F2; border:1px solid #B45309;"></span> Tactile
+                </button>
+            </div>
+            <a href="#studio-workspace" class="btn-cta">Open Canvas 🚀</a>
+        </div>
+    </header>
+
+    <!-- Front-Page Hero Section (Matches index.html Layout) -->
+    <section class="studio-hero">
+        <div>
+            <span class="pill-badge">✨ AI-Loaded Hoknex Creative & Credential Engine</span>
+            <h1>Design certificates, posters & banners <span>in seconds.</span></h1>
+            <p class="lead">
+                Generate verifiable Hoknex certificates from a single AI prompt, craft high-impact event posters & YouTube thumbnails, draw freehand like Adobe Express, or upload and edit your own original PDF & image documents.
+            </p>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <a href="#studio-workspace" class="btn-cta" style="padding:0.85rem 1.6rem; font-size:0.84rem;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Start Creating Free
+                </a>
+                <button class="tool-btn" style="padding:0.85rem 1.4rem; border-radius:12px; font-size:0.84rem;" onclick="document.getElementById('docUpload').click()">
+                    <i class="fa-solid fa-file-arrow-up"></i> Edit Original PDF / Image
+                </button>
+            </div>
+        </div>
+
+        <!-- Front-Page AI Prompt & Instant Launch Card -->
+        <div class="hero-ai-box">
+            <h3>AI Prompt Studio ⚡</h3>
+            <p>Pick a format, tell the AI what you need, and launch directly onto the canvas.</p>
+
+            <div class="quick-formats">
+                <div class="fmt-chip active" data-fmt="certificate" onclick="selectHeroFormat('certificate', this)">
+                    <i class="fa-solid fa-award"></i>Certificate
+                </div>
+                <div class="fmt-chip" data-fmt="poster" onclick="selectHeroFormat('poster', this)">
+                    <i class="fa-solid fa-file-image"></i>Poster
+                </div>
+                <div class="fmt-chip" data-fmt="banner" onclick="selectHeroFormat('banner', this)">
+                    <i class="fa-solid fa-panorama"></i>Banner
+                </div>
+                <div class="fmt-chip" data-fmt="thumbnail" onclick="selectHeroFormat('thumbnail', this)">
+                    <i class="fa-brands fa-youtube"></i>Thumbnail
+                </div>
+            </div>
+
+            <div class="hero-input-row">
+                <input type="text" id="heroRecipient" placeholder="Recipient or Subtitle (e.g. Aditya Kumar)">
+            </div>
+            <textarea id="heroPrompt" rows="2" placeholder="Describe your design... e.g. 'National Hackathon 2026 Winner Certificate with gold seal'"></textarea>
+
+            <button class="btn-cta" style="width:100%; justify-content:center; padding:0.95rem; margin-top:8px;" onclick="launchFromHeroPrompt()">
+                <i class="fa-solid fa-sparkles"></i> Generate & Open in Canvas
+            </button>
+        </div>
+    </section>
+
+    <!-- 4-Card Ecosystem Strip (All Tools Accessible From Front Page) -->
+    <section class="quick-modes-strip">
+        <div class="mode-card" onclick="quickStartMode('certificate')">
+            <span class="mode-tag">🎓 Credentials</span>
+            <h4>AI Certificate Maker</h4>
+            <p>Auto-generate verifiable Hoknex certificates with unique IDs, seals, and custom signatures.</p>
+        </div>
+        <div class="mode-card" onclick="quickStartMode('poster')">
+            <span class="mode-tag">🎨 Print & Events</span>
+            <h4>Poster & Banner Studio</h4>
+            <p>Build A4 event posters, campus hackathon flyers, and wide LinkedIn/web banners.</p>
+        </div>
+        <div class="mode-card" onclick="quickStartMode('thumbnail')">
+            <span class="mode-tag">🎬 Creator Suite</span>
+            <h4>Thumbnail Generator</h4>
+            <p>1280×720 high-contrast YouTube & reel thumbnails with bold typography and filters.</p>
+        </div>
+        <div class="mode-card" onclick="document.getElementById('docUpload').click()">
+            <span class="mode-tag">📄 Document Editor</span>
+            <h4>Edit Original Docs</h4>
+            <p>Import any existing PDF, scan, or image to draw, annotate, erase, or stamp over it.</p>
+        </div>
+    </section>
+
+    <!-- Full High-Tech Interactive Studio Workspace -->
+    <section class="studio-section" id="studio-workspace">
+        <div class="studio-shell">
+            <!-- Studio Top Bar -->
+            <div class="studio-toolbar">
+                <div class="toolbar-group">
+                    <select id="formatSelect" style="width:auto; padding:7px 12px; font-size:0.8rem;" onchange="changeCanvasFormat()">
+                        <option value="certificate">Certificate (1120 × 790)</option>
+                        <option value="poster">Event Poster A4 (794 × 1123)</option>
+                        <option value="banner">Web / LinkedIn Banner (1584 × 396)</option>
+                        <option value="thumbnail">YouTube Thumbnail (1280 × 720)</option>
+                        <option value="square">Instagram / Feed Square (1080 × 1080)</option>
+                    </select>
+                    <button class="tool-btn" onclick="undo()"><i class="fa-solid fa-rotate-left"></i> Undo</button>
+                    <button class="tool-btn" onclick="redo()"><i class="fa-solid fa-rotate-right"></i> Redo</button>
+                    <button class="tool-btn" onclick="bringForward()"><i class="fa-solid fa-layer-group"></i> Front</button>
+                    <button class="tool-btn" onclick="sendBackward()"><i class="fa-solid fa-arrow-down"></i> Back</button>
+                    <button class="tool-btn" style="color:#dc2626;" onclick="deleteSelected()"><i class="fa-solid fa-trash"></i> Delete</button>
+                </div>
+
+                <div class="toolbar-group">
+                    <button class="tool-btn" onclick="saveProjectToServer()"><i class="fa-solid fa-cloud-arrow-up"></i> Save Cloud</button>
+                    <button class="tool-btn" onclick="exportPNG()"><i class="fa-solid fa-image"></i> Export PNG</button>
+                    <button class="btn-cta" onclick="exportPDF()"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+                </div>
+            </div>
+
+            <!-- 3-Column Canvas Workspace -->
+            <div class="studio-grid">
+                <!-- Left Panel: AI Generator, Document Upload & Adobe Drawing Tools -->
+                <div class="panel-left">
+                    <div class="panel-box">
+                        <div class="panel-label"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Prompt Regenerate</div>
+                        <input type="text" id="recipientInput" placeholder="Recipient / Subtitle" style="margin-bottom:7px;">
+                        <textarea id="promptInput" rows="2" placeholder="Describe changes or new design..."></textarea>
+                        <button class="btn-cta" style="width:100%; justify-content:center; margin-top:7px;" onclick="generateFromPrompt()">
+                            <i class="fa-solid fa-bolt"></i> Generate with AI
+                        </button>
+                    </div>
+
+                    <div class="panel-box">
+                        <div class="panel-label"><i class="fa-solid fa-file-import"></i> Original PDF / Image</div>
+                        <input type="file" id="docUpload" accept="image/*,.pdf" style="display:none" onchange="handleDocumentUpload(event)" />
+                        <button class="tool-btn" style="width:100%; justify-content:center;" onclick="document.getElementById('docUpload').click()">
+                            <i class="fa-solid fa-upload"></i> Upload Document to Edit
+                        </button>
+                    </div>
+
+                    <div class="panel-box">
+                        <div class="panel-label"><i class="fa-solid fa-pen-nib"></i> Adobe-Style Tools</div>
+                        <div class="adobe-tools-grid">
+                            <div class="adobe-tile active" id="toolSelect" onclick="setMode('select')">
+                                <i class="fa-solid fa-arrow-pointer"></i>Select
+                            </div>
+                            <div class="adobe-tile" id="toolDraw" onclick="setMode('draw')">
+                                <i class="fa-solid fa-paintbrush"></i>Draw
+                            </div>
+                            <div class="adobe-tile" id="toolErase" onclick="setMode('erase')">
+                                <i class="fa-solid fa-eraser"></i>Cover/Erase
+                            </div>
+                            <div class="adobe-tile" onclick="addText('Double-click to edit', 36)">
+                                <i class="fa-solid fa-font"></i>Text
+                            </div>
+                            <div class="adobe-tile" onclick="addRect()">
+                                <i class="fa-regular fa-square"></i>Shape
+                            </div>
+                            <div class="adobe-tile" onclick="addCircle()">
+                                <i class="fa-regular fa-circle"></i>Badge
+                            </div>
+                            <div class="adobe-tile" onclick="addOfficialSeal()">
+                                <i class="fa-solid fa-certificate"></i>Hoknex Seal
+                            </div>
+                            <div class="adobe-tile" onclick="addSignatureLine()">
+                                <i class="fa-solid fa-signature"></i>Signature
+                            </div>
+                            <div class="adobe-tile" onclick="clearCanvas()">
+                                <i class="fa-solid fa-broom"></i>Clear
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center Interactive Canvas -->
+                <div class="canvas-stage">
+                    <div class="canvas-frame">
+                        <canvas id="hoknexCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Color, Brush & Typography Inspector -->
+                <div class="panel-right">
+                    <div class="panel-box">
+                        <div class="panel-label"><i class="fa-solid fa-palette"></i> Surface & Brush</div>
+                        <div class="prop-row">
+                            <span>Canvas Background</span>
+                            <input type="color" id="bgColorPicker" value="#FAF9F6" onchange="updateCanvasBg(this.value)" />
+                        </div>
+                        <div class="prop-row">
+                            <span>Fill / Brush Color</span>
+                            <input type="color" id="fillColorPicker" value="#2563EB" onchange="updateObjectColor(this.value)" />
+                        </div>
+                        <div class="prop-row">
+                            <span>Border / Stroke</span>
+                            <input type="color" id="strokeColorPicker" value="#18181B" onchange="updateStrokeColor(this.value)" />
+                        </div>
+                        <div class="prop-row">
+                            <span>Brush Thickness</span>
+                            <input type="range" id="brushSize" min="1" max="45" value="4" oninput="updateBrushSize(this.value)" />
+                        </div>
+                        <div class="prop-row">
+                            <span>Layer Opacity</span>
+                            <input type="range" id="opacitySlider" min="0.1" max="1" step="0.05" value="1" oninput="updateOpacity(this.value)" />
+                        </div>
+                    </div>
+
+                    <div class="panel-box">
+                        <div class="panel-label"><i class="fa-solid fa-text-height"></i> Typography</div>
+                        <select id="fontFamilySelect" style="margin-bottom:8px;" onchange="updateFontFamily(this.value)">
+                            <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+                            <option value="Playfair Display">Playfair Display (Editorial)</option>
+                            <option value="Cinzel">Cinzel (Royal Certificate)</option>
+                            <option value="Space Grotesk">Space Grotesk (Tech)</option>
+                        </select>
+                        <div class="prop-row">
+                            <span>Font Size</span>
+                            <input type="number" id="fontSizeInput" value="36" min="8" max="200" style="width:76px; padding:6px;" onchange="updateFontSize(this.value)" />
+                        </div>
+                        <div style="display:flex; gap:6px; margin-top:6px;">
+                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="toggleBold()"><i class="fa-solid fa-bold"></i></button>
+                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="toggleItalic()"><i class="fa-solid fa-italic"></i></button>
+                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="toggleUnderline()"><i class="fa-solid fa-underline"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="panel-box">
+                        <div class="panel-label"><i class="fa-solid fa-sliders"></i> Image Adjustments</div>
+                        <div style="display:flex; gap:6px;">
+                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('grayscale')">B&W</button>
+                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('sepia')">Warm</button>
+                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('reset')">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="hoknex-footer">
+        <div class="footer-inner">
+            <div>
+                <strong style="font-family:'Playfair Display',serif; font-size:1.3rem;">Hoknex Studio</strong>
+                <p style="font-size:0.82rem; opacity:0.75; margin-top:4px;">AI Certificate, Poster, Banner & Document Creation Suite for Global Campuses.</p>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="feed.html">Campus Feed</a>
+                <a href="store.html">Store</a>
+                <a href="magazine.html">Magazine</a>
+                <a href="donation.html">Donations</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile App Bottom Bar -->
+    <nav class="mobile-bottom-bar">
+        <a href="index.html" class="mob-nav-item"><span>🏠</span>Hub</a>
+        <a href="store.html" class="mob-nav-item"><span>🛍️</span>Store</a>
+        <a href="magazine.html" class="mob-nav-item"><span>📰</span>Zine</a>
+        <a href="donation.html" class="mob-nav-item"><span>💖</span>Fund</a>
+        <a href="studio.html" class="mob-nav-item active"><span>✨</span>Studio</a>
     </nav>
-    <div class="header-actions">
-      <button class="btn" onclick="saveProjectToServer()"><i class="fa-solid fa-cloud-arrow-up"></i> Save</button>
-      <button class="btn" onclick="exportPNG()"><i class="fa-solid fa-image"></i> PNG</button>
-      <button class="btn btn-gold" onclick="exportPDF()"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
-    </div>
-  </header>
 
-  <div class="workspace">
-    <!-- LEFT SIDEBAR: Prompt AI, Canvas Format & Upload -->
-    <aside class="sidebar-left">
-      <!-- 1. Canvas Size / Format Selector -->
-      <div class="card-box">
-        <div class="section-title"><i class="fa-solid fa-crop-simple"></i> Canvas Format</div>
-        <select id="formatSelect" onchange="changeCanvasFormat()">
-          <option value="certificate">Certificate (Landscape 1120×790)</option>
-          <option value="poster">Event Poster (Portrait 794×1123)</option>
-          <option value="banner">Web / LinkedIn Banner (1584×396)</option>
-          <option value="thumbnail">YouTube Thumbnail (1280×720)</option>
-          <option value="square">Social / Feed Post (1080×1080)</option>
-        </select>
-      </div>
+    <script>
+        const STUDIO_API = 'http://localhost:5050/api/studio';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-      <!-- 2. Prompt-to-Design Generator -->
-      <div class="card-box">
-        <div class="section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate By Prompt</div>
-        <input type="text" id="recipientInput" placeholder="Recipient / Subtitle (e.g. Aditya Kumar)" />
-        <textarea id="promptInput" rows="3" placeholder="Describe your certificate, poster, banner, or thumbnail... e.g. 'Gold luxury hackathon winner certificate for AI Innovation'"></textarea>
-        <button class="btn btn-gold" style="width: 100%; justify-content: center;" onclick="generateFromPrompt()">
-          <i class="fa-solid fa-bolt"></i> Generate Design
-        </button>
-      </div>
-
-      <!-- 3. Upload & Edit Original Document (Image or PDF) -->
-      <div class="card-box">
-        <div class="section-title"><i class="fa-solid fa-file-import"></i> Edit Original Document</div>
-        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">
-          Upload an existing certificate, PDF, photo, or template to annotate, sign, or edit.
-        </p>
-        <input type="file" id="docUpload" accept="image/*,.pdf" style="display:none" onchange="handleDocumentUpload(event)" />
-        <button class="btn" style="width: 100%; justify-content: center;" onclick="document.getElementById('docUpload').click()">
-          <i class="fa-solid fa-upload"></i> Upload PDF / Image
-        </button>
-      </div>
-
-      <!-- 4. Adobe-Style Creation & Drawing Tools -->
-      <div class="card-box">
-        <div class="section-title"><i class="fa-solid fa-pen-nib"></i> Create & Draw Tools</div>
-        <div class="tool-grid">
-          <div class="tool-tile active" id="toolSelect" onclick="setMode('select')">
-            <i class="fa-solid fa-arrow-pointer"></i>Select
-          </div>
-          <div class="tool-tile" id="toolDraw" onclick="setMode('draw')">
-            <i class="fa-solid fa-paintbrush"></i>Brush
-          </div>
-          <div class="tool-tile" onclick="addText('Double-click to edit', 36, '#ffffff')">
-            <i class="fa-solid fa-font"></i>Add Text
-          </div>
-          <div class="tool-tile" onclick="addRect()">
-            <i class="fa-regular fa-square"></i>Box
-          </div>
-          <div class="tool-tile" onclick="addCircle()">
-            <i class="fa-regular fa-circle"></i>Circle
-          </div>
-          <div class="tool-tile" onclick="addGoldSeal()">
-            <i class="fa-solid fa-award"></i>Hoknex Seal
-          </div>
-          <div class="tool-tile" onclick="addSignatureLine()">
-            <i class="fa-solid fa-signature"></i>Signature
-          </div>
-          <div class="tool-tile" onclick="applyCertificateTemplate()">
-            <i class="fa-solid fa-scroll"></i>Cert Base
-          </div>
-          <div class="tool-tile" onclick="clearCanvas()">
-            <i class="fa-solid fa-trash"></i>Clear
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- CENTER STAGE -->
-    <main class="stage-container">
-      <div class="floating-bar">
-        <button onclick="undo()" title="Undo"><i class="fa-solid fa-rotate-left"></i> Undo</button>
-        <button onclick="redo()" title="Redo"><i class="fa-solid fa-rotate-right"></i> Redo</button>
-        <span style="color:var(--border-glass)">|</span>
-        <button onclick="bringForward()" title="Bring Forward"><i class="fa-solid fa-layer-group"></i> Front</button>
-        <button onclick="sendBackward()" title="Send Backward"><i class="fa-solid fa-arrow-down-short-wide"></i> Back</button>
-        <span style="color:var(--border-glass)">|</span>
-        <button onclick="deleteSelected()" style="color:#ff5c77;" title="Delete Selected"><i class="fa-solid fa-trash-can"></i> Delete</button>
-      </div>
-
-      <div class="canvas-wrapper">
-        <canvas id="hoknexCanvas"></canvas>
-      </div>
-    </main>
-
-    <!-- RIGHT SIDEBAR: Properties & Brush Inspector -->
-    <aside class="sidebar-right">
-      <div class="card-box">
-        <div class="section-title"><i class="fa-solid fa-sliders"></i> Canvas & Brush</div>
-        <div class="prop-row">
-          <span>Canvas Background</span>
-          <input type="color" id="bgColorPicker" value="#0b0d13" onchange="updateCanvasBg(this.value)" />
-        </div>
-        <div class="prop-row">
-          <span>Brush / Fill Color</span>
-          <input type="color" id="fillColorPicker" value="#f5b942" onchange="updateObjectColor(this.value)" />
-        </div>
-        <div class="prop-row">
-          <span>Stroke / Border</span>
-          <input type="color" id="strokeColorPicker" value="#ffffff" onchange="updateStrokeColor(this.value)" />
-        </div>
-        <div class="prop-row">
-          <span>Brush Size</span>
-          <input type="range" id="brushSize" min="1" max="40" value="4" oninput="updateBrushSize(this.value)" />
-        </div>
-        <div class="prop-row">
-          <span>Opacity</span>
-          <input type="range" id="opacitySlider" min="0.1" max="1" step="0.05" value="1" oninput="updateOpacity(this.value)" />
-        </div>
-      </div>
-
-      <div class="card-box">
-        <div class="section-title"><i class="fa-solid fa-text-height"></i> Typography</div>
-        <select id="fontFamilySelect" onchange="updateFontFamily(this.value)">
-          <option value="Inter">Inter (Modern Sans)</option>
-          <option value="Cinzel">Cinzel (Classic Certificate)</option>
-          <option value="Playfair Display">Playfair Display (Editorial)</option>
-          <option value="Space Grotesk">Space Grotesk (Tech / Poster)</option>
-        </select>
-        <div class="prop-row">
-          <span>Font Size</span>
-          <input type="number" id="fontSizeInput" value="36" min="8" max="200" style="width: 80px; margin:0;" onchange="updateFontSize(this.value)" />
-        </div>
-        <div style="display:flex; gap:6px; margin-top:8px;">
-          <button class="btn" style="flex:1; justify-content:center;" onclick="toggleBold()"><i class="fa-solid fa-bold"></i></button>
-          <button class="btn" style="flex:1; justify-content:center;" onclick="toggleItalic()"><i class="fa-solid fa-italic"></i></button>
-          <button class="btn" style="flex:1; justify-content:center;" onclick="toggleUnderline()"><i class="fa-solid fa-underline"></i></button>
-        </div>
-      </div>
-
-      <div class="card-box">
-        <div class="section-title"><i class="fa-solid fa-wand-sparkles"></i> Image Filters</div>
-        <div style="display:flex; gap:6px;">
-          <button class="btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('grayscale')">B&W</button>
-          <button class="btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('sepia')">Vintage</button>
-          <button class="btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('reset')">Reset</button>
-        </div>
-      </div>
-    </aside>
-  </div>
-
-  <div id="toast" class="toast"></div>
-
-  <script>
-    const STUDIO_API = 'http://localhost:5050/api/studio';
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-    const FORMATS = {
-      certificate: { w: 1120, h: 790, scale: 0.72 },
-      poster:      { w: 794,  h: 1123, scale: 0.54 },
-      banner:      { w: 1584, h: 396, scale: 0.52 },
-      thumbnail:   { w: 1280, h: 720, scale: 0.65 },
-      square:      { w: 1080, h: 1080, scale: 0.55 }
-    };
-
-    const canvas = new fabric.Canvas('hoknexCanvas', {
-      backgroundColor: '#0b0d13',
-      preserveObjectStacking: true
-    });
-
-    let history = [];
-    let historyStep = -1;
-    let isRestoring = false;
-
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.style.display = 'block';
-      setTimeout(() => t.style.display = 'none', 3200);
-    }
-
-    function saveHistory() {
-      if (isRestoring) return;
-      history = history.slice(0, historyStep + 1);
-      history.push(JSON.stringify(canvas.toJSON()));
-      historyStep++;
-    }
-
-    canvas.on('object:added', saveHistory);
-    canvas.on('object:modified', saveHistory);
-    canvas.on('object:removed', saveHistory);
-
-    function undo() {
-      if (historyStep > 0) {
-        isRestoring = true;
-        historyStep--;
-        canvas.loadFromJSON(history[historyStep], () => {
-          canvas.renderAll();
-          isRestoring = false;
-        });
-      }
-    }
-
-    function redo() {
-      if (historyStep < history.length - 1) {
-        isRestoring = true;
-        historyStep++;
-        canvas.loadFromJSON(history[historyStep], () => {
-          canvas.renderAll();
-          isRestoring = false;
-        });
-      }
-    }
-
-    function changeCanvasFormat() {
-      const fmt = FORMATS[document.getElementById('formatSelect').value];
-      canvas.setWidth(fmt.w * fmt.scale);
-      canvas.setHeight(fmt.h * fmt.scale);
-      canvas.setZoom(fmt.scale);
-      canvas.renderAll();
-    }
-
-    // Mode Switching (Select vs Adobe-style Freehand Draw)
-    function setMode(mode) {
-      document.querySelectorAll('.tool-tile').forEach(el => el.classList.remove('active'));
-      if (mode === 'draw') {
-        canvas.isDrawingMode = true;
-        canvas.freeDrawingBrush.color = document.getElementById('fillColorPicker').value;
-        canvas.freeDrawingBrush.width = parseInt(document.getElementById('brushSize').value, 10);
-        document.getElementById('toolDraw').classList.add('active');
-      } else {
-        canvas.isDrawingMode = false;
-        document.getElementById('toolSelect').classList.add('active');
-      }
-    }
-
-    // Element Builders
-    function addText(text, size = 36, color = '#ffffff', font = 'Inter', top = 250, left = 250) {
-      setMode('select');
-      const t = new fabric.IText(text, {
-        left, top, fontSize: size, fill: color, fontFamily: font, originX: 'center'
-      });
-      canvas.add(t);
-      canvas.setActiveObject(t);
-    }
-
-    function addRect() {
-      setMode('select');
-      const rect = new fabric.Rect({
-        left: 200, top: 200, width: 220, height: 130,
-        fill: 'rgba(245, 185, 66, 0.15)', stroke: '#f5b942', strokeWidth: 2, rx: 10, ry: 10
-      });
-      canvas.add(rect);
-      canvas.setActiveObject(rect);
-    }
-
-    function addCircle() {
-      setMode('select');
-      const circle = new fabric.Circle({
-        left: 260, top: 220, radius: 70,
-        fill: 'rgba(0, 229, 255, 0.15)', stroke: '#00e5ff', strokeWidth: 2
-      });
-      canvas.add(circle);
-      canvas.setActiveObject(circle);
-    }
-
-    function addGoldSeal() {
-      setMode('select');
-      const outer = new fabric.Circle({ radius: 55, fill: '#111521', stroke: '#f5b942', strokeWidth: 4, originX: 'center', originY: 'center' });
-      const inner = new fabric.Circle({ radius: 46, fill: 'transparent', stroke: '#f5b942', strokeWidth: 1, strokeDashArray: [4, 4], originX: 'center', originY: 'center' });
-      const label = new fabric.Text('HOKNEX\nVERIFIED', { fontSize: 13, fill: '#f5b942', fontFamily: 'Cinzel', fontWeight: 'bold', textAlign: 'center', originX: 'center', originY: 'center' });
-      const group = new fabric.Group([outer, inner, label], { left: 860, top: 610 });
-      canvas.add(group);
-      canvas.setActiveObject(group);
-    }
-
-    function addSignatureLine() {
-      setMode('select');
-      const line = new fabric.Line([0, 0, 200, 0], { stroke: '#f5b942', strokeWidth: 2, originX: 'center' });
-      const label = new fabric.IText('Authorized Signatory\nHoknex Leadership', { fontSize: 14, fill: '#cbd5e1', top: 10, textAlign: 'center', originX: 'center', fontFamily: 'Inter' });
-      const group = new fabric.Group([line, label], { left: 260, top: 640 });
-      canvas.add(group);
-    }
-
-    // Default Certificate Layout
-    function applyCertificateTemplate(data = null) {
-      canvas.clear();
-      const fmtKey = document.getElementById('formatSelect').value;
-      const fmt = FORMATS[fmtKey];
-      const theme = data?.theme || { bg: '#0b0d13', accent: '#f5b942', secondary: '#141926', text: '#ffffff', subtext: '#94a3b8', badge: 'OFFICIAL CREDENTIAL' };
-      const content = data?.content || {
-        org: 'HOKNEX',
-        headline: 'CERTIFICATE OF ACHIEVEMENT',
-        recipient: document.getElementById('recipientInput').value || 'Aditya Kumar',
-        description: 'In recognition of exceptional dedication, innovation, and technical excellence.',
-        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-      };
-      const certId = data?.certId || 'HKX-2026-9A4F1C';
-
-      canvas.setBackgroundColor(theme.bg, canvas.renderAll.bind(canvas));
-      document.getElementById('bgColorPicker').value = theme.bg;
-
-      // Double Ornate Border
-      canvas.add(new fabric.Rect({
-        left: 28, top: 28, width: fmt.w - 56, height: fmt.h - 56,
-        fill: 'transparent', stroke: theme.accent, strokeWidth: 3, selectable: false
-      }));
-      canvas.add(new fabric.Rect({
-        left: 40, top: 40, width: fmt.w - 80, height: fmt.h - 80,
-        fill: 'transparent', stroke: theme.accent, strokeWidth: 1, opacity: 0.5, selectable: false
-      }));
-
-      const cx = fmt.w / 2;
-      canvas.add(new fabric.IText(`${content.org} • ${theme.badge}`, {
-        left: cx, top: 90, fontSize: 16, fill: theme.accent, fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center', charSpacing: 220
-      }));
-
-      canvas.add(new fabric.IText(content.headline, {
-        left: cx, top: 155, fontSize: fmtKey === 'banner' ? 34 : 44, fill: theme.text, fontFamily: 'Cinzel', fontWeight: 'bold', originX: 'center'
-      }));
-
-      if (fmtKey === 'certificate') {
-        canvas.add(new fabric.IText('THIS CREDENTIAL IS PROUDLY PRESENTED TO', {
-          left: cx, top: 245, fontSize: 14, fill: theme.subtext, fontFamily: 'Inter', originX: 'center', charSpacing: 150
-        }));
-
-        canvas.add(new fabric.IText(content.recipient, {
-          left: cx, top: 300, fontSize: 56, fill: theme.accent, fontFamily: 'Playfair Display', fontStyle: 'italic', fontWeight: 'bold', originX: 'center'
-        }));
-
-        canvas.add(new fabric.Line([cx - 260, 380, cx + 260, 380], {
-          stroke: theme.accent, strokeWidth: 1.5, opacity: 0.6
-        }));
-      }
-
-      canvas.add(new fabric.Textbox(content.description, {
-        left: cx, top: fmtKey === 'certificate' ? 415 : 240, width: fmt.w * 0.68,
-        fontSize: 18, fill: theme.subtext, fontFamily: 'Inter', textAlign: 'center', originX: 'center'
-      }));
-
-      canvas.add(new fabric.IText(`Issued: ${content.date}   |   Verify ID: ${certId}`, {
-        left: cx, top: fmt.h - 90, fontSize: 13, fill: theme.subtext, fontFamily: 'Space Grotesk', originX: 'center'
-      }));
-
-      if (fmtKey === 'certificate') {
-        addGoldSeal();
-        addSignatureLine();
-      }
-      saveHistory();
-    }
-
-    // Prompt-to-Design API Call
-    async function generateFromPrompt() {
-      const prompt = document.getElementById('promptInput').value;
-      const recipient = document.getElementById('recipientInput').value || 'Aditya Kumar';
-      const format = document.getElementById('formatSelect').value;
-
-      showToast('Generating design from prompt...');
-      try {
-        const res = await fetch(`${STUDIO_API}/generate-from-prompt`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt, recipient, format, org: 'HOKNEX' })
-        });
-        const data = await res.json();
-        if (data.success) {
-          applyCertificateTemplate(data);
-          showToast(`Generated! Verify ID: ${data.certId}`);
-        }
-      } catch (err) {
-        // Offline fallback if server isn't started yet
-        applyCertificateTemplate();
-        showToast('Generated locally (start studio-server.js for cloud IDs)');
-      }
-    }
-
-    // Upload & Edit Original Image or PDF Document
-    async function handleDocumentUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      if (file.type === 'application/pdf') {
-        showToast('Rendering PDF page onto editable canvas...');
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        const page = await pdf.getPage(1);
-        const viewport = page.getViewport({ scale: 2 });
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = viewport.width;
-        tempCanvas.height = viewport.height;
-        await page.render({ canvasContext: tempCanvas.getContext('2d'), viewport }).promise;
-
-        fabric.Image.fromURL(tempCanvas.toDataURL('image/png'), (img) => {
-          const fmt = FORMATS[document.getElementById('formatSelect').value];
-          img.scaleToWidth(fmt.w);
-          canvas.add(img);
-          canvas.sendToBack(img);
-          showToast('PDF loaded! Add text, draw, or place seals over it.');
-        });
-      } else {
-        const reader = new FileReader();
-        reader.onload = (f) => {
-          fabric.Image.fromURL(f.target.result, (img) => {
-            img.scaleToWidth(450);
-            canvas.add(img);
-            canvas.centerObject(img);
-            canvas.setActiveObject(img);
-            showToast('Image added to canvas!');
-          });
+        const PALETTES = {
+            gallery:   { bg: '#FAF9F6', surface: '#FFFFFF', ink: '#18181B', muted: '#71717A', accent: '#2563EB', secondary: '#0D9488', badge: 'GALLERY MINIMAL EDITION' },
+            editorial: { bg: '#111111', surface: '#1E1E1E', ink: '#F4F4F5', muted: '#A1A1AA', accent: '#F59E0B', secondary: '#A855F7', badge: 'EDITORIAL DARK EDITION' },
+            tactile:   { bg: '#FBF7F2', surface: '#FFFFFF', ink: '#27221F', muted: '#6B5E55', accent: '#B45309', secondary: '#A3B18A', badge: 'WARM & TACTILE EDITION' }
         };
-        reader.readAsDataURL(file);
-      }
-    }
 
-    // Inspector Controls
-    function updateCanvasBg(color) { canvas.setBackgroundColor(color, canvas.renderAll.bind(canvas)); }
-    function updateObjectColor(color) {
-      canvas.freeDrawingBrush.color = color;
-      const obj = canvas.getActiveObject();
-      if (obj) { obj.set('fill', color); canvas.renderAll(); }
-    }
-    function updateStrokeColor(color) {
-      const obj = canvas.getActiveObject();
-      if (obj) { obj.set('stroke', color); canvas.renderAll(); }
-    }
-    function updateBrushSize(val) { canvas.freeDrawingBrush.width = parseInt(val, 10); }
-    function updateOpacity(val) {
-      const obj = canvas.getActiveObject();
-      if (obj) { obj.set('opacity', parseFloat(val)); canvas.renderAll(); }
-    }
-    function updateFontFamily(font) {
-      const obj = canvas.getActiveObject();
-      if (obj && obj.fontFamily) { obj.set('fontFamily', font); canvas.renderAll(); }
-    }
-    function updateFontSize(size) {
-      const obj = canvas.getActiveObject();
-      if (obj && obj.fontSize) { obj.set('fontSize', parseInt(size, 10)); canvas.renderAll(); }
-    }
-    function toggleBold() {
-      const obj = canvas.getActiveObject();
-      if (obj) { obj.set('fontWeight', obj.fontWeight === 'bold' ? 'normal' : 'bold'); canvas.renderAll(); }
-    }
-    function toggleItalic() {
-      const obj = canvas.getActiveObject();
-      if (obj) { obj.set('fontStyle', obj.fontStyle === 'italic' ? 'normal' : 'italic'); canvas.renderAll(); }
-    }
-    function toggleUnderline() {
-      const obj = canvas.getActiveObject();
-      if (obj) { obj.set('underline', !obj.underline); canvas.renderAll(); }
-    }
-    function bringForward() { const o = canvas.getActiveObject(); if (o) canvas.bringForward(o); }
-    function sendBackward() { const o = canvas.getActiveObject(); if (o) canvas.sendBackwards(o); }
-    function deleteSelected() {
-      const active = canvas.getActiveObjects();
-      if (active.length) {
-        active.forEach(o => canvas.remove(o));
-        canvas.discardActiveObject().renderAll();
-      }
-    }
-    function clearCanvas() { canvas.clear(); updateCanvasBg('#0b0d13'); }
+        let currentThemeKey = 'gallery';
 
-    function applyImageFilter(type) {
-      const obj = canvas.getActiveObject();
-      if (!obj || obj.type !== 'image') return showToast('Select an uploaded image first');
-      obj.filters = [];
-      if (type === 'grayscale') obj.filters.push(new fabric.Image.filters.Grayscale());
-      if (type === 'sepia') obj.filters.push(new fabric.Image.filters.Sepia());
-      obj.applyFilters();
-      canvas.renderAll();
-    }
+        const FORMATS = {
+            certificate: { w: 1120, h: 790, scale: 0.68 },
+            poster:      { w: 794,  h: 1123, scale: 0.52 },
+            banner:      { w: 1584, h: 396, scale: 0.48 },
+            thumbnail:   { w: 1280, h: 720, scale: 0.60 },
+            square:      { w: 1080, h: 1080, scale: 0.52 }
+        };
 
-    // Export High-Res PNG & PDF
-    function exportPNG() {
-      const fmt = FORMATS[document.getElementById('formatSelect').value];
-      const dataURL = canvas.toDataURL({ format: 'png', multiplier: 1 / fmt.scale });
-      const a = document.createElement('a');
-      a.href = dataURL;
-      a.download = `hoknex-${document.getElementById('formatSelect').value}-${Date.now()}.png`;
-      a.click();
-    }
-
-    function exportPDF() {
-      const fmtKey = document.getElementById('formatSelect').value;
-      const fmt = FORMATS[fmtKey];
-      const imgData = canvas.toDataURL({ format: 'png', multiplier: 1 / fmt.scale });
-      const { jsPDF } = window.jspdf;
-      const orientation = fmt.w >= fmt.h ? 'landscape' : 'portrait';
-      const pdf = new jsPDF({ orientation, unit: 'px', format: [fmt.w, fmt.h] });
-      pdf.addImage(imgData, 'PNG', 0, 0, fmt.w, fmt.h);
-      pdf.save(`hoknex-${fmtKey}-${Date.now()}.pdf`);
-    }
-
-    async function saveProjectToServer() {
-      try {
-        const res = await fetch(`${STUDIO_API}/projects`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: document.getElementById('promptInput').value || 'Hoknex Studio Design',
-            format: document.getElementById('formatSelect').value,
-            canvasJSON: canvas.toJSON()
-          })
+        const canvas = new fabric.Canvas('hoknexCanvas', {
+            backgroundColor: PALETTES.gallery.bg,
+            preserveObjectStacking: true
         });
-        if (res.ok) showToast('Saved to Hoknex Studio Server!');
-      } catch {
-        localStorage.setItem('hoknex_studio_autosave', JSON.stringify(canvas.toJSON()));
-        showToast('Saved locally in browser!');
-      }
-    }
 
-    // Initialize default view
-    changeCanvasFormat();
-    applyCertificateTemplate();
-  </script>
+        let history = [];
+        let historyStep = -1;
+        let isRestoring = false;
+
+        function showToast(msg) {
+            const c = document.getElementById('hoknexToastContainer');
+            const t = document.createElement('div');
+            t.className = 'hoknex-toast';
+            t.textContent = msg;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3200);
+        }
+
+        function setStudioTheme(themeKey, btn) {
+            currentThemeKey = themeKey;
+            document.documentElement.setAttribute('data-theme', themeKey);
+            document.querySelectorAll('.theme-pill').forEach(p => p.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            const pal = PALETTES[themeKey];
+            document.getElementById('bgColorPicker').value = pal.bg;
+            document.getElementById('fillColorPicker').value = pal.accent;
+            document.getElementById('strokeColorPicker').value = pal.ink;
+            applyDesignTemplate();
+            showToast(`Theme switched to ${themeKey.toUpperCase()}`);
+        }
+
+        function selectHeroFormat(fmt, el) {
+            document.querySelectorAll('.fmt-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('formatSelect').value = fmt;
+        }
+
+        function quickStartMode(fmt) {
+            document.getElementById('formatSelect').value = fmt;
+            changeCanvasFormat();
+            applyDesignTemplate();
+            document.getElementById('studio-workspace').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function launchFromHeroPrompt() {
+            document.getElementById('recipientInput').value = document.getElementById('heroRecipient').value;
+            document.getElementById('promptInput').value = document.getElementById('heroPrompt').value;
+            changeCanvasFormat();
+            generateFromPrompt();
+            document.getElementById('studio-workspace').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function saveHistory() {
+            if (isRestoring) return;
+            history = history.slice(0, historyStep + 1);
+            history.push(JSON.stringify(canvas.toJSON()));
+            historyStep++;
+        }
+
+        canvas.on('object:added', saveHistory);
+        canvas.on('object:modified', saveHistory);
+        canvas.on('object:removed', saveHistory);
+
+        function undo() {
+            if (historyStep > 0) {
+                isRestoring = true;
+                historyStep--;
+                canvas.loadFromJSON(history[historyStep], () => { canvas.renderAll(); isRestoring = false; });
+            }
+        }
+
+        function redo() {
+            if (historyStep < history.length - 1) {
+                isRestoring = true;
+                historyStep++;
+                canvas.loadFromJSON(history[historyStep], () => { canvas.renderAll(); isRestoring = false; });
+            }
+        }
+
+        function changeCanvasFormat() {
+            const fmt = FORMATS[document.getElementById('formatSelect').value];
+            canvas.setWidth(fmt.w * fmt.scale);
+            canvas.setHeight(fmt.h * fmt.scale);
+            canvas.setZoom(fmt.scale);
+            canvas.renderAll();
+        }
+
+        function setMode(mode) {
+            document.querySelectorAll('.adobe-tile').forEach(el => el.classList.remove('active'));
+            const pal = PALETTES[currentThemeKey];
+            if (mode === 'draw') {
+                canvas.isDrawingMode = true;
+                canvas.freeDrawingBrush.color = document.getElementById('fillColorPicker').value;
+                canvas.freeDrawingBrush.width = parseInt(document.getElementById('brushSize').value, 10);
+                document.getElementById('toolDraw').classList.add('active');
+            } else if (mode === 'erase') {
+                canvas.isDrawingMode = true;
+                canvas.freeDrawingBrush.color = canvas.backgroundColor || pal.bg;
+                canvas.freeDrawingBrush.width = 24;
+                document.getElementById('toolErase').classList.add('active');
+                showToast('Cover/Erase brush active (paints with canvas background)');
+            } else {
+                canvas.isDrawingMode = false;
+                document.getElementById('toolSelect').classList.add('active');
+            }
+        }
+
+        function addText(text, size = 36) {
+            setMode('select');
+            const pal = PALETTES[currentThemeKey];
+            const t = new fabric.IText(text, {
+                left: 300, top: 240, fontSize: size, fill: pal.ink, fontFamily: 'Plus Jakarta Sans', originX: 'center'
+            });
+            canvas.add(t);
+            canvas.setActiveObject(t);
+        }
+
+        function addRect() {
+            setMode('select');
+            const pal = PALETTES[currentThemeKey];
+            const rect = new fabric.Rect({
+                left: 220, top: 200, width: 220, height: 130,
+                fill: pal.surface, stroke: pal.accent, strokeWidth: 2, rx: 12, ry: 12
+            });
+            canvas.add(rect);
+            canvas.setActiveObject(rect);
+        }
+
+        function addCircle() {
+            setMode('select');
+            const pal = PALETTES[currentThemeKey];
+            const circle = new fabric.Circle({
+                left: 260, top: 220, radius: 65,
+                fill: pal.accent, opacity: 0.9
+            });
+            canvas.add(circle);
+            canvas.setActiveObject(circle);
+        }
+
+        function addOfficialSeal() {
+            setMode('select');
+            const pal = PALETTES[currentThemeKey];
+            const outer = new fabric.Circle({ radius: 52, fill: pal.surface, stroke: pal.accent, strokeWidth: 4, originX: 'center', originY: 'center' });
+            const inner = new fabric.Circle({ radius: 43, fill: 'transparent', stroke: pal.secondary, strokeWidth: 1.5, strokeDashArray: [4, 4], originX: 'center', originY: 'center' });
+            const label = new fabric.Text('HOKNEX\nVERIFIED', { fontSize: 12, fill: pal.ink, fontFamily: 'Space Grotesk', fontWeight: 'bold', textAlign: 'center', originX: 'center', originY: 'center' });
+            const group = new fabric.Group([outer, inner, label], { left: 850, top: 600 });
+            canvas.add(group);
+            canvas.setActiveObject(group);
+        }
+
+        function addSignatureLine() {
+            setMode('select');
+            const pal = PALETTES[currentThemeKey];
+            const line = new fabric.Line([0, 0, 200, 0], { stroke: pal.accent, strokeWidth: 2, originX: 'center' });
+            const label = new fabric.IText('Authorized Signatory\nHoknex Campus Network', { fontSize: 13, fill: pal.muted, top: 10, textAlign: 'center', originX: 'center', fontFamily: 'Plus Jakarta Sans' });
+            const group = new fabric.Group([line, label], { left: 260, top: 630 });
+            canvas.add(group);
+        }
+
+        function applyDesignTemplate(aiData = null) {
+            canvas.clear();
+            const fmtKey = document.getElementById('formatSelect').value;
+            const fmt = FORMATS[fmtKey];
+            const pal = aiData?.theme || PALETTES[currentThemeKey];
+
+            const headline = aiData?.content?.headline || (
+                fmtKey === 'certificate' ? 'CERTIFICATE OF EXCELLENCE' :
+                fmtKey === 'poster' ? 'GLOBAL CAMPUS SUMMIT 2026' :
+                fmtKey === 'banner' ? 'BUILDING THE FUTURE OF STUDENT INNOVATION' :
+                'HOW WE BUILT HOKNEX FROM ZERO'
+            );
+
+            const recipient = aiData?.content?.recipient || document.getElementById('recipientInput').value || 'Aditya Kumar';
+            const description = aiData?.content?.description || 'Awarded for outstanding leadership, creative engineering, and global campus collaboration on Hoknex.';
+            const certId = aiData?.certId || 'HKX-2026-8F4C2A';
+            const dateStr = aiData?.content?.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            // 60% Background
+            canvas.setBackgroundColor(pal.bg, canvas.renderAll.bind(canvas));
+            document.getElementById('bgColorPicker').value = pal.bg;
+
+            // 30% Surface Card Frame
+            canvas.add(new fabric.Rect({
+                left: 32, top: 32, width: fmt.w - 64, height: fmt.h - 64,
+                fill: pal.surface, stroke: pal.accent, strokeWidth: 2.5, rx: 16, ry: 16, selectable: false
+            }));
+
+            const cx = fmt.w / 2;
+
+            // 10% Accent Badge
+            canvas.add(new fabric.IText(`HOKNEX  •  ${pal.badge || 'VERIFIED STUDIO'}`, {
+                left: cx, top: fmtKey === 'banner' ? 58 : 88,
+                fontSize: 14, fill: pal.accent, fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center', charSpacing: 180
+            }));
+
+            canvas.add(new fabric.IText(headline, {
+                left: cx, top: fmtKey === 'banner' ? 115 : 155,
+                fontSize: fmtKey === 'banner' ? 34 : 44, fill: pal.ink, fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center'
+            }));
+
+            if (fmtKey === 'certificate') {
+                canvas.add(new fabric.IText('THIS CREDENTIAL IS PROUDLY PRESENTED TO', {
+                    left: cx, top: 242, fontSize: 13, fill: pal.muted, fontFamily: 'Plus Jakarta Sans', fontWeight: 'bold', originX: 'center', charSpacing: 140
+                }));
+
+                canvas.add(new fabric.IText(recipient, {
+                    left: cx, top: 292, fontSize: 54, fill: pal.accent, fontFamily: 'Playfair Display', fontStyle: 'italic', fontWeight: 'bold', originX: 'center'
+                }));
+
+                canvas.add(new fabric.Line([cx - 240, 372, cx + 240, 372], {
+                    stroke: pal.secondary || pal.accent, strokeWidth: 2
+                }));
+            }
+
+            canvas.add(new fabric.Textbox(description, {
+                left: cx, top: fmtKey === 'certificate' ? 405 : (fmtKey === 'banner' ? 195 : 265),
+                width: fmt.w * 0.68, fontSize: 18, fill: pal.muted, fontFamily: 'Plus Jakarta Sans', textAlign: 'center', originX: 'center'
+            }));
+
+            canvas.add(new fabric.IText(`Issued: ${dateStr}   |   Verify ID: ${certId}`, {
+                left: cx, top: fmt.h - 75, fontSize: 13, fill: pal.muted, fontFamily: 'Space Grotesk', originX: 'center'
+            }));
+
+            if (fmtKey === 'certificate') {
+                addOfficialSeal();
+                addSignatureLine();
+            }
+            saveHistory();
+        }
+
+        async function generateFromPrompt() {
+            const prompt = document.getElementById('promptInput').value;
+            const recipient = document.getElementById('recipientInput').value || 'Aditya Kumar';
+            const format = document.getElementById('formatSelect').value;
+
+            showToast('AI generating layout & verifiable ID...');
+            try {
+                const res = await fetch(`${STUDIO_API}/generate-from-prompt`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt, recipient, format, themeKey: currentThemeKey })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    applyDesignTemplate(data);
+                    showToast(`AI Design Ready! ID: ${data.certId}`);
+                    return;
+                }
+            } catch (_) {}
+
+            // Client-side AI fallback if studio-server.js isn't running yet
+            const cleanHeadline = prompt.trim()
+                ? prompt.replace(/create|make|generate|a|an|for|certificate|poster|banner|thumbnail/gi, '').trim().toUpperCase()
+                : null;
+            applyDesignTemplate({
+                theme: PALETTES[currentThemeKey],
+                certId: `HKX-2026-${Math.random().toString(16).substring(2, 8).toUpperCase()}`,
+                content: {
+                    headline: cleanHeadline && cleanHeadline.length > 3 ? cleanHeadline : undefined,
+                    recipient,
+                    description: prompt || undefined
+                }
+            });
+            showToast('Generated with client AI engine!');
+        }
+
+        async function handleDocumentUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('studio-workspace').scrollIntoView({ behavior: 'smooth' });
+
+            if (file.type === 'application/pdf') {
+                showToast('Importing original PDF onto editable canvas...');
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 2 });
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = viewport.width;
+                tempCanvas.height = viewport.height;
+                await page.render({ canvasContext: tempCanvas.getContext('2d'), viewport }).promise;
+
+                fabric.Image.fromURL(tempCanvas.toDataURL('image/png'), (img) => {
+                    const fmt = FORMATS[document.getElementById('formatSelect').value];
+                    img.scaleToWidth(fmt.w);
+                    canvas.add(img);
+                    canvas.sendToBack(img);
+                    showToast('Original PDF loaded! Draw, cover/erase, or add text over it.');
+                });
+            } else {
+                const reader = new FileReader();
+                reader.onload = (f) => {
+                    fabric.Image.fromURL(f.target.result, (img) => {
+                        img.scaleToWidth(480);
+                        canvas.add(img);
+                        canvas.centerObject(img);
+                        canvas.setActiveObject(img);
+                        showToast('Image loaded onto canvas!');
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateCanvasBg(c) { canvas.setBackgroundColor(c, canvas.renderAll.bind(canvas)); }
+        function updateObjectColor(c) {
+            canvas.freeDrawingBrush.color = c;
+            const o = canvas.getActiveObject();
+            if (o) { o.set('fill', c); canvas.renderAll(); }
+        }
+        function updateStrokeColor(c) { const o = canvas.getActiveObject(); if (o) { o.set('stroke', c); canvas.renderAll(); } }
+        function updateBrushSize(v) { canvas.freeDrawingBrush.width = parseInt(v, 10); }
+        function updateOpacity(v) { const o = canvas.getActiveObject(); if (o) { o.set('opacity', parseFloat(v)); canvas.renderAll(); } }
+        function updateFontFamily(f) { const o = canvas.getActiveObject(); if (o && o.fontFamily) { o.set('fontFamily', f); canvas.renderAll(); } }
+        function updateFontSize(s) { const o = canvas.getActiveObject(); if (o && o.fontSize) { o.set('fontSize', parseInt(s, 10)); canvas.renderAll(); } }
+        function toggleBold() { const o = canvas.getActiveObject(); if (o) { o.set('fontWeight', o.fontWeight === 'bold' ? 'normal' : 'bold'); canvas.renderAll(); } }
+        function toggleItalic() { const o = canvas.getActiveObject(); if (o) { o.set('fontStyle', o.fontStyle === 'italic' ? 'normal' : 'italic'); canvas.renderAll(); } }
+        function toggleUnderline() { const o = canvas.getActiveObject(); if (o) { o.set('underline', !o.underline); canvas.renderAll(); } }
+        function bringForward() { const o = canvas.getActiveObject(); if (o) canvas.bringForward(o); }
+        function sendBackward() { const o = canvas.getActiveObject(); if (o) canvas.sendBackwards(o); }
+        function deleteSelected() {
+            const active = canvas.getActiveObjects();
+            if (active.length) {
+                active.forEach(o => canvas.remove(o));
+                canvas.discardActiveObject().renderAll();
+            }
+        }
+        function clearCanvas() { canvas.clear(); updateCanvasBg(PALETTES[currentThemeKey].bg); }
+
+        function applyImageFilter(type) {
+            const obj = canvas.getActiveObject();
+            if (!obj || obj.type !== 'image') return showToast('Click an uploaded image first');
+            obj.filters = [];
+            if (type === 'grayscale') obj.filters.push(new fabric.Image.filters.Grayscale());
+            if (type === 'sepia') obj.filters.push(new fabric.Image.filters.Sepia());
+            obj.applyFilters();
+            canvas.renderAll();
+        }
+
+        function exportPNG() {
+            const fmt = FORMATS[document.getElementById('formatSelect').value];
+            const dataURL = canvas.toDataURL({ format: 'png', multiplier: 1 / fmt.scale });
+            const a = document.createElement('a');
+            a.href = dataURL;
+            a.download = `hoknex-${document.getElementById('formatSelect').value}-${Date.now()}.png`;
+            a.click();
+        }
+
+        function exportPDF() {
+            const fmtKey = document.getElementById('formatSelect').value;
+            const fmt = FORMATS[fmtKey];
+            const imgData = canvas.toDataURL({ format: 'png', multiplier: 1 / fmt.scale });
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: fmt.w >= fmt.h ? 'landscape' : 'portrait', unit: 'px', format: [fmt.w, fmt.h] });
+            pdf.addImage(imgData, 'PNG', 0, 0, fmt.w, fmt.h);
+            pdf.save(`hoknex-${fmtKey}-${Date.now()}.pdf`);
+        }
+
+        async function saveProjectToServer() {
+            try {
+                const res = await fetch(`${STUDIO_API}/projects`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('promptInput').value || 'Hoknex Studio Project',
+                        format: document.getElementById('formatSelect').value,
+                        theme: currentThemeKey,
+                        canvasJSON: canvas.toJSON()
+                    })
+                });
+                if (res.ok) return showToast('Saved to studio-server.js!');
+            } catch (_) {}
+            localStorage.setItem('hoknex_studio_project', JSON.stringify(canvas.toJSON()));
+            showToast('Saved locally in browser!');
+        }
+
+        changeCanvasFormat();
+        applyDesignTemplate();
+    </script>
 </body>
 </html>
