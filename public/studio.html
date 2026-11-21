@@ -4,78 +4,69 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Hoknex Studio — AI Certificate, Poster & Creative Suite</title>
+    <title>Hoknex Studio — AI Certificate, Bulk & Creative Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <!-- Fabric.js Vector & Raster Engine -->
+    <!-- Fabric.js Vector & Raster Canvas Engine -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <!-- jsPDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- PDF.js Original Document Loader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- QRCode.js for Per-Certificate Scannable QR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
         /* ==========================================================================
-           60-30-10 DESIGN SYSTEM ACROSS ALL 3 CURATED PALETTES
+           60-30-10 PALETTES: GALLERY MINIMAL | EDITORIAL DARK | WARM & TACTILE
            ========================================================================== */
         :root, [data-theme="gallery"] {
-            /* 60% Background */
             --bg-main: #FAF9F6;
-            /* 30% Surface & Text */
             --bg-surface: #FFFFFF;
             --bg-surface-alt: #F3F2EE;
             --ink-primary: #18181B;
             --ink-muted: #71717A;
-            --border-subtle: rgba(24, 24, 27, 0.1);
-            /* 10% Accent */
+            --border-subtle: rgba(24, 24, 27, 0.11);
             --accent: #2563EB;
             --accent-secondary: #0D9488;
             --accent-tint: rgba(37, 99, 235, 0.09);
             --accent-contrast: #FFFFFF;
-            --shadow-card: 0 16px 40px rgba(24, 24, 27, 0.06);
-            --shadow-cta: 0 10px 25px rgba(37, 99, 235, 0.28);
+            --shadow-card: 0 14px 36px rgba(24, 24, 27, 0.06);
+            --shadow-cta: 0 10px 24px rgba(37, 99, 235, 0.26);
             --footer-bg: #18181B;
             --footer-ink: #FAF9F6;
         }
 
         [data-theme="editorial"] {
-            /* 60% Background */
             --bg-main: #111111;
-            /* 30% Surface & Text */
             --bg-surface: #1E1E1E;
             --bg-surface-alt: #27272A;
             --ink-primary: #F4F4F5;
             --ink-muted: #A1A1AA;
-            --border-subtle: rgba(244, 244, 245, 0.11);
-            /* 10% Accent */
+            --border-subtle: rgba(244, 244, 245, 0.12);
             --accent: #F59E0B;
             --accent-secondary: #A855F7;
             --accent-tint: rgba(245, 158, 11, 0.14);
             --accent-contrast: #111111;
-            --shadow-card: 0 20px 50px rgba(0, 0, 0, 0.45);
-            --shadow-cta: 0 10px 28px rgba(245, 158, 11, 0.3);
+            --shadow-card: 0 18px 46px rgba(0, 0, 0, 0.45);
+            --shadow-cta: 0 10px 26px rgba(245, 158, 11, 0.3);
             --footer-bg: #09090B;
             --footer-ink: #F4F4F5;
         }
 
         [data-theme="tactile"] {
-            /* 60% Background */
             --bg-main: #FBF7F2;
-            /* 30% Surface & Text */
             --bg-surface: #FFFFFF;
             --bg-surface-alt: #E6CCB2;
             --ink-primary: #27221F;
             --ink-muted: #6B5E55;
             --border-subtle: rgba(39, 34, 31, 0.12);
-            /* 10% Accent */
             --accent: #B45309;
             --accent-secondary: #A3B18A;
             --accent-tint: rgba(180, 83, 9, 0.1);
             --accent-contrast: #FFFFFF;
-            --shadow-card: 0 16px 40px rgba(39, 34, 31, 0.07);
-            --shadow-cta: 0 10px 25px rgba(180, 83, 9, 0.28);
+            --shadow-card: 0 14px 36px rgba(39, 34, 31, 0.07);
+            --shadow-cta: 0 10px 24px rgba(180, 83, 9, 0.28);
             --footer-bg: #27221F;
             --footer-ink: #FBF7F2;
         }
@@ -93,47 +84,34 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html { scroll-behavior: smooth; }
         body {
-            background-color: var(--bg-main);
+            background: var(--bg-main);
             color: var(--ink-primary);
             min-height: 100vh;
-            overflow-x: hidden;
-            transition: background-color 0.35s ease, color 0.35s ease;
-            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        @keyframes fadeUpIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
-        }
-
-        /* ==========================================================================
-           STICKY NAVBAR (Matches index.html Architecture)
-           ========================================================================== */
+        /* Navbar */
         .hoknex-navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.95rem 3rem;
-            background: color-mix(in srgb, var(--bg-surface) 88%, transparent);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            padding: 0.9rem 2.5rem;
+            background: color-mix(in srgb, var(--bg-surface) 90%, transparent);
+            backdrop-filter: blur(18px);
             border-bottom: 1px solid var(--border-subtle);
             position: sticky;
             top: 0;
             z-index: 1000;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .nav-brand {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             font-weight: 900;
             color: var(--ink-primary);
             text-decoration: none;
@@ -141,44 +119,21 @@
         }
 
         .logo-badge {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
             background: var(--accent);
             color: var(--accent-contrast);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Playfair Display', serif;
             font-weight: 900;
-            font-size: 1.1rem;
+            font-family: 'Playfair Display', serif;
         }
 
-        .nav-links {
-            display: flex;
-            gap: 1.75rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: var(--ink-muted);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.84rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--accent);
-        }
-
-        /* Theme Switcher Pill */
         .theme-switcher {
             display: flex;
-            align-items: center;
-            gap: 6px;
+            gap: 4px;
             background: var(--bg-surface-alt);
             padding: 4px;
             border-radius: 999px;
@@ -189,348 +144,263 @@
             border: none;
             background: transparent;
             color: var(--ink-muted);
-            padding: 5px 11px;
+            padding: 5px 10px;
             border-radius: 999px;
             font-size: 0.72rem;
             font-weight: 800;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 5px;
-            transition: all 0.25s var(--ease-spring);
         }
 
         .theme-pill.active {
             background: var(--bg-surface);
             color: var(--ink-primary);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
 
-        .swatch {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            display: inline-block;
-        }
+        .swatch { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 
         .btn-cta {
             background: var(--accent);
             color: var(--accent-contrast);
-            padding: 0.65rem 1.35rem;
-            border-radius: 12px;
-            font-weight: 800;
-            text-decoration: none;
             border: none;
-            cursor: pointer;
+            padding: 0.65rem 1.25rem;
+            border-radius: 11px;
+            font-weight: 800;
+            font-size: 0.78rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            font-size: 0.78rem;
+            cursor: pointer;
             box-shadow: var(--shadow-cta);
-            transition: transform 0.25s var(--ease-spring), opacity 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 7px;
+            text-decoration: none;
+            transition: transform 0.2s var(--ease-spring);
         }
 
-        .btn-cta:hover {
-            transform: translateY(-2px);
-            opacity: 0.94;
-        }
+        .btn-cta:hover { transform: translateY(-2px); }
 
-        /* ==========================================================================
-           INDEX-STYLE HERO LAUNCHPAD (60% BG / 30% SURFACE / 10% ACCENT)
-           ========================================================================== */
-        .studio-hero {
-            padding: 3.5rem 3rem 2.5rem;
-            max-width: 1380px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 3rem;
-            align-items: center;
-            animation: fadeUpIn 0.6s var(--ease-smooth);
-        }
-
-        .pill-badge {
+        .btn-ghost {
+            background: var(--bg-surface);
+            color: var(--ink-primary);
+            border: 1px solid var(--border-subtle);
+            padding: 0.65rem 1.15rem;
+            border-radius: 11px;
+            font-weight: 700;
+            font-size: 0.78rem;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: var(--accent-tint);
-            color: var(--accent);
-            border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
-            padding: 6px 15px;
-            border-radius: 999px;
-            font-size: 0.76rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin-bottom: 1.1rem;
+            gap: 6px;
+            text-decoration: none;
         }
 
-        .studio-hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3.35rem;
-            font-weight: 900;
-            line-height: 1.12;
-            color: var(--ink-primary);
+        .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ==========================================================================
+           VIEW 1: FRONT HUB (Isolated Menu — Clicking Opens Only That Feature)
+           ========================================================================== */
+        #hubView {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 3rem 2rem 4rem;
+        }
+
+        .hub-hero {
+            text-align: center;
+            max-width: 780px;
+            margin: 0 auto 3rem;
+        }
+
+        .hub-pill {
+            display: inline-block;
+            background: var(--accent-tint);
+            color: var(--accent);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
             margin-bottom: 1rem;
         }
 
-        .studio-hero h1 span {
-            color: var(--accent);
-            font-style: italic;
+        .hub-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 0.85rem;
         }
 
-        .studio-hero p.lead {
-            color: var(--ink-muted);
-            font-size: 1.02rem;
-            font-weight: 600;
-            line-height: 1.65;
-            margin-bottom: 1.75rem;
-            max-width: 580px;
+        .hub-hero h1 span { color: var(--accent); font-style: italic; }
+        .hub-hero p { color: var(--ink-muted); font-size: 1rem; font-weight: 600; line-height: 1.6; }
+
+        .feature-hub-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
         }
 
-        /* Quick Launch AI Prompt Box on Front Page */
-        .hero-ai-box {
+        .hub-card {
             background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
             border-radius: 22px;
-            padding: 1.75rem;
+            padding: 1.85rem;
             box-shadow: var(--shadow-card);
+            cursor: pointer;
+            transition: transform 0.3s var(--ease-spring), border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1.25rem;
         }
 
-        .hero-ai-box h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 900;
-            margin-bottom: 0.35rem;
+        .hub-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent);
         }
 
-        .hero-ai-box p {
-            font-size: 0.84rem;
-            color: var(--ink-muted);
-            font-weight: 600;
-            margin-bottom: 1.1rem;
-        }
-
-        .quick-formats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
+        .hub-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--accent-tint);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
             margin-bottom: 1rem;
         }
 
-        .fmt-chip {
-            background: var(--bg-main);
-            border: 1.5px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 10px 6px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 0.74rem;
-            font-weight: 800;
+        .hub-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 900;
+            margin-bottom: 0.45rem;
+        }
+
+        .hub-card p {
             color: var(--ink-muted);
-            transition: all 0.2s var(--ease-spring);
+            font-size: 0.86rem;
+            font-weight: 600;
+            line-height: 1.55;
         }
 
-        .fmt-chip i {
-            display: block;
-            font-size: 1.05rem;
-            margin-bottom: 4px;
-            color: var(--ink-primary);
-        }
-
-        .fmt-chip.active, .fmt-chip:hover {
-            border-color: var(--accent);
-            background: var(--accent-tint);
+        .hub-open-link {
+            font-size: 0.8rem;
+            font-weight: 800;
             color: var(--accent);
-            transform: translateY(-2px);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .fmt-chip.active i, .fmt-chip:hover i {
-            color: var(--accent);
+        /* ==========================================================================
+           FOCUSED ISOLATED FEATURE STAGES (Only Active Feature Is Shown)
+           ========================================================================== */
+        .feature-stage {
+            display: none;
+            max-width: 1380px;
+            margin: 0 auto;
+            padding: 1.75rem 2rem 4rem;
         }
 
-        .hero-input-row {
+        .feature-stage.active { display: block; }
+
+        .stage-top-bar {
             display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: var(--bg-surface);
+            padding: 14px 20px;
+            border-radius: 18px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-card);
         }
 
-        input[type="text"], input[type="number"], select, textarea {
+        .stage-title-group h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.65rem;
+            font-weight: 900;
+        }
+
+        .stage-title-group p {
+            font-size: 0.82rem;
+            color: var(--ink-muted);
+            font-weight: 600;
+        }
+
+        .box-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        label {
+            display: block;
+            font-size: 0.73rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--ink-muted);
+            margin-bottom: 6px;
+        }
+
+        input, select, textarea {
             width: 100%;
             background: var(--bg-main);
             border: 1.5px solid var(--border-subtle);
             color: var(--ink-primary);
-            border-radius: 12px;
-            padding: 11px 14px;
-            font-size: 0.88rem;
+            border-radius: 11px;
+            padding: 10px 12px;
+            font-size: 0.86rem;
             font-weight: 600;
+            margin-bottom: 12px;
             outline: none;
-            transition: border-color 0.2s;
         }
 
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--accent);
-        }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 
-        /* ==========================================================================
-           ALL-IN-ONE ACTION CARDS (Matches index.html Ecosystem Grid)
-           ========================================================================== */
-        .quick-modes-strip {
-            max-width: 1380px;
-            margin: 0 auto 2.5rem;
-            padding: 0 3rem;
+        /* Canvas & Studio Grid */
+        .canvas-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: 270px 1fr 260px;
             gap: 1.25rem;
+            align-items: start;
         }
 
-        .mode-card {
+        .canvas-viewport {
             background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
-            border-radius: 18px;
-            padding: 1.35rem;
-            box-shadow: var(--shadow-card);
-            cursor: pointer;
-            transition: transform 0.3s var(--ease-spring), border-color 0.2s;
-        }
-
-        .mode-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent);
-        }
-
-        .mode-tag {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 7px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            background: var(--accent-tint);
-            color: var(--accent);
-            margin-bottom: 0.65rem;
-        }
-
-        .mode-card h4 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.15rem;
-            font-weight: 900;
-            margin-bottom: 0.3rem;
-        }
-
-        .mode-card p {
-            font-size: 0.82rem;
-            color: var(--ink-muted);
-            font-weight: 600;
-            line-height: 1.45;
-        }
-
-        /* ==========================================================================
-           HIGH-TECH INTERACTIVE STUDIO WORKSPACE
-           ========================================================================== */
-        .studio-section {
-            max-width: 1440px;
-            margin: 0 auto 4rem;
-            padding: 0 2rem;
-        }
-
-        .studio-shell {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 24px;
-            box-shadow: var(--shadow-card);
-            overflow: hidden;
+            border-radius: 20px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-        }
-
-        /* Studio Top Action Bar */
-        .studio-toolbar {
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--border-subtle);
-            background: var(--bg-surface);
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
+            overflow: auto;
+            box-shadow: var(--shadow-card);
         }
 
-        .toolbar-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tool-btn {
-            background: var(--bg-main);
-            color: var(--ink-primary);
-            border: 1px solid var(--border-subtle);
-            padding: 7px 12px;
-            border-radius: 10px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-
-        .tool-btn:hover, .tool-btn.active {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: var(--accent-tint);
-        }
-
-        /* 3-Column Studio Grid */
-        .studio-grid {
-            display: grid;
-            grid-template-columns: 290px 1fr 270px;
-            min-height: 680px;
-        }
-
-        .panel-left, .panel-right {
-            padding: 16px;
-            background: var(--bg-surface);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            overflow-y: auto;
-        }
-
-        .panel-left { border-right: 1px solid var(--border-subtle); }
-        .panel-right { border-left: 1px solid var(--border-subtle); }
-
-        .panel-box {
-            background: var(--bg-main);
-            border: 1px solid var(--border-subtle);
-            border-radius: 14px;
-            padding: 12px;
-        }
-
-        .panel-label {
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--accent);
-            margin-bottom: 9px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .adobe-tools-grid {
+        .tools-3x3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 7px;
         }
 
-        .adobe-tile {
-            background: var(--bg-surface);
+        .mini-tool {
+            background: var(--bg-main);
             border: 1px solid var(--border-subtle);
             border-radius: 10px;
             padding: 9px 4px;
@@ -539,141 +409,28 @@
             font-size: 0.72rem;
             font-weight: 700;
             color: var(--ink-muted);
-            transition: 0.2s;
         }
 
-        .adobe-tile i {
-            display: block;
-            font-size: 1rem;
-            margin-bottom: 4px;
-            color: var(--ink-primary);
-        }
+        .mini-tool i { display: block; font-size: 1rem; margin-bottom: 4px; color: var(--ink-primary); }
+        .mini-tool.active, .mini-tool:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-tint); }
+        .mini-tool.active i, .mini-tool:hover i { color: var(--accent); }
 
-        .adobe-tile:hover, .adobe-tile.active {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: var(--accent-tint);
-        }
+        /* Bulk Batch Table */
+        .bulk-grid { display: grid; grid-template-columns: 420px 1fr; gap: 1.5rem; align-items: start; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid var(--border-subtle); text-align: left; }
+        th { font-size: 0.72rem; text-transform: uppercase; color: var(--ink-muted); font-weight: 800; }
 
-        .adobe-tile:hover i, .adobe-tile.active i {
-            color: var(--accent);
-        }
-
-        /* Center Canvas Viewport */
-        .canvas-stage {
-            background: var(--bg-main);
-            background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px);
-            background-size: 18px 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 28px;
-            overflow: auto;
-            position: relative;
-        }
-
-        .canvas-frame {
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+        .qr-box {
+            background: #FFFFFF;
+            padding: 8px;
+            border-radius: 10px;
+            display: inline-block;
             border: 1px solid var(--border-subtle);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .prop-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--ink-muted);
-            margin-bottom: 8px;
-        }
-
-        input[type="color"] {
-            width: 34px;
-            height: 26px;
-            border: none;
-            background: none;
-            cursor: pointer;
-        }
-
-        input[type="range"] {
-            width: 115px;
-            accent-color: var(--accent);
-        }
-
-        /* Footer (Matches index.html) */
-        .hoknex-footer {
-            background: var(--footer-bg);
-            color: var(--footer-ink);
-            padding: 3.5rem 3rem 2rem;
-            border-top: 3px solid var(--accent);
-        }
-
-        .footer-inner {
-            max-width: 1380px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: var(--footer-ink);
-            opacity: 0.8;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .footer-links a:hover {
-            opacity: 1;
-            color: var(--accent);
-        }
-
-        /* Mobile App Bottom Bar */
-        .mobile-bottom-bar {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--bg-surface);
-            border-top: 1px solid var(--border-subtle);
-            padding: 8px 0.5rem calc(8px + env(safe-area-inset-bottom));
-            z-index: 25000;
-            justify-content: space-around;
-        }
-
-        .mob-nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            font-size: 0.65rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: var(--ink-muted);
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 12px;
-        }
-
-        .mob-nav-item.active {
-            color: var(--accent);
-            background: var(--accent-tint);
         }
 
         /* Toast */
-        #hoknexToastContainer {
+        #toastContainer {
             position: fixed;
             top: 20px;
             right: 20px;
@@ -682,712 +439,791 @@
             flex-direction: column;
             gap: 8px;
         }
-
-        .hoknex-toast {
+        .toast-msg {
             background: var(--accent);
             color: var(--accent-contrast);
             padding: 12px 18px;
             border-radius: 12px;
-            font-size: 0.86rem;
             font-weight: 800;
+            font-size: 0.85rem;
             box-shadow: var(--shadow-cta);
-            animation: fadeUpIn 0.3s var(--ease-spring);
         }
 
-        @media (max-width: 1080px) {
-            .studio-hero { grid-template-columns: 1fr; padding: 2rem 1.25rem; }
-            .studio-hero h1 { font-size: 2.35rem; }
-            .quick-modes-strip { grid-template-columns: repeat(2, 1fr); padding: 0 1.25rem; }
-            .studio-grid { grid-template-columns: 1fr; }
-            .panel-left, .panel-right { border: none; border-bottom: 1px solid var(--border-subtle); }
-            .hoknex-navbar { padding: 0.85rem 1.2rem; }
-            .nav-links { display: none; }
-            .mobile-bottom-bar { display: flex; }
-            body { padding-bottom: 75px; }
+        @media (max-width: 1024px) {
+            .feature-hub-grid, .canvas-grid, .bulk-grid { grid-template-columns: 1fr; }
+            .hub-hero h1 { font-size: 2.25rem; }
+            .hoknex-navbar { padding: 0.8rem 1.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <div id="hoknexToastContainer"></div>
+    <div id="toastContainer"></div>
 
-    <!-- Top Navbar (Mirrors index.html + Theme Switcher) -->
+    <!-- Top Navigation Bar -->
     <header class="hoknex-navbar">
-        <a href="index.html" class="nav-brand">
-            <span class="logo-badge">H</span> <strong>Hoknex</strong> <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.75rem; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.08em;">Studio</span>
-        </a>
+        <div style="display:flex; align-items:center; gap:14px;">
+            <a href="studio.html" class="nav-brand" onclick="openHub(); return false;">
+                <span class="logo-badge">H</span> Hoknex Studio
+            </a>
+            <button class="btn-ghost" id="backToHubBtn" style="display:none;" onclick="openHub()">
+                <i class="fa-solid fa-arrow-left"></i> Back to Hub
+            </button>
+        </div>
 
-        <nav class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="feed.html">Campus Feed</a>
-            <a href="store.html">Store 🛍️</a>
-            <a href="magazine.html">Magazine 📖</a>
-            <a href="donation.html">Fund 💖</a>
-            <a href="studio.html" class="active">AI Studio ✨</a>
-        </nav>
-
-        <div style="display:flex; align-items:center; gap:12px;">
-            <!-- 3-Theme Switcher -->
-            <div class="theme-switcher" title="Switch 60-30-10 Color Theme">
-                <button class="theme-pill active" onclick="setStudioTheme('gallery', this)">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <!-- 60-30-10 Theme Switcher -->
+            <div class="theme-switcher">
+                <button class="theme-pill active" onclick="setTheme('gallery', this)">
                     <span class="swatch" style="background:#FAF9F6; border:1px solid #2563EB;"></span> Minimal
                 </button>
-                <button class="theme-pill" onclick="setStudioTheme('editorial', this)">
+                <button class="theme-pill" onclick="setTheme('editorial', this)">
                     <span class="swatch" style="background:#111111; border:1px solid #F59E0B;"></span> Dark
                 </button>
-                <button class="theme-pill" onclick="setStudioTheme('tactile', this)">
+                <button class="theme-pill" onclick="setTheme('tactile', this)">
                     <span class="swatch" style="background:#FBF7F2; border:1px solid #B45309;"></span> Tactile
                 </button>
             </div>
-            <a href="#studio-workspace" class="btn-cta">Open Canvas 🚀</a>
+            <a href="index.html" class="btn-ghost"><i class="fa-solid fa-house"></i> Hoknex Home</a>
+            <a href="feed.html" class="btn-ghost">Feed</a>
         </div>
     </header>
 
-    <!-- Front-Page Hero Section (Matches index.html Layout) -->
-    <section class="studio-hero">
-        <div>
-            <span class="pill-badge">✨ AI-Loaded Hoknex Creative & Credential Engine</span>
-            <h1>Design certificates, posters & banners <span>in seconds.</span></h1>
-            <p class="lead">
-                Generate verifiable Hoknex certificates from a single AI prompt, craft high-impact event posters & YouTube thumbnails, draw freehand like Adobe Express, or upload and edit your own original PDF & image documents.
-            </p>
-            <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                <a href="#studio-workspace" class="btn-cta" style="padding:0.85rem 1.6rem; font-size:0.84rem;">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> Start Creating Free
-                </a>
-                <button class="tool-btn" style="padding:0.85rem 1.4rem; border-radius:12px; font-size:0.84rem;" onclick="document.getElementById('docUpload').click()">
-                    <i class="fa-solid fa-file-arrow-up"></i> Edit Original PDF / Image
+    <!-- ======================================================================
+         FRONT PAGE: CLEAN FEATURE LAUNCHER (Clicking Opens Only That Feature)
+         ====================================================================== -->
+    <main id="hubView">
+        <div class="hub-hero">
+            <span class="hub-pill">✨ Hoknex AI & Credential Suite</span>
+            <h1>Pick what you want to make. <span>Open only that tool.</span></h1>
+            <p>Generate certificates, posters, banners, or thumbnails by AI prompt—or run password-protected bulk certificates with scannable QR codes and custom scripts.</p>
+        </div>
+
+        <div class="feature-hub-grid">
+            <div class="hub-card" onclick="openStage('aiStage')">
+                <div>
+                    <div class="hub-icon-box"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <h3>1. AI Prompt Generator</h3>
+                    <p>Tell the AI what certificate, poster, banner, or thumbnail you want—like Gemini—and generate a full editable layout with a scannable QR code.</p>
+                </div>
+                <span class="hub-open-link">Open AI Generator <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="hub-card" onclick="openStage('bulkStage')">
+                <div>
+                    <div class="hub-icon-box"><i class="fa-solid fa-layer-group"></i></div>
+                    <h3>2. Bulk Certificate Builder & Script</h3>
+                    <p>Generate N certificates automatically by script or name list, upload your theme, logo & signature, set separate passwords per certificate, and share links.</p>
+                </div>
+                <span class="hub-open-link">Open Bulk Builder <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="hub-card" onclick="openStage('posterStage')">
+                <div>
+                    <div class="hub-icon-box"><i class="fa-solid fa-panorama"></i></div>
+                    <h3>3. Poster, Banner & Thumbnail Studio</h3>
+                    <p>Create event posters, wide banners, and YouTube/social thumbnails with dedicated canvas presets and typography controls.</p>
+                </div>
+                <span class="hub-open-link">Open Poster & Banner <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="hub-card" onclick="openStage('drawStage')">
+                <div>
+                    <div class="hub-icon-box"><i class="fa-solid fa-pen-nib"></i></div>
+                    <h3>4. Adobe-Style Draw & Canvas</h3>
+                    <p>Draw freehand like Adobe Express/Photoshop with adjustable brush sizes, colors, opacity, shapes, seals, and layer ordering.</p>
+                </div>
+                <span class="hub-open-link">Open Draw Canvas <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="hub-card" onclick="openStage('docStage')">
+                <div>
+                    <div class="hub-icon-box"><i class="fa-solid fa-file-pen"></i></div>
+                    <h3>5. Edit Original Document (PDF / Image)</h3>
+                    <p>Upload any existing PDF or certificate/document image to annotate, cover/erase text, sign, add QR stamps, and export PDF/PNG.</p>
+                </div>
+                <span class="hub-open-link">Open Document Editor <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="hub-card" onclick="openStage('vaultStage')">
+                <div>
+                    <div class="hub-icon-box"><i class="fa-solid fa-lock"></i></div>
+                    <h3>6. Protected Link & QR Viewer</h3>
+                    <p>Open any shared certificate link or scan a certificate QR code—enter that certificate's unique password to unlock and download it.</p>
+                </div>
+                <span class="hub-open-link">Open Link & QR Vault <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+        </div>
+    </main>
+
+    <!-- ======================================================================
+         FEATURE 1: AI PROMPT GENERATOR STAGE
+         ====================================================================== -->
+    <section id="aiStage" class="feature-stage">
+        <div class="stage-top-bar">
+            <div class="stage-title-group">
+                <h2>AI Prompt Generator</h2>
+                <p>Write a prompt like Gemini to generate a certificate, poster, banner, or thumbnail with a personal QR code.</p>
+            </div>
+            <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+        </div>
+
+        <div class="box-card" style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items:start;">
+            <div>
+                <label>Format Type</label>
+                <select id="aiFormat">
+                    <option value="certificate">Certificate (1120 × 790)</option>
+                    <option value="poster">Poster (794 × 1123)</option>
+                    <option value="banner">Banner (1584 × 396)</option>
+                    <option value="thumbnail">Thumbnail (1280 × 720)</option>
+                </select>
+
+                <label>Recipient / Headline Name</label>
+                <input type="text" id="aiRecipient" placeholder="e.g. Aditya Kumar">
+
+                <label>Your AI Prompt</label>
+                <textarea id="aiPromptText" rows="4" placeholder="Tell AI what to make... e.g. 'Create an honorary AI Innovation & Robotics Certificate for winning the Hoknex Hackathon'"></textarea>
+
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn-cta" onclick="runAIPromptGeneration()"><i class="fa-solid fa-sparkles"></i> Generate with AI</button>
+                    <button class="btn-ghost" onclick="exportActiveCanvasPNG()"><i class="fa-solid fa-image"></i> Download PNG</button>
+                    <button class="btn-ghost" onclick="exportActiveCanvasPDF()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+                <canvas id="aiCanvas"></canvas>
+                <div style="display:flex; align-items:center; gap:14px; background:var(--bg-main); padding:10px 16px; border-radius:14px; border:1px solid var(--border-subtle);">
+                    <div id="aiQrContainer" class="qr-box"></div>
+                    <div style="font-size:0.8rem;">
+                        <strong id="aiCertIdLabel">ID: Pending</strong>
+                        <p style="color:var(--ink-muted); font-size:0.75rem; margin-top:2px;">Scanning this QR opens this exact certificate in any browser.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================================================
+         FEATURE 2: BULK CERTIFICATE BUILDER (SCRIPT / COUNT / PASSWORDS / QR)
+         ====================================================================== -->
+    <section id="bulkStage" class="feature-stage">
+        <div class="stage-top-bar">
+            <div class="stage-title-group">
+                <h2>Bulk Certificate Builder & Script Engine</h2>
+                <p>Generate N certificates by script or name list, attach custom logo/signature, assign separate passwords per certificate, and share links.</p>
+            </div>
+            <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+        </div>
+
+        <div class="bulk-grid">
+            <div class="box-card">
+                <label>Generation Mode</label>
+                <select id="bulkMode" onchange="toggleBulkScriptInput()">
+                    <option value="names">From Participant Names / Prompts (One per line)</option>
+                    <option value="count">Generate Exact Number (N Certificates)</option>
+                    <option value="script">From Custom JS/Template Script</option>
+                </select>
+
+                <div id="bulkNamesBox">
+                    <label>Participant Names or Prompts (One per line)</label>
+                    <textarea id="bulkNamesInput" rows="4" placeholder="Priyanshu Aryan | AI Track Winner&#10;Nisha Bharti | Community Lead&#10;Manomay Singh | Best IoT Prototype"></textarea>
+                </div>
+
+                <div id="bulkCountBox" style="display:none;">
+                    <label>Number of Certificates to Generate</label>
+                    <input type="number" id="bulkCountInput" value="5" min="1" max="100">
+                    <label>Base Title / Prompt</label>
+                    <input type="text" id="bulkBasePrompt" value="Hoknex Builder Credential 2026">
+                </div>
+
+                <div id="bulkScriptBox" style="display:none;">
+                    <label>Script (Return array of { name, role, password } or use template)</label>
+                    <textarea id="bulkScriptInput" rows="5">// Example script: generates 3 certificates with unique passwords
+return [
+  { name: "Rohan Sharma", role: "Hackathon Finalist", password: "ROH-101" },
+  { name: "Ananya Verma", role: "Design Lead", password: "ANA-202" },
+  { name: "Vikram Roy", role: "Cloud Track", password: "VIK-303" }
+];</textarea>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div>
+                        <label>Upload Logo</label>
+                        <input type="file" id="bulkLogoUpload" accept="image/*" onchange="handleAssetUpload(event, 'logo')" style="padding:6px;">
+                    </div>
+                    <div>
+                        <label>Upload Signature</label>
+                        <input type="file" id="bulkSigUpload" accept="image/*" onchange="handleAssetUpload(event, 'sig')" style="padding:6px;">
+                    </div>
+                </div>
+
+                <label>Password Prefix (Each certificate gets its own unique password)</label>
+                <input type="text" id="bulkPassPrefix" value="HKX-PASS-" placeholder="e.g. HKX-2026-">
+
+                <button class="btn-cta" style="width:100%; justify-content:center;" onclick="generateBulkCertificates()">
+                    <i class="fa-solid fa-gears"></i> Generate Bulk Certificates & Links
                 </button>
             </div>
-        </div>
 
-        <!-- Front-Page AI Prompt & Instant Launch Card -->
-        <div class="hero-ai-box">
-            <h3>AI Prompt Studio ⚡</h3>
-            <p>Pick a format, tell the AI what you need, and launch directly onto the canvas.</p>
-
-            <div class="quick-formats">
-                <div class="fmt-chip active" data-fmt="certificate" onclick="selectHeroFormat('certificate', this)">
-                    <i class="fa-solid fa-award"></i>Certificate
+            <div class="box-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h3 style="font-family:'Playfair Display',serif; font-size:1.25rem;">Generated Bulk Batch (<span id="bulkCountBadge">0</span>)</h3>
+                    <button class="btn-ghost" onclick="exportAllBulkPDF()"><i class="fa-solid fa-file-pdf"></i> Download All PDF</button>
                 </div>
-                <div class="fmt-chip" data-fmt="poster" onclick="selectHeroFormat('poster', this)">
-                    <i class="fa-solid fa-file-image"></i>Poster
-                </div>
-                <div class="fmt-chip" data-fmt="banner" onclick="selectHeroFormat('banner', this)">
-                    <i class="fa-solid fa-panorama"></i>Banner
-                </div>
-                <div class="fmt-chip" data-fmt="thumbnail" onclick="selectHeroFormat('thumbnail', this)">
-                    <i class="fa-brands fa-youtube"></i>Thumbnail
-                </div>
-            </div>
-
-            <div class="hero-input-row">
-                <input type="text" id="heroRecipient" placeholder="Recipient or Subtitle (e.g. Aditya Kumar)">
-            </div>
-            <textarea id="heroPrompt" rows="2" placeholder="Describe your design... e.g. 'National Hackathon 2026 Winner Certificate with gold seal'"></textarea>
-
-            <button class="btn-cta" style="width:100%; justify-content:center; padding:0.95rem; margin-top:8px;" onclick="launchFromHeroPrompt()">
-                <i class="fa-solid fa-sparkles"></i> Generate & Open in Canvas
-            </button>
-        </div>
-    </section>
-
-    <!-- 4-Card Ecosystem Strip (All Tools Accessible From Front Page) -->
-    <section class="quick-modes-strip">
-        <div class="mode-card" onclick="quickStartMode('certificate')">
-            <span class="mode-tag">🎓 Credentials</span>
-            <h4>AI Certificate Maker</h4>
-            <p>Auto-generate verifiable Hoknex certificates with unique IDs, seals, and custom signatures.</p>
-        </div>
-        <div class="mode-card" onclick="quickStartMode('poster')">
-            <span class="mode-tag">🎨 Print & Events</span>
-            <h4>Poster & Banner Studio</h4>
-            <p>Build A4 event posters, campus hackathon flyers, and wide LinkedIn/web banners.</p>
-        </div>
-        <div class="mode-card" onclick="quickStartMode('thumbnail')">
-            <span class="mode-tag">🎬 Creator Suite</span>
-            <h4>Thumbnail Generator</h4>
-            <p>1280×720 high-contrast YouTube & reel thumbnails with bold typography and filters.</p>
-        </div>
-        <div class="mode-card" onclick="document.getElementById('docUpload').click()">
-            <span class="mode-tag">📄 Document Editor</span>
-            <h4>Edit Original Docs</h4>
-            <p>Import any existing PDF, scan, or image to draw, annotate, erase, or stamp over it.</p>
-        </div>
-    </section>
-
-    <!-- Full High-Tech Interactive Studio Workspace -->
-    <section class="studio-section" id="studio-workspace">
-        <div class="studio-shell">
-            <!-- Studio Top Bar -->
-            <div class="studio-toolbar">
-                <div class="toolbar-group">
-                    <select id="formatSelect" style="width:auto; padding:7px 12px; font-size:0.8rem;" onchange="changeCanvasFormat()">
-                        <option value="certificate">Certificate (1120 × 790)</option>
-                        <option value="poster">Event Poster A4 (794 × 1123)</option>
-                        <option value="banner">Web / LinkedIn Banner (1584 × 396)</option>
-                        <option value="thumbnail">YouTube Thumbnail (1280 × 720)</option>
-                        <option value="square">Instagram / Feed Square (1080 × 1080)</option>
-                    </select>
-                    <button class="tool-btn" onclick="undo()"><i class="fa-solid fa-rotate-left"></i> Undo</button>
-                    <button class="tool-btn" onclick="redo()"><i class="fa-solid fa-rotate-right"></i> Redo</button>
-                    <button class="tool-btn" onclick="bringForward()"><i class="fa-solid fa-layer-group"></i> Front</button>
-                    <button class="tool-btn" onclick="sendBackward()"><i class="fa-solid fa-arrow-down"></i> Back</button>
-                    <button class="tool-btn" style="color:#dc2626;" onclick="deleteSelected()"><i class="fa-solid fa-trash"></i> Delete</button>
-                </div>
-
-                <div class="toolbar-group">
-                    <button class="tool-btn" onclick="saveProjectToServer()"><i class="fa-solid fa-cloud-arrow-up"></i> Save Cloud</button>
-                    <button class="tool-btn" onclick="exportPNG()"><i class="fa-solid fa-image"></i> Export PNG</button>
-                    <button class="btn-cta" onclick="exportPDF()"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
-                </div>
-            </div>
-
-            <!-- 3-Column Canvas Workspace -->
-            <div class="studio-grid">
-                <!-- Left Panel: AI Generator, Document Upload & Adobe Drawing Tools -->
-                <div class="panel-left">
-                    <div class="panel-box">
-                        <div class="panel-label"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Prompt Regenerate</div>
-                        <input type="text" id="recipientInput" placeholder="Recipient / Subtitle" style="margin-bottom:7px;">
-                        <textarea id="promptInput" rows="2" placeholder="Describe changes or new design..."></textarea>
-                        <button class="btn-cta" style="width:100%; justify-content:center; margin-top:7px;" onclick="generateFromPrompt()">
-                            <i class="fa-solid fa-bolt"></i> Generate with AI
-                        </button>
-                    </div>
-
-                    <div class="panel-box">
-                        <div class="panel-label"><i class="fa-solid fa-file-import"></i> Original PDF / Image</div>
-                        <input type="file" id="docUpload" accept="image/*,.pdf" style="display:none" onchange="handleDocumentUpload(event)" />
-                        <button class="tool-btn" style="width:100%; justify-content:center;" onclick="document.getElementById('docUpload').click()">
-                            <i class="fa-solid fa-upload"></i> Upload Document to Edit
-                        </button>
-                    </div>
-
-                    <div class="panel-box">
-                        <div class="panel-label"><i class="fa-solid fa-pen-nib"></i> Adobe-Style Tools</div>
-                        <div class="adobe-tools-grid">
-                            <div class="adobe-tile active" id="toolSelect" onclick="setMode('select')">
-                                <i class="fa-solid fa-arrow-pointer"></i>Select
-                            </div>
-                            <div class="adobe-tile" id="toolDraw" onclick="setMode('draw')">
-                                <i class="fa-solid fa-paintbrush"></i>Draw
-                            </div>
-                            <div class="adobe-tile" id="toolErase" onclick="setMode('erase')">
-                                <i class="fa-solid fa-eraser"></i>Cover/Erase
-                            </div>
-                            <div class="adobe-tile" onclick="addText('Double-click to edit', 36)">
-                                <i class="fa-solid fa-font"></i>Text
-                            </div>
-                            <div class="adobe-tile" onclick="addRect()">
-                                <i class="fa-regular fa-square"></i>Shape
-                            </div>
-                            <div class="adobe-tile" onclick="addCircle()">
-                                <i class="fa-regular fa-circle"></i>Badge
-                            </div>
-                            <div class="adobe-tile" onclick="addOfficialSeal()">
-                                <i class="fa-solid fa-certificate"></i>Hoknex Seal
-                            </div>
-                            <div class="adobe-tile" onclick="addSignatureLine()">
-                                <i class="fa-solid fa-signature"></i>Signature
-                            </div>
-                            <div class="adobe-tile" onclick="clearCanvas()">
-                                <i class="fa-solid fa-broom"></i>Clear
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Center Interactive Canvas -->
-                <div class="canvas-stage">
-                    <div class="canvas-frame">
-                        <canvas id="hoknexCanvas"></canvas>
-                    </div>
-                </div>
-
-                <!-- Right Panel: Color, Brush & Typography Inspector -->
-                <div class="panel-right">
-                    <div class="panel-box">
-                        <div class="panel-label"><i class="fa-solid fa-palette"></i> Surface & Brush</div>
-                        <div class="prop-row">
-                            <span>Canvas Background</span>
-                            <input type="color" id="bgColorPicker" value="#FAF9F6" onchange="updateCanvasBg(this.value)" />
-                        </div>
-                        <div class="prop-row">
-                            <span>Fill / Brush Color</span>
-                            <input type="color" id="fillColorPicker" value="#2563EB" onchange="updateObjectColor(this.value)" />
-                        </div>
-                        <div class="prop-row">
-                            <span>Border / Stroke</span>
-                            <input type="color" id="strokeColorPicker" value="#18181B" onchange="updateStrokeColor(this.value)" />
-                        </div>
-                        <div class="prop-row">
-                            <span>Brush Thickness</span>
-                            <input type="range" id="brushSize" min="1" max="45" value="4" oninput="updateBrushSize(this.value)" />
-                        </div>
-                        <div class="prop-row">
-                            <span>Layer Opacity</span>
-                            <input type="range" id="opacitySlider" min="0.1" max="1" step="0.05" value="1" oninput="updateOpacity(this.value)" />
-                        </div>
-                    </div>
-
-                    <div class="panel-box">
-                        <div class="panel-label"><i class="fa-solid fa-text-height"></i> Typography</div>
-                        <select id="fontFamilySelect" style="margin-bottom:8px;" onchange="updateFontFamily(this.value)">
-                            <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
-                            <option value="Playfair Display">Playfair Display (Editorial)</option>
-                            <option value="Cinzel">Cinzel (Royal Certificate)</option>
-                            <option value="Space Grotesk">Space Grotesk (Tech)</option>
-                        </select>
-                        <div class="prop-row">
-                            <span>Font Size</span>
-                            <input type="number" id="fontSizeInput" value="36" min="8" max="200" style="width:76px; padding:6px;" onchange="updateFontSize(this.value)" />
-                        </div>
-                        <div style="display:flex; gap:6px; margin-top:6px;">
-                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="toggleBold()"><i class="fa-solid fa-bold"></i></button>
-                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="toggleItalic()"><i class="fa-solid fa-italic"></i></button>
-                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="toggleUnderline()"><i class="fa-solid fa-underline"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="panel-box">
-                        <div class="panel-label"><i class="fa-solid fa-sliders"></i> Image Adjustments</div>
-                        <div style="display:flex; gap:6px;">
-                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('grayscale')">B&W</button>
-                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('sepia')">Warm</button>
-                            <button class="tool-btn" style="flex:1; justify-content:center;" onclick="applyImageFilter('reset')">Reset</button>
-                        </div>
-                    </div>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Recipient</th>
+                                <th>Cert ID</th>
+                                <th>Unique Password</th>
+                                <th>QR Code</th>
+                                <th>Protected Link</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bulkTableBody">
+                            <tr><td colspan="5" style="color:var(--ink-muted); text-align:center;">No batch generated yet.</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="hoknex-footer">
-        <div class="footer-inner">
+    <!-- ======================================================================
+         FEATURE 3: POSTER, BANNER & THUMBNAIL STUDIO
+         ====================================================================== -->
+    <section id="posterStage" class="feature-stage">
+        <div class="stage-top-bar">
+            <div class="stage-title-group">
+                <h2>Poster, Banner & Thumbnail Studio</h2>
+                <p>Dedicated presets for Event Posters, Banners, and Thumbnails with instant AI text & export.</p>
+            </div>
+            <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+        </div>
+
+        <div class="box-card" style="display:grid; grid-template-columns:300px 1fr; gap:20px;">
             <div>
-                <strong style="font-family:'Playfair Display',serif; font-size:1.3rem;">Hoknex Studio</strong>
-                <p style="font-size:0.82rem; opacity:0.75; margin-top:4px;">AI Certificate, Poster, Banner & Document Creation Suite for Global Campuses.</p>
+                <label>Select Format</label>
+                <select id="posterFormatSelect" onchange="initPosterCanvas()">
+                    <option value="poster">Poster (794 × 1123)</option>
+                    <option value="banner">Banner (1584 × 396)</option>
+                    <option value="thumbnail">Thumbnail (1280 × 720)</option>
+                </select>
+                <label>Headline</label>
+                <input type="text" id="posterHeadline" value="HOKNEX GLOBAL SUMMIT">
+                <label>Subheadline / Tagline</label>
+                <input type="text" id="posterSub" value="Where Student Builders Ship the Future">
+                <button class="btn-cta" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="renderPosterTemplate()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Apply Layout
+                </button>
+                <button class="btn-ghost" style="width:100%; justify-content:center;" onclick="exportPosterPNG()">
+                    <i class="fa-solid fa-download"></i> Export PNG
+                </button>
             </div>
-            <div class="footer-links">
-                <a href="index.html">Home</a>
-                <a href="feed.html">Campus Feed</a>
-                <a href="store.html">Store</a>
-                <a href="magazine.html">Magazine</a>
-                <a href="donation.html">Donations</a>
+            <div class="canvas-viewport">
+                <canvas id="posterCanvas"></canvas>
             </div>
         </div>
-    </footer>
+    </section>
 
-    <!-- Mobile App Bottom Bar -->
-    <nav class="mobile-bottom-bar">
-        <a href="index.html" class="mob-nav-item"><span>🏠</span>Hub</a>
-        <a href="store.html" class="mob-nav-item"><span>🛍️</span>Store</a>
-        <a href="magazine.html" class="mob-nav-item"><span>📰</span>Zine</a>
-        <a href="donation.html" class="mob-nav-item"><span>💖</span>Fund</a>
-        <a href="studio.html" class="mob-nav-item active"><span>✨</span>Studio</a>
-    </nav>
+    <!-- ======================================================================
+         FEATURE 4: ADOBE-STYLE DRAW & VECTOR CANVAS
+         ====================================================================== -->
+    <section id="drawStage" class="feature-stage">
+        <div class="stage-top-bar">
+            <div class="stage-title-group">
+                <h2>Adobe-Style Draw & Canvas</h2>
+                <p>Freehand brush, shapes, editable text, seals, opacity, and layer ordering.</p>
+            </div>
+            <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+        </div>
+
+        <div class="canvas-grid">
+            <div class="box-card">
+                <label>Drawing & Vector Tools</label>
+                <div class="tools-3x3">
+                    <div class="mini-tool active" id="mSelect" onclick="setDrawMode('select')"><i class="fa-solid fa-arrow-pointer"></i>Select</div>
+                    <div class="mini-tool" id="mBrush" onclick="setDrawMode('draw')"><i class="fa-solid fa-paintbrush"></i>Brush</div>
+                    <div class="mini-tool" onclick="addCanvasText()"><i class="fa-solid fa-font"></i>Text</div>
+                    <div class="mini-tool" onclick="addCanvasRect()"><i class="fa-regular fa-square"></i>Box</div>
+                    <div class="mini-tool" onclick="addCanvasCircle()"><i class="fa-regular fa-circle"></i>Circle</div>
+                    <div class="mini-tool" onclick="delDrawObj()"><i class="fa-solid fa-trash"></i>Delete</div>
+                </div>
+                <div style="display:flex; gap:8px; margin-top:14px;">
+                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="drawCanvas.bringForward(drawCanvas.getActiveObject())">Front</button>
+                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="drawCanvas.sendBackwards(drawCanvas.getActiveObject())">Back</button>
+                </div>
+                <button class="btn-cta" style="width:100%; justify-content:center; margin-top:12px;" onclick="exportDrawPNG()">
+                    <i class="fa-solid fa-download"></i> Export Artwork PNG
+                </button>
+            </div>
+
+            <div class="canvas-viewport">
+                <canvas id="drawCanvas"></canvas>
+            </div>
+
+            <div class="box-card">
+                <label>Brush & Fill Color</label>
+                <input type="color" id="drawColor" value="#2563EB" onchange="updateDrawColor(this.value)" style="height:40px; padding:4px;">
+                <label>Brush Thickness</label>
+                <input type="range" id="drawSize" min="1" max="40" value="5" oninput="drawCanvas.freeDrawingBrush.width = parseInt(this.value,10)">
+                <label>Canvas Background</label>
+                <input type="color" id="drawBg" value="#FFFFFF" onchange="drawCanvas.setBackgroundColor(this.value, drawCanvas.renderAll.bind(drawCanvas))" style="height:40px; padding:4px;">
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================================================
+         FEATURE 5: EDIT ORIGINAL DOCUMENT (PDF OR IMAGE)
+         ====================================================================== -->
+    <section id="docStage" class="feature-stage">
+        <div class="stage-top-bar">
+            <div class="stage-title-group">
+                <h2>Edit Original Document (PDF / Image)</h2>
+                <p>Upload any existing PDF or image, add text/annotations/signatures/QR over it, and download.</p>
+            </div>
+            <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+        </div>
+
+        <div class="box-card" style="display:grid; grid-template-columns:300px 1fr; gap:20px;">
+            <div>
+                <label>Upload PDF or Image</label>
+                <input type="file" id="origDocFile" accept="image/*,.pdf" onchange="loadOriginalDoc(event)">
+                <button class="btn-ghost" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="addDocAnnotation()">
+                    <i class="fa-solid fa-plus"></i> Add Editable Text Layer
+                </button>
+                <button class="btn-ghost" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="toggleDocBrush()">
+                    <i class="fa-solid fa-marker"></i> Toggle Pen / Highlighter
+                </button>
+                <button class="btn-cta" style="width:100%; justify-content:center;" onclick="exportEditedDocPDF()">
+                    <i class="fa-solid fa-file-pdf"></i> Export Edited PDF
+                </button>
+            </div>
+            <div class="canvas-viewport">
+                <canvas id="docCanvas"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================================================
+         FEATURE 6: PASSWORD-PROTECTED LINK & QR CERTIFICATE VAULT
+         ====================================================================== -->
+    <section id="vaultStage" class="feature-stage">
+        <div class="stage-top-bar">
+            <div class="stage-title-group">
+                <h2>Password-Protected Link & QR Vault</h2>
+                <p>Anyone opening a shared certificate link or scanning a certificate QR enters its password to view & download.</p>
+            </div>
+            <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+        </div>
+
+        <div class="box-card" style="max-width:680px; margin:0 auto;">
+            <label>Certificate ID (Auto-filled when opened via Link or QR)</label>
+            <input type="text" id="vaultCertId" placeholder="e.g. HKX-2026-A1B2C3">
+
+            <label>Enter Certificate Password</label>
+            <input type="password" id="vaultPassword" placeholder="Enter unique password for this certificate">
+
+            <button class="btn-cta" style="width:100%; justify-content:center;" onclick="unlockCertificate()">
+                <i class="fa-solid fa-unlock"></i> Unlock & View Certificate
+            </button>
+
+            <div id="vaultResultBox" style="display:none; margin-top:20px; padding-top:18px; border-top:1px solid var(--border-subtle);">
+                <h3 id="vaultCertTitle" style="font-family:'Playfair Display',serif; font-size:1.5rem;"></h3>
+                <p id="vaultCertRecipient" style="color:var(--accent); font-weight:800; font-size:1.1rem; margin:6px 0;"></p>
+                <p id="vaultCertMeta" style="color:var(--ink-muted); font-size:0.84rem; margin-bottom:14px;"></p>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-cta" onclick="downloadUnlockedCertPDF()"><i class="fa-solid fa-download"></i> Download Certificate PDF</button>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <script>
         const STUDIO_API = 'http://localhost:5050/api/studio';
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         const PALETTES = {
-            gallery:   { bg: '#FAF9F6', surface: '#FFFFFF', ink: '#18181B', muted: '#71717A', accent: '#2563EB', secondary: '#0D9488', badge: 'GALLERY MINIMAL EDITION' },
-            editorial: { bg: '#111111', surface: '#1E1E1E', ink: '#F4F4F5', muted: '#A1A1AA', accent: '#F59E0B', secondary: '#A855F7', badge: 'EDITORIAL DARK EDITION' },
-            tactile:   { bg: '#FBF7F2', surface: '#FFFFFF', ink: '#27221F', muted: '#6B5E55', accent: '#B45309', secondary: '#A3B18A', badge: 'WARM & TACTILE EDITION' }
+            gallery:   { bg: '#FAF9F6', surface: '#FFFFFF', ink: '#18181B', muted: '#71717A', accent: '#2563EB', secondary: '#0D9488' },
+            editorial: { bg: '#111111', surface: '#1E1E1E', ink: '#F4F4F5', muted: '#A1A1AA', accent: '#F59E0B', secondary: '#A855F7' },
+            tactile:   { bg: '#FBF7F2', surface: '#FFFFFF', ink: '#27221F', muted: '#6B5E55', accent: '#B45309', secondary: '#A3B18A' }
         };
 
-        let currentThemeKey = 'gallery';
+        let currentTheme = 'gallery';
+        let uploadedLogoURL = null;
+        let uploadedSigURL = null;
+        let bulkRecords = [];
+        let activeUnlockedCert = null;
 
-        const FORMATS = {
-            certificate: { w: 1120, h: 790, scale: 0.68 },
-            poster:      { w: 794,  h: 1123, scale: 0.52 },
-            banner:      { w: 1584, h: 396, scale: 0.48 },
-            thumbnail:   { w: 1280, h: 720, scale: 0.60 },
-            square:      { w: 1080, h: 1080, scale: 0.52 }
-        };
-
-        const canvas = new fabric.Canvas('hoknexCanvas', {
-            backgroundColor: PALETTES.gallery.bg,
-            preserveObjectStacking: true
-        });
-
-        let history = [];
-        let historyStep = -1;
-        let isRestoring = false;
+        // Initialize Fabric Canvases
+        const aiCanvas = new fabric.Canvas('aiCanvas', { width: 560, height: 395, backgroundColor: '#FAF9F6' });
+        const posterCanvas = new fabric.Canvas('posterCanvas', { width: 460, height: 650, backgroundColor: '#FAF9F6' });
+        const drawCanvas = new fabric.Canvas('drawCanvas', { width: 640, height: 440, backgroundColor: '#FFFFFF' });
+        const docCanvas = new fabric.Canvas('docCanvas', { width: 640, height: 460, backgroundColor: '#FAF9F6' });
 
         function showToast(msg) {
-            const c = document.getElementById('hoknexToastContainer');
-            const t = document.createElement('div');
-            t.className = 'hoknex-toast';
-            t.textContent = msg;
-            c.appendChild(t);
-            setTimeout(() => t.remove(), 3200);
+            const c = document.getElementById('toastContainer');
+            const el = document.createElement('div');
+            el.className = 'toast-msg';
+            el.textContent = msg;
+            c.appendChild(el);
+            setTimeout(() => el.remove(), 3200);
         }
 
-        function setStudioTheme(themeKey, btn) {
-            currentThemeKey = themeKey;
-            document.documentElement.setAttribute('data-theme', themeKey);
+        function setTheme(key, btn) {
+            currentTheme = key;
+            document.documentElement.setAttribute('data-theme', key);
             document.querySelectorAll('.theme-pill').forEach(p => p.classList.remove('active'));
             if (btn) btn.classList.add('active');
-
-            const pal = PALETTES[themeKey];
-            document.getElementById('bgColorPicker').value = pal.bg;
-            document.getElementById('fillColorPicker').value = pal.accent;
-            document.getElementById('strokeColorPicker').value = pal.ink;
-            applyDesignTemplate();
-            showToast(`Theme switched to ${themeKey.toUpperCase()}`);
+            showToast(`Palette switched to ${key.toUpperCase()}`);
         }
 
-        function selectHeroFormat(fmt, el) {
-            document.querySelectorAll('.fmt-chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            document.getElementById('formatSelect').value = fmt;
+        // Single-Feature Isolation Navigation
+        function openHub() {
+            document.querySelectorAll('.feature-stage').forEach(s => s.classList.remove('active'));
+            document.getElementById('hubView').style.display = 'block';
+            document.getElementById('backToHubBtn').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function quickStartMode(fmt) {
-            document.getElementById('formatSelect').value = fmt;
-            changeCanvasFormat();
-            applyDesignTemplate();
-            document.getElementById('studio-workspace').scrollIntoView({ behavior: 'smooth' });
+        function openStage(stageId) {
+            document.getElementById('hubView').style.display = 'none';
+            document.querySelectorAll('.feature-stage').forEach(s => s.classList.remove('active'));
+            document.getElementById(stageId).classList.add('active');
+            document.getElementById('backToHubBtn').style.display = 'inline-flex';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function launchFromHeroPrompt() {
-            document.getElementById('recipientInput').value = document.getElementById('heroRecipient').value;
-            document.getElementById('promptInput').value = document.getElementById('heroPrompt').value;
-            changeCanvasFormat();
-            generateFromPrompt();
-            document.getElementById('studio-workspace').scrollIntoView({ behavior: 'smooth' });
+        function buildCertShareURL(certId) {
+            const base = `${window.location.origin}${window.location.pathname}`;
+            return `${base}?certId=${encodeURIComponent(certId)}`;
         }
 
-        function saveHistory() {
-            if (isRestoring) return;
-            history = history.slice(0, historyStep + 1);
-            history.push(JSON.stringify(canvas.toJSON()));
-            historyStep++;
+        function renderQRInto(containerEl, url, size = 76) {
+            containerEl.innerHTML = '';
+            new QRCode(containerEl, { text: url, width: size, height: size });
         }
 
-        canvas.on('object:added', saveHistory);
-        canvas.on('object:modified', saveHistory);
-        canvas.on('object:removed', saveHistory);
+        // 1. AI Prompt Generation
+        async function runAIPromptGeneration() {
+            const prompt = document.getElementById('aiPromptText').value.trim();
+            const recipient = document.getElementById('aiRecipient').value.trim() || 'Aditya Kumar';
+            const format = document.getElementById('aiFormat').value;
+            const pal = PALETTES[currentTheme];
+            const certId = `HKX-2026-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+            const pass = `PW-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
 
-        function undo() {
-            if (historyStep > 0) {
-                isRestoring = true;
-                historyStep--;
-                canvas.loadFromJSON(history[historyStep], () => { canvas.renderAll(); isRestoring = false; });
-            }
-        }
+            const headline = prompt
+                ? prompt.replace(/create|make|generate|a|an|for|certificate|poster|banner|thumbnail/gi, '').trim().toUpperCase().slice(0, 42)
+                : 'HOKNEX CERTIFICATE OF ACHIEVEMENT';
 
-        function redo() {
-            if (historyStep < history.length - 1) {
-                isRestoring = true;
-                historyStep++;
-                canvas.loadFromJSON(history[historyStep], () => { canvas.renderAll(); isRestoring = false; });
-            }
-        }
+            aiCanvas.clear();
+            aiCanvas.setBackgroundColor(pal.bg, aiCanvas.renderAll.bind(aiCanvas));
+            aiCanvas.add(new fabric.Rect({ left: 16, top: 16, width: 528, height: 363, fill: pal.surface, stroke: pal.accent, strokeWidth: 2.5, rx: 12 }));
+            aiCanvas.add(new fabric.IText('HOKNEX VERIFIED CREDENTIAL', { left: 280, top: 45, fontSize: 11, fill: pal.accent, fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center' }));
+            aiCanvas.add(new fabric.IText(headline || 'CERTIFICATE OF EXCELLENCE', { left: 280, top: 82, fontSize: 22, fill: pal.ink, fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center' }));
+            aiCanvas.add(new fabric.IText(recipient, { left: 280, top: 155, fontSize: 30, fill: pal.accent, fontFamily: 'Playfair Display', fontStyle: 'italic', fontWeight: 'bold', originX: 'center' }));
+            aiCanvas.add(new fabric.Textbox(prompt || 'Awarded for excellence and innovation in the Hoknex campus network.', { left: 280, top: 215, width: 420, fontSize: 13, fill: pal.muted, textAlign: 'center', originX: 'center' }));
+            aiCanvas.add(new fabric.IText(`ID: ${certId}  |  Format: ${format.toUpperCase()}`, { left: 280, top: 342, fontSize: 10, fill: pal.muted, originX: 'center' }));
 
-        function changeCanvasFormat() {
-            const fmt = FORMATS[document.getElementById('formatSelect').value];
-            canvas.setWidth(fmt.w * fmt.scale);
-            canvas.setHeight(fmt.h * fmt.scale);
-            canvas.setZoom(fmt.scale);
-            canvas.renderAll();
-        }
+            const shareUrl = buildCertShareURL(certId);
+            renderQRInto(document.getElementById('aiQrContainer'), shareUrl, 72);
+            document.getElementById('aiCertIdLabel').textContent = `ID: ${certId} (Pass: ${pass})`;
 
-        function setMode(mode) {
-            document.querySelectorAll('.adobe-tile').forEach(el => el.classList.remove('active'));
-            const pal = PALETTES[currentThemeKey];
-            if (mode === 'draw') {
-                canvas.isDrawingMode = true;
-                canvas.freeDrawingBrush.color = document.getElementById('fillColorPicker').value;
-                canvas.freeDrawingBrush.width = parseInt(document.getElementById('brushSize').value, 10);
-                document.getElementById('toolDraw').classList.add('active');
-            } else if (mode === 'erase') {
-                canvas.isDrawingMode = true;
-                canvas.freeDrawingBrush.color = canvas.backgroundColor || pal.bg;
-                canvas.freeDrawingBrush.width = 24;
-                document.getElementById('toolErase').classList.add('active');
-                showToast('Cover/Erase brush active (paints with canvas background)');
-            } else {
-                canvas.isDrawingMode = false;
-                document.getElementById('toolSelect').classList.add('active');
-            }
-        }
-
-        function addText(text, size = 36) {
-            setMode('select');
-            const pal = PALETTES[currentThemeKey];
-            const t = new fabric.IText(text, {
-                left: 300, top: 240, fontSize: size, fill: pal.ink, fontFamily: 'Plus Jakarta Sans', originX: 'center'
-            });
-            canvas.add(t);
-            canvas.setActiveObject(t);
-        }
-
-        function addRect() {
-            setMode('select');
-            const pal = PALETTES[currentThemeKey];
-            const rect = new fabric.Rect({
-                left: 220, top: 200, width: 220, height: 130,
-                fill: pal.surface, stroke: pal.accent, strokeWidth: 2, rx: 12, ry: 12
-            });
-            canvas.add(rect);
-            canvas.setActiveObject(rect);
-        }
-
-        function addCircle() {
-            setMode('select');
-            const pal = PALETTES[currentThemeKey];
-            const circle = new fabric.Circle({
-                left: 260, top: 220, radius: 65,
-                fill: pal.accent, opacity: 0.9
-            });
-            canvas.add(circle);
-            canvas.setActiveObject(circle);
-        }
-
-        function addOfficialSeal() {
-            setMode('select');
-            const pal = PALETTES[currentThemeKey];
-            const outer = new fabric.Circle({ radius: 52, fill: pal.surface, stroke: pal.accent, strokeWidth: 4, originX: 'center', originY: 'center' });
-            const inner = new fabric.Circle({ radius: 43, fill: 'transparent', stroke: pal.secondary, strokeWidth: 1.5, strokeDashArray: [4, 4], originX: 'center', originY: 'center' });
-            const label = new fabric.Text('HOKNEX\nVERIFIED', { fontSize: 12, fill: pal.ink, fontFamily: 'Space Grotesk', fontWeight: 'bold', textAlign: 'center', originX: 'center', originY: 'center' });
-            const group = new fabric.Group([outer, inner, label], { left: 850, top: 600 });
-            canvas.add(group);
-            canvas.setActiveObject(group);
-        }
-
-        function addSignatureLine() {
-            setMode('select');
-            const pal = PALETTES[currentThemeKey];
-            const line = new fabric.Line([0, 0, 200, 0], { stroke: pal.accent, strokeWidth: 2, originX: 'center' });
-            const label = new fabric.IText('Authorized Signatory\nHoknex Campus Network', { fontSize: 13, fill: pal.muted, top: 10, textAlign: 'center', originX: 'center', fontFamily: 'Plus Jakarta Sans' });
-            const group = new fabric.Group([line, label], { left: 260, top: 630 });
-            canvas.add(group);
-        }
-
-        function applyDesignTemplate(aiData = null) {
-            canvas.clear();
-            const fmtKey = document.getElementById('formatSelect').value;
-            const fmt = FORMATS[fmtKey];
-            const pal = aiData?.theme || PALETTES[currentThemeKey];
-
-            const headline = aiData?.content?.headline || (
-                fmtKey === 'certificate' ? 'CERTIFICATE OF EXCELLENCE' :
-                fmtKey === 'poster' ? 'GLOBAL CAMPUS SUMMIT 2026' :
-                fmtKey === 'banner' ? 'BUILDING THE FUTURE OF STUDENT INNOVATION' :
-                'HOW WE BUILT HOKNEX FROM ZERO'
-            );
-
-            const recipient = aiData?.content?.recipient || document.getElementById('recipientInput').value || 'Aditya Kumar';
-            const description = aiData?.content?.description || 'Awarded for outstanding leadership, creative engineering, and global campus collaboration on Hoknex.';
-            const certId = aiData?.certId || 'HKX-2026-8F4C2A';
-            const dateStr = aiData?.content?.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-            // 60% Background
-            canvas.setBackgroundColor(pal.bg, canvas.renderAll.bind(canvas));
-            document.getElementById('bgColorPicker').value = pal.bg;
-
-            // 30% Surface Card Frame
-            canvas.add(new fabric.Rect({
-                left: 32, top: 32, width: fmt.w - 64, height: fmt.h - 64,
-                fill: pal.surface, stroke: pal.accent, strokeWidth: 2.5, rx: 16, ry: 16, selectable: false
-            }));
-
-            const cx = fmt.w / 2;
-
-            // 10% Accent Badge
-            canvas.add(new fabric.IText(`HOKNEX  •  ${pal.badge || 'VERIFIED STUDIO'}`, {
-                left: cx, top: fmtKey === 'banner' ? 58 : 88,
-                fontSize: 14, fill: pal.accent, fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center', charSpacing: 180
-            }));
-
-            canvas.add(new fabric.IText(headline, {
-                left: cx, top: fmtKey === 'banner' ? 115 : 155,
-                fontSize: fmtKey === 'banner' ? 34 : 44, fill: pal.ink, fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center'
-            }));
-
-            if (fmtKey === 'certificate') {
-                canvas.add(new fabric.IText('THIS CREDENTIAL IS PROUDLY PRESENTED TO', {
-                    left: cx, top: 242, fontSize: 13, fill: pal.muted, fontFamily: 'Plus Jakarta Sans', fontWeight: 'bold', originX: 'center', charSpacing: 140
-                }));
-
-                canvas.add(new fabric.IText(recipient, {
-                    left: cx, top: 292, fontSize: 54, fill: pal.accent, fontFamily: 'Playfair Display', fontStyle: 'italic', fontWeight: 'bold', originX: 'center'
-                }));
-
-                canvas.add(new fabric.Line([cx - 240, 372, cx + 240, 372], {
-                    stroke: pal.secondary || pal.accent, strokeWidth: 2
-                }));
-            }
-
-            canvas.add(new fabric.Textbox(description, {
-                left: cx, top: fmtKey === 'certificate' ? 405 : (fmtKey === 'banner' ? 195 : 265),
-                width: fmt.w * 0.68, fontSize: 18, fill: pal.muted, fontFamily: 'Plus Jakarta Sans', textAlign: 'center', originX: 'center'
-            }));
-
-            canvas.add(new fabric.IText(`Issued: ${dateStr}   |   Verify ID: ${certId}`, {
-                left: cx, top: fmt.h - 75, fontSize: 13, fill: pal.muted, fontFamily: 'Space Grotesk', originX: 'center'
-            }));
-
-            if (fmtKey === 'certificate') {
-                addOfficialSeal();
-                addSignatureLine();
-            }
-            saveHistory();
-        }
-
-        async function generateFromPrompt() {
-            const prompt = document.getElementById('promptInput').value;
-            const recipient = document.getElementById('recipientInput').value || 'Aditya Kumar';
-            const format = document.getElementById('formatSelect').value;
-
-            showToast('AI generating layout & verifiable ID...');
+            // Persist to backend if online
             try {
-                const res = await fetch(`${STUDIO_API}/generate-from-prompt`, {
+                await fetch(`${STUDIO_API}/certificates/save`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt, recipient, format, themeKey: currentThemeKey })
+                    body: JSON.stringify({ certId, password: pass, recipient, title: headline, description: prompt, format })
                 });
-                const data = await res.json();
-                if (data.success) {
-                    applyDesignTemplate(data);
-                    showToast(`AI Design Ready! ID: ${data.certId}`);
-                    return;
-                }
             } catch (_) {}
 
-            // Client-side AI fallback if studio-server.js isn't running yet
-            const cleanHeadline = prompt.trim()
-                ? prompt.replace(/create|make|generate|a|an|for|certificate|poster|banner|thumbnail/gi, '').trim().toUpperCase()
-                : null;
-            applyDesignTemplate({
-                theme: PALETTES[currentThemeKey],
-                certId: `HKX-2026-${Math.random().toString(16).substring(2, 8).toUpperCase()}`,
-                content: {
-                    headline: cleanHeadline && cleanHeadline.length > 3 ? cleanHeadline : undefined,
-                    recipient,
-                    description: prompt || undefined
-                }
-            });
-            showToast('Generated with client AI engine!');
+            showToast(`AI generated ${format} (${certId})`);
         }
 
-        async function handleDocumentUpload(e) {
+        function exportActiveCanvasPNG() {
+            const a = document.createElement('a');
+            a.href = aiCanvas.toDataURL({ format: 'png', multiplier: 2 });
+            a.download = `hoknex-ai-${Date.now()}.png`;
+            a.click();
+        }
+
+        function exportActiveCanvasPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [560, 395] });
+            pdf.addImage(aiCanvas.toDataURL('image/png'), 'PNG', 0, 0, 560, 395);
+            pdf.save(`hoknex-ai-${Date.now()}.pdf`);
+        }
+
+        // 2. Bulk Certificate Generator (Names, Count N, or Custom Script + Passwords + QR + Links)
+        function toggleBulkScriptInput() {
+            const mode = document.getElementById('bulkMode').value;
+            document.getElementById('bulkNamesBox').style.display = mode === 'names' ? 'block' : 'none';
+            document.getElementById('bulkCountBox').style.display = mode === 'count' ? 'block' : 'none';
+            document.getElementById('bulkScriptBox').style.display = mode === 'script' ? 'block' : 'none';
+        }
+
+        function handleAssetUpload(e, kind) {
             const file = e.target.files[0];
             if (!file) return;
-            document.getElementById('studio-workspace').scrollIntoView({ behavior: 'smooth' });
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                if (kind === 'logo') uploadedLogoURL = ev.target.result;
+                if (kind === 'sig') uploadedSigURL = ev.target.result;
+                showToast(`${kind === 'logo' ? 'Logo' : 'Signature'} uploaded for bulk batch`);
+            };
+            reader.readAsDataURL(file);
+        }
 
+        async function generateBulkCertificates() {
+            const mode = document.getElementById('bulkMode').value;
+            const prefix = document.getElementById('bulkPassPrefix').value || 'HKX-';
+            let entries = [];
+
+            if (mode === 'names') {
+                const lines = document.getElementById('bulkNamesInput').value.split('\n').map(l => l.trim()).filter(Boolean);
+                entries = lines.map((line, i) => {
+                    const [name, role] = line.split('|').map(s => s.trim());
+                    return { name: name || `Participant ${i + 1}`, role: role || 'Hoknex Verified Achiever' };
+                });
+            } else if (mode === 'count') {
+                const count = Math.min(100, Math.max(1, parseInt(document.getElementById('bulkCountInput').value, 10) || 1));
+                const basePrompt = document.getElementById('bulkBasePrompt').value || 'Hoknex Certificate';
+                for (let i = 1; i <= count; i++) {
+                    entries.push({ name: `Recipient #${i}`, role: basePrompt });
+                }
+            } else {
+                try {
+                    const fn = new Function(document.getElementById('bulkScriptInput').value);
+                    const result = fn();
+                    if (Array.isArray(result)) entries = result;
+                } catch (err) {
+                    return showToast('Script syntax error: ' + err.message);
+                }
+            }
+
+            bulkRecords = entries.map((item, idx) => {
+                const certId = `HKX-2026-${String(idx + 1).padStart(3, '0')}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
+                const password = item.password || `${prefix}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+                return {
+                    certId,
+                    password,
+                    recipient: item.name || `Member ${idx + 1}`,
+                    title: item.role || 'Hoknex Credential',
+                    link: buildCertShareURL(certId),
+                    logo: uploadedLogoURL,
+                    signature: uploadedSigURL
+                };
+            });
+
+            // Save batch to backend if running
+            try {
+                await fetch(`${STUDIO_API}/certificates/bulk`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ certificates: bulkRecords })
+                });
+            } catch (_) {}
+
+            renderBulkTable();
+            showToast(`Generated ${bulkRecords.length} password-protected certificates`);
+        }
+
+        function renderBulkTable() {
+            const tbody = document.getElementById('bulkTableBody');
+            document.getElementById('bulkCountBadge').textContent = bulkRecords.length;
+            tbody.innerHTML = '';
+
+            bulkRecords.forEach((rec, i) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${rec.recipient}</strong><br><span style="color:var(--ink-muted); font-size:0.75rem;">${rec.title}</span></td>
+                    <td><code>${rec.certId}</code></td>
+                    <td><strong>${rec.password}</strong></td>
+                    <td><div id="qr-row-${i}" class="qr-box"></div></td>
+                    <td>
+                        <button class="btn-ghost" onclick="copyShareLink('${rec.link}', '${rec.password}')">
+                            <i class="fa-solid fa-link"></i> Copy Link
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+                renderQRInto(document.getElementById(`qr-row-${i}`), rec.link, 56);
+            });
+        }
+
+        function copyShareLink(link, pass) {
+            navigator.clipboard.writeText(`${link} (Password: ${pass})`);
+            showToast(`Copied link & password (${pass})`);
+        }
+
+        function exportAllBulkPDF() {
+            if (!bulkRecords.length) return showToast('Generate a bulk batch first');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+            bulkRecords.forEach((rec, idx) => {
+                if (idx > 0) pdf.addPage();
+                pdf.setFontSize(24);
+                pdf.text('HOKNEX OFFICIAL CERTIFICATE', 120, 120);
+                pdf.setFontSize(16);
+                pdf.text(`Awarded to: ${rec.recipient}`, 120, 180);
+                pdf.text(`Credential: ${rec.title}`, 120, 215);
+                pdf.setFontSize(12);
+                pdf.text(`Certificate ID: ${rec.certId}  |  Access Password: ${rec.password}`, 120, 260);
+            });
+            pdf.save(`hoknex-bulk-certificates-${Date.now()}.pdf`);
+        }
+
+        // 3. Poster, Banner & Thumbnail Studio
+        const POSTER_DIMS = {
+            poster:    { w: 420, h: 594 },
+            banner:    { w: 680, h: 170 },
+            thumbnail: { w: 640, h: 360 }
+        };
+
+        function initPosterCanvas() {
+            const dim = POSTER_DIMS[document.getElementById('posterFormatSelect').value];
+            posterCanvas.setWidth(dim.w);
+            posterCanvas.setHeight(dim.h);
+            renderPosterTemplate();
+        }
+
+        function renderPosterTemplate() {
+            const pal = PALETTES[currentTheme];
+            const headline = document.getElementById('posterHeadline').value || 'HOKNEX STUDIO';
+            const sub = document.getElementById('posterSub').value || 'Global Campus Creative Suite';
+            posterCanvas.clear();
+            posterCanvas.setBackgroundColor(pal.bg, posterCanvas.renderAll.bind(posterCanvas));
+            posterCanvas.add(new fabric.Rect({ left: 14, top: 14, width: posterCanvas.width - 28, height: posterCanvas.height - 28, fill: pal.surface, stroke: pal.accent, strokeWidth: 2, rx: 10 }));
+            posterCanvas.add(new fabric.IText(headline.toUpperCase(), { left: posterCanvas.width / 2, top: posterCanvas.height * 0.35, fontSize: 28, fill: pal.ink, fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center' }));
+            posterCanvas.add(new fabric.IText(sub, { left: posterCanvas.width / 2, top: posterCanvas.height * 0.55, fontSize: 16, fill: pal.accent, fontFamily: 'Plus Jakarta Sans', fontWeight: 'bold', originX: 'center' }));
+        }
+
+        function exportPosterPNG() {
+            const a = document.createElement('a');
+            a.href = posterCanvas.toDataURL({ format: 'png', multiplier: 2 });
+            a.download = `hoknex-${document.getElementById('posterFormatSelect').value}-${Date.now()}.png`;
+            a.click();
+        }
+
+        // 4. Adobe-Style Draw Canvas
+        function setDrawMode(m) {
+            document.querySelectorAll('.mini-tool').forEach(t => t.classList.remove('active'));
+            if (m === 'draw') {
+                drawCanvas.isDrawingMode = true;
+                drawCanvas.freeDrawingBrush.color = document.getElementById('drawColor').value;
+                drawCanvas.freeDrawingBrush.width = parseInt(document.getElementById('drawSize').value, 10);
+                document.getElementById('mBrush').classList.add('active');
+            } else {
+                drawCanvas.isDrawingMode = false;
+                document.getElementById('mSelect').classList.add('active');
+            }
+        }
+        function updateDrawColor(c) { drawCanvas.freeDrawingBrush.color = c; const o = drawCanvas.getActiveObject(); if (o) { o.set('fill', c); drawCanvas.renderAll(); } }
+        function addCanvasText() { setDrawMode('select'); const t = new fabric.IText('Edit Text', { left: 220, top: 180, fontSize: 28, fill: document.getElementById('drawColor').value }); drawCanvas.add(t); }
+        function addCanvasRect() { setDrawMode('select'); drawCanvas.add(new fabric.Rect({ left: 180, top: 150, width: 160, height: 100, fill: 'transparent', stroke: document.getElementById('drawColor').value, strokeWidth: 3 })); }
+        function addCanvasCircle() { setDrawMode('select'); drawCanvas.add(new fabric.Circle({ left: 250, top: 150, radius: 55, fill: 'transparent', stroke: document.getElementById('drawColor').value, strokeWidth: 3 })); }
+        function delDrawObj() { const o = drawCanvas.getActiveObject(); if (o) drawCanvas.remove(o); }
+        function exportDrawPNG() { const a = document.createElement('a'); a.href = drawCanvas.toDataURL('png'); a.download = `hoknex-art-${Date.now()}.png`; a.click(); }
+
+        // 5. Edit Original PDF or Image Document
+        async function loadOriginalDoc(e) {
+            const file = e.target.files[0];
+            if (!file) return;
             if (file.type === 'application/pdf') {
-                showToast('Importing original PDF onto editable canvas...');
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const buf = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
                 const page = await pdf.getPage(1);
-                const viewport = page.getViewport({ scale: 2 });
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = viewport.width;
-                tempCanvas.height = viewport.height;
-                await page.render({ canvasContext: tempCanvas.getContext('2d'), viewport }).promise;
-
-                fabric.Image.fromURL(tempCanvas.toDataURL('image/png'), (img) => {
-                    const fmt = FORMATS[document.getElementById('formatSelect').value];
-                    img.scaleToWidth(fmt.w);
-                    canvas.add(img);
-                    canvas.sendToBack(img);
-                    showToast('Original PDF loaded! Draw, cover/erase, or add text over it.');
+                const vp = page.getViewport({ scale: 1.3 });
+                const temp = document.createElement('canvas');
+                temp.width = vp.width; temp.height = vp.height;
+                await page.render({ canvasContext: temp.getContext('2d'), viewport: vp }).promise;
+                fabric.Image.fromURL(temp.toDataURL('image/png'), (img) => {
+                    img.scaleToWidth(600);
+                    docCanvas.add(img);
+                    docCanvas.sendToBack(img);
                 });
             } else {
                 const reader = new FileReader();
-                reader.onload = (f) => {
-                    fabric.Image.fromURL(f.target.result, (img) => {
-                        img.scaleToWidth(480);
-                        canvas.add(img);
-                        canvas.centerObject(img);
-                        canvas.setActiveObject(img);
-                        showToast('Image loaded onto canvas!');
+                reader.onload = (ev) => {
+                    fabric.Image.fromURL(ev.target.result, (img) => {
+                        img.scaleToWidth(520);
+                        docCanvas.add(img);
+                        docCanvas.centerObject(img);
                     });
                 };
                 reader.readAsDataURL(file);
             }
         }
-
-        function updateCanvasBg(c) { canvas.setBackgroundColor(c, canvas.renderAll.bind(canvas)); }
-        function updateObjectColor(c) {
-            canvas.freeDrawingBrush.color = c;
-            const o = canvas.getActiveObject();
-            if (o) { o.set('fill', c); canvas.renderAll(); }
-        }
-        function updateStrokeColor(c) { const o = canvas.getActiveObject(); if (o) { o.set('stroke', c); canvas.renderAll(); } }
-        function updateBrushSize(v) { canvas.freeDrawingBrush.width = parseInt(v, 10); }
-        function updateOpacity(v) { const o = canvas.getActiveObject(); if (o) { o.set('opacity', parseFloat(v)); canvas.renderAll(); } }
-        function updateFontFamily(f) { const o = canvas.getActiveObject(); if (o && o.fontFamily) { o.set('fontFamily', f); canvas.renderAll(); } }
-        function updateFontSize(s) { const o = canvas.getActiveObject(); if (o && o.fontSize) { o.set('fontSize', parseInt(s, 10)); canvas.renderAll(); } }
-        function toggleBold() { const o = canvas.getActiveObject(); if (o) { o.set('fontWeight', o.fontWeight === 'bold' ? 'normal' : 'bold'); canvas.renderAll(); } }
-        function toggleItalic() { const o = canvas.getActiveObject(); if (o) { o.set('fontStyle', o.fontStyle === 'italic' ? 'normal' : 'italic'); canvas.renderAll(); } }
-        function toggleUnderline() { const o = canvas.getActiveObject(); if (o) { o.set('underline', !o.underline); canvas.renderAll(); } }
-        function bringForward() { const o = canvas.getActiveObject(); if (o) canvas.bringForward(o); }
-        function sendBackward() { const o = canvas.getActiveObject(); if (o) canvas.sendBackwards(o); }
-        function deleteSelected() {
-            const active = canvas.getActiveObjects();
-            if (active.length) {
-                active.forEach(o => canvas.remove(o));
-                canvas.discardActiveObject().renderAll();
-            }
-        }
-        function clearCanvas() { canvas.clear(); updateCanvasBg(PALETTES[currentThemeKey].bg); }
-
-        function applyImageFilter(type) {
-            const obj = canvas.getActiveObject();
-            if (!obj || obj.type !== 'image') return showToast('Click an uploaded image first');
-            obj.filters = [];
-            if (type === 'grayscale') obj.filters.push(new fabric.Image.filters.Grayscale());
-            if (type === 'sepia') obj.filters.push(new fabric.Image.filters.Sepia());
-            obj.applyFilters();
-            canvas.renderAll();
-        }
-
-        function exportPNG() {
-            const fmt = FORMATS[document.getElementById('formatSelect').value];
-            const dataURL = canvas.toDataURL({ format: 'png', multiplier: 1 / fmt.scale });
-            const a = document.createElement('a');
-            a.href = dataURL;
-            a.download = `hoknex-${document.getElementById('formatSelect').value}-${Date.now()}.png`;
-            a.click();
-        }
-
-        function exportPDF() {
-            const fmtKey = document.getElementById('formatSelect').value;
-            const fmt = FORMATS[fmtKey];
-            const imgData = canvas.toDataURL({ format: 'png', multiplier: 1 / fmt.scale });
+        function addDocAnnotation() { docCanvas.isDrawingMode = false; docCanvas.add(new fabric.IText('Edited Note / Signature', { left: 150, top: 120, fontSize: 22, fill: '#2563EB' })); }
+        function toggleDocBrush() { docCanvas.isDrawingMode = !docCanvas.isDrawingMode; docCanvas.freeDrawingBrush.width = 4; showToast(docCanvas.isDrawingMode ? 'Pen ON' : 'Pen OFF'); }
+        function exportEditedDocPDF() {
             const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({ orientation: fmt.w >= fmt.h ? 'landscape' : 'portrait', unit: 'px', format: [fmt.w, fmt.h] });
-            pdf.addImage(imgData, 'PNG', 0, 0, fmt.w, fmt.h);
-            pdf.save(`hoknex-${fmtKey}-${Date.now()}.pdf`);
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [640, 460] });
+            pdf.addImage(docCanvas.toDataURL('image/png'), 'PNG', 0, 0, 640, 460);
+            pdf.save(`hoknex-edited-doc-${Date.now()}.pdf`);
         }
 
-        async function saveProjectToServer() {
-            try {
-                const res = await fetch(`${STUDIO_API}/projects`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: document.getElementById('promptInput').value || 'Hoknex Studio Project',
-                        format: document.getElementById('formatSelect').value,
-                        theme: currentThemeKey,
-                        canvasJSON: canvas.toJSON()
-                    })
-                });
-                if (res.ok) return showToast('Saved to studio-server.js!');
-            } catch (_) {}
-            localStorage.setItem('hoknex_studio_project', JSON.stringify(canvas.toJSON()));
-            showToast('Saved locally in browser!');
+        // 6. Password-Protected Link & QR Vault Unlock
+        async function unlockCertificate() {
+            const certId = document.getElementById('vaultCertId').value.trim();
+            const password = document.getElementById('vaultPassword').value.trim();
+            if (!certId || !password) return showToast('Enter both Certificate ID and Password');
+
+            // Check local bulk records first
+            let match = bulkRecords.find(r => r.certId.toLowerCase() === certId.toLowerCase() && r.password === password);
+
+            // Check backend server if not in memory
+            if (!match) {
+                try {
+                    const res = await fetch(`${STUDIO_API}/certificates/unlock`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ certId, password })
+                    });
+                    const data = await res.json();
+                    if (data.valid) match = data.certificate;
+                } catch (_) {}
+            }
+
+            if (!match) return showToast('Invalid Certificate ID or Password');
+
+            activeUnlockedCert = match;
+            document.getElementById('vaultResultBox').style.display = 'block';
+            document.getElementById('vaultCertTitle').textContent = match.title;
+            document.getElementById('vaultCertRecipient').textContent = `Issued to: ${match.recipient}`;
+            document.getElementById('vaultCertMeta').textContent = `Certificate ID: ${match.certId} • Verified by Hoknex`;
+            showToast('Certificate unlocked!');
         }
 
-        changeCanvasFormat();
-        applyDesignTemplate();
+        function downloadUnlockedCertPDF() {
+            if (!activeUnlockedCert) return;
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+            pdf.setFontSize(24);
+            pdf.text('HOKNEX VERIFIED CERTIFICATE', 100, 120);
+            pdf.setFontSize(18);
+            pdf.text(`Recipient: ${activeUnlockedCert.recipient}`, 100, 180);
+            pdf.text(`Credential: ${activeUnlockedCert.title}`, 100, 220);
+            pdf.setFontSize(12);
+            pdf.text(`Certificate ID: ${activeUnlockedCert.certId}`, 100, 270);
+            pdf.save(`${activeUnlockedCert.certId}.pdf`);
+        }
+
+        // Auto-open Vault if scanned via QR / Shared Link (?certId=...)
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const scannedId = params.get('certId');
+            if (scannedId) {
+                document.getElementById('vaultCertId').value = scannedId;
+                openStage('vaultStage');
+                showToast(`QR/Link detected for ${scannedId}. Enter password to unlock.`);
+            }
+            renderPosterTemplate();
+        });
     </script>
 </body>
 </html>
