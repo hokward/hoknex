@@ -7,13 +7,9 @@
     <title>Hoknex Studio — AI Certificate, Bulk & Creative Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <!-- Fabric.js Vector & Raster Canvas Engine -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
-    <!-- jsPDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- PDF.js Original Document Loader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <!-- QRCode.js for Per-Certificate Scannable QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
@@ -33,8 +29,6 @@
             --accent-contrast: #FFFFFF;
             --shadow-card: 0 14px 36px rgba(24, 24, 27, 0.06);
             --shadow-cta: 0 10px 24px rgba(37, 99, 235, 0.26);
-            --footer-bg: #18181B;
-            --footer-ink: #FAF9F6;
         }
 
         [data-theme="editorial"] {
@@ -50,8 +44,6 @@
             --accent-contrast: #111111;
             --shadow-card: 0 18px 46px rgba(0, 0, 0, 0.45);
             --shadow-cta: 0 10px 26px rgba(245, 158, 11, 0.3);
-            --footer-bg: #09090B;
-            --footer-ink: #F4F4F5;
         }
 
         [data-theme="tactile"] {
@@ -67,13 +59,10 @@
             --accent-contrast: #FFFFFF;
             --shadow-card: 0 14px 36px rgba(39, 34, 31, 0.07);
             --shadow-cta: 0 10px 24px rgba(180, 83, 9, 0.28);
-            --footer-bg: #27221F;
-            --footer-ink: #FBF7F2;
         }
 
         :root {
             --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-            --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         *, *::before, *::after {
@@ -91,7 +80,6 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Navbar */
         .hoknex-navbar {
             display: flex;
             justify-content: space-between;
@@ -200,9 +188,6 @@
 
         .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
-        /* ==========================================================================
-           VIEW 1: FRONT HUB (Isolated Menu — Clicking Opens Only That Feature)
-           ========================================================================== */
         #hubView {
             max-width: 1280px;
             margin: 0 auto;
@@ -259,10 +244,7 @@
             gap: 1.25rem;
         }
 
-        .hub-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--accent);
-        }
+        .hub-card:hover { transform: translateY(-6px); border-color: var(--accent); }
 
         .hub-icon-box {
             width: 48px;
@@ -277,34 +259,10 @@
             margin-bottom: 1rem;
         }
 
-        .hub-card h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.35rem;
-            font-weight: 900;
-            margin-bottom: 0.45rem;
-        }
+        .hub-card h3 { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 900; margin-bottom: 0.45rem; }
+        .hub-card p { color: var(--ink-muted); font-size: 0.86rem; font-weight: 600; line-height: 1.55; }
+        .hub-open-link { font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 6px; }
 
-        .hub-card p {
-            color: var(--ink-muted);
-            font-size: 0.86rem;
-            font-weight: 600;
-            line-height: 1.55;
-        }
-
-        .hub-open-link {
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* ==========================================================================
-           FOCUSED ISOLATED FEATURE STAGES (Only Active Feature Is Shown)
-           ========================================================================== */
         .feature-stage {
             display: none;
             max-width: 1380px;
@@ -328,17 +286,8 @@
             box-shadow: var(--shadow-card);
         }
 
-        .stage-title-group h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.65rem;
-            font-weight: 900;
-        }
-
-        .stage-title-group p {
-            font-size: 0.82rem;
-            color: var(--ink-muted);
-            font-weight: 600;
-        }
+        .stage-title-group h2 { font-family: 'Playfair Display', serif; font-size: 1.65rem; font-weight: 900; }
+        .stage-title-group p { font-size: 0.82rem; color: var(--ink-muted); font-weight: 600; }
 
         .box-card {
             background: var(--bg-surface);
@@ -373,84 +322,28 @@
 
         input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 
-        /* Canvas & Studio Grid */
-        .canvas-grid {
-            display: grid;
-            grid-template-columns: 270px 1fr 260px;
-            gap: 1.25rem;
-            align-items: start;
-        }
-
-        .canvas-viewport {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 20px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow: auto;
-            box-shadow: var(--shadow-card);
-        }
-
-        .tools-3x3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 7px;
-        }
-
-        .mini-tool {
-            background: var(--bg-main);
-            border: 1px solid var(--border-subtle);
-            border-radius: 10px;
-            padding: 9px 4px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--ink-muted);
-        }
-
+        .canvas-grid { display: grid; grid-template-columns: 270px 1fr 260px; gap: 1.25rem; align-items: start; }
+        .canvas-viewport { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; overflow: auto; box-shadow: var(--shadow-card); }
+        .tools-3x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+        .mini-tool { background: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 9px 4px; text-align: center; cursor: pointer; font-size: 0.72rem; font-weight: 700; color: var(--ink-muted); }
         .mini-tool i { display: block; font-size: 1rem; margin-bottom: 4px; color: var(--ink-primary); }
         .mini-tool.active, .mini-tool:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-tint); }
         .mini-tool.active i, .mini-tool:hover i { color: var(--accent); }
 
-        /* Bulk Batch Table */
-        .bulk-grid { display: grid; grid-template-columns: 420px 1fr; gap: 1.5rem; align-items: start; }
+        .bulk-grid { display: grid; grid-template-columns: 440px 1fr; gap: 1.5rem; align-items: start; }
+        .vault-layout { display: grid; grid-template-columns: 360px 1fr; gap: 1.5rem; align-items: start; }
         table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
         th, td { padding: 10px 12px; border-bottom: 1px solid var(--border-subtle); text-align: left; }
         th { font-size: 0.72rem; text-transform: uppercase; color: var(--ink-muted); font-weight: 800; }
 
-        .qr-box {
-            background: #FFFFFF;
-            padding: 8px;
-            border-radius: 10px;
-            display: inline-block;
-            border: 1px solid var(--border-subtle);
-        }
+        .qr-box { background: #FFFFFF; padding: 8px; border-radius: 10px; display: inline-block; border: 1px solid var(--border-subtle); }
+        .theme-thumb-preview { width: 100%; max-height: 90px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-subtle); margin-bottom: 10px; display: none; }
 
-        /* Toast */
-        #toastContainer {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .toast-msg {
-            background: var(--accent);
-            color: var(--accent-contrast);
-            padding: 12px 18px;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 0.85rem;
-            box-shadow: var(--shadow-cta);
-        }
+        #toastContainer { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; }
+        .toast-msg { background: var(--accent); color: var(--accent-contrast); padding: 12px 18px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; box-shadow: var(--shadow-cta); }
 
         @media (max-width: 1024px) {
-            .feature-hub-grid, .canvas-grid, .bulk-grid { grid-template-columns: 1fr; }
+            .feature-hub-grid, .canvas-grid, .bulk-grid, .vault-layout { grid-template-columns: 1fr; }
             .hub-hero h1 { font-size: 2.25rem; }
             .hoknex-navbar { padding: 0.8rem 1.2rem; }
         }
@@ -460,7 +353,6 @@
 
     <div id="toastContainer"></div>
 
-    <!-- Top Navigation Bar -->
     <header class="hoknex-navbar">
         <div style="display:flex; align-items:center; gap:14px;">
             <a href="studio.html" class="nav-brand" onclick="openHub(); return false;">
@@ -472,7 +364,6 @@
         </div>
 
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-            <!-- 60-30-10 Theme Switcher -->
             <div class="theme-switcher">
                 <button class="theme-pill active" onclick="setTheme('gallery', this)">
                     <span class="swatch" style="background:#FAF9F6; border:1px solid #2563EB;"></span> Minimal
@@ -489,14 +380,12 @@
         </div>
     </header>
 
-    <!-- ======================================================================
-         FRONT PAGE: CLEAN FEATURE LAUNCHER (Clicking Opens Only That Feature)
-         ====================================================================== -->
+    <!-- FRONT HUB -->
     <main id="hubView">
         <div class="hub-hero">
             <span class="hub-pill">✨ Hoknex AI & Credential Suite</span>
             <h1>Pick what you want to make. <span>Open only that tool.</span></h1>
-            <p>Generate certificates, posters, banners, or thumbnails by AI prompt—or run password-protected bulk certificates with scannable QR codes and custom scripts.</p>
+            <p>Generate certificates, posters, banners, or thumbnails by AI prompt—or run password-protected bulk certificates from CSV/scripts with custom theme backgrounds and scannable QR codes.</p>
         </div>
 
         <div class="feature-hub-grid">
@@ -504,7 +393,7 @@
                 <div>
                     <div class="hub-icon-box"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                     <h3>1. AI Prompt Generator</h3>
-                    <p>Tell the AI what certificate, poster, banner, or thumbnail you want—like Gemini—and generate a full editable layout with a scannable QR code.</p>
+                    <p>Write a prompt to generate a certificate, poster, banner, or thumbnail with custom background themes and a scannable QR code.</p>
                 </div>
                 <span class="hub-open-link">Open AI Generator <i class="fa-solid fa-arrow-right"></i></span>
             </div>
@@ -512,8 +401,8 @@
             <div class="hub-card" onclick="openStage('bulkStage')">
                 <div>
                     <div class="hub-icon-box"><i class="fa-solid fa-layer-group"></i></div>
-                    <h3>2. Bulk Certificate Builder & Script</h3>
-                    <p>Generate N certificates automatically by script or name list, upload your theme, logo & signature, set separate passwords per certificate, and share links.</p>
+                    <h3>2. Bulk Certificate Builder & CSV</h3>
+                    <p>Upload a CSV or write a script for N certificates, upload custom theme background, logo & signature, set per-certificate passwords, and share links.</p>
                 </div>
                 <span class="hub-open-link">Open Bulk Builder <i class="fa-solid fa-arrow-right"></i></span>
             </div>
@@ -531,7 +420,7 @@
                 <div>
                     <div class="hub-icon-box"><i class="fa-solid fa-pen-nib"></i></div>
                     <h3>4. Adobe-Style Draw & Canvas</h3>
-                    <p>Draw freehand like Adobe Express/Photoshop with adjustable brush sizes, colors, opacity, shapes, seals, and layer ordering.</p>
+                    <p>Draw freehand like Adobe Express/Photoshop with adjustable brush sizes, colors, shapes, and layer ordering.</p>
                 </div>
                 <span class="hub-open-link">Open Draw Canvas <i class="fa-solid fa-arrow-right"></i></span>
             </div>
@@ -540,7 +429,7 @@
                 <div>
                     <div class="hub-icon-box"><i class="fa-solid fa-file-pen"></i></div>
                     <h3>5. Edit Original Document (PDF / Image)</h3>
-                    <p>Upload any existing PDF or certificate/document image to annotate, cover/erase text, sign, add QR stamps, and export PDF/PNG.</p>
+                    <p>Upload any existing PDF or certificate/document image to annotate, sign, add stamps, and export PDF/PNG.</p>
                 </div>
                 <span class="hub-open-link">Open Document Editor <i class="fa-solid fa-arrow-right"></i></span>
             </div>
@@ -556,14 +445,12 @@
         </div>
     </main>
 
-    <!-- ======================================================================
-         FEATURE 1: AI PROMPT GENERATOR STAGE
-         ====================================================================== -->
+    <!-- FEATURE 1: AI PROMPT GENERATOR -->
     <section id="aiStage" class="feature-stage">
         <div class="stage-top-bar">
             <div class="stage-title-group">
                 <h2>AI Prompt Generator</h2>
-                <p>Write a prompt like Gemini to generate a certificate, poster, banner, or thumbnail with a personal QR code.</p>
+                <p>Write a prompt to generate a certificate, poster, banner, or thumbnail with custom background image & personal QR.</p>
             </div>
             <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
         </div>
@@ -581,8 +468,12 @@
                 <label>Recipient / Headline Name</label>
                 <input type="text" id="aiRecipient" placeholder="e.g. Aditya Kumar">
 
+                <label>Custom Background Theme Image (Optional)</label>
+                <input type="file" id="aiBgUpload" accept="image/*" onchange="handleBgThemeUpload(event, 'ai')" style="padding:6px;">
+                <img id="aiBgPreview" class="theme-thumb-preview" alt="AI Background Preview">
+
                 <label>Your AI Prompt</label>
-                <textarea id="aiPromptText" rows="4" placeholder="Tell AI what to make... e.g. 'Create an honorary AI Innovation & Robotics Certificate for winning the Hoknex Hackathon'"></textarea>
+                <textarea id="aiPromptText" rows="3" placeholder="Tell AI what to make... e.g. 'Create an honorary AI Innovation Certificate for Hoknex Sync Hackathon'"></textarea>
 
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                     <button class="btn-cta" onclick="runAIPromptGeneration()"><i class="fa-solid fa-sparkles"></i> Generate with AI</button>
@@ -604,14 +495,12 @@
         </div>
     </section>
 
-    <!-- ======================================================================
-         FEATURE 2: BULK CERTIFICATE BUILDER (SCRIPT / COUNT / PASSWORDS / QR)
-         ====================================================================== -->
+    <!-- FEATURE 2: BULK CERTIFICATE BUILDER -->
     <section id="bulkStage" class="feature-stage">
         <div class="stage-top-bar">
             <div class="stage-title-group">
-                <h2>Bulk Certificate Builder & Script Engine</h2>
-                <p>Generate N certificates by script or name list, attach custom logo/signature, assign separate passwords per certificate, and share links.</p>
+                <h2>Bulk Certificate Builder, CSV & Script Engine</h2>
+                <p>Upload CSV or write a script for N certificates, set custom background theme, logo & signature, assign per-certificate passwords, and share links.</p>
             </div>
             <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
         </div>
@@ -621,31 +510,41 @@
                 <label>Generation Mode</label>
                 <select id="bulkMode" onchange="toggleBulkScriptInput()">
                     <option value="names">From Participant Names / Prompts (One per line)</option>
+                    <option value="csv">From CSV File Upload (name,role,password)</option>
                     <option value="count">Generate Exact Number (N Certificates)</option>
-                    <option value="script">From Custom JS/Template Script</option>
+                    <option value="script">From Custom JS Script</option>
                 </select>
 
                 <div id="bulkNamesBox">
-                    <label>Participant Names or Prompts (One per line)</label>
-                    <textarea id="bulkNamesInput" rows="4" placeholder="Priyanshu Aryan | AI Track Winner&#10;Nisha Bharti | Community Lead&#10;Manomay Singh | Best IoT Prototype"></textarea>
+                    <label>Participant Names or Prompts (One per line: Name | Role | OptionalPass)</label>
+                    <textarea id="bulkNamesInput" rows="4" placeholder="Priyanshu Aryan | AI Track Winner | PRIY-101&#10;Nisha Bharti | Community Lead&#10;Manomay Singh | Best IoT Prototype"></textarea>
+                </div>
+
+                <div id="bulkCsvBox" style="display:none;">
+                    <label>Upload CSV File (Columns: name, role, password)</label>
+                    <input type="file" id="bulkCsvFile" accept=".csv,text/csv" onchange="handleCsvFileUpload(event)" style="padding:6px;">
+                    <p id="bulkCsvStatus" style="font-size:0.76rem; color:var(--accent); font-weight:700; margin-bottom:10px;">Format example: Aditya Kumar,Lead Organizer,ADK-2026</p>
                 </div>
 
                 <div id="bulkCountBox" style="display:none;">
                     <label>Number of Certificates to Generate</label>
-                    <input type="number" id="bulkCountInput" value="5" min="1" max="100">
+                    <input type="number" id="bulkCountInput" value="5" min="1" max="200">
                     <label>Base Title / Prompt</label>
                     <input type="text" id="bulkBasePrompt" value="Hoknex Builder Credential 2026">
                 </div>
 
                 <div id="bulkScriptBox" style="display:none;">
-                    <label>Script (Return array of { name, role, password } or use template)</label>
-                    <textarea id="bulkScriptInput" rows="5">// Example script: generates 3 certificates with unique passwords
-return [
+                    <label>Script (Return array of { name, role, password })</label>
+                    <textarea id="bulkScriptInput" rows="5">return [
   { name: "Rohan Sharma", role: "Hackathon Finalist", password: "ROH-101" },
   { name: "Ananya Verma", role: "Design Lead", password: "ANA-202" },
   { name: "Vikram Roy", role: "Cloud Track", password: "VIK-303" }
 ];</textarea>
                 </div>
+
+                <label>Custom Background Theme Image (For All Certificates in Batch)</label>
+                <input type="file" id="bulkBgUpload" accept="image/*" onchange="handleBgThemeUpload(event, 'bulk')" style="padding:6px;">
+                <img id="bulkBgPreview" class="theme-thumb-preview" alt="Bulk Background Preview">
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div>
@@ -658,7 +557,7 @@ return [
                     </div>
                 </div>
 
-                <label>Password Prefix (Each certificate gets its own unique password)</label>
+                <label>Default Password Prefix (Used when password column is blank)</label>
                 <input type="text" id="bulkPassPrefix" value="HKX-PASS-" placeholder="e.g. HKX-2026-">
 
                 <button class="btn-cta" style="width:100%; justify-content:center;" onclick="generateBulkCertificates()">
@@ -667,9 +566,12 @@ return [
             </div>
 
             <div class="box-card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
                     <h3 style="font-family:'Playfair Display',serif; font-size:1.25rem;">Generated Bulk Batch (<span id="bulkCountBadge">0</span>)</h3>
-                    <button class="btn-ghost" onclick="exportAllBulkPDF()"><i class="fa-solid fa-file-pdf"></i> Download All PDF</button>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-ghost" onclick="exportBulkCredentialsCSV()"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+                        <button class="btn-ghost" onclick="exportAllBulkPDF()"><i class="fa-solid fa-file-pdf"></i> Download All PDF</button>
+                    </div>
                 </div>
                 <div style="overflow-x:auto;">
                     <table>
@@ -691,14 +593,12 @@ return [
         </div>
     </section>
 
-    <!-- ======================================================================
-         FEATURE 3: POSTER, BANNER & THUMBNAIL STUDIO
-         ====================================================================== -->
+    <!-- FEATURE 3: POSTER, BANNER & THUMBNAIL -->
     <section id="posterStage" class="feature-stage">
         <div class="stage-top-bar">
             <div class="stage-title-group">
                 <h2>Poster, Banner & Thumbnail Studio</h2>
-                <p>Dedicated presets for Event Posters, Banners, and Thumbnails with instant AI text & export.</p>
+                <p>Dedicated presets for Event Posters, Banners, and Thumbnails with instant export.</p>
             </div>
             <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
         </div>
@@ -728,14 +628,12 @@ return [
         </div>
     </section>
 
-    <!-- ======================================================================
-         FEATURE 4: ADOBE-STYLE DRAW & VECTOR CANVAS
-         ====================================================================== -->
+    <!-- FEATURE 4: ADOBE-STYLE DRAW CANVAS -->
     <section id="drawStage" class="feature-stage">
         <div class="stage-top-bar">
             <div class="stage-title-group">
                 <h2>Adobe-Style Draw & Canvas</h2>
-                <p>Freehand brush, shapes, editable text, seals, opacity, and layer ordering.</p>
+                <p>Freehand brush, shapes, editable text, and layer ordering.</p>
             </div>
             <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
         </div>
@@ -775,14 +673,12 @@ return [
         </div>
     </section>
 
-    <!-- ======================================================================
-         FEATURE 5: EDIT ORIGINAL DOCUMENT (PDF OR IMAGE)
-         ====================================================================== -->
+    <!-- FEATURE 5: EDIT ORIGINAL DOCUMENT -->
     <section id="docStage" class="feature-stage">
         <div class="stage-top-bar">
             <div class="stage-title-group">
                 <h2>Edit Original Document (PDF / Image)</h2>
-                <p>Upload any existing PDF or image, add text/annotations/signatures/QR over it, and download.</p>
+                <p>Upload any existing PDF or image, add text/annotations/signatures over it, and download.</p>
             </div>
             <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
         </div>
@@ -807,36 +703,47 @@ return [
         </div>
     </section>
 
-    <!-- ======================================================================
-         FEATURE 6: PASSWORD-PROTECTED LINK & QR CERTIFICATE VAULT
-         ====================================================================== -->
+    <!-- FEATURE 6: PASSWORD-PROTECTED LINK & QR VAULT -->
     <section id="vaultStage" class="feature-stage">
         <div class="stage-top-bar">
             <div class="stage-title-group">
                 <h2>Password-Protected Link & QR Vault</h2>
-                <p>Anyone opening a shared certificate link or scanning a certificate QR enters its password to view & download.</p>
+                <p>Enter a certificate's ID and unique password to render its full Fabric certificate with background, logo, signature, and QR code.</p>
             </div>
             <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
         </div>
 
-        <div class="box-card" style="max-width:680px; margin:0 auto;">
-            <label>Certificate ID (Auto-filled when opened via Link or QR)</label>
-            <input type="text" id="vaultCertId" placeholder="e.g. HKX-2026-A1B2C3">
+        <div class="vault-layout">
+            <div class="box-card">
+                <label>Certificate ID (Auto-filled from Link or QR)</label>
+                <input type="text" id="vaultCertId" placeholder="e.g. HKX-2026-001-A1B">
 
-            <label>Enter Certificate Password</label>
-            <input type="password" id="vaultPassword" placeholder="Enter unique password for this certificate">
+                <label>Enter Certificate Password</label>
+                <input type="password" id="vaultPassword" placeholder="Enter unique password for this certificate">
 
-            <button class="btn-cta" style="width:100%; justify-content:center;" onclick="unlockCertificate()">
-                <i class="fa-solid fa-unlock"></i> Unlock & View Certificate
-            </button>
+                <button class="btn-cta" style="width:100%; justify-content:center; margin-bottom:14px;" onclick="unlockCertificate()">
+                    <i class="fa-solid fa-unlock"></i> Unlock & Render Certificate
+                </button>
 
-            <div id="vaultResultBox" style="display:none; margin-top:20px; padding-top:18px; border-top:1px solid var(--border-subtle);">
-                <h3 id="vaultCertTitle" style="font-family:'Playfair Display',serif; font-size:1.5rem;"></h3>
-                <p id="vaultCertRecipient" style="color:var(--accent); font-weight:800; font-size:1.1rem; margin:6px 0;"></p>
-                <p id="vaultCertMeta" style="color:var(--ink-muted); font-size:0.84rem; margin-bottom:14px;"></p>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn-cta" onclick="downloadUnlockedCertPDF()"><i class="fa-solid fa-download"></i> Download Certificate PDF</button>
+                <div id="vaultResultBox" style="display:none; padding-top:14px; border-top:1px solid var(--border-subtle);">
+                    <h3 id="vaultCertTitle" style="font-family:'Playfair Display',serif; font-size:1.25rem;"></h3>
+                    <p id="vaultCertRecipient" style="color:var(--accent); font-weight:800; font-size:1rem; margin:6px 0;"></p>
+                    <p id="vaultCertMeta" style="color:var(--ink-muted); font-size:0.78rem; margin-bottom:12px;"></p>
+
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+                        <div id="vaultQrContainer" class="qr-box"></div>
+                        <span style="font-size:0.75rem; color:var(--ink-muted); font-weight:600;">Personal QR embedded on canvas & ready to scan in any browser.</span>
+                    </div>
+
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="btn-ghost" onclick="downloadUnlockedCertPNG()"><i class="fa-solid fa-image"></i> PNG</button>
+                        <button class="btn-cta" onclick="downloadUnlockedCertPDF()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                    </div>
                 </div>
+            </div>
+
+            <div class="canvas-viewport">
+                <canvas id="vaultCanvas"></canvas>
             </div>
         </div>
     </section>
@@ -852,16 +759,19 @@ return [
         };
 
         let currentTheme = 'gallery';
+        let aiBgThemeURL = null;
+        let bulkBgThemeURL = null;
         let uploadedLogoURL = null;
         let uploadedSigURL = null;
+        let csvParsedEntries = [];
         let bulkRecords = [];
         let activeUnlockedCert = null;
 
-        // Initialize Fabric Canvases
         const aiCanvas = new fabric.Canvas('aiCanvas', { width: 560, height: 395, backgroundColor: '#FAF9F6' });
         const posterCanvas = new fabric.Canvas('posterCanvas', { width: 460, height: 650, backgroundColor: '#FAF9F6' });
         const drawCanvas = new fabric.Canvas('drawCanvas', { width: 640, height: 440, backgroundColor: '#FFFFFF' });
         const docCanvas = new fabric.Canvas('docCanvas', { width: 640, height: 460, backgroundColor: '#FAF9F6' });
+        const vaultCanvas = new fabric.Canvas('vaultCanvas', { width: 720, height: 510, backgroundColor: '#FAF9F6' });
 
         function showToast(msg) {
             const c = document.getElementById('toastContainer');
@@ -880,7 +790,6 @@ return [
             showToast(`Palette switched to ${key.toUpperCase()}`);
         }
 
-        // Single-Feature Isolation Navigation
         function openHub() {
             document.querySelectorAll('.feature-stage').forEach(s => s.classList.remove('active'));
             document.getElementById('hubView').style.display = 'block';
@@ -903,7 +812,51 @@ return [
 
         function renderQRInto(containerEl, url, size = 76) {
             containerEl.innerHTML = '';
-            new QRCode(containerEl, { text: url, width: size, height: size });
+            const qr = new QRCode(containerEl, { text: url, width: size, height: size });
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const img = containerEl.querySelector('img');
+                    const cvs = containerEl.querySelector('canvas');
+                    if (img && img.src) resolve(img.src);
+                    else if (cvs) resolve(cvs.toDataURL('image/png'));
+                    else resolve(null);
+                }, 60);
+            });
+        }
+
+        function handleBgThemeUpload(e, target) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                if (target === 'ai') {
+                    aiBgThemeURL = ev.target.result;
+                    const img = document.getElementById('aiBgPreview');
+                    img.src = aiBgThemeURL;
+                    img.style.display = 'block';
+                } else {
+                    bulkBgThemeURL = ev.target.result;
+                    const img = document.getElementById('bulkBgPreview');
+                    img.src = bulkBgThemeURL;
+                    img.style.display = 'block';
+                }
+                showToast('Custom background theme image loaded');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function applyCustomBgToFabricCanvas(targetCanvas, bgUrl, fallbackBg, cb) {
+            if (!bgUrl) {
+                targetCanvas.setBackgroundColor(fallbackBg, cb);
+                return;
+            }
+            fabric.Image.fromURL(bgUrl, (img) => {
+                img.scaleToWidth(targetCanvas.width);
+                if (img.height * img.scaleX < targetCanvas.height) {
+                    img.scaleToHeight(targetCanvas.height);
+                }
+                targetCanvas.setBackgroundImage(img, cb);
+            });
         }
 
         // 1. AI Prompt Generation
@@ -920,24 +873,33 @@ return [
                 : 'HOKNEX CERTIFICATE OF ACHIEVEMENT';
 
             aiCanvas.clear();
-            aiCanvas.setBackgroundColor(pal.bg, aiCanvas.renderAll.bind(aiCanvas));
-            aiCanvas.add(new fabric.Rect({ left: 16, top: 16, width: 528, height: 363, fill: pal.surface, stroke: pal.accent, strokeWidth: 2.5, rx: 12 }));
-            aiCanvas.add(new fabric.IText('HOKNEX VERIFIED CREDENTIAL', { left: 280, top: 45, fontSize: 11, fill: pal.accent, fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center' }));
-            aiCanvas.add(new fabric.IText(headline || 'CERTIFICATE OF EXCELLENCE', { left: 280, top: 82, fontSize: 22, fill: pal.ink, fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center' }));
-            aiCanvas.add(new fabric.IText(recipient, { left: 280, top: 155, fontSize: 30, fill: pal.accent, fontFamily: 'Playfair Display', fontStyle: 'italic', fontWeight: 'bold', originX: 'center' }));
-            aiCanvas.add(new fabric.Textbox(prompt || 'Awarded for excellence and innovation in the Hoknex campus network.', { left: 280, top: 215, width: 420, fontSize: 13, fill: pal.muted, textAlign: 'center', originX: 'center' }));
-            aiCanvas.add(new fabric.IText(`ID: ${certId}  |  Format: ${format.toUpperCase()}`, { left: 280, top: 342, fontSize: 10, fill: pal.muted, originX: 'center' }));
+            applyCustomBgToFabricCanvas(aiCanvas, aiBgThemeURL, pal.bg, () => {
+                aiCanvas.add(new fabric.Rect({
+                    left: 16, top: 16, width: 528, height: 363,
+                    fill: aiBgThemeURL ? 'rgba(255,255,255,0.82)' : pal.surface,
+                    stroke: pal.accent, strokeWidth: 2.5, rx: 12
+                }));
+                aiCanvas.add(new fabric.IText('HOKNEX VERIFIED CREDENTIAL', { left: 280, top: 45, fontSize: 11, fill: pal.accent, fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center' }));
+                aiCanvas.add(new fabric.IText(headline || 'CERTIFICATE OF EXCELLENCE', { left: 280, top: 82, fontSize: 22, fill: '#18181B', fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center' }));
+                aiCanvas.add(new fabric.IText(recipient, { left: 280, top: 155, fontSize: 30, fill: pal.accent, fontFamily: 'Playfair Display', fontStyle: 'italic', fontWeight: 'bold', originX: 'center' }));
+                aiCanvas.add(new fabric.Textbox(prompt || 'Awarded for excellence and innovation in the Hoknex campus network.', { left: 280, top: 215, width: 420, fontSize: 13, fill: '#3F3F46', textAlign: 'center', originX: 'center' }));
+                aiCanvas.add(new fabric.IText(`ID: ${certId}  |  Format: ${format.toUpperCase()}`, { left: 280, top: 342, fontSize: 10, fill: '#52525B', originX: 'center' }));
+                aiCanvas.renderAll();
+            });
 
             const shareUrl = buildCertShareURL(certId);
-            renderQRInto(document.getElementById('aiQrContainer'), shareUrl, 72);
+            await renderQRInto(document.getElementById('aiQrContainer'), shareUrl, 72);
             document.getElementById('aiCertIdLabel').textContent = `ID: ${certId} (Pass: ${pass})`;
 
-            // Persist to backend if online
             try {
                 await fetch(`${STUDIO_API}/certificates/save`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ certId, password: pass, recipient, title: headline, description: prompt, format })
+                    body: JSON.stringify({
+                        certId, password: pass, recipient,
+                        title: headline, description: prompt, format,
+                        themeKey: currentTheme, backgroundImage: aiBgThemeURL
+                    })
                 });
             } catch (_) {}
 
@@ -958,12 +920,41 @@ return [
             pdf.save(`hoknex-ai-${Date.now()}.pdf`);
         }
 
-        // 2. Bulk Certificate Generator (Names, Count N, or Custom Script + Passwords + QR + Links)
+        // 2. Bulk Certificate Builder
         function toggleBulkScriptInput() {
             const mode = document.getElementById('bulkMode').value;
             document.getElementById('bulkNamesBox').style.display = mode === 'names' ? 'block' : 'none';
+            document.getElementById('bulkCsvBox').style.display = mode === 'csv' ? 'block' : 'none';
             document.getElementById('bulkCountBox').style.display = mode === 'count' ? 'block' : 'none';
             document.getElementById('bulkScriptBox').style.display = mode === 'script' ? 'block' : 'none';
+        }
+
+        function parseCsvText(csvText) {
+            const lines = csvText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            if (!lines.length) return [];
+            const firstCells = lines[0].split(',').map(c => c.trim().toLowerCase());
+            const hasHeader = firstCells[0] === 'name' || firstCells[0] === 'participant' || firstCells[0] === 'recipient';
+            const dataLines = hasHeader ? lines.slice(1) : lines;
+            return dataLines.map((line, idx) => {
+                const cols = line.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+                return {
+                    name: cols[0] || `Participant ${idx + 1}`,
+                    role: cols[1] || 'Hoknex Verified Achiever',
+                    password: cols[2] || ''
+                };
+            });
+        }
+
+        function handleCsvFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                csvParsedEntries = parseCsvText(ev.target.result);
+                document.getElementById('bulkCsvStatus').textContent = `Loaded ${csvParsedEntries.length} rows from ${file.name}`;
+                showToast(`Parsed ${csvParsedEntries.length} rows from CSV`);
+            };
+            reader.readAsText(file);
         }
 
         function handleAssetUpload(e, kind) {
@@ -986,14 +977,17 @@ return [
             if (mode === 'names') {
                 const lines = document.getElementById('bulkNamesInput').value.split('\n').map(l => l.trim()).filter(Boolean);
                 entries = lines.map((line, i) => {
-                    const [name, role] = line.split('|').map(s => s.trim());
-                    return { name: name || `Participant ${i + 1}`, role: role || 'Hoknex Verified Achiever' };
+                    const [name, role, password] = line.split('|').map(s => s && s.trim());
+                    return { name: name || `Participant ${i + 1}`, role: role || 'Hoknex Verified Achiever', password: password || '' };
                 });
+            } else if (mode === 'csv') {
+                if (!csvParsedEntries.length) return showToast('Upload a valid CSV file first');
+                entries = csvParsedEntries;
             } else if (mode === 'count') {
-                const count = Math.min(100, Math.max(1, parseInt(document.getElementById('bulkCountInput').value, 10) || 1));
+                const count = Math.min(200, Math.max(1, parseInt(document.getElementById('bulkCountInput').value, 10) || 1));
                 const basePrompt = document.getElementById('bulkBasePrompt').value || 'Hoknex Certificate';
                 for (let i = 1; i <= count; i++) {
-                    entries.push({ name: `Recipient #${i}`, role: basePrompt });
+                    entries.push({ name: `Recipient #${i}`, role: basePrompt, password: '' });
                 }
             } else {
                 try {
@@ -1005,9 +999,11 @@ return [
                 }
             }
 
+            if (!entries.length) return showToast('Provide at least one participant or count');
+
             bulkRecords = entries.map((item, idx) => {
                 const certId = `HKX-2026-${String(idx + 1).padStart(3, '0')}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
-                const password = item.password || `${prefix}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+                const password = (item.password && item.password.trim()) ? item.password.trim() : `${prefix}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
                 return {
                     certId,
                     password,
@@ -1015,16 +1011,21 @@ return [
                     title: item.role || 'Hoknex Credential',
                     link: buildCertShareURL(certId),
                     logo: uploadedLogoURL,
-                    signature: uploadedSigURL
+                    signature: uploadedSigURL,
+                    backgroundImage: bulkBgThemeURL
                 };
             });
 
-            // Save batch to backend if running
             try {
                 await fetch(`${STUDIO_API}/certificates/bulk`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ certificates: bulkRecords })
+                    body: JSON.stringify({
+                        batchName: `Hoknex Bulk (${mode})`,
+                        themeKey: currentTheme,
+                        backgroundImage: bulkBgThemeURL,
+                        certificates: bulkRecords
+                    })
                 });
             } catch (_) {}
 
@@ -1060,6 +1061,22 @@ return [
             showToast(`Copied link & password (${pass})`);
         }
 
+        function exportBulkCredentialsCSV() {
+            if (!bulkRecords.length) return showToast('Generate a bulk batch first');
+            const rows = [
+                ['certId', 'recipient', 'title', 'password', 'shareLink'],
+                ...bulkRecords.map(r => [r.certId, r.recipient, r.title, r.password, r.link])
+            ];
+            const csvContent = rows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `hoknex-bulk-credentials-${Date.now()}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
         function exportAllBulkPDF() {
             if (!bulkRecords.length) return showToast('Generate a bulk batch first');
             const { jsPDF } = window.jspdf;
@@ -1077,7 +1094,7 @@ return [
             pdf.save(`hoknex-bulk-certificates-${Date.now()}.pdf`);
         }
 
-        // 3. Poster, Banner & Thumbnail Studio
+        // 3. Poster, Banner & Thumbnail
         const POSTER_DIMS = {
             poster:    { w: 420, h: 594 },
             banner:    { w: 680, h: 170 },
@@ -1129,7 +1146,7 @@ return [
         function delDrawObj() { const o = drawCanvas.getActiveObject(); if (o) drawCanvas.remove(o); }
         function exportDrawPNG() { const a = document.createElement('a'); a.href = drawCanvas.toDataURL('png'); a.download = `hoknex-art-${Date.now()}.png`; a.click(); }
 
-        // 5. Edit Original PDF or Image Document
+        // 5. Edit Original Document
         async function loadOriginalDoc(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -1167,16 +1184,100 @@ return [
             pdf.save(`hoknex-edited-doc-${Date.now()}.pdf`);
         }
 
-        // 6. Password-Protected Link & QR Vault Unlock
+        // 6. Render Unlocked Certificate on Fabric Canvas (Background, Logo, Signature, QR)
+        async function renderCertificateToVaultCanvas(cert) {
+            const pal = PALETTES[cert.themeKey] || PALETTES[currentTheme];
+            const shareUrl = cert.shareLink || buildCertShareURL(cert.certId);
+            const qrDataUrl = await renderQRInto(document.getElementById('vaultQrContainer'), shareUrl, 84);
+
+            vaultCanvas.clear();
+            applyCustomBgToFabricCanvas(vaultCanvas, cert.backgroundImage, pal.bg, () => {
+                vaultCanvas.add(new fabric.Rect({
+                    left: 22, top: 22, width: vaultCanvas.width - 44, height: vaultCanvas.height - 44,
+                    fill: cert.backgroundImage ? 'rgba(255,255,255,0.86)' : pal.surface,
+                    stroke: pal.accent, strokeWidth: 3, rx: 14, ry: 14, selectable: false
+                }));
+
+                const cx = vaultCanvas.width / 2;
+
+                vaultCanvas.add(new fabric.IText('HOKNEX OFFICIAL VERIFIED CREDENTIAL', {
+                    left: cx, top: 54, fontSize: 12, fill: pal.accent,
+                    fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center', charSpacing: 160
+                }));
+
+                vaultCanvas.add(new fabric.IText((cert.title || 'CERTIFICATE OF ACHIEVEMENT').toUpperCase(), {
+                    left: cx, top: 92, fontSize: 28, fill: '#18181B',
+                    fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center'
+                }));
+
+                vaultCanvas.add(new fabric.IText('PROUDLY PRESENTED TO', {
+                    left: cx, top: 146, fontSize: 11, fill: '#52525B',
+                    fontFamily: 'Plus Jakarta Sans', fontWeight: 'bold', originX: 'center', charSpacing: 140
+                }));
+
+                vaultCanvas.add(new fabric.IText(cert.recipient || 'Recipient', {
+                    left: cx, top: 182, fontSize: 40, fill: pal.accent,
+                    fontFamily: 'Playfair Display', fontStyle: 'italic', fontWeight: 'bold', originX: 'center'
+                }));
+
+                vaultCanvas.add(new fabric.Textbox(
+                    cert.description || `Recognized for outstanding achievement and contribution on ${cert.date || 'Hoknex'}.`,
+                    { left: cx, top: 248, width: 520, fontSize: 15, fill: '#3F3F46', textAlign: 'center', originX: 'center' }
+                ));
+
+                // Optional Logo at Top-Left Inside Frame
+                if (cert.logo) {
+                    fabric.Image.fromURL(cert.logo, (logoImg) => {
+                        logoImg.scaleToHeight(56);
+                        logoImg.set({ left: 48, top: 44 });
+                        vaultCanvas.add(logoImg);
+                        vaultCanvas.renderAll();
+                    });
+                }
+
+                // Optional Signature or Default Line at Bottom-Left
+                if (cert.signature) {
+                    fabric.Image.fromURL(cert.signature, (sigImg) => {
+                        sigImg.scaleToHeight(54);
+                        sigImg.set({ left: 75, top: 375 });
+                        vaultCanvas.add(sigImg);
+                        vaultCanvas.add(new fabric.IText('Authorized Signatory', {
+                            left: 75, top: 435, fontSize: 11, fill: '#52525B'
+                        }));
+                        vaultCanvas.renderAll();
+                    });
+                } else {
+                    vaultCanvas.add(new fabric.Line([75, 425, 245, 425], { stroke: '#18181B', strokeWidth: 1.5 }));
+                    vaultCanvas.add(new fabric.IText('Authorized Signatory', {
+                        left: 160, top: 433, fontSize: 11, fill: '#52525B', originX: 'center'
+                    }));
+                }
+
+                // Scannable QR Stamp at Bottom-Right Inside Frame
+                if (qrDataUrl) {
+                    fabric.Image.fromURL(qrDataUrl, (qrImg) => {
+                        qrImg.scaleToWidth(82);
+                        qrImg.set({ left: vaultCanvas.width - 126, top: vaultCanvas.height - 134 });
+                        vaultCanvas.add(qrImg);
+                        vaultCanvas.add(new fabric.IText(`ID: ${cert.certId}`, {
+                            left: vaultCanvas.width - 85, top: vaultCanvas.height - 46,
+                            fontSize: 10, fill: '#3F3F46', fontWeight: 'bold', originX: 'center'
+                        }));
+                        vaultCanvas.renderAll();
+                    });
+                }
+
+                vaultCanvas.renderAll();
+            });
+        }
+
         async function unlockCertificate() {
             const certId = document.getElementById('vaultCertId').value.trim();
             const password = document.getElementById('vaultPassword').value.trim();
             if (!certId || !password) return showToast('Enter both Certificate ID and Password');
 
-            // Check local bulk records first
             let match = bulkRecords.find(r => r.certId.toLowerCase() === certId.toLowerCase() && r.password === password);
 
-            // Check backend server if not in memory
             if (!match) {
                 try {
                     const res = await fetch(`${STUDIO_API}/certificates/unlock`, {
@@ -1196,24 +1297,27 @@ return [
             document.getElementById('vaultCertTitle').textContent = match.title;
             document.getElementById('vaultCertRecipient').textContent = `Issued to: ${match.recipient}`;
             document.getElementById('vaultCertMeta').textContent = `Certificate ID: ${match.certId} • Verified by Hoknex`;
-            showToast('Certificate unlocked!');
+
+            await renderCertificateToVaultCanvas(match);
+            showToast('Certificate unlocked and rendered on canvas');
+        }
+
+        function downloadUnlockedCertPNG() {
+            if (!activeUnlockedCert) return;
+            const a = document.createElement('a');
+            a.href = vaultCanvas.toDataURL({ format: 'png', multiplier: 2 });
+            a.download = `${activeUnlockedCert.certId}.png`;
+            a.click();
         }
 
         function downloadUnlockedCertPDF() {
             if (!activeUnlockedCert) return;
             const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
-            pdf.setFontSize(24);
-            pdf.text('HOKNEX VERIFIED CERTIFICATE', 100, 120);
-            pdf.setFontSize(18);
-            pdf.text(`Recipient: ${activeUnlockedCert.recipient}`, 100, 180);
-            pdf.text(`Credential: ${activeUnlockedCert.title}`, 100, 220);
-            pdf.setFontSize(12);
-            pdf.text(`Certificate ID: ${activeUnlockedCert.certId}`, 100, 270);
+            const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [vaultCanvas.width, vaultCanvas.height] });
+            pdf.addImage(vaultCanvas.toDataURL({ format: 'png', multiplier: 2 }), 'PNG', 0, 0, vaultCanvas.width, vaultCanvas.height);
             pdf.save(`${activeUnlockedCert.certId}.pdf`);
         }
 
-        // Auto-open Vault if scanned via QR / Shared Link (?certId=...)
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const scannedId = params.get('certId');
