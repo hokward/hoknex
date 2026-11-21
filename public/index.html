@@ -1182,7 +1182,7 @@
         }
     </script>
 
-    <!-- Start of Tawk.to Script -->
+    <!-- Start of Tawk.to Script + Long-Press Movable Widget -->
     <script type="text/javascript">
     var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
     (function(){
@@ -1192,6 +1192,125 @@
     s1.charset='UTF-8';
     s1.setAttribute('crossorigin','*');
     s0.parentNode.insertBefore(s1,s0);
+    })();
+
+    (function enableMovableTawkWidget() {
+        const LONG_PRESS_MS = 350;
+        let pressTimer = null;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let currentLeft = null;
+        let currentTop = null;
+        let targetEl = null;
+
+        function findTawkBubble() {
+            const candidates = Array.from(document.querySelectorAll('iframe, div')).filter(el => {
+                const style = window.getComputedStyle(el);
+                const rect = el.getBoundingClientRect();
+                const isFixed = style.position === 'fixed';
+                const reasonableSize = rect.width >= 44 && rect.width <= 120 && rect.height >= 44 && rect.height <= 120;
+                const notOurBars = !el.closest('.mobile-bottom-bar') && !el.closest('.hoknex-navbar') && !el.closest('.modal-overlay');
+                return isFixed && reasonableSize && notOurBars && Number(style.zIndex || 0) >= 100;
+            });
+            return candidates[0] || null;
+        }
+
+        function attachDragHandlers(el) {
+            if (!el || el.dataset.hoknexDraggable === 'true') return;
+            el.dataset.hoknexDraggable = 'true';
+            el.style.touchAction = 'none';
+            el.style.transition = 'transform 0.15s ease, box-shadow 0.15s ease';
+
+            // Lift above mobile bottom bar on initial load if no saved position exists
+            const saved = localStorage.getItem('hoknex_tawk_pos');
+            if (saved) {
+                try {
+                    const pos = JSON.parse(saved);
+                    if (typeof pos.left === 'number' && typeof pos.top === 'number') {
+                        el.style.left = `${Math.max(8, Math.min(pos.left, window.innerWidth - 70))}px`;
+                        el.style.top = `${Math.max(8, Math.min(pos.top, window.innerHeight - 140))}px`;
+                        el.style.right = 'auto';
+                        el.style.bottom = 'auto';
+                    }
+                } catch (_) {}
+            } else if (window.innerWidth <= 968) {
+                el.style.bottom = '86px';
+            }
+
+            const onStart = (clientX, clientY) => {
+                clearTimeout(pressTimer);
+                isDragging = false;
+                const rect = el.getBoundingClientRect();
+                startX = clientX - rect.left;
+                startY = clientY - rect.top;
+
+                pressTimer = setTimeout(() => {
+                    isDragging = true;
+                    el.style.left = `${rect.left}px`;
+                    el.style.top = `${rect.top}px`;
+                    el.style.right = 'auto';
+                    el.style.bottom = 'auto';
+                    el.style.transform = 'scale(1.08)';
+                    el.style.boxShadow = '0 12px 28px rgba(0, 128, 128, 0.35)';
+                    if (navigator.vibrate) navigator.vibrate(25);
+                }, LONG_PRESS_MS);
+            };
+
+            const onMove = (clientX, clientY, e) => {
+                if (!isDragging) {
+                    clearTimeout(pressTimer);
+                    return;
+                }
+                e.preventDefault();
+                const maxX = window.innerWidth - el.offsetWidth - 8;
+                const maxY = window.innerHeight - el.offsetHeight - 8;
+                currentLeft = Math.max(8, Math.min(clientX - startX, maxX));
+                currentTop = Math.max(8, Math.min(clientY - startY, maxY));
+                el.style.left = `${currentLeft}px`;
+                el.style.top = `${currentTop}px`;
+            };
+
+            const onEnd = (e) => {
+                clearTimeout(pressTimer);
+                if (isDragging) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    el.style.transform = 'scale(1)';
+                    el.style.boxShadow = '';
+                    localStorage.setItem('hoknex_tawk_pos', JSON.stringify({ left: currentLeft, top: currentTop }));
+                    setTimeout(() => { isDragging = false; }, 50);
+                }
+            };
+
+            el.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) onStart(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+
+            el.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1) onMove(e.touches[0].clientX, e.touches[0].clientY, e);
+            }, { passive: false });
+
+            el.addEventListener('touchend', onEnd, { passive: false });
+
+            el.addEventListener('mousedown', (e) => {
+                if (e.button === 0) onStart(e.clientX, e.clientY);
+            });
+            window.addEventListener('mousemove', (e) => {
+                if (isDragging) onMove(e.clientX, e.clientY, e);
+            });
+            window.addEventListener('mouseup', onEnd);
+        }
+
+        const watcher = setInterval(() => {
+            targetEl = findTawkBubble();
+            if (targetEl) {
+                attachDragHandlers(targetEl);
+                clearInterval(watcher);
+            }
+        }, 500);
+
+        setTimeout(() => clearInterval(watcher), 15000);
     })();
     </script>
     <!-- End of Tawk.to Script -->
