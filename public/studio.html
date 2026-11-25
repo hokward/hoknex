@@ -118,6 +118,22 @@
             font-family: 'Playfair Display', serif;
         }
 
+        .status-pill {
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: var(--bg-surface-alt);
+            color: var(--ink-muted);
+            border: 1px solid var(--border-subtle);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #10B981; }
+        .status-dot.offline { background: #F59E0B; }
+
         .theme-switcher {
             display: flex;
             gap: 4px;
@@ -237,7 +253,7 @@
         .prompt-chip { background: var(--bg-main); border: 1px solid var(--border-subtle); color: var(--ink-muted); padding: 5px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
         .prompt-chip:hover { border-color: var(--accent); color: var(--accent); }
 
-        .canvas-grid { display: grid; grid-template-columns: 290px 1fr 280px; gap: 1.2rem; align-items: start; }
+        .canvas-grid { display: grid; grid-template-columns: 295px 1fr 290px; gap: 1.2rem; align-items: start; }
         .canvas-viewport { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; align-items: center; overflow: auto; box-shadow: var(--shadow-card); }
         .tools-4x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
         .mini-tool { background: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 9px 4px; text-align: center; cursor: pointer; font-size: 0.71rem; font-weight: 700; color: var(--ink-muted); }
@@ -245,8 +261,34 @@
         .mini-tool.active, .mini-tool:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-tint); }
         .mini-tool.active i, .mini-tool:hover i { color: var(--accent); }
 
+        /* Layers Inspector */
+        .layers-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; margin-top: 8px; }
+        .layer-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            background: var(--bg-main);
+            border: 1px solid var(--border-subtle);
+            border-radius: 9px;
+            padding: 7px 10px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .layer-item.selected { border-color: var(--accent); background: var(--accent-tint); }
+        .layer-actions button {
+            background: none;
+            border: none;
+            color: var(--ink-muted);
+            cursor: pointer;
+            padding: 2px 5px;
+            font-size: 0.78rem;
+        }
+        .layer-actions button:hover { color: var(--accent); }
+
         .bulk-grid { display: grid; grid-template-columns: 440px 1fr; gap: 1.4rem; align-items: start; }
-        .vault-layout { display: grid; grid-template-columns: 390px 1fr; gap: 1.4rem; align-items: start; }
+        .vault-layout { display: grid; grid-template-columns: 400px 1fr; gap: 1.4rem; align-items: start; }
         table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
         th, td { padding: 10px 12px; border-bottom: 1px solid var(--border-subtle); text-align: left; }
         th { font-size: 0.72rem; text-transform: uppercase; color: var(--ink-muted); font-weight: 800; }
@@ -254,7 +296,7 @@
         .qr-box { background: #FFFFFF; padding: 8px; border-radius: 10px; display: inline-block; border: 1px solid var(--border-subtle); }
         .theme-thumb-preview { width: 100%; max-height: 85px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-subtle); margin-bottom: 10px; display: none; }
 
-        /* Auth Modal (Required Only When Downloading) */
+        /* Auth Modal */
         .modal-backdrop {
             position: fixed;
             inset: 0;
@@ -304,6 +346,10 @@
             <button class="btn-ghost" id="backToHubBtn" style="display:none;" onclick="openHub()">
                 <i class="fa-solid fa-arrow-left"></i> Back to Hub
             </button>
+            <span class="status-pill">
+                <span class="status-dot offline" id="serverStatusDot"></span>
+                <span id="serverStatusText">Syncing...</span>
+            </span>
         </div>
 
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -372,7 +418,7 @@
                 <div>
                     <div class="hub-icon-box"><i class="fa-solid fa-pen-nib"></i></div>
                     <h3>4. Pro Vector, Draw & Layout Editor</h3>
-                    <p>Full canvas editor with freehand brush, shapes, stars/badges, custom images, text styles, opacity, cloning, and layer ordering.</p>
+                    <p>Full canvas editor with freehand brush, shapes, stars/badges, custom images, text styles, layers inspector, undo/redo, and cloud save.</p>
                 </div>
                 <span class="hub-open-link">Open Pro Editor <i class="fa-solid fa-arrow-right"></i></span>
             </div>
@@ -642,15 +688,20 @@
     </section>
 
     <!-- ======================================================================
-         FEATURE 4: PRO VECTOR, DRAW & LAYOUT EDITOR
+         FEATURE 4: PRO VECTOR, DRAW & LAYOUT EDITOR (WITH UNDO/REDO & LAYERS)
          ====================================================================== -->
     <section id="drawStage" class="feature-stage">
         <div class="stage-top-bar">
             <div class="stage-title-group">
                 <h2>Pro Vector, Draw & Layout Editor</h2>
-                <p>Draw freehand, place shapes/stars/images, edit text, control opacity & layers, and download PNG or PDF.</p>
+                <p>Draw freehand, place shapes/stars/images/QR stamps, manage layers, undo/redo, save to cloud, and download PNG or PDF.</p>
             </div>
-            <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn-ghost" onclick="undoDraw()"><i class="fa-solid fa-rotate-left"></i> Undo</button>
+                <button class="btn-ghost" onclick="redoDraw()"><i class="fa-solid fa-rotate-right"></i> Redo</button>
+                <button class="btn-ghost" onclick="saveProProjectToCloud()"><i class="fa-solid fa-cloud-arrow-up"></i> Save Cloud</button>
+                <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+            </div>
         </div>
 
         <div class="canvas-grid">
@@ -664,16 +715,25 @@
                     <div class="mini-tool" onclick="addCanvasCircle()"><i class="fa-regular fa-circle"></i>Circle</div>
                     <div class="mini-tool" onclick="addCanvasStar()"><i class="fa-regular fa-star"></i>Badge</div>
                     <div class="mini-tool" onclick="document.getElementById('proImgUpload').click()"><i class="fa-regular fa-image"></i>Image</div>
+                    <div class="mini-tool" onclick="insertQrStampOnProCanvas()"><i class="fa-solid fa-qrcode"></i>QR Stamp</div>
                     <div class="mini-tool" onclick="duplicateDrawObj()"><i class="fa-regular fa-copy"></i>Clone</div>
-                    <div class="mini-tool" onclick="delDrawObj()"><i class="fa-solid fa-trash"></i>Delete</div>
                 </div>
                 <input type="file" id="proImgUpload" accept="image/*" style="display:none" onchange="uploadImageToProCanvas(event)">
 
                 <div style="display:flex; gap:8px; margin-top:14px;">
-                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="drawCanvas.bringForward(drawCanvas.getActiveObject())">Front</button>
-                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="drawCanvas.sendBackwards(drawCanvas.getActiveObject())">Back</button>
+                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="drawCanvas.bringForward(drawCanvas.getActiveObject()); refreshLayersList();">Front</button>
+                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="drawCanvas.sendBackwards(drawCanvas.getActiveObject()); refreshLayersList();">Back</button>
+                    <button class="btn-danger" style="flex:1; justify-content:center;" onclick="delDrawObj()">Del</button>
                 </div>
-                <div style="display:flex; gap:8px; margin-top:8px;">
+
+                <div style="margin-top:14px;">
+                    <label>Layers Inspector</label>
+                    <div class="layers-list" id="proLayersList">
+                        <div style="font-size:0.75rem; color:var(--ink-muted);">No layers yet.</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:8px; margin-top:12px;">
                     <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="guardedDownload(() => exportDrawPNG())"><i class="fa-solid fa-image"></i> PNG</button>
                     <button class="btn-cta" style="flex:1; justify-content:center;" onclick="guardedDownload(() => exportDrawPDF())"><i class="fa-solid fa-file-pdf"></i> PDF</button>
                 </div>
@@ -699,6 +759,11 @@
                     <option value="Cinzel">Cinzel</option>
                     <option value="Space Grotesk">Space Grotesk</option>
                 </select>
+                <div style="display:flex; gap:6px; margin-bottom:12px;">
+                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="toggleDrawBold()"><i class="fa-solid fa-bold"></i></button>
+                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="toggleDrawItalic()"><i class="fa-solid fa-italic"></i></button>
+                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="toggleDrawUnderline()"><i class="fa-solid fa-underline"></i></button>
+                </div>
                 <label>Canvas Background</label>
                 <input type="color" id="drawBg" value="#FFFFFF" onchange="drawCanvas.setBackgroundColor(this.value, drawCanvas.renderAll.bind(drawCanvas))" style="height:38px; padding:4px;">
             </div>
@@ -791,6 +856,12 @@
                         <button class="btn-cta" onclick="guardedDownload(() => downloadUnlockedCertPDF())"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
                     </div>
                 </div>
+
+                <!-- Issued Certificates Quick Ledger -->
+                <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--border-subtle);">
+                    <label>Your Issued Certificates (This Device)</label>
+                    <div id="vaultHistoryList" style="display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto;"></div>
+                </div>
             </div>
 
             <div class="canvas-viewport">
@@ -814,7 +885,6 @@
                 <button class="auth-tab" id="tabBtnDelete" onclick="switchAuthMode('delete')">Delete Account</button>
             </div>
 
-            <!-- Sign Up -->
             <form id="formSignup" onsubmit="handleSignup(event)">
                 <label>Full Name</label>
                 <input type="text" id="suName" required placeholder="Aditya Kumar">
@@ -825,7 +895,6 @@
                 <button type="submit" class="btn-cta" style="width:100%; justify-content:center;">Create Account & Download</button>
             </form>
 
-            <!-- Sign In -->
             <form id="formSignin" style="display:none;" onsubmit="handleSignin(event)">
                 <label>Email Address</label>
                 <input type="email" id="siEmail" required placeholder="you@hoknex.edu">
@@ -834,7 +903,6 @@
                 <button type="submit" class="btn-cta" style="width:100%; justify-content:center;">Sign In & Download</button>
             </form>
 
-            <!-- Delete Account Anytime -->
             <form id="formDelete" style="display:none;" onsubmit="handleDeleteAccount(event)">
                 <p style="font-size:0.8rem; color:#DC2626; font-weight:700; margin-bottom:12px;">
                     This permanently deletes your Hoknex Studio account and saved projects immediately.
@@ -855,6 +923,7 @@
 
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+        // Shared Hoknex 60-30-10 Design Tokens & CSV Parser
         const PALETTES = {
             gallery:   { bg: '#FAF9F6', surface: '#FFFFFF', ink: '#18181B', muted: '#71717A', accent: '#2563EB', secondary: '#0D9488' },
             editorial: { bg: '#111111', surface: '#1E1E1E', ink: '#F4F4F5', muted: '#A1A1AA', accent: '#F59E0B', secondary: '#A855F7' },
@@ -888,7 +957,7 @@
 
         const aiCanvas = new fabric.Canvas('aiCanvas', { width: 560, height: 395, backgroundColor: '#FAF9F6' });
         const posterCanvas = new fabric.Canvas('posterCanvas', { width: 460, height: 650, backgroundColor: '#FAF9F6' });
-        const drawCanvas = new fabric.Canvas('drawCanvas', { width: 640, height: 440, backgroundColor: '#FFFFFF' });
+        const drawCanvas = new fabric.Canvas('drawCanvas', { width: 640, height: 440, backgroundColor: '#FFFFFF', preserveObjectStacking: true });
         const docCanvas = new fabric.Canvas('docCanvas', { width: 640, height: 460, backgroundColor: '#FAF9F6' });
         const vaultCanvas = new fabric.Canvas('vaultCanvas', { width: 720, height: 510, backgroundColor: '#FAF9F6' });
 
@@ -899,6 +968,21 @@
             el.textContent = msg;
             c.appendChild(el);
             setTimeout(() => el.remove(), 3400);
+        }
+
+        async function checkStudioServerHealth() {
+            const dot = document.getElementById('serverStatusDot');
+            const txt = document.getElementById('serverStatusText');
+            try {
+                const res = await fetch(`${STUDIO_API}/health`);
+                if (res.ok) {
+                    dot.classList.remove('offline');
+                    txt.textContent = 'Server Connected';
+                    return;
+                }
+            } catch (_) {}
+            dot.classList.add('offline');
+            txt.textContent = 'Browser + QR Mode';
         }
 
         // ====================================================================
@@ -990,7 +1074,6 @@
                 if (data.error) return showToast(data.error);
             } catch (_) {}
 
-            // Fallback local account if server is offline
             const localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}');
             const key = email.toLowerCase();
             if (localUsers[key]) return showToast('Account already exists. Please Sign In.');
@@ -1067,7 +1150,7 @@
         }
 
         // ====================================================================
-        // SHORT, CLEAN QR URLS + LOCAL & SERVER STORAGE
+        // SHORT QR URLS + LOCAL & SERVER STORAGE
         // ====================================================================
         function getLocalCertStore() {
             try { return JSON.parse(localStorage.getItem(LOCAL_VAULT_KEY) || '{}'); } catch { return {}; }
@@ -1079,9 +1162,35 @@
             const { backgroundImage, logo, signature, ...compact } = cert;
             store[cert.certId.trim().toUpperCase()] = compact;
             try { localStorage.setItem(LOCAL_VAULT_KEY, JSON.stringify(store)); } catch (_) {}
+            renderVaultHistoryList();
         }
 
-        // Short clean URL so phone/browser QR scanners read it instantly
+        function renderVaultHistoryList() {
+            const box = document.getElementById('vaultHistoryList');
+            if (!box) return;
+            const store = getLocalCertStore();
+            const items = Object.values(store).reverse().slice(0, 12);
+            if (!items.length) {
+                box.innerHTML = '<div style="font-size:0.75rem; color:var(--ink-muted);">No certificates issued on this device yet.</div>';
+                return;
+            }
+            box.innerHTML = items.map(item => `
+                <div class="layer-item" onclick="prefillVault('${item.certId}', '${item.password}')">
+                    <div>
+                        <div>${item.recipient}</div>
+                        <div style="font-size:0.68rem; color:var(--ink-muted);">${item.certId} • Pass: ${item.password}</div>
+                    </div>
+                    <span style="color:var(--accent); font-size:0.7rem;">Load →</span>
+                </div>
+            `).join('');
+        }
+
+        function prefillVault(id, pass) {
+            document.getElementById('vaultCertId').value = id;
+            document.getElementById('vaultPassword').value = pass;
+            unlockCertificate();
+        }
+
         function buildShortQrUrl(certId) {
             const base = `${window.location.origin}${window.location.pathname}`;
             return `${base}?id=${encodeURIComponent(String(certId).trim().toUpperCase())}`;
@@ -1107,6 +1216,8 @@
             document.querySelectorAll('.feature-stage').forEach(s => s.classList.remove('active'));
             document.getElementById(stageId).classList.add('active');
             document.getElementById('backToHubBtn').style.display = 'inline-flex';
+            if (stageId === 'vaultStage') renderVaultHistoryList();
+            if (stageId === 'drawStage') refreshLayersList();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -1338,7 +1449,11 @@
             openStage('drawStage');
             drawCanvas.setWidth(560);
             drawCanvas.setHeight(395);
-            drawCanvas.loadFromJSON(json, () => drawCanvas.renderAll());
+            drawCanvas.loadFromJSON(json, () => {
+                drawCanvas.renderAll();
+                saveDrawHistory();
+                refreshLayersList();
+            });
             showToast('Loaded design into Pro Editor');
         }
 
@@ -1586,7 +1701,140 @@
             a.click();
         }
 
-        // 4. Pro Vector, Draw & Layout Editor
+        // 4. Pro Vector, Draw & Layout Editor (Undo/Redo + Layers Inspector + QR Stamp + Cloud Save)
+        let drawHistory = [];
+        let drawHistoryStep = -1;
+        let isDrawRestoring = false;
+
+        function saveDrawHistory() {
+            if (isDrawRestoring) return;
+            drawHistory = drawHistory.slice(0, drawHistoryStep + 1);
+            drawHistory.push(JSON.stringify(drawCanvas.toJSON()));
+            drawHistoryStep++;
+            refreshLayersList();
+        }
+
+        drawCanvas.on('object:added', saveDrawHistory);
+        drawCanvas.on('object:modified', saveDrawHistory);
+        drawCanvas.on('object:removed', saveDrawHistory);
+        drawCanvas.on('selection:created', refreshLayersList);
+        drawCanvas.on('selection:updated', refreshLayersList);
+        drawCanvas.on('selection:cleared', refreshLayersList);
+
+        function undoDraw() {
+            if (drawHistoryStep > 0) {
+                isDrawRestoring = true;
+                drawHistoryStep--;
+                drawCanvas.loadFromJSON(drawHistory[drawHistoryStep], () => {
+                    drawCanvas.renderAll();
+                    isDrawRestoring = false;
+                    refreshLayersList();
+                });
+            }
+        }
+
+        function redoDraw() {
+            if (drawHistoryStep < drawHistory.length - 1) {
+                isDrawRestoring = true;
+                drawHistoryStep++;
+                drawCanvas.loadFromJSON(drawHistory[drawHistoryStep], () => {
+                    drawCanvas.renderAll();
+                    isDrawRestoring = false;
+                    refreshLayersList();
+                });
+            }
+        }
+
+        function refreshLayersList() {
+            const listEl = document.getElementById('proLayersList');
+            if (!listEl) return;
+            const objs = drawCanvas.getObjects();
+            const active = drawCanvas.getActiveObject();
+            if (!objs.length) {
+                listEl.innerHTML = '<div style="font-size:0.75rem; color:var(--ink-muted);">No layers yet.</div>';
+                return;
+            }
+            listEl.innerHTML = objs.slice().reverse().map((obj, revIdx) => {
+                const realIdx = objs.length - 1 - revIdx;
+                const label = obj.text ? `Text: ${obj.text.slice(0, 14)}` : `Layer ${realIdx + 1} (${obj.type})`;
+                const isSel = active === obj;
+                return `
+                    <div class="layer-item ${isSel ? 'selected' : ''}" onclick="selectDrawLayer(${realIdx})">
+                        <span>${label}</span>
+                        <span class="layer-actions">
+                            <button onclick="event.stopPropagation(); toggleLayerVis(${realIdx})" title="Show/Hide">
+                                <i class="fa-solid ${obj.visible ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); toggleLayerLock(${realIdx})" title="Lock/Unlock">
+                                <i class="fa-solid ${obj.selectable ? 'fa-lock-open' : 'fa-lock'}"></i>
+                            </button>
+                        </span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectDrawLayer(idx) {
+            const obj = drawCanvas.getObjects()[idx];
+            if (obj && obj.selectable) {
+                drawCanvas.setActiveObject(obj);
+                drawCanvas.renderAll();
+                refreshLayersList();
+            }
+        }
+
+        function toggleLayerVis(idx) {
+            const obj = drawCanvas.getObjects()[idx];
+            if (!obj) return;
+            obj.visible = !obj.visible;
+            drawCanvas.renderAll();
+            refreshLayersList();
+        }
+
+        function toggleLayerLock(idx) {
+            const obj = drawCanvas.getObjects()[idx];
+            if (!obj) return;
+            obj.selectable = !obj.selectable;
+            obj.evented = obj.selectable;
+            if (!obj.selectable) drawCanvas.discardActiveObject();
+            drawCanvas.renderAll();
+            refreshLayersList();
+        }
+
+        async function insertQrStampOnProCanvas() {
+            const certId = lastAiCertRecord?.certId || `HKX-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+            const qrUrl = buildShortQrUrl(certId);
+            const tempDiv = document.createElement('div');
+            const qrImgUrl = await renderQRInto(tempDiv, qrUrl, 90);
+            if (!qrImgUrl) return;
+            fabric.Image.fromURL(qrImgUrl, (img) => {
+                img.set({ left: drawCanvas.width - 120, top: drawCanvas.height - 120 });
+                drawCanvas.add(img);
+                drawCanvas.setActiveObject(img);
+                showToast(`Added QR Stamp (${certId})`);
+            });
+        }
+
+        async function saveProProjectToCloud() {
+            const user = getCurrentUser();
+            try {
+                const res = await fetch(`${STUDIO_API}/projects`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: `Hoknex Project ${new Date().toLocaleTimeString()}`,
+                        format: 'custom',
+                        themeKey: currentTheme,
+                        ownerId: user?.id || null,
+                        canvasJSON: drawCanvas.toJSON()
+                    })
+                });
+                if (res.ok) return showToast('Saved project to Hoknex Studio Server');
+            } catch (_) {}
+            localStorage.setItem('hoknex_pro_autosave', JSON.stringify(drawCanvas.toJSON()));
+            showToast('Saved project locally in browser');
+        }
+
         function setDrawMode(m) {
             document.querySelectorAll('.mini-tool').forEach(t => t.classList.remove('active'));
             if (m === 'draw') {
@@ -1615,6 +1863,18 @@
         function updateDrawFont(f) {
             const o = drawCanvas.getActiveObject();
             if (o && o.fontFamily) { o.set('fontFamily', f); drawCanvas.renderAll(); }
+        }
+        function toggleDrawBold() {
+            const o = drawCanvas.getActiveObject();
+            if (o) { o.set('fontWeight', o.fontWeight === 'bold' ? 'normal' : 'bold'); drawCanvas.renderAll(); }
+        }
+        function toggleDrawItalic() {
+            const o = drawCanvas.getActiveObject();
+            if (o) { o.set('fontStyle', o.fontStyle === 'italic' ? 'normal' : 'italic'); drawCanvas.renderAll(); }
+        }
+        function toggleDrawUnderline() {
+            const o = drawCanvas.getActiveObject();
+            if (o) { o.set('underline', !o.underline); drawCanvas.renderAll(); }
         }
         function addCanvasText() { setDrawMode('select'); const t = new fabric.IText('Double-click to edit', { left: 220, top: 180, fontSize: 28, fill: document.getElementById('drawColor').value }); drawCanvas.add(t); }
         function addCanvasRect() { setDrawMode('select'); drawCanvas.add(new fabric.Rect({ left: 180, top: 150, width: 160, height: 100, fill: 'transparent', stroke: document.getElementById('drawColor').value, strokeWidth: 3 })); }
@@ -1953,6 +2213,10 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             syncAccountUI();
+            checkStudioServerHealth();
+            renderVaultHistoryList();
+            saveDrawHistory();
+
             const params = new URLSearchParams(window.location.search);
             const scannedId = params.get('id') || params.get('certId');
             if (scannedId) {
