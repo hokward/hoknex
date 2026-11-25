@@ -4,8 +4,8 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hoknex Studio — Creative Suite, Bulk Credentials & QR Vault</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <title>Hoknex Studio — Credentials, Visual Design & Document Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -14,460 +14,754 @@
 
     <style>
         /* ==========================================================================
-           60-30-10 DESIGN SYSTEM: GALLERY MINIMAL | EDITORIAL DARK | WARM & TACTILE
+           60-30-10 COLOR ARCHITECTURE: GALLERY MINIMAL | EDITORIAL DARK | TACTILE
            ========================================================================== */
         :root, [data-theme="gallery"] {
             --bg-main: #FAF9F6;
             --bg-surface: #FFFFFF;
-            --bg-surface-alt: #F3F2EE;
+            --bg-subtle: #F3F2EE;
             --ink-primary: #18181B;
+            --ink-secondary: #52525B;
             --ink-muted: #71717A;
-            --border-subtle: rgba(24, 24, 27, 0.11);
+            --border-hairline: rgba(24, 24, 27, 0.09);
+            --border-strong: rgba(24, 24, 27, 0.16);
             --accent: #2563EB;
             --accent-secondary: #0D9488;
-            --accent-tint: rgba(37, 99, 235, 0.09);
+            --accent-tint: rgba(37, 99, 235, 0.07);
             --accent-contrast: #FFFFFF;
-            --shadow-card: 0 14px 36px rgba(24, 24, 27, 0.06);
-            --shadow-cta: 0 10px 24px rgba(37, 99, 235, 0.26);
+            --shadow-soft: 0 8px 30px rgba(24, 24, 27, 0.04);
+            --shadow-elevated: 0 20px 48px rgba(24, 24, 27, 0.08);
         }
 
         [data-theme="editorial"] {
             --bg-main: #111111;
-            --bg-surface: #1E1E1E;
-            --bg-surface-alt: #27272A;
+            --bg-surface: #1A1A1A;
+            --bg-subtle: #242424;
             --ink-primary: #F4F4F5;
+            --ink-secondary: #D4D4D8;
             --ink-muted: #A1A1AA;
-            --border-subtle: rgba(244, 244, 245, 0.12);
+            --border-hairline: rgba(244, 244, 245, 0.09);
+            --border-strong: rgba(244, 244, 245, 0.18);
             --accent: #F59E0B;
             --accent-secondary: #A855F7;
-            --accent-tint: rgba(245, 158, 11, 0.14);
+            --accent-tint: rgba(245, 158, 11, 0.12);
             --accent-contrast: #111111;
-            --shadow-card: 0 18px 46px rgba(0, 0, 0, 0.45);
-            --shadow-cta: 0 10px 26px rgba(245, 158, 11, 0.3);
+            --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.35);
+            --shadow-elevated: 0 24px 54px rgba(0, 0, 0, 0.55);
         }
 
         [data-theme="tactile"] {
             --bg-main: #FBF7F2;
             --bg-surface: #FFFFFF;
-            --bg-surface-alt: #E6CCB2;
+            --bg-subtle: #EFE6DA;
             --ink-primary: #27221F;
+            --ink-secondary: #4A403A;
             --ink-muted: #6B5E55;
-            --border-subtle: rgba(39, 34, 31, 0.12);
+            --border-hairline: rgba(39, 34, 31, 0.1);
+            --border-strong: rgba(39, 34, 31, 0.18);
             --accent: #B45309;
             --accent-secondary: #A3B18A;
-            --accent-tint: rgba(180, 83, 9, 0.1);
+            --accent-tint: rgba(180, 83, 9, 0.08);
             --accent-contrast: #FFFFFF;
-            --shadow-card: 0 14px 36px rgba(39, 34, 31, 0.07);
-            --shadow-cta: 0 10px 24px rgba(180, 83, 9, 0.28);
+            --shadow-soft: 0 8px 30px rgba(39, 34, 31, 0.05);
+            --shadow-elevated: 0 20px 48px rgba(39, 34, 31, 0.09);
         }
-
-        :root { --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); }
 
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: var(--bg-main);
+            background-color: var(--bg-main);
             color: var(--ink-primary);
             min-height: 100vh;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.25s ease, color 0.25s ease;
         }
 
-        /* Navbar */
-        .hoknex-navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.9rem 2.2rem;
-            background: color-mix(in srgb, var(--bg-surface) 92%, transparent);
-            backdrop-filter: blur(18px);
-            border-bottom: 1px solid var(--border-subtle);
+        /* ==========================================================================
+           NAVIGATION HEADER
+           ========================================================================== */
+        .studio-header {
             position: sticky;
             top: 0;
             z-index: 1000;
-            gap: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.95rem 2.5rem;
+            background: color-mix(in srgb, var(--bg-main) 86%, transparent);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-hairline);
+            gap: 1rem;
             flex-wrap: wrap;
         }
 
-        .nav-brand {
+        .header-left {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1.35rem;
-            font-weight: 900;
-            color: var(--ink-primary);
-            text-decoration: none;
-            font-family: 'Playfair Display', serif;
+            gap: 1.25rem;
         }
 
-        .logo-badge {
-            width: 34px;
-            height: 34px;
-            border-radius: 9px;
+        .brand-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+            text-decoration: none;
+            color: var(--ink-primary);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            cursor: pointer;
+        }
+
+        .brand-monogram {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             background: var(--accent);
             color: var(--accent-contrast);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-weight: 900;
             font-family: 'Playfair Display', serif;
-        }
-
-        .status-pill {
-            font-size: 0.7rem;
             font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: var(--bg-surface-alt);
-            color: var(--ink-muted);
-            border: 1px solid var(--border-subtle);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 1rem;
         }
 
-        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #10B981; }
-        .status-dot.offline { background: #F59E0B; }
-
-        .theme-switcher {
+        .header-right {
             display: flex;
-            gap: 4px;
-            background: var(--bg-surface-alt);
-            padding: 4px;
-            border-radius: 999px;
-            border: 1px solid var(--border-subtle);
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
         }
 
-        .theme-pill {
+        .palette-bar {
+            display: inline-flex;
+            background: var(--bg-subtle);
+            padding: 3px;
+            border-radius: 999px;
+            border: 1px solid var(--border-hairline);
+        }
+
+        .palette-btn {
             border: none;
             background: transparent;
             color: var(--ink-muted);
-            padding: 5px 10px;
+            padding: 5px 12px;
             border-radius: 999px;
-            font-size: 0.72rem;
-            font-weight: 800;
+            font-size: 0.74rem;
+            font-weight: 700;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            transition: all 0.2s ease;
         }
 
-        .theme-pill.active {
+        .palette-btn.active {
             background: var(--bg-surface);
             color: var(--ink-primary);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
         }
 
-        .swatch { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            display: inline-block;
+        }
 
-        .btn-cta {
+        /* ==========================================================================
+           BUTTONS & CONTROLS
+           ========================================================================== */
+        .btn-primary {
             background: var(--accent);
             color: var(--accent-contrast);
             border: none;
-            padding: 0.65rem 1.2rem;
-            border-radius: 11px;
-            font-weight: 800;
-            font-size: 0.76rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            padding: 0.62rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
             cursor: pointer;
-            box-shadow: var(--shadow-cta);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 0.45rem;
             text-decoration: none;
-            transition: transform 0.2s var(--ease-spring);
+            transition: opacity 0.2s ease, transform 0.15s ease;
         }
 
-        .btn-cta:hover { transform: translateY(-2px); }
+        .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
-        .btn-ghost {
+        .btn-secondary {
             background: var(--bg-surface);
             color: var(--ink-primary);
-            border: 1px solid var(--border-subtle);
-            padding: 0.65rem 1.1rem;
-            border-radius: 11px;
-            font-weight: 700;
-            font-size: 0.76rem;
+            border: 1px solid var(--border-strong);
+            padding: 0.6rem 1.1rem;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 0.45rem;
             text-decoration: none;
+            transition: border-color 0.2s ease, color 0.2s ease;
         }
 
-        .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-        .btn-ghost:disabled, .btn-cta:disabled { opacity: 0.45; cursor: not-allowed; }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 
-        .btn-danger {
-            background: rgba(220, 38, 38, 0.1);
+        .btn-danger-subtle {
+            background: transparent;
             color: #DC2626;
-            border: 1px solid rgba(220, 38, 38, 0.3);
-            padding: 0.65rem 1.1rem;
-            border-radius: 11px;
-            font-weight: 800;
+            border: 1px solid rgba(220, 38, 38, 0.28);
+            padding: 0.55rem 0.9rem;
+            border-radius: 10px;
             font-size: 0.76rem;
+            font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 0.4rem;
         }
 
-        /* Hub View */
-        #hubView { max-width: 1320px; margin: 0 auto; padding: 2.8rem 2rem 4rem; }
-        .hub-hero { text-align: center; max-width: 840px; margin: 0 auto 2.8rem; }
-        .hub-pill { display: inline-block; background: var(--accent-tint); color: var(--accent); padding: 6px 14px; border-radius: 999px; font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 1rem; }
-        .hub-hero h1 { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900; line-height: 1.14; margin-bottom: 0.85rem; }
-        .hub-hero h1 span { color: var(--accent); font-style: italic; }
-        .hub-hero p { color: var(--ink-muted); font-size: 0.98rem; font-weight: 600; line-height: 1.6; }
+        .btn-danger-subtle:hover { background: rgba(220, 38, 38, 0.07); }
 
-        .feature-hub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
-        .hub-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 22px; padding: 1.75rem; box-shadow: var(--shadow-card); cursor: pointer; transition: transform 0.3s var(--ease-spring), border-color 0.2s; display: flex; flex-direction: column; justify-content: space-between; gap: 1.1rem; }
-        .hub-card:hover { transform: translateY(-6px); border-color: var(--accent); }
-        .hub-icon-box { width: 46px; height: 46px; border-radius: 13px; background: var(--accent-tint); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: 0.9rem; }
-        .hub-card h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; margin-bottom: 0.4rem; }
-        .hub-card p { color: var(--ink-muted); font-size: 0.85rem; font-weight: 600; line-height: 1.5; }
-        .hub-open-link { font-size: 0.78rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 6px; }
+        /* ==========================================================================
+           EDITORIAL HUB LANDING
+           ========================================================================== */
+        .hub-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 3.75rem 2.5rem 5rem;
+        }
 
-        /* Isolated Feature Stages */
-        .feature-stage { display: none; max-width: 1420px; margin: 0 auto; padding: 1.6rem 2rem 4rem; }
-        .feature-stage.active { display: block; }
+        .hub-header {
+            max-width: 720px;
+            margin-bottom: 3.25rem;
+        }
 
-        .stage-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.4rem; flex-wrap: wrap; gap: 12px; background: var(--bg-surface); padding: 14px 20px; border-radius: 18px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
-        .stage-title-group h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; }
-        .stage-title-group p { font-size: 0.82rem; color: var(--ink-muted); font-weight: 600; }
+        .hub-kicker {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            margin-bottom: 0.85rem;
+            display: block;
+        }
 
-        .box-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 1.4rem; box-shadow: var(--shadow-card); }
+        .hub-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.1rem;
+            font-weight: 800;
+            line-height: 1.12;
+            letter-spacing: -0.02em;
+            color: var(--ink-primary);
+            margin-bottom: 1rem;
+        }
 
-        label { display: block; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin-bottom: 6px; }
-        input, select, textarea { width: 100%; background: var(--bg-main); border: 1.5px solid var(--border-subtle); color: var(--ink-primary); border-radius: 11px; padding: 10px 12px; font-size: 0.86rem; font-weight: 600; margin-bottom: 12px; outline: none; }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+        .hub-header p {
+            font-size: 1.02rem;
+            color: var(--ink-secondary);
+            font-weight: 500;
+            line-height: 1.65;
+        }
 
-        .ai-workspace-grid { display: grid; grid-template-columns: 440px 1fr; gap: 1.4rem; align-items: start; }
-        .prompt-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-        .prompt-chip { background: var(--bg-main); border: 1px solid var(--border-subtle); color: var(--ink-muted); padding: 5px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
-        .prompt-chip:hover { border-color: var(--accent); color: var(--accent); }
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
 
-        .canvas-grid { display: grid; grid-template-columns: 295px 1fr 290px; gap: 1.2rem; align-items: start; }
-        .canvas-viewport { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; align-items: center; overflow: auto; box-shadow: var(--shadow-card); }
-        .tools-4x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
-        .mini-tool { background: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 9px 4px; text-align: center; cursor: pointer; font-size: 0.71rem; font-weight: 700; color: var(--ink-muted); }
-        .mini-tool i { display: block; font-size: 1rem; margin-bottom: 4px; color: var(--ink-primary); }
-        .mini-tool.active, .mini-tool:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-tint); }
-        .mini-tool.active i, .mini-tool:hover i { color: var(--accent); }
+        .module-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-hairline);
+            border-radius: 18px;
+            padding: 2rem;
+            box-shadow: var(--shadow-soft);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1.75rem;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
 
-        /* Layers Inspector */
-        .layers-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; margin-top: 8px; }
-        .layer-item {
+        .module-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow-elevated);
+        }
+
+        .module-index {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--ink-muted);
+            letter-spacing: 0.08em;
+            margin-bottom: 1.1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 6px;
-            background: var(--bg-main);
-            border: 1px solid var(--border-subtle);
-            border-radius: 9px;
-            padding: 7px 10px;
-            font-size: 0.76rem;
+        }
+
+        .module-index i {
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+
+        .module-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
             font-weight: 700;
+            color: var(--ink-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .module-card p {
+            font-size: 0.88rem;
+            color: var(--ink-secondary);
+            line-height: 1.6;
+        }
+
+        .module-cta {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--accent);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        /* ==========================================================================
+           WORKSPACE STAGES
+           ========================================================================== */
+        .stage-wrapper {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 2.5rem 5rem;
+        }
+
+        .stage-wrapper.active { display: block; }
+
+        .stage-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 1.35rem;
+            margin-bottom: 1.75rem;
+            border-bottom: 1px solid var(--border-hairline);
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .stage-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+        }
+
+        .stage-header p {
+            font-size: 0.88rem;
+            color: var(--ink-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .panel-surface {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-hairline);
+            border-radius: 18px;
+            padding: 1.6rem;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--ink-muted);
+            margin-bottom: 0.45rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="password"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            background: var(--bg-main);
+            border: 1px solid var(--border-strong);
+            color: var(--ink-primary);
+            border-radius: 10px;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.86rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .two-col-studio {
+            display: grid;
+            grid-template-columns: 430px 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .three-col-editor {
+            display: grid;
+            grid-template-columns: 280px 1fr 270px;
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        .canvas-stage-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-hairline);
+            border-radius: 18px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: auto;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .preset-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin-bottom: 1rem;
+        }
+
+        .preset-pill {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-hairline);
+            color: var(--ink-secondary);
+            padding: 0.38rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .preset-pill:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .tool-cell {
+            background: var(--bg-main);
+            border: 1px solid var(--border-hairline);
+            border-radius: 10px;
+            padding: 0.65rem 0.35rem;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--ink-secondary);
+            transition: all 0.15s ease;
+        }
+
+        .tool-cell i {
+            display: block;
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+            color: var(--ink-primary);
+        }
+
+        .tool-cell.active, .tool-cell:hover {
+            border-color: var(--accent);
+            background: var(--accent-tint);
+            color: var(--accent);
+        }
+
+        .tool-cell.active i, .tool-cell:hover i {
+            color: var(--accent);
+        }
+
+        .layers-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 0.5rem;
+        }
+
+        .layer-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-main);
+            border: 1px solid var(--border-hairline);
+            border-radius: 9px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.76rem;
+            font-weight: 600;
             cursor: pointer;
         }
-        .layer-item.selected { border-color: var(--accent); background: var(--accent-tint); }
-        .layer-actions button {
+
+        .layer-row.selected {
+            border-color: var(--accent);
+            background: var(--accent-tint);
+        }
+
+        .layer-row button {
             background: none;
             border: none;
             color: var(--ink-muted);
             cursor: pointer;
             padding: 2px 5px;
-            font-size: 0.78rem;
         }
-        .layer-actions button:hover { color: var(--accent); }
 
-        .bulk-grid { display: grid; grid-template-columns: 440px 1fr; gap: 1.4rem; align-items: start; }
-        .vault-layout { display: grid; grid-template-columns: 400px 1fr; gap: 1.4rem; align-items: start; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-        th, td { padding: 10px 12px; border-bottom: 1px solid var(--border-subtle); text-align: left; }
-        th { font-size: 0.72rem; text-transform: uppercase; color: var(--ink-muted); font-weight: 800; }
+        .layer-row button:hover { color: var(--accent); }
 
-        .qr-box { background: #FFFFFF; padding: 8px; border-radius: 10px; display: inline-block; border: 1px solid var(--border-subtle); }
-        .theme-thumb-preview { width: 100%; max-height: 85px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-subtle); margin-bottom: 10px; display: none; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.83rem;
+        }
 
-        /* Modals */
+        th, td {
+            padding: 0.75rem 0.9rem;
+            border-bottom: 1px solid var(--border-hairline);
+            text-align: left;
+        }
+
+        th {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--ink-muted);
+            font-weight: 700;
+        }
+
+        .qr-frame {
+            background: #FFFFFF;
+            padding: 7px;
+            border-radius: 8px;
+            display: inline-block;
+            border: 1px solid var(--border-hairline);
+        }
+
+        .bg-preview-thumb {
+            width: 100%;
+            max-height: 84px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid var(--border-hairline);
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        /* Modal */
         .modal-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.58);
+            background: rgba(0, 0, 0, 0.52);
             backdrop-filter: blur(6px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 50000;
-            padding: 16px;
+            padding: 1rem;
         }
-        .modal-card {
+
+        .modal-box {
             background: var(--bg-surface);
             color: var(--ink-primary);
-            border: 1px solid var(--border-subtle);
-            border-radius: 22px;
-            padding: 24px;
+            border: 1px solid var(--border-hairline);
+            border-radius: 18px;
+            padding: 1.75rem;
             width: 100%;
-            max-width: 440px;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+            max-width: 540px;
+            box-shadow: var(--shadow-elevated);
             position: relative;
         }
-        .auth-tabs { display: flex; gap: 6px; background: var(--bg-main); padding: 4px; border-radius: 12px; margin-bottom: 16px; }
-        .auth-tab { flex: 1; border: none; background: transparent; color: var(--ink-muted); padding: 8px; border-radius: 9px; font-weight: 800; font-size: 0.78rem; cursor: pointer; }
-        .auth-tab.active { background: var(--accent); color: var(--accent-contrast); }
 
-        #toastContainer { position: fixed; top: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; }
-        .toast-msg { background: var(--accent); color: var(--accent-contrast); padding: 12px 18px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; box-shadow: var(--shadow-cta); }
+        #toastStack {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast-item {
+            background: var(--ink-primary);
+            color: var(--bg-surface);
+            padding: 0.75rem 1.15rem;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-elevated);
+        }
 
         @media (max-width: 1024px) {
-            .feature-hub-grid, .ai-workspace-grid, .canvas-grid, .bulk-grid, .vault-layout { grid-template-columns: 1fr; }
-            .hub-hero h1 { font-size: 2.2rem; }
-            .hoknex-navbar { padding: 0.8rem 1.2rem; }
+            .modules-grid, .two-col-studio, .three-col-editor {
+                grid-template-columns: 1fr;
+            }
+            .hub-container, .stage-wrapper { padding: 1.5rem 1.25rem 3.5rem; }
+            .hub-header h1 { font-size: 2.25rem; }
+            .studio-header { padding: 0.85rem 1.25rem; }
         }
     </style>
 </head>
 <body>
 
-    <div id="toastContainer"></div>
+    <div id="toastStack"></div>
 
-    <!-- Top Hoknex Navbar -->
-    <header class="hoknex-navbar">
-        <div style="display:flex; align-items:center; gap:12px;">
-            <a href="studio.html" class="nav-brand" onclick="openHub(); return false;">
-                <span class="logo-badge">H</span> Hoknex Studio
+    <!-- Header -->
+    <header class="studio-header">
+        <div class="header-left">
+            <a href="studio.html" class="brand-mark" onclick="openHub(); return false;">
+                <span class="brand-monogram">H</span>
+                <span>Hoknex Studio</span>
             </a>
-            <button class="btn-ghost" id="backToHubBtn" style="display:none;" onclick="openHub()">
-                <i class="fa-solid fa-arrow-left"></i> Back to Hub
+            <button class="btn-secondary" id="backToHubBtn" style="display:none;" onclick="openHub()">
+                <i class="fa-solid fa-arrow-left"></i> All Tools
             </button>
-            <span class="status-pill">
-                <span class="status-dot offline" id="serverStatusDot"></span>
-                <span id="serverStatusText">Syncing...</span>
-            </span>
         </div>
 
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <div class="theme-switcher">
-                <button class="theme-pill active" onclick="setTheme('gallery', this)">
-                    <span class="swatch" style="background:#FAF9F6; border:1px solid #2563EB;"></span> Minimal
+        <div class="header-right">
+            <div class="palette-bar">
+                <button class="palette-btn active" onclick="setTheme('gallery', this)">
+                    <span class="dot" style="background:#FAF9F6; border:1px solid #2563EB;"></span> Minimal
                 </button>
-                <button class="theme-pill" onclick="setTheme('editorial', this)">
-                    <span class="swatch" style="background:#111111; border:1px solid #F59E0B;"></span> Dark
+                <button class="palette-btn" onclick="setTheme('editorial', this)">
+                    <span class="dot" style="background:#111111; border:1px solid #F59E0B;"></span> Dark
                 </button>
-                <button class="theme-pill" onclick="setTheme('tactile', this)">
-                    <span class="swatch" style="background:#FBF7F2; border:1px solid #B45309;"></span> Tactile
+                <button class="palette-btn" onclick="setTheme('tactile', this)">
+                    <span class="dot" style="background:#FBF7F2; border:1px solid #B45309;"></span> Tactile
                 </button>
             </div>
-
-            <span id="accountBadge" style="display:none; font-size:0.76rem; font-weight:800; color:var(--accent); padding:0 6px;"></span>
-            <button class="btn-ghost" id="authNavBtn" onclick="openAuthModal('signin')">
-                <i class="fa-solid fa-user"></i> <span id="authNavLabel">Sign In / Sign Up</span>
-            </button>
-            <button class="btn-danger" id="deleteAccNavBtn" style="display:none;" onclick="openAuthModal('delete')">
-                <i class="fa-solid fa-user-slash"></i> Delete Account
-            </button>
-            <a href="index.html" class="btn-ghost"><i class="fa-solid fa-house"></i> Hoknex</a>
+            <a href="index.html" class="btn-secondary">Hoknex Home</a>
         </div>
     </header>
 
     <!-- ======================================================================
-         FRONT HUB: FREE TO EDIT ANYTHING, ACCOUNT REQUIRED ONLY TO DOWNLOAD
+         HUB VIEW
          ====================================================================== -->
-    <main id="hubView">
-        <div class="hub-hero">
-            <span class="hub-pill">✨ Hoknex Official Studio • Free Editing, Account Required to Download</span>
-            <h1>Create without limits. <span>Download with Hoknex.</span></h1>
-            <p>Edit certificates, posters, banners, thumbnails, PDFs, and bulk batches freely. Create a Hoknex Studio account when you export/download—and delete your account anytime.</p>
+    <main id="hubView" class="hub-container">
+        <div class="hub-header">
+            <span class="hub-kicker">Hoknex Design & Credential Infrastructure</span>
+            <h1>Design, issue, and verify visual credentials in one studio.</h1>
+            <p>Select a workspace below to generate single or bulk certificates with scannable QR verification, craft posters and banners, or annotate multi-page PDF documents.</p>
         </div>
 
-        <div class="feature-hub-grid">
-            <div class="hub-card" onclick="openStage('aiStage')">
+        <div class="modules-grid">
+            <div class="module-card" onclick="openStage('aiStage')">
                 <div>
-                    <div class="hub-icon-box"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                    <h3>1. Hoknex AI Prompt Studio</h3>
-                    <p>Describe your certificate, poster, banner, or thumbnail in plain text to generate a full layout with a scannable QR code and unique password.</p>
+                    <div class="module-index"><span>01 / CREDENTIAL & VISUAL COMPOSER</span><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <h3>Prompt Studio</h3>
+                    <p>Compose certificates, posters, banners, or thumbnails from structured prompts with custom logos, signatures, and scannable QR verification.</p>
                 </div>
-                <span class="hub-open-link">Open AI Studio <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
-            <div class="hub-card" onclick="openStage('bulkStage')">
+            <div class="module-card" onclick="openStage('bulkStage')">
                 <div>
-                    <div class="hub-icon-box"><i class="fa-solid fa-layer-group"></i></div>
-                    <h3>2. Bulk Certificate & CSV Engine</h3>
-                    <p>Upload a CSV or write a script for N certificates, attach custom theme background, logo & signature, set per-certificate passwords, and share links.</p>
+                    <div class="module-index"><span>02 / BATCH ISSUANCE</span><i class="fa-solid fa-layer-group"></i></div>
+                    <h3>Bulk Certificate Engine</h3>
+                    <p>Import CSV rosters or run batch scripts to issue hundreds of credentials with individual passwords, custom artwork, and shareable links.</p>
                 </div>
-                <span class="hub-open-link">Open Bulk Engine <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
-            <div class="hub-card" onclick="openStage('posterStage')">
+            <div class="module-card" onclick="openStage('posterStage')">
                 <div>
-                    <div class="hub-icon-box"><i class="fa-solid fa-panorama"></i></div>
-                    <h3>3. Poster, Banner & Thumbnail Studio</h3>
-                    <p>Design event posters, wide banners, and thumbnails with custom badges, headlines, subheadlines, and high-res exports.</p>
+                    <div class="module-index"><span>03 / CAMPAIGN FORMATS</span><i class="fa-solid fa-panorama"></i></div>
+                    <h3>Poster, Banner & Thumbnail</h3>
+                    <p>Produce print-ready event posters, widescreen web banners, and media thumbnails calibrated to exact aspect ratios.</p>
                 </div>
-                <span class="hub-open-link">Open Poster & Banner <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
-            <div class="hub-card" onclick="openStage('drawStage')">
+            <div class="module-card" onclick="openStage('drawStage')">
                 <div>
-                    <div class="hub-icon-box"><i class="fa-solid fa-pen-nib"></i></div>
-                    <h3>4. Pro Vector, Draw & Layout Editor</h3>
-                    <p>Full canvas editor with freehand brush, shapes, stars/badges, custom images, text styles, layers inspector, undo/redo, and cloud save/load.</p>
+                    <div class="module-index"><span>04 / VECTOR & RASTER CANVAS</span><i class="fa-solid fa-pen-nib"></i></div>
+                    <h3>Pro Canvas Editor</h3>
+                    <p>Full multi-layer vector drawing board with freehand brushes, typography controls, QR stamps, undo history, and project cloud sync.</p>
                 </div>
-                <span class="hub-open-link">Open Pro Editor <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
-            <div class="hub-card" onclick="openStage('docStage')">
+            <div class="module-card" onclick="openStage('docStage')">
                 <div>
-                    <div class="hub-icon-box"><i class="fa-solid fa-file-pen"></i></div>
-                    <h3>5. Multi-Page PDF & Document Editor</h3>
-                    <p>Upload any multi-page PDF or document image, switch pages with Prev/Next, annotate or sign each page, and export PDF.</p>
+                    <div class="module-index"><span>05 / DOCUMENT MARKUP</span><i class="fa-solid fa-file-pen"></i></div>
+                    <h3>Multi-Page PDF Editor</h3>
+                    <p>Load multi-page PDF files or scans, navigate across pages, place signatures or text annotations per page, and export a compiled PDF.</p>
                 </div>
-                <span class="hub-open-link">Open Document Editor <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
-            <div class="hub-card" onclick="openStage('vaultStage')">
+            <div class="module-card" onclick="openStage('vaultStage')">
                 <div>
-                    <div class="hub-icon-box"><i class="fa-solid fa-lock"></i></div>
-                    <h3>6. Protected QR & Link Vault</h3>
-                    <p>Scan any certificate QR code or open a shared link in any browser—enter that certificate's password to view and download it.</p>
+                    <div class="module-index"><span>06 / PUBLIC VERIFICATION</span><i class="fa-solid fa-qrcode"></i></div>
+                    <h3>Certificate QR Vault</h3>
+                    <p>Open any shared credential link or scan its QR code on any device, enter the certificate password, and download the verified PDF.</p>
                 </div>
-                <span class="hub-open-link">Open QR Vault <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
         </div>
     </main>
 
     <!-- ======================================================================
-         FEATURE 1: HOKNEX AI PROMPT GENERATOR
+         01. PROMPT STUDIO
          ====================================================================== -->
-    <section id="aiStage" class="feature-stage">
-        <div class="stage-top-bar">
-            <div class="stage-title-group">
-                <h2>Hoknex AI Prompt Generator</h2>
-                <p>Write what you want to make and generate a full certificate, poster, banner, or thumbnail with QR verification.</p>
+    <section id="aiStage" class="stage-wrapper">
+        <div class="stage-header">
+            <div>
+                <h2>Prompt Studio</h2>
+                <p>Generate certificates, posters, banners, and thumbnails with embedded QR verification.</p>
             </div>
-            <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+            <button class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
         </div>
 
-        <div class="ai-workspace-grid">
-            <div class="box-card">
-                <label>Quick Prompt Starters</label>
-                <div class="prompt-chips">
-                    <span class="prompt-chip" onclick="useAiPreset('Gold royal Hackathon Winner Certificate for Hoknex Sync')">🏆 Hackathon Winner</span>
-                    <span class="prompt-chip" onclick="useAiPreset('Cyberpunk neon AI & IoT Innovation Certificate')">⚡ AI & IoT Cert</span>
-                    <span class="prompt-chip" onclick="useAiPreset('Minimal luxury Leadership & Excellence Certificate')">🏛️ Leadership Cert</span>
-                    <span class="prompt-chip" onclick="useAiPreset('Hoknex Campus Summit 2026 Official Poster')">🎨 Campus Poster</span>
+        <div class="two-col-studio">
+            <div class="panel-surface">
+                <label class="field-label">Quick Templates</label>
+                <div class="preset-pills">
+                    <span class="preset-pill" onclick="useAiPreset('First Place Hackathon Winner Certificate for Hoknex Sync')">Hackathon Winner</span>
+                    <span class="preset-pill" onclick="useAiPreset('Cyberpunk Engineering & IoT Excellence Certificate')">Engineering & IoT</span>
+                    <span class="preset-pill" onclick="useAiPreset('Executive Campus Leadership Recognition Certificate')">Leadership</span>
+                    <span class="preset-pill" onclick="useAiPreset('Hoknex Annual Summit Official Event Poster')">Summit Poster</span>
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div>
-                        <label>Format Type</label>
+                        <label class="field-label">Output Format</label>
                         <select id="aiFormat">
                             <option value="certificate">Certificate (1120 × 790)</option>
                             <option value="poster">Poster (794 × 1123)</option>
@@ -476,11 +770,11 @@
                         </select>
                     </div>
                     <div>
-                        <label>Visual Theme</label>
+                        <label class="field-label">Visual Style</label>
                         <select id="aiStylePreset">
-                            <option value="auto">Auto-Detect from Prompt</option>
-                            <option value="gold">Royal Gold & Obsidian</option>
-                            <option value="cyber">Cyberpunk Neon Cyan</option>
+                            <option value="auto">Auto-Detect</option>
+                            <option value="gold">Obsidian & Gold</option>
+                            <option value="cyber">Midnight & Cyan</option>
                             <option value="minimal">Gallery Minimal</option>
                             <option value="tactile">Warm Ivory & Sienna</option>
                         </select>
@@ -489,59 +783,59 @@
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div>
-                        <label>Recipient Name</label>
-                        <input type="text" id="aiRecipient" placeholder="e.g. Aditya Kumar">
+                        <label class="field-label">Recipient Name</label>
+                        <input type="text" id="aiRecipient" placeholder="Aditya Kumar">
                     </div>
                     <div>
-                        <label>Certificate Password</label>
+                        <label class="field-label">Access Password</label>
                         <input type="text" id="aiCustomPass" placeholder="Auto-generated if blank">
                     </div>
                 </div>
 
-                <label>Issuing Authority</label>
+                <label class="field-label">Issuing Organization</label>
                 <input type="text" id="aiIssuer" value="Hoknex">
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div>
-                        <label>Upload Logo (Optional)</label>
-                        <input type="file" accept="image/*" onchange="handleSingleAsset(event, 'logo')" style="padding:6px;">
+                        <label class="field-label">Logo (Optional)</label>
+                        <input type="file" accept="image/*" onchange="handleSingleAsset(event, 'logo')">
                     </div>
                     <div>
-                        <label>Upload Signature (Optional)</label>
-                        <input type="file" accept="image/*" onchange="handleSingleAsset(event, 'sig')" style="padding:6px;">
+                        <label class="field-label">Signature (Optional)</label>
+                        <input type="file" accept="image/*" onchange="handleSingleAsset(event, 'sig')">
                     </div>
                 </div>
 
-                <label>Custom Background Theme Image (Optional)</label>
-                <input type="file" id="aiBgUpload" accept="image/*" onchange="handleBgThemeUpload(event, 'ai')" style="padding:6px;">
-                <img id="aiBgPreview" class="theme-thumb-preview" alt="AI Background Preview">
+                <label class="field-label">Custom Background Image (Optional)</label>
+                <input type="file" id="aiBgUpload" accept="image/*" onchange="handleBgThemeUpload(event, 'ai')">
+                <img id="aiBgPreview" class="bg-preview-thumb" alt="Background preview">
 
-                <label>Your Prompt</label>
-                <textarea id="aiPromptText" rows="3" placeholder="Tell what you want to make... e.g. 'Certificate of Excellence for building an IoT safety wristband at Hoknex'"></textarea>
+                <label class="field-label">Design Brief / Citation</label>
+                <textarea id="aiPromptText" rows="3" placeholder="Describe the award title, event, or design brief..."></textarea>
 
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="btn-cta" onclick="runAIPromptGeneration()"><i class="fa-solid fa-sparkles"></i> Generate</button>
-                    <button class="btn-ghost" onclick="sendAiDesignToProEditor()"><i class="fa-solid fa-pen-to-square"></i> Edit in Pro Canvas</button>
-                    <button class="btn-ghost" onclick="guardedDownload(() => exportActiveCanvasPNG())"><i class="fa-solid fa-image"></i> Download PNG</button>
-                    <button class="btn-ghost" onclick="guardedDownload(() => exportActiveCanvasPDF())"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                    <button class="btn-primary" onclick="runAIPromptGeneration()"><i class="fa-solid fa-sparkles"></i> Generate</button>
+                    <button class="btn-secondary" onclick="sendAiDesignToProEditor()"><i class="fa-solid fa-pen-to-square"></i> Open in Canvas</button>
+                    <button class="btn-secondary" onclick="exportActiveCanvasPNG()"><i class="fa-solid fa-image"></i> PNG</button>
+                    <button class="btn-secondary" onclick="exportActiveCanvasPDF()"><i class="fa-solid fa-file-pdf"></i> PDF</button>
                 </div>
             </div>
 
-            <div class="canvas-viewport" style="gap:14px;">
+            <div class="canvas-stage-box" style="gap:16px;">
                 <canvas id="aiCanvas"></canvas>
 
-                <div style="width:100%; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; background:var(--bg-main); padding:12px 16px; border-radius:14px; border:1px solid var(--border-subtle);">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <div id="aiQrContainer" class="qr-box"></div>
-                        <div style="font-size:0.8rem;">
-                            <strong id="aiCertIdLabel">ID: Generate a design to get QR & Password</strong>
-                            <p id="aiCertPassLabel" style="color:var(--accent); font-weight:800; font-size:0.82rem; margin-top:3px;"></p>
-                            <p style="color:var(--ink-muted); font-size:0.74rem; margin-top:2px;">Scan QR or open link in any browser & enter password to view.</p>
+                <div style="width:100%; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; background:var(--bg-main); padding:14px 18px; border-radius:14px; border:1px solid var(--border-hairline);">
+                    <div style="display:flex; align-items:center; gap:14px;">
+                        <div id="aiQrContainer" class="qr-frame"></div>
+                        <div style="font-size:0.82rem;">
+                            <strong id="aiCertIdLabel">Generate a design to create its QR credential</strong>
+                            <p id="aiCertPassLabel" style="color:var(--accent); font-weight:700; margin-top:2px;"></p>
+                            <p style="color:var(--ink-muted); font-size:0.75rem; margin-top:2px;">Works across all phones and browsers worldwide.</p>
                         </div>
                     </div>
                     <div style="display:flex; gap:8px;">
-                        <button class="btn-ghost" id="aiCopyLinkBtn" disabled onclick="copyLastAiLink()"><i class="fa-solid fa-copy"></i> Copy Link & Pass</button>
-                        <button class="btn-cta" id="aiTestVaultBtn" disabled onclick="testLastAiInVault()"><i class="fa-solid fa-shield-halved"></i> Open in Vault</button>
+                        <button class="btn-secondary" id="aiCopyLinkBtn" disabled onclick="copyLastAiLink()"><i class="fa-solid fa-copy"></i> Copy Link & Pass</button>
+                        <button class="btn-primary" id="aiTestVaultBtn" disabled onclick="testLastAiInVault()"><i class="fa-solid fa-arrow-up-right-from-square"></i> Verify in Vault</button>
                     </div>
                 </div>
             </div>
@@ -549,47 +843,47 @@
     </section>
 
     <!-- ======================================================================
-         FEATURE 2: BULK CERTIFICATE BUILDER & CSV ENGINE
+         02. BULK CERTIFICATE ENGINE
          ====================================================================== -->
-    <section id="bulkStage" class="feature-stage">
-        <div class="stage-top-bar">
-            <div class="stage-title-group">
-                <h2>Bulk Certificate Builder, CSV & Script Engine</h2>
-                <p>Generate N certificates by CSV, name list, or script with custom theme, logo, signature, per-certificate passwords, and QR links.</p>
+    <section id="bulkStage" class="stage-wrapper">
+        <div class="stage-header">
+            <div>
+                <h2>Bulk Certificate Engine</h2>
+                <p>Issue multi-recipient batches via CSV, roster list, or script with individual access passwords and QR codes.</p>
             </div>
-            <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+            <button class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
         </div>
 
-        <div class="bulk-grid">
-            <div class="box-card">
-                <label>Generation Mode</label>
+        <div class="two-col-studio">
+            <div class="panel-surface">
+                <label class="field-label">Batch Input Mode</label>
                 <select id="bulkMode" onchange="toggleBulkScriptInput()">
-                    <option value="names">From Names / Roles / Passwords (One per line)</option>
-                    <option value="csv">From CSV File Upload (name,role,password)</option>
-                    <option value="count">Generate Exact Number (N Certificates)</option>
-                    <option value="script">From Custom JS Script</option>
+                    <option value="names">Participant Roster (Name | Role | Optional Password)</option>
+                    <option value="csv">CSV File Upload (name,role,password)</option>
+                    <option value="count">Fixed Quantity (N Certificates)</option>
+                    <option value="script">Custom JavaScript Generator</option>
                 </select>
 
                 <div id="bulkNamesBox">
-                    <label>Participants (One per line: Name | Role | OptionalPassword)</label>
+                    <label class="field-label">Roster Entries (One per line)</label>
                     <textarea id="bulkNamesInput" rows="4" placeholder="Priyanshu Aryan | AI Track Lead | PRIY-101&#10;Nikunj Singh | Event Co-Organizer&#10;Nisha Bharti | Community Lead"></textarea>
                 </div>
 
                 <div id="bulkCsvBox" style="display:none;">
-                    <label>Upload CSV File (Columns: name, role, password)</label>
-                    <input type="file" id="bulkCsvFile" accept=".csv,text/csv" onchange="handleCsvFileUpload(event)" style="padding:6px;">
-                    <p id="bulkCsvStatus" style="font-size:0.76rem; color:var(--accent); font-weight:700; margin-bottom:10px;">Example: Aditya Kumar,Lead Organizer,ADK-2026</p>
+                    <label class="field-label">Upload CSV File</label>
+                    <input type="file" id="bulkCsvFile" accept=".csv,text/csv" onchange="handleCsvFileUpload(event)">
+                    <p id="bulkCsvStatus" style="font-size:0.76rem; color:var(--accent); font-weight:600; margin-bottom:10px;">Columns: name, role, password</p>
                 </div>
 
                 <div id="bulkCountBox" style="display:none;">
-                    <label>Number of Certificates to Generate</label>
+                    <label class="field-label">Number of Certificates</label>
                     <input type="number" id="bulkCountInput" value="5" min="1" max="200">
-                    <label>Base Credential Title</label>
+                    <label class="field-label">Credential Title</label>
                     <input type="text" id="bulkBasePrompt" value="Hoknex Builder Credential 2026">
                 </div>
 
                 <div id="bulkScriptBox" style="display:none;">
-                    <label>Script (Return array of { name, role, password })</label>
+                    <label class="field-label">Generator Script</label>
                     <textarea id="bulkScriptInput" rows="5">return [
   { name: "Rohan Sharma", role: "Hackathon Finalist", password: "ROH-101" },
   { name: "Ananya Verma", role: "Design Lead", password: "ANA-202" },
@@ -597,35 +891,35 @@
 ];</textarea>
                 </div>
 
-                <label>Custom Background Theme Image (For Batch)</label>
-                <input type="file" id="bulkBgUpload" accept="image/*" onchange="handleBgThemeUpload(event, 'bulk')" style="padding:6px;">
-                <img id="bulkBgPreview" class="theme-thumb-preview" alt="Bulk Background Preview">
+                <label class="field-label">Batch Background Image (Optional)</label>
+                <input type="file" id="bulkBgUpload" accept="image/*" onchange="handleBgThemeUpload(event, 'bulk')">
+                <img id="bulkBgPreview" class="bg-preview-thumb" alt="Batch Background Preview">
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div>
-                        <label>Upload Logo</label>
-                        <input type="file" accept="image/*" onchange="handleAssetUpload(event, 'logo')" style="padding:6px;">
+                        <label class="field-label">Organization Logo</label>
+                        <input type="file" accept="image/*" onchange="handleAssetUpload(event, 'logo')">
                     </div>
                     <div>
-                        <label>Upload Signature</label>
-                        <input type="file" accept="image/*" onchange="handleAssetUpload(event, 'sig')" style="padding:6px;">
+                        <label class="field-label">Authorized Signature</label>
+                        <input type="file" accept="image/*" onchange="handleAssetUpload(event, 'sig')">
                     </div>
                 </div>
 
-                <label>Default Password Prefix (If password left blank)</label>
+                <label class="field-label">Auto-Password Prefix</label>
                 <input type="text" id="bulkPassPrefix" value="HKX-">
 
-                <button class="btn-cta" style="width:100%; justify-content:center;" onclick="generateBulkCertificates()">
-                    <i class="fa-solid fa-gears"></i> Generate Bulk Certificates
+                <button class="btn-primary" style="width:100%; justify-content:center;" onclick="generateBulkCertificates()">
+                    <i class="fa-solid fa-gears"></i> Issue Bulk Batch
                 </button>
             </div>
 
-            <div class="box-card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-                    <h3 style="font-family:'Playfair Display',serif; font-size:1.25rem;">Generated Bulk Batch (<span id="bulkCountBadge">0</span>)</h3>
+            <div class="panel-surface">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                    <h3 style="font-family:'Playfair Display',serif; font-size:1.3rem;">Issued Batch (<span id="bulkCountBadge">0</span>)</h3>
                     <div style="display:flex; gap:8px;">
-                        <button class="btn-ghost" onclick="guardedDownload(() => exportBulkCredentialsCSV())"><i class="fa-solid fa-file-csv"></i> Download CSV</button>
-                        <button class="btn-ghost" onclick="guardedDownload(() => exportAllBulkPDF())"><i class="fa-solid fa-file-pdf"></i> Download All PDF</button>
+                        <button class="btn-secondary" onclick="exportBulkCredentialsCSV()"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+                        <button class="btn-secondary" onclick="exportAllBulkPDF()"><i class="fa-solid fa-file-pdf"></i> Export All PDF</button>
                     </div>
                 </div>
                 <div style="overflow-x:auto;">
@@ -633,14 +927,14 @@
                         <thead>
                             <tr>
                                 <th>Recipient</th>
-                                <th>Cert ID</th>
+                                <th>ID</th>
                                 <th>Password</th>
-                                <th>QR Code</th>
+                                <th>QR</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="bulkTableBody">
-                            <tr><td colspan="5" style="color:var(--ink-muted); text-align:center;">No batch generated yet.</td></tr>
+                            <tr><td colspan="5" style="color:var(--ink-muted); text-align:center; padding:2rem;">No certificates issued yet.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -649,111 +943,111 @@
     </section>
 
     <!-- ======================================================================
-         FEATURE 3: POSTER, BANNER & THUMBNAIL STUDIO
+         03. POSTER, BANNER & THUMBNAIL STUDIO
          ====================================================================== -->
-    <section id="posterStage" class="feature-stage">
-        <div class="stage-top-bar">
-            <div class="stage-title-group">
+    <section id="posterStage" class="stage-wrapper">
+        <div class="stage-header">
+            <div>
                 <h2>Poster, Banner & Thumbnail Studio</h2>
-                <p>Dedicated presets for Event Posters, Banners, and Thumbnails with high-resolution download.</p>
+                <p>Calibrated dimensions for print posters, widescreen banners, and media thumbnails.</p>
             </div>
-            <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+            <button class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
         </div>
 
-        <div class="box-card" style="display:grid; grid-template-columns:300px 1fr; gap:20px;">
+        <div class="panel-surface" style="display:grid; grid-template-columns:300px 1fr; gap:20px;">
             <div>
-                <label>Select Format</label>
+                <label class="field-label">Canvas Format</label>
                 <select id="posterFormatSelect" onchange="initPosterCanvas()">
                     <option value="poster">Poster (794 × 1123)</option>
                     <option value="banner">Banner (1584 × 396)</option>
                     <option value="thumbnail">Thumbnail (1280 × 720)</option>
                 </select>
-                <label>Badge / Tag</label>
+                <label class="field-label">Eyebrow Tag</label>
                 <input type="text" id="posterBadge" value="HOKNEX OFFICIAL">
-                <label>Headline</label>
+                <label class="field-label">Main Headline</label>
                 <input type="text" id="posterHeadline" value="HOKNEX GLOBAL SUMMIT">
-                <label>Subheadline / Tagline</label>
+                <label class="field-label">Subtitle</label>
                 <input type="text" id="posterSub" value="Where Student Builders Ship the Future">
-                <button class="btn-cta" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="renderPosterTemplate()">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> Apply Layout
+                <button class="btn-primary" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="renderPosterTemplate()">
+                    Update Layout
                 </button>
-                <button class="btn-ghost" style="width:100%; justify-content:center;" onclick="guardedDownload(() => exportPosterPNG())">
+                <button class="btn-secondary" style="width:100%; justify-content:center;" onclick="exportPosterPNG()">
                     <i class="fa-solid fa-download"></i> Download PNG
                 </button>
             </div>
-            <div class="canvas-viewport">
+            <div class="canvas-stage-box">
                 <canvas id="posterCanvas"></canvas>
             </div>
         </div>
     </section>
 
     <!-- ======================================================================
-         FEATURE 4: PRO VECTOR, DRAW & LAYOUT EDITOR (WITH CLOUD SAVE & LOAD)
+         04. PRO CANVAS EDITOR
          ====================================================================== -->
-    <section id="drawStage" class="feature-stage">
-        <div class="stage-top-bar">
-            <div class="stage-title-group">
-                <h2>Pro Vector, Draw & Layout Editor</h2>
-                <p>Draw freehand, place shapes/stars/images/QR stamps, manage layers, undo/redo, save/load cloud projects, and download PNG or PDF.</p>
+    <section id="drawStage" class="stage-wrapper">
+        <div class="stage-header">
+            <div>
+                <h2>Pro Canvas Editor</h2>
+                <p>Multi-layer vector shapes, freehand brushes, typography, QR stamps, and cloud project sync.</p>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn-ghost" onclick="undoDraw()"><i class="fa-solid fa-rotate-left"></i> Undo</button>
-                <button class="btn-ghost" onclick="redoDraw()"><i class="fa-solid fa-rotate-right"></i> Redo</button>
-                <button class="btn-ghost" onclick="saveProProjectToCloud()"><i class="fa-solid fa-cloud-arrow-up"></i> Save Cloud</button>
-                <button class="btn-ghost" onclick="openCloudProjectsModal()"><i class="fa-solid fa-folder-open"></i> Load Cloud</button>
-                <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+                <button class="btn-secondary" onclick="undoDraw()"><i class="fa-solid fa-rotate-left"></i> Undo</button>
+                <button class="btn-secondary" onclick="redoDraw()"><i class="fa-solid fa-rotate-right"></i> Redo</button>
+                <button class="btn-secondary" onclick="saveProProjectToCloud()"><i class="fa-solid fa-cloud-arrow-up"></i> Save</button>
+                <button class="btn-secondary" onclick="openCloudProjectsModal()"><i class="fa-solid fa-folder-open"></i> Projects</button>
+                <button class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
             </div>
         </div>
 
-        <div class="canvas-grid">
-            <div class="box-card">
-                <label>Creation & Vector Tools</label>
-                <div class="tools-4x3">
-                    <div class="mini-tool active" id="mSelect" onclick="setDrawMode('select')"><i class="fa-solid fa-arrow-pointer"></i>Select</div>
-                    <div class="mini-tool" id="mBrush" onclick="setDrawMode('draw')"><i class="fa-solid fa-paintbrush"></i>Brush</div>
-                    <div class="mini-tool" onclick="addCanvasText()"><i class="fa-solid fa-font"></i>Text</div>
-                    <div class="mini-tool" onclick="addCanvasRect()"><i class="fa-regular fa-square"></i>Box</div>
-                    <div class="mini-tool" onclick="addCanvasCircle()"><i class="fa-regular fa-circle"></i>Circle</div>
-                    <div class="mini-tool" onclick="addCanvasStar()"><i class="fa-regular fa-star"></i>Badge</div>
-                    <div class="mini-tool" onclick="document.getElementById('proImgUpload').click()"><i class="fa-regular fa-image"></i>Image</div>
-                    <div class="mini-tool" onclick="insertQrStampOnProCanvas()"><i class="fa-solid fa-qrcode"></i>QR Stamp</div>
-                    <div class="mini-tool" onclick="duplicateDrawObj()"><i class="fa-regular fa-copy"></i>Clone</div>
+        <div class="three-col-editor">
+            <div class="panel-surface">
+                <label class="field-label">Tools</label>
+                <div class="tool-grid">
+                    <div class="tool-cell active" id="mSelect" onclick="setDrawMode('select')"><i class="fa-solid fa-arrow-pointer"></i>Select</div>
+                    <div class="tool-cell" id="mBrush" onclick="setDrawMode('draw')"><i class="fa-solid fa-paintbrush"></i>Brush</div>
+                    <div class="tool-cell" onclick="addCanvasText()"><i class="fa-solid fa-font"></i>Text</div>
+                    <div class="tool-cell" onclick="addCanvasRect()"><i class="fa-regular fa-square"></i>Box</div>
+                    <div class="tool-cell" onclick="addCanvasCircle()"><i class="fa-regular fa-circle"></i>Circle</div>
+                    <div class="tool-cell" onclick="addCanvasStar()"><i class="fa-regular fa-star"></i>Badge</div>
+                    <div class="tool-cell" onclick="document.getElementById('proImgUpload').click()"><i class="fa-regular fa-image"></i>Image</div>
+                    <div class="tool-cell" onclick="insertQrStampOnProCanvas()"><i class="fa-solid fa-qrcode"></i>QR Stamp</div>
+                    <div class="tool-cell" onclick="duplicateDrawObj()"><i class="fa-regular fa-copy"></i>Clone</div>
                 </div>
                 <input type="file" id="proImgUpload" accept="image/*" style="display:none" onchange="uploadImageToProCanvas(event)">
 
-                <div style="display:flex; gap:8px; margin-top:14px;">
-                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="drawCanvas.bringForward(drawCanvas.getActiveObject()); refreshLayersList();">Front</button>
-                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="drawCanvas.sendBackwards(drawCanvas.getActiveObject()); refreshLayersList();">Back</button>
-                    <button class="btn-danger" style="flex:1; justify-content:center;" onclick="delDrawObj()">Del</button>
+                <div style="display:flex; gap:6px; margin-top:12px;">
+                    <button class="btn-secondary" style="flex:1; justify-content:center;" onclick="drawCanvas.bringForward(drawCanvas.getActiveObject()); refreshLayersList();">Front</button>
+                    <button class="btn-secondary" style="flex:1; justify-content:center;" onclick="drawCanvas.sendBackwards(drawCanvas.getActiveObject()); refreshLayersList();">Back</button>
+                    <button class="btn-danger-subtle" style="flex:1; justify-content:center;" onclick="delDrawObj()">Delete</button>
                 </div>
 
                 <div style="margin-top:14px;">
-                    <label>Layers Inspector</label>
-                    <div class="layers-list" id="proLayersList">
+                    <label class="field-label">Layers</label>
+                    <div class="layers-stack" id="proLayersList">
                         <div style="font-size:0.75rem; color:var(--ink-muted);">No layers yet.</div>
                     </div>
                 </div>
 
-                <div style="display:flex; gap:8px; margin-top:12px;">
-                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="guardedDownload(() => exportDrawPNG())"><i class="fa-solid fa-image"></i> PNG</button>
-                    <button class="btn-cta" style="flex:1; justify-content:center;" onclick="guardedDownload(() => exportDrawPDF())"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                <div style="display:flex; gap:8px; margin-top:14px;">
+                    <button class="btn-secondary" style="flex:1; justify-content:center;" onclick="exportDrawPNG()"><i class="fa-solid fa-image"></i> PNG</button>
+                    <button class="btn-primary" style="flex:1; justify-content:center;" onclick="exportDrawPDF()"><i class="fa-solid fa-file-pdf"></i> PDF</button>
                 </div>
             </div>
 
-            <div class="canvas-viewport">
+            <div class="canvas-stage-box">
                 <canvas id="drawCanvas"></canvas>
             </div>
 
-            <div class="box-card">
-                <label>Fill & Brush Color</label>
-                <input type="color" id="drawColor" value="#2563EB" onchange="updateDrawColor(this.value)" style="height:38px; padding:4px;">
-                <label>Stroke / Outline Color</label>
-                <input type="color" id="drawStrokeColor" value="#18181B" onchange="updateDrawStroke(this.value)" style="height:38px; padding:4px;">
-                <label>Brush Thickness</label>
+            <div class="panel-surface">
+                <label class="field-label">Fill & Brush Color</label>
+                <input type="color" id="drawColor" value="#2563EB" onchange="updateDrawColor(this.value)" style="height:36px; padding:3px;">
+                <label class="field-label">Stroke Color</label>
+                <input type="color" id="drawStrokeColor" value="#18181B" onchange="updateDrawStroke(this.value)" style="height:36px; padding:3px;">
+                <label class="field-label">Brush Size</label>
                 <input type="range" id="drawSize" min="1" max="45" value="5" oninput="drawCanvas.freeDrawingBrush.width = parseInt(this.value,10)">
-                <label>Layer Opacity</label>
+                <label class="field-label">Opacity</label>
                 <input type="range" id="drawOpacity" min="0.1" max="1" step="0.05" value="1" oninput="updateDrawOpacity(this.value)">
-                <label>Font Family</label>
+                <label class="field-label">Typeface</label>
                 <select onchange="updateDrawFont(this.value)">
                     <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
                     <option value="Playfair Display">Playfair Display</option>
@@ -761,203 +1055,161 @@
                     <option value="Space Grotesk">Space Grotesk</option>
                 </select>
                 <div style="display:flex; gap:6px; margin-bottom:12px;">
-                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="toggleDrawBold()"><i class="fa-solid fa-bold"></i></button>
-                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="toggleDrawItalic()"><i class="fa-solid fa-italic"></i></button>
-                    <button class="btn-ghost" style="flex:1; justify-content:center;" onclick="toggleDrawUnderline()"><i class="fa-solid fa-underline"></i></button>
+                    <button class="btn-secondary" style="flex:1; justify-content:center;" onclick="toggleDrawBold()"><i class="fa-solid fa-bold"></i></button>
+                    <button class="btn-secondary" style="flex:1; justify-content:center;" onclick="toggleDrawItalic()"><i class="fa-solid fa-italic"></i></button>
+                    <button class="btn-secondary" style="flex:1; justify-content:center;" onclick="toggleDrawUnderline()"><i class="fa-solid fa-underline"></i></button>
                 </div>
-                <label>Canvas Background</label>
-                <input type="color" id="drawBg" value="#FFFFFF" onchange="drawCanvas.setBackgroundColor(this.value, drawCanvas.renderAll.bind(drawCanvas))" style="height:38px; padding:4px;">
+                <label class="field-label">Canvas Background</label>
+                <input type="color" id="drawBg" value="#FFFFFF" onchange="drawCanvas.setBackgroundColor(this.value, drawCanvas.renderAll.bind(drawCanvas))" style="height:36px; padding:3px;">
             </div>
         </div>
     </section>
 
     <!-- ======================================================================
-         FEATURE 5: MULTI-PAGE PDF & IMAGE DOCUMENT EDITOR
+         05. MULTI-PAGE PDF EDITOR
          ====================================================================== -->
-    <section id="docStage" class="feature-stage">
-        <div class="stage-top-bar">
-            <div class="stage-title-group">
+    <section id="docStage" class="stage-wrapper">
+        <div class="stage-header">
+            <div>
                 <h2>Multi-Page PDF & Document Editor</h2>
-                <p>Upload any multi-page PDF or image, switch pages smoothly, annotate or sign each page, and download PDF.</p>
+                <p>Navigate multi-page PDF files, annotate or sign individual pages, and export a compiled document.</p>
             </div>
-            <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+            <button class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
         </div>
 
-        <div class="box-card" style="display:grid; grid-template-columns:310px 1fr; gap:20px; align-items:start;">
+        <div class="panel-surface" style="display:grid; grid-template-columns:310px 1fr; gap:20px; align-items:start;">
             <div>
-                <label>Upload PDF or Image</label>
+                <label class="field-label">Select PDF or Image</label>
                 <input type="file" id="origDocFile" accept="image/*,.pdf" onchange="loadOriginalDoc(event)">
 
-                <div id="pdfPageNav" style="display:none; background:var(--bg-main); border:1px solid var(--border-subtle); border-radius:14px; padding:12px; margin-bottom:14px;">
-                    <label style="margin-bottom:8px;">PDF Page Navigation</label>
+                <div id="pdfPageNav" style="display:none; background:var(--bg-main); border:1px solid var(--border-hairline); border-radius:12px; padding:12px; margin-bottom:14px;">
+                    <label class="field-label" style="margin-bottom:8px;">Page Navigation</label>
                     <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
-                        <button type="button" class="btn-ghost" id="prevPdfPageBtn" onclick="changePdfPage(-1)" disabled>
+                        <button type="button" class="btn-secondary" id="prevPdfPageBtn" onclick="changePdfPage(-1)" disabled>
                             <i class="fa-solid fa-chevron-left"></i> Prev
                         </button>
-                        <span id="pdfPageIndicator" style="font-size:0.82rem; font-weight:800; color:var(--accent);">Page 1 of 1</span>
-                        <button type="button" class="btn-ghost" id="nextPdfPageBtn" onclick="changePdfPage(1)" disabled>
+                        <span id="pdfPageIndicator" style="font-size:0.82rem; font-weight:700; color:var(--accent);">Page 1 of 1</span>
+                        <button type="button" class="btn-secondary" id="nextPdfPageBtn" onclick="changePdfPage(1)" disabled>
                             Next <i class="fa-solid fa-chevron-right"></i>
                         </button>
                     </div>
                 </div>
 
-                <button type="button" class="btn-ghost" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="addDocAnnotation()">
-                    <i class="fa-solid fa-plus"></i> Add Editable Text Layer
+                <button type="button" class="btn-secondary" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="addDocAnnotation()">
+                    <i class="fa-solid fa-plus"></i> Insert Text Note
                 </button>
-                <button type="button" class="btn-ghost" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="toggleDocBrush()">
-                    <i class="fa-solid fa-marker"></i> Toggle Pen / Highlighter
+                <button type="button" class="btn-secondary" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="toggleDocBrush()">
+                    <i class="fa-solid fa-pen"></i> Toggle Freehand Pen
                 </button>
-                <button type="button" class="btn-cta" style="width:100%; justify-content:center;" onclick="guardedDownload(() => exportEditedDocPDF())">
-                    <i class="fa-solid fa-file-pdf"></i> Download Edited PDF
+                <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="exportEditedDocPDF()">
+                    <i class="fa-solid fa-file-pdf"></i> Export PDF
                 </button>
             </div>
 
-            <div class="canvas-viewport">
+            <div class="canvas-stage-box">
                 <canvas id="docCanvas"></canvas>
             </div>
         </div>
     </section>
 
     <!-- ======================================================================
-         FEATURE 6: PASSWORD-PROTECTED QR & LINK VAULT
+         06. CERTIFICATE QR VAULT
          ====================================================================== -->
-    <section id="vaultStage" class="feature-stage">
-        <div class="stage-top-bar">
-            <div class="stage-title-group">
-                <h2>Hoknex Password-Protected QR Vault</h2>
-                <p>Scan a certificate QR code or open a shared link—enter its password to unlock and download the certificate.</p>
+    <section id="vaultStage" class="stage-wrapper">
+        <div class="stage-header">
+            <div>
+                <h2>Certificate Verification Vault</h2>
+                <p>Enter the certificate ID and password from any device to view and download the verified credential.</p>
             </div>
-            <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
+            <button class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
         </div>
 
-        <div class="vault-layout">
-            <div class="box-card">
-                <label>Certificate ID (Auto-filled from QR / Link)</label>
-                <input type="text" id="vaultCertId" placeholder="e.g. HKX-A1B2C3">
+        <div class="two-col-studio" style="grid-template-columns: 390px 1fr;">
+            <div class="panel-surface">
+                <label class="field-label">Certificate ID</label>
+                <input type="text" id="vaultCertId" placeholder="HKX-XXXXXX">
 
-                <label>Certificate Password</label>
-                <input type="password" id="vaultPassword" placeholder="Enter unique password for this certificate" onkeydown="if(event.key==='Enter') unlockCertificate()">
+                <label class="field-label">Certificate Password</label>
+                <input type="password" id="vaultPassword" placeholder="Enter password" onkeydown="if(event.key==='Enter') unlockCertificate()">
 
-                <button class="btn-cta" style="width:100%; justify-content:center; margin-bottom:14px;" onclick="unlockCertificate()">
-                    <i class="fa-solid fa-unlock"></i> Unlock Certificate
+                <button class="btn-primary" style="width:100%; justify-content:center; margin-bottom:14px;" onclick="unlockCertificate()">
+                    <i class="fa-solid fa-unlock"></i> Unlock Credential
                 </button>
 
-                <div id="vaultResultBox" style="display:none; padding-top:14px; border-top:1px solid var(--border-subtle);">
+                <div id="vaultResultBox" style="display:none; padding-top:14px; border-top:1px solid var(--border-hairline);">
                     <h3 id="vaultCertTitle" style="font-family:'Playfair Display',serif; font-size:1.25rem;"></h3>
-                    <p id="vaultCertRecipient" style="color:var(--accent); font-weight:800; font-size:1rem; margin:6px 0;"></p>
+                    <p id="vaultCertRecipient" style="color:var(--accent); font-weight:700; font-size:0.98rem; margin:4px 0;"></p>
                     <p id="vaultCertMeta" style="color:var(--ink-muted); font-size:0.78rem; margin-bottom:12px;"></p>
 
                     <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
-                        <div id="vaultQrContainer" class="qr-box"></div>
-                        <span style="font-size:0.75rem; color:var(--ink-muted); font-weight:600;">Scannable QR code embedded on certificate.</span>
+                        <div id="vaultQrContainer" class="qr-frame"></div>
+                        <span style="font-size:0.76rem; color:var(--ink-muted);">Verified QR credential ready for export.</span>
                     </div>
 
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button class="btn-ghost" onclick="guardedDownload(() => downloadUnlockedCertPNG())"><i class="fa-solid fa-image"></i> Download PNG</button>
-                        <button class="btn-cta" onclick="guardedDownload(() => downloadUnlockedCertPDF())"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                        <button class="btn-secondary" onclick="downloadUnlockedCertPNG()"><i class="fa-solid fa-image"></i> Download PNG</button>
+                        <button class="btn-primary" onclick="downloadUnlockedCertPDF()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
                     </div>
                 </div>
 
-                <!-- Issued Certificates Quick Ledger -->
-                <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--border-subtle);">
-                    <label>Your Issued Certificates (This Device)</label>
-                    <div id="vaultHistoryList" style="display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto;"></div>
+                <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--border-hairline);">
+                    <label class="field-label">Recent Credentials on This Device</label>
+                    <div id="vaultHistoryList" class="layers-stack"></div>
                 </div>
             </div>
 
-            <div class="canvas-viewport">
+            <div class="canvas-stage-box">
                 <canvas id="vaultCanvas"></canvas>
             </div>
         </div>
     </section>
 
     <!-- ======================================================================
-         CLOUD PROJECTS LOADER MODAL (LOAD, INLINE RENAME & DELETE)
+         SAVED PROJECTS MODAL
          ====================================================================== -->
     <div class="modal-backdrop" id="cloudProjectsModal" onclick="if(event.target === this) closeCloudProjectsModal()">
-        <div class="modal-card" style="max-width:540px;">
+        <div class="modal-box">
             <button onclick="closeCloudProjectsModal()" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink-muted);">&times;</button>
-            <h3 style="font-family:'Playfair Display',serif; font-size:1.45rem; margin-bottom:4px;">Hoknex Cloud Projects</h3>
-            <p style="font-size:0.8rem; color:var(--ink-muted); margin-bottom:14px;">Load, rename inline, or delete saved canvas projects from Hoknex Studio.</p>
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.45rem; margin-bottom:4px;">Saved Studio Projects</h3>
+            <p style="font-size:0.82rem; color:var(--ink-muted); margin-bottom:14px;">Load, rename, or remove saved canvas projects.</p>
 
-            <div id="cloudProjectsList" style="display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto;">
-                <div style="font-size:0.82rem; color:var(--ink-muted);">Loading saved projects...</div>
+            <div id="cloudProjectsList" class="layers-stack" style="max-height:340px;">
+                <div style="font-size:0.82rem; color:var(--ink-muted);">Loading projects...</div>
             </div>
-        </div>
-    </div>
-
-    <!-- ======================================================================
-         ACCOUNT MODAL (SIGN IN / SIGN UP FOR DOWNLOADS + DELETE ACCOUNT ANYTIME)
-         ====================================================================== -->
-    <div class="modal-backdrop" id="authModal" onclick="if(event.target === this) closeAuthModal()">
-        <div class="modal-card">
-            <button onclick="closeAuthModal()" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink-muted);">&times;</button>
-            <h3 style="font-family:'Playfair Display',serif; font-size:1.45rem; margin-bottom:4px;">Hoknex Studio Account</h3>
-            <p style="font-size:0.8rem; color:var(--ink-muted); margin-bottom:14px;">Editing is 100% free. Sign up or sign in to download files—or delete your account anytime.</p>
-
-            <div class="auth-tabs">
-                <button class="auth-tab active" id="tabBtnSignup" onclick="switchAuthMode('signup')">Sign Up</button>
-                <button class="auth-tab" id="tabBtnSignin" onclick="switchAuthMode('signin')">Sign In</button>
-                <button class="auth-tab" id="tabBtnDelete" onclick="switchAuthMode('delete')">Delete Account</button>
-            </div>
-
-            <form id="formSignup" onsubmit="handleSignup(event)">
-                <label>Full Name</label>
-                <input type="text" id="suName" required placeholder="Aditya Kumar">
-                <label>Email Address</label>
-                <input type="email" id="suEmail" required placeholder="you@hoknex.edu">
-                <label>Create Password</label>
-                <input type="password" id="suPass" required minlength="4" placeholder="At least 4 characters">
-                <button type="submit" class="btn-cta" style="width:100%; justify-content:center;">Create Account & Download</button>
-            </form>
-
-            <form id="formSignin" style="display:none;" onsubmit="handleSignin(event)">
-                <label>Email Address</label>
-                <input type="email" id="siEmail" required placeholder="you@hoknex.edu">
-                <label>Password</label>
-                <input type="password" id="siPass" required placeholder="Your password">
-                <button type="submit" class="btn-cta" style="width:100%; justify-content:center;">Sign In & Download</button>
-            </form>
-
-            <form id="formDelete" style="display:none;" onsubmit="handleDeleteAccount(event)">
-                <p style="font-size:0.8rem; color:#DC2626; font-weight:700; margin-bottom:12px;">
-                    This permanently deletes your Hoknex Studio account and saved projects immediately.
-                </p>
-                <label>Account Email</label>
-                <input type="email" id="delEmail" required placeholder="you@hoknex.edu">
-                <label>Confirm Password</label>
-                <input type="password" id="delPass" required placeholder="Enter your password to confirm">
-                <button type="submit" class="btn-danger" style="width:100%; justify-content:center;">Permanently Delete My Account</button>
-            </form>
         </div>
     </div>
 
     <script>
-        const STUDIO_API = (window.location.port === '5050')
-            ? `${window.location.origin}/api/studio`
-            : 'http://localhost:5050/api/studio';
+        // Automatically connects to the live published domain in production, or Render/localhost fallback
+        const STUDIO_API = (() => {
+            const { protocol, hostname, port, origin } = window.location;
+            if (port === '5050') return `${origin}/api/studio`;
+            if (hostname === 'localhost' || hostname === '127.0.0.1' || protocol === 'file:') {
+                return 'http://localhost:5050/api/studio';
+            }
+            return `${origin}/api/studio`;
+        })();
+
+        const FALLBACK_PUBLIC_API = 'https://hoknex-backend.onrender.com/api/studio';
 
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         const PALETTES = {
             gallery:   { bg: '#FAF9F6', surface: '#FFFFFF', ink: '#18181B', muted: '#71717A', accent: '#2563EB', secondary: '#0D9488' },
-            editorial: { bg: '#111111', surface: '#1E1E1E', ink: '#F4F4F5', muted: '#A1A1AA', accent: '#F59E0B', secondary: '#A855F7' },
+            editorial: { bg: '#111111', surface: '#1A1A1A', ink: '#F4F4F5', muted: '#A1A1AA', accent: '#F59E0B', secondary: '#A855F7' },
             tactile:   { bg: '#FBF7F2', surface: '#FFFFFF', ink: '#27221F', muted: '#6B5E55', accent: '#B45309', secondary: '#A3B18A' }
         };
 
         const AI_STYLES = {
-            gold:    { bg: '#0C0A09', surface: 'rgba(28, 25, 23, 0.92)', ink: '#FEFCE8', muted: '#D6D3D1', accent: '#EAB308', badge: 'HOKNEX DISTINCTION' },
-            cyber:   { bg: '#050811', surface: 'rgba(15, 23, 42, 0.90)', ink: '#FFFFFF', muted: '#94A3B8', accent: '#00F0FF', badge: 'HOKNEX INNOVATION' },
-            minimal: { bg: '#FAF9F6', surface: 'rgba(255, 255, 255, 0.92)', ink: '#18181B', muted: '#52525B', accent: '#2563EB', badge: 'HOKNEX OFFICIAL' },
-            tactile: { bg: '#FBF7F2', surface: 'rgba(255, 255, 255, 0.92)', ink: '#27221F', muted: '#6B5E55', accent: '#B45309', badge: 'HOKNEX HONORS' }
+            gold:    { bg: '#0C0A09', surface: 'rgba(28, 25, 23, 0.94)', ink: '#FEFCE8', muted: '#D6D3D1', accent: '#EAB308', badge: 'HOKNEX DISTINCTION' },
+            cyber:   { bg: '#050811', surface: 'rgba(15, 23, 42, 0.92)', ink: '#FFFFFF', muted: '#94A3B8', accent: '#00F0FF', badge: 'HOKNEX INNOVATION' },
+            minimal: { bg: '#FAF9F6', surface: 'rgba(255, 255, 255, 0.94)', ink: '#18181B', muted: '#52525B', accent: '#2563EB', badge: 'HOKNEX OFFICIAL' },
+            tactile: { bg: '#FBF7F2', surface: 'rgba(255, 255, 255, 0.94)', ink: '#27221F', muted: '#6B5E55', accent: '#B45309', badge: 'HOKNEX HONORS' }
         };
 
-        const LOCAL_VAULT_KEY = 'hoknex_vault_v3';
-        const SESSION_KEY = 'hoknex_studio_user_v1';
+        const LOCAL_VAULT_KEY = 'hoknex_vault_v4';
 
         let currentTheme = 'gallery';
-        let pendingDownloadCallback = null;
-
         let aiBgThemeURL = null;
         let aiSingleLogoURL = null;
         let aiSingleSigURL = null;
@@ -977,12 +1229,12 @@
         const vaultCanvas = new fabric.Canvas('vaultCanvas', { width: 720, height: 510, backgroundColor: '#FAF9F6' });
 
         function showToast(msg) {
-            const c = document.getElementById('toastContainer');
-            const el = document.createElement('div');
-            el.className = 'toast-msg';
-            el.textContent = msg;
-            c.appendChild(el);
-            setTimeout(() => el.remove(), 3400);
+            const stack = document.getElementById('toastStack');
+            const item = document.createElement('div');
+            item.className = 'toast-item';
+            item.textContent = msg;
+            stack.appendChild(item);
+            setTimeout(() => item.remove(), 3400);
         }
 
         function escapeHtmlText(str) {
@@ -993,188 +1245,79 @@
                 .replace(/"/g, '&quot;');
         }
 
-        async function checkStudioServerHealth() {
-            const dot = document.getElementById('serverStatusDot');
-            const txt = document.getElementById('serverStatusText');
+        // ====================================================================
+        // CROSS-DEVICE PORTABLE CREDENTIAL ENCODING (WORKS ON ANY DEVICE)
+        // ====================================================================
+        function encodeCertToken(cert) {
+            const payload = {
+                i: cert.certId,
+                p: cert.password,
+                r: cert.recipient,
+                t: cert.title,
+                d: cert.description,
+                s: cert.issuer || 'Hoknex',
+                dt: cert.date,
+                th: cert.themeKey || 'gallery'
+            };
+            const json = JSON.stringify(payload);
+            return btoa(unescape(encodeURIComponent(json)))
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/, '');
+        }
+
+        function decodeCertToken(hashStr) {
             try {
-                const res = await fetch(`${STUDIO_API}/health`);
-                if (res.ok) {
-                    dot.classList.remove('offline');
-                    txt.textContent = 'Server Connected';
-                    return;
-                }
-            } catch (_) {}
-            dot.classList.add('offline');
-            txt.textContent = 'Browser + QR Mode';
-        }
-
-        // ====================================================================
-        // ACCOUNT MANAGEMENT (FREE EDIT, ACCOUNT REQUIRED TO DOWNLOAD, DELETE ANYTIME)
-        // ====================================================================
-        function getCurrentUser() {
-            try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
-        }
-
-        function setCurrentUser(u) {
-            if (u) localStorage.setItem(SESSION_KEY, JSON.stringify(u));
-            else localStorage.removeItem(SESSION_KEY);
-            syncAccountUI();
-        }
-
-        function syncAccountUI() {
-            const user = getCurrentUser();
-            const badge = document.getElementById('accountBadge');
-            const label = document.getElementById('authNavLabel');
-            const delBtn = document.getElementById('deleteAccNavBtn');
-
-            if (user) {
-                badge.style.display = 'inline';
-                badge.textContent = `● ${user.name}`;
-                label.textContent = 'Switch Account';
-                delBtn.style.display = 'inline-flex';
-            } else {
-                badge.style.display = 'none';
-                label.textContent = 'Sign In / Sign Up';
-                delBtn.style.display = 'none';
+                if (!hashStr || !hashStr.includes('v=')) return null;
+                const rawParam = new URLSearchParams(hashStr.replace(/^#/, '')).get('v');
+                if (!rawParam) return null;
+                let b64 = rawParam.replace(/-/g, '+').replace(/_/g, '/');
+                while (b64.length % 4) b64 += '=';
+                const json = decodeURIComponent(escape(atob(b64)));
+                const m = JSON.parse(json);
+                return {
+                    certId: m.i,
+                    password: m.p,
+                    recipient: m.r,
+                    title: m.t,
+                    description: m.d,
+                    issuer: m.s || 'Hoknex',
+                    date: m.dt,
+                    themeKey: m.th || 'gallery'
+                };
+            } catch {
+                return null;
             }
         }
 
-        function openAuthModal(mode = 'signup') {
-            switchAuthMode(mode);
-            document.getElementById('authModal').style.display = 'flex';
-        }
-
-        function closeAuthModal() {
-            document.getElementById('authModal').style.display = 'none';
-            pendingDownloadCallback = null;
-        }
-
-        function switchAuthMode(mode) {
-            ['signup', 'signin', 'delete'].forEach(m => {
-                document.getElementById(`tabBtn${m[0].toUpperCase() + m.slice(1)}`).classList.toggle('active', m === mode);
-            });
-            document.getElementById('formSignup').style.display = mode === 'signup' ? 'block' : 'none';
-            document.getElementById('formSignin').style.display = mode === 'signin' ? 'block' : 'none';
-            document.getElementById('formDelete').style.display = mode === 'delete' ? 'block' : 'none';
-        }
-
-        function guardedDownload(actionFn) {
-            const user = getCurrentUser();
-            if (user && user.email) {
-                actionFn();
-                return;
+        function buildPublicCertUrl(cert) {
+            const base = `${window.location.origin}${window.location.pathname}`;
+            const certId = typeof cert === 'string' ? cert : cert.certId;
+            if (typeof cert === 'object' && cert.password) {
+                const token = encodeCertToken(cert);
+                return `${base}?id=${encodeURIComponent(certId.toUpperCase())}#v=${token}`;
             }
-            pendingDownloadCallback = actionFn;
-            showToast('Create or sign in to a Hoknex Studio account to download');
-            openAuthModal('signup');
+            return `${base}?id=${encodeURIComponent(String(certId).trim().toUpperCase())}`;
         }
 
-        function finishAuthAndRunPending(userObj) {
-            setCurrentUser(userObj);
-            const cb = pendingDownloadCallback;
-            closeAuthModal();
-            if (typeof cb === 'function') cb();
-        }
+        async function postStudioWithFallback(endpoint, bodyObj) {
+            const endpoints = STUDIO_API === FALLBACK_PUBLIC_API
+                ? [STUDIO_API]
+                : [STUDIO_API, FALLBACK_PUBLIC_API];
 
-        async function handleSignup(e) {
-            e.preventDefault();
-            const name = document.getElementById('suName').value.trim();
-            const email = document.getElementById('suEmail').value.trim();
-            const password = document.getElementById('suPass').value;
-
-            try {
-                const res = await fetch(`${STUDIO_API}/auth/signup`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password })
-                });
-                const data = await res.json();
-                if (res.ok && data.user) {
-                    showToast(`Welcome to Hoknex Studio, ${data.user.name}!`);
-                    finishAuthAndRunPending(data.user);
-                    return;
-                }
-                if (data.error) return showToast(data.error);
-            } catch (_) {}
-
-            const localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}');
-            const key = email.toLowerCase();
-            if (localUsers[key]) return showToast('Account already exists. Please Sign In.');
-            const userObj = { id: Date.now().toString(), name, email: key, password };
-            localUsers[key] = userObj;
-            localStorage.setItem('hoknex_local_users', JSON.stringify(localUsers));
-            showToast(`Account created for ${name}`);
-            finishAuthAndRunPending(userObj);
-        }
-
-        async function handleSignin(e) {
-            e.preventDefault();
-            const email = document.getElementById('siEmail').value.trim();
-            const password = document.getElementById('siPass').value;
-
-            try {
-                const res = await fetch(`${STUDIO_API}/auth/signin`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await res.json();
-                if (res.ok && data.user) {
-                    showToast(`Signed in as ${data.user.name}`);
-                    finishAuthAndRunPending(data.user);
-                    return;
-                }
-                if (data.error) return showToast(data.error);
-            } catch (_) {}
-
-            const localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}');
-            const u = localUsers[email.toLowerCase()];
-            if (u && u.password === password) {
-                showToast(`Signed in as ${u.name}`);
-                finishAuthAndRunPending(u);
-            } else {
-                showToast('Invalid email or password.');
+            for (const base of endpoints) {
+                try {
+                    const res = await fetch(`${base}${endpoint}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(bodyObj)
+                    });
+                    if (res.ok) return await res.json();
+                } catch (_) {}
             }
+            return null;
         }
 
-        async function handleDeleteAccount(e) {
-            e.preventDefault();
-            const email = document.getElementById('delEmail').value.trim();
-            const password = document.getElementById('delPass').value;
-            const current = getCurrentUser();
-
-            try {
-                const res = await fetch(`${STUDIO_API}/auth/delete-account`, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, token: current?.token })
-                });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    setCurrentUser(null);
-                    closeAuthModal();
-                    showToast('Account permanently deleted.');
-                    return;
-                }
-                if (data.error) return showToast(data.error);
-            } catch (_) {}
-
-            const localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}');
-            const key = email.toLowerCase();
-            if (localUsers[key] && localUsers[key].password === password) {
-                delete localUsers[key];
-                localStorage.setItem('hoknex_local_users', JSON.stringify(localUsers));
-                setCurrentUser(null);
-                closeAuthModal();
-                showToast('Account permanently deleted.');
-            } else {
-                showToast('Could not verify account credentials.');
-            }
-        }
-
-        // ====================================================================
-        // SHORT QR URLS + LOCAL & SERVER STORAGE
-        // ====================================================================
         function getLocalCertStore() {
             try { return JSON.parse(localStorage.getItem(LOCAL_VAULT_KEY) || '{}'); } catch { return {}; }
         }
@@ -1194,16 +1337,16 @@
             const store = getLocalCertStore();
             const items = Object.values(store).reverse().slice(0, 12);
             if (!items.length) {
-                box.innerHTML = '<div style="font-size:0.75rem; color:var(--ink-muted);">No certificates issued on this device yet.</div>';
+                box.innerHTML = '<div style="font-size:0.75rem; color:var(--ink-muted);">No credentials issued on this device yet.</div>';
                 return;
             }
             box.innerHTML = items.map(item => `
-                <div class="layer-item" onclick="prefillVault('${escapeHtmlText(item.certId)}', '${escapeHtmlText(item.password)}')">
+                <div class="layer-row" onclick="prefillVault('${escapeHtmlText(item.certId)}', '${escapeHtmlText(item.password)}')">
                     <div>
                         <div>${escapeHtmlText(item.recipient)}</div>
                         <div style="font-size:0.68rem; color:var(--ink-muted);">${escapeHtmlText(item.certId)} • Pass: ${escapeHtmlText(item.password)}</div>
                     </div>
-                    <span style="color:var(--accent); font-size:0.7rem;">Load →</span>
+                    <span style="color:var(--accent); font-size:0.72rem;">Open</span>
                 </div>
             `).join('');
         }
@@ -1214,21 +1357,15 @@
             unlockCertificate();
         }
 
-        function buildShortQrUrl(certId) {
-            const base = `${window.location.origin}${window.location.pathname}`;
-            return `${base}?id=${encodeURIComponent(String(certId).trim().toUpperCase())}`;
-        }
-
         function setTheme(key, btn) {
             currentTheme = key;
             document.documentElement.setAttribute('data-theme', key);
-            document.querySelectorAll('.theme-pill').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.palette-btn').forEach(p => p.classList.remove('active'));
             if (btn) btn.classList.add('active');
-            showToast(`Theme switched to ${key.toUpperCase()}`);
         }
 
         function openHub() {
-            document.querySelectorAll('.feature-stage').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.stage-wrapper').forEach(s => s.classList.remove('active'));
             document.getElementById('hubView').style.display = 'block';
             document.getElementById('backToHubBtn').style.display = 'none';
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1236,7 +1373,7 @@
 
         function openStage(stageId) {
             document.getElementById('hubView').style.display = 'none';
-            document.querySelectorAll('.feature-stage').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.stage-wrapper').forEach(s => s.classList.remove('active'));
             document.getElementById(stageId).classList.add('active');
             document.getElementById('backToHubBtn').style.display = 'inline-flex';
             if (stageId === 'vaultStage') renderVaultHistoryList();
@@ -1244,13 +1381,13 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function renderQRInto(containerEl, url, size = 76) {
+        function renderQRInto(containerEl, url, size = 80) {
             containerEl.innerHTML = '';
             new QRCode(containerEl, {
                 text: url,
                 width: size,
                 height: size,
-                correctLevel: QRCode.CorrectLevel.M
+                correctLevel: QRCode.CorrectLevel.L
             });
             return new Promise((resolve) => {
                 setTimeout(() => {
@@ -1259,7 +1396,7 @@
                     if (img && img.src) resolve(img.src);
                     else if (cvs) resolve(cvs.toDataURL('image/png'));
                     else resolve(null);
-                }, 75);
+                }, 80);
             });
         }
 
@@ -1279,7 +1416,7 @@
                     img.src = bulkBgThemeURL;
                     img.style.display = 'block';
                 }
-                showToast('Custom background theme image loaded');
+                showToast('Background image applied');
             };
             reader.readAsDataURL(file);
         }
@@ -1310,7 +1447,9 @@
             });
         }
 
-        // 1. Hoknex AI Prompt Generator
+        // ====================================================================
+        // 01. PROMPT STUDIO
+        // ====================================================================
         function useAiPreset(text) {
             document.getElementById('aiPromptText').value = text;
             document.getElementById('aiFormat').value = text.toLowerCase().includes('poster') ? 'poster' : 'certificate';
@@ -1341,16 +1480,14 @@
 
             const headline = prompt
                 ? prompt.replace(/create|make|generate|a|an|for|certificate|poster|banner|thumbnail|gold|royal|cyberpunk|neon|minimal/gi, '').trim().toUpperCase().slice(0, 44)
-                : 'HOKNEX CERTIFICATE OF EXCELLENCE';
+                : 'CERTIFICATE OF EXCELLENCE';
 
-            const qrUrl = buildShortQrUrl(certId);
             const certObj = {
                 certId,
                 password: pass,
-                qrUrl,
                 recipient,
-                title: headline.length > 3 ? headline : 'HOKNEX CERTIFICATE OF EXCELLENCE',
-                description: prompt || `Awarded for outstanding achievement and leadership within ${issuer}.`,
+                title: headline.length > 3 ? headline : 'CERTIFICATE OF EXCELLENCE',
+                description: prompt || `Awarded for distinguished achievement and contribution within ${issuer}.`,
                 issuer,
                 format,
                 themeKey: currentTheme,
@@ -1360,25 +1497,21 @@
                 backgroundImage: aiBgThemeURL
             };
 
+            const shareUrl = buildPublicCertUrl(certObj);
+            certObj.qrUrl = shareUrl;
             lastAiCertRecord = certObj;
             saveCertToLocalStore(certObj);
 
-            try {
-                await fetch(`${STUDIO_API}/certificates/save`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(certObj)
-                });
-            } catch (_) {}
+            await postStudioWithFallback('/certificates/save', certObj);
 
-            const qrDataUrl = await renderQRInto(document.getElementById('aiQrContainer'), qrUrl, 76);
+            const qrDataUrl = await renderQRInto(document.getElementById('aiQrContainer'), shareUrl, 78);
 
             aiCanvas.clear();
             applyCustomBgToFabricCanvas(aiCanvas, aiBgThemeURL, style.bg, () => {
                 aiCanvas.add(new fabric.Rect({
                     left: 16, top: 16, width: 528, height: 363,
-                    fill: aiBgThemeURL ? 'rgba(255,255,255,0.88)' : style.surface,
-                    stroke: style.accent, strokeWidth: 2.5, rx: 12, selectable: false
+                    fill: aiBgThemeURL ? 'rgba(255,255,255,0.9)' : style.surface,
+                    stroke: style.accent, strokeWidth: 2, rx: 10, selectable: false
                 }));
 
                 const textInk = aiBgThemeURL ? '#18181B' : style.ink;
@@ -1395,9 +1528,9 @@
                 }));
 
                 if (format === 'certificate') {
-                    aiCanvas.add(new fabric.IText('PROUDLY PRESENTED TO', {
+                    aiCanvas.add(new fabric.IText('PRESENTED TO', {
                         left: 280, top: 116, fontSize: 9, fill: textMuted,
-                        fontFamily: 'Plus Jakarta Sans', fontWeight: 'bold', originX: 'center', charSpacing: 120
+                        fontFamily: 'Plus Jakarta Sans', fontWeight: 'bold', originX: 'center', charSpacing: 140
                     }));
                     aiCanvas.add(new fabric.IText(recipient, {
                         left: 280, top: 142, fontSize: 32, fill: style.accent,
@@ -1445,18 +1578,18 @@
                 aiCanvas.renderAll();
             });
 
-            document.getElementById('aiCertIdLabel').textContent = `Certificate ID: ${certId}`;
-            document.getElementById('aiCertPassLabel').textContent = `Password: ${pass}`;
+            document.getElementById('aiCertIdLabel').textContent = `Credential ID: ${certId}`;
+            document.getElementById('aiCertPassLabel').textContent = `Access Password: ${pass}`;
             document.getElementById('aiCopyLinkBtn').disabled = false;
             document.getElementById('aiTestVaultBtn').disabled = false;
 
-            showToast(`Generated ${certId} • Password: ${pass}`);
+            showToast(`Credential ${certId} created`);
         }
 
         function copyLastAiLink() {
             if (!lastAiCertRecord) return;
-            navigator.clipboard.writeText(`${lastAiCertRecord.qrUrl}\nCertificate ID: ${lastAiCertRecord.certId}\nPassword: ${lastAiCertRecord.password}`);
-            showToast(`Copied QR link & password (${lastAiCertRecord.password})`);
+            navigator.clipboard.writeText(`${lastAiCertRecord.qrUrl}\nCredential ID: ${lastAiCertRecord.certId}\nPassword: ${lastAiCertRecord.password}`);
+            showToast(`Copied link and password (${lastAiCertRecord.password})`);
         }
 
         function testLastAiInVault() {
@@ -1477,13 +1610,13 @@
                 saveDrawHistory();
                 refreshLayersList();
             });
-            showToast('Loaded design into Pro Editor');
+            showToast('Opened in Pro Canvas');
         }
 
         function exportActiveCanvasPNG() {
             const a = document.createElement('a');
             a.href = aiCanvas.toDataURL({ format: 'png', multiplier: 2 });
-            a.download = `hoknex-studio-${Date.now()}.png`;
+            a.download = `hoknex-credential-${Date.now()}.png`;
             a.click();
         }
 
@@ -1491,10 +1624,12 @@
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [560, 395] });
             pdf.addImage(aiCanvas.toDataURL({ format: 'png', multiplier: 2 }), 'PNG', 0, 0, 560, 395);
-            pdf.save(`hoknex-studio-${Date.now()}.pdf`);
+            pdf.save(`hoknex-credential-${Date.now()}.pdf`);
         }
 
-        // 2. Bulk Certificate Builder & CSV Engine
+        // ====================================================================
+        // 02. BULK CERTIFICATE ENGINE
+        // ====================================================================
         function toggleBulkScriptInput() {
             const mode = document.getElementById('bulkMode').value;
             document.getElementById('bulkNamesBox').style.display = mode === 'names' ? 'block' : 'none';
@@ -1526,7 +1661,7 @@
             reader.onload = (ev) => {
                 csvParsedEntries = parseCsvText(ev.target.result);
                 document.getElementById('bulkCsvStatus').textContent = `Loaded ${csvParsedEntries.length} rows from ${file.name}`;
-                showToast(`Parsed ${csvParsedEntries.length} rows from CSV`);
+                showToast(`Parsed ${csvParsedEntries.length} CSV entries`);
             };
             reader.readAsText(file);
         }
@@ -1555,7 +1690,7 @@
                     return { name: name || `Participant ${i + 1}`, role: role || 'Hoknex Verified Member', password: password || '' };
                 });
             } else if (mode === 'csv') {
-                if (!csvParsedEntries.length) return showToast('Upload a valid CSV file first');
+                if (!csvParsedEntries.length) return showToast('Upload a CSV file first');
                 entries = csvParsedEntries;
             } else if (mode === 'count') {
                 const count = Math.min(200, Math.max(1, parseInt(document.getElementById('bulkCountInput').value, 10) || 1));
@@ -1573,17 +1708,15 @@
                 }
             }
 
-            if (!entries.length) return showToast('Provide at least one participant or count');
+            if (!entries.length) return showToast('Add at least one recipient');
             const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
             bulkRecords = entries.map((item, idx) => {
                 const certId = `HKX-${String(idx + 1).padStart(3, '0')}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
                 const password = (item.password && item.password.trim()) ? item.password.trim() : `${prefix}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-                const qrUrl = buildShortQrUrl(certId);
                 const rec = {
                     certId,
                     password,
-                    qrUrl,
                     recipient: item.name || `Member ${idx + 1}`,
                     title: item.role || 'Hoknex Credential',
                     description: `Officially awarded to ${item.name || `Member ${idx + 1}`} for ${item.role || 'Hoknex Credential'}.`,
@@ -1594,27 +1727,22 @@
                     signature: uploadedSigURL,
                     backgroundImage: bulkBgThemeURL
                 };
+                rec.qrUrl = buildPublicCertUrl(rec);
                 saveCertToLocalStore(rec);
                 return rec;
             });
 
-            try {
-                await fetch(`${STUDIO_API}/certificates/bulk`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        batchName: `Hoknex Bulk (${mode})`,
-                        themeKey: currentTheme,
-                        backgroundImage: bulkBgThemeURL,
-                        logo: uploadedLogoURL,
-                        signature: uploadedSigURL,
-                        certificates: bulkRecords
-                    })
-                });
-            } catch (_) {}
+            await postStudioWithFallback('/certificates/bulk', {
+                batchName: `Hoknex Batch (${mode})`,
+                themeKey: currentTheme,
+                backgroundImage: bulkBgThemeURL,
+                logo: uploadedLogoURL,
+                signature: uploadedSigURL,
+                certificates: bulkRecords
+            });
 
             renderBulkTable();
-            showToast(`Generated ${bulkRecords.length} certificates with unique passwords & QR codes`);
+            showToast(`Issued ${bulkRecords.length} credentials`);
         }
 
         function renderBulkTable() {
@@ -1628,13 +1756,13 @@
                     <td><strong>${escapeHtmlText(rec.recipient)}</strong><br><span style="color:var(--ink-muted); font-size:0.75rem;">${escapeHtmlText(rec.title)}</span></td>
                     <td><code>${escapeHtmlText(rec.certId)}</code></td>
                     <td><strong>${escapeHtmlText(rec.password)}</strong></td>
-                    <td><div id="qr-row-${i}" class="qr-box"></div></td>
+                    <td><div id="qr-row-${i}" class="qr-frame"></div></td>
                     <td style="display:flex; gap:6px; flex-wrap:wrap;">
-                        <button class="btn-ghost" onclick="copyShareLink('${rec.qrUrl}', '${rec.password}')">
+                        <button class="btn-secondary" onclick="copyShareLink('${rec.qrUrl}', '${rec.password}')">
                             <i class="fa-solid fa-link"></i> Copy
                         </button>
-                        <button class="btn-cta" onclick="openBulkCertInVault(${i})">
-                            <i class="fa-solid fa-eye"></i> Open
+                        <button class="btn-primary" onclick="openBulkCertInVault(${i})">
+                            Open
                         </button>
                     </td>
                 `;
@@ -1658,9 +1786,9 @@
         }
 
         function exportBulkCredentialsCSV() {
-            if (!bulkRecords.length) return showToast('Generate a bulk batch first');
+            if (!bulkRecords.length) return showToast('Issue a batch first');
             const rows = [
-                ['certId', 'recipient', 'title', 'password', 'qrLink'],
+                ['certId', 'recipient', 'title', 'password', 'shareUrl'],
                 ...bulkRecords.map(r => [r.certId, r.recipient, r.title, r.password, r.qrUrl])
             ];
             const csv = rows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
@@ -1668,29 +1796,31 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `hoknex-bulk-credentials-${Date.now()}.csv`;
+            a.download = `hoknex-batch-${Date.now()}.csv`;
             a.click();
             URL.revokeObjectURL(url);
         }
 
         function exportAllBulkPDF() {
-            if (!bulkRecords.length) return showToast('Generate a bulk batch first');
+            if (!bulkRecords.length) return showToast('Issue a batch first');
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
             bulkRecords.forEach((rec, idx) => {
                 if (idx > 0) pdf.addPage();
                 pdf.setFontSize(24);
-                pdf.text('HOKNEX OFFICIAL CERTIFICATE', 120, 120);
+                pdf.text('HOKNEX OFFICIAL CREDENTIAL', 120, 120);
                 pdf.setFontSize(16);
                 pdf.text(`Awarded to: ${rec.recipient}`, 120, 180);
-                pdf.text(`Credential: ${rec.title}`, 120, 215);
+                pdf.text(`Title: ${rec.title}`, 120, 215);
                 pdf.setFontSize(12);
-                pdf.text(`Certificate ID: ${rec.certId}  |  Password: ${rec.password}`, 120, 260);
+                pdf.text(`Credential ID: ${rec.certId}  |  Access Password: ${rec.password}`, 120, 260);
             });
-            pdf.save(`hoknex-bulk-certificates-${Date.now()}.pdf`);
+            pdf.save(`hoknex-batch-certificates-${Date.now()}.pdf`);
         }
 
-        // 3. Poster, Banner & Thumbnail
+        // ====================================================================
+        // 03. POSTER, BANNER & THUMBNAIL STUDIO
+        // ====================================================================
         const POSTER_DIMS = {
             poster:    { w: 420, h: 594 },
             banner:    { w: 680, h: 170 },
@@ -1724,7 +1854,9 @@
             a.click();
         }
 
-        // 4. Pro Vector, Draw & Layout Editor (Undo/Redo + Layers + Cloud Save/Load/Rename/Delete)
+        // ====================================================================
+        // 04. PRO CANVAS EDITOR
+        // ====================================================================
         let drawHistory = [];
         let drawHistoryStep = -1;
         let isDrawRestoring = false;
@@ -1782,9 +1914,9 @@
                 const label = obj.text ? `Text: ${escapeHtmlText(obj.text.slice(0, 14))}` : `Layer ${realIdx + 1} (${obj.type})`;
                 const isSel = active === obj;
                 return `
-                    <div class="layer-item ${isSel ? 'selected' : ''}" onclick="selectDrawLayer(${realIdx})">
+                    <div class="layer-row ${isSel ? 'selected' : ''}" onclick="selectDrawLayer(${realIdx})">
                         <span>${label}</span>
-                        <span class="layer-actions">
+                        <span>
                             <button onclick="event.stopPropagation(); toggleLayerVis(${realIdx})" title="Show/Hide">
                                 <i class="fa-solid ${obj.visible ? 'fa-eye' : 'fa-eye-slash'}"></i>
                             </button>
@@ -1826,7 +1958,7 @@
 
         async function insertQrStampOnProCanvas() {
             const certId = lastAiCertRecord?.certId || `HKX-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-            const qrUrl = buildShortQrUrl(certId);
+            const qrUrl = lastAiCertRecord?.qrUrl || buildPublicCertUrl(certId);
             const tempDiv = document.createElement('div');
             const qrImgUrl = await renderQRInto(tempDiv, qrUrl, 90);
             if (!qrImgUrl) return;
@@ -1834,47 +1966,31 @@
                 img.set({ left: drawCanvas.width - 120, top: drawCanvas.height - 120 });
                 drawCanvas.add(img);
                 drawCanvas.setActiveObject(img);
-                showToast(`Added QR Stamp (${certId})`);
+                showToast(`Inserted QR Stamp (${certId})`);
             });
         }
 
         async function saveProProjectToCloud() {
-            const user = getCurrentUser();
             const existingMeta = (() => {
-                try {
-                    return JSON.parse(localStorage.getItem('hoknex_pro_autosave_meta') || '{}');
-                } catch {
-                    return {};
-                }
+                try { return JSON.parse(localStorage.getItem('hoknex_pro_autosave_meta') || '{}'); } catch { return {}; }
             })();
             const projectName = existingMeta.name || `Hoknex Project ${new Date().toLocaleTimeString()}`;
             const updatedAt = new Date().toISOString();
 
-            try {
-                const res = await fetch(`${STUDIO_API}/projects`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: projectName,
-                        format: 'custom',
-                        themeKey: currentTheme,
-                        ownerId: user?.id || null,
-                        canvasJSON: drawCanvas.toJSON()
-                    })
-                });
-                if (res.ok) return showToast(`Saved "${projectName}" to Hoknex Studio Server`);
-            } catch (_) {}
+            const saved = await postStudioWithFallback('/projects', {
+                name: projectName,
+                format: 'custom',
+                themeKey: currentTheme,
+                canvasJSON: drawCanvas.toJSON()
+            });
+
+            if (saved && saved.success) {
+                return showToast(`Saved "${projectName}"`);
+            }
 
             localStorage.setItem('hoknex_pro_autosave', JSON.stringify(drawCanvas.toJSON()));
-            localStorage.setItem(
-                'hoknex_pro_autosave_meta',
-                JSON.stringify({
-                    name: projectName,
-                    themeKey: currentTheme,
-                    updatedAt
-                })
-            );
-            showToast(`Saved "${projectName}" locally in browser`);
+            localStorage.setItem('hoknex_pro_autosave_meta', JSON.stringify({ name: projectName, themeKey: currentTheme, updatedAt }));
+            showToast(`Saved "${projectName}" locally`);
         }
 
         function openCloudProjectsModal() {
@@ -1888,41 +2004,35 @@
 
         function loadCloudProjectsList() {
             const listEl = document.getElementById('cloudProjectsList');
-            listEl.innerHTML = '<div style="font-size:0.82rem; color:var(--ink-muted);">Fetching projects from Hoknex Studio Server...</div>';
+            listEl.innerHTML = '<div style="font-size:0.82rem; color:var(--ink-muted);">Loading projects...</div>';
 
             (async () => {
                 let projects = [];
                 try {
                     const res = await fetch(`${STUDIO_API}/projects`);
                     const data = await res.json();
-                    if (res.ok && Array.isArray(data.projects)) {
-                        projects = data.projects;
-                    }
+                    if (res.ok && Array.isArray(data.projects)) projects = data.projects;
                 } catch (_) {}
 
                 if (!projects.length) {
                     const localSave = localStorage.getItem('hoknex_pro_autosave');
                     if (localSave) {
                         const localMeta = (() => {
-                            try {
-                                return JSON.parse(localStorage.getItem('hoknex_pro_autosave_meta') || '{}');
-                            } catch {
-                                return {};
-                            }
+                            try { return JSON.parse(localStorage.getItem('hoknex_pro_autosave_meta') || '{}'); } catch { return {}; }
                         })();
                         projects.push({
                             id: 'local-autosave',
-                            name: localMeta.name || 'Local Browser Autosave',
+                            name: localMeta.name || 'Local Autosave',
                             format: 'custom',
                             themeKey: localMeta.themeKey || currentTheme,
-                            updatedAt: localMeta.updatedAt || 'Local Device',
+                            updatedAt: localMeta.updatedAt || 'Saved Locally',
                             canvasJSON: JSON.parse(localSave)
                         });
                     }
                 }
 
                 if (!projects.length) {
-                    listEl.innerHTML = '<div style="font-size:0.82rem; color:var(--ink-muted);">No saved projects found yet. Click "Save Cloud" to save your current canvas.</div>';
+                    listEl.innerHTML = '<div style="font-size:0.82rem; color:var(--ink-muted);">No saved projects yet.</div>';
                     return;
                 }
 
@@ -1930,40 +2040,38 @@
 
                 listEl.innerHTML = projects.map((proj, idx) => {
                     const safeName = escapeHtmlText(proj.name || `Project #${idx + 1}`);
-                    const timeLabel = proj.updatedAt && proj.updatedAt !== 'Local Device'
+                    const timeLabel = proj.updatedAt && proj.updatedAt !== 'Saved Locally'
                         ? new Date(proj.updatedAt).toLocaleString()
                         : (proj.updatedAt || 'Saved Project');
                     return `
-                        <div class="layer-item" style="padding:11px 14px; flex-direction:column; align-items:stretch; gap:8px;" onclick="applyCloudProjectToCanvas(${idx})">
+                        <div class="layer-row" style="padding:11px 14px; flex-direction:column; align-items:stretch; gap:8px;" onclick="applyCloudProjectToCanvas(${idx})">
                             <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
                                 <div>
                                     <div style="font-size:0.86rem;">${safeName}</div>
-                                    <div style="font-size:0.72rem; color:var(--ink-muted);">
-                                        Theme: ${(proj.themeKey || 'gallery').toUpperCase()} • ${timeLabel}
-                                    </div>
+                                    <div style="font-size:0.72rem; color:var(--ink-muted);">${timeLabel}</div>
                                 </div>
                                 <div style="display:flex; gap:6px; align-items:center;">
-                                    <button type="button" class="btn-cta" style="padding:6px 11px; font-size:0.7rem;" onclick="event.stopPropagation(); applyCloudProjectToCanvas(${idx});">Load</button>
-                                    <button type="button" class="btn-ghost" style="padding:6px 10px; font-size:0.7rem;" onclick="event.stopPropagation(); openInlineRenameRow(${idx});" title="Rename Project">
+                                    <button type="button" class="btn-primary" style="padding:5px 10px; font-size:0.7rem;" onclick="event.stopPropagation(); applyCloudProjectToCanvas(${idx});">Load</button>
+                                    <button type="button" class="btn-secondary" style="padding:5px 9px; font-size:0.7rem;" onclick="event.stopPropagation(); openInlineRenameRow(${idx});" title="Rename">
                                         <i class="fa-solid fa-pen"></i>
                                     </button>
-                                    <button type="button" class="btn-danger" style="padding:6px 10px; font-size:0.7rem;" onclick="event.stopPropagation(); deleteCloudProject(${idx});" title="Delete Project">
+                                    <button type="button" class="btn-danger-subtle" style="padding:5px 9px; font-size:0.7rem;" onclick="event.stopPropagation(); deleteCloudProject(${idx});" title="Delete">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </div>
                             </div>
 
-                            <div id="inlineRenameBox-${idx}" style="display:none; gap:8px; align-items:center; padding-top:6px; border-top:1px solid var(--border-subtle);" onclick="event.stopPropagation();">
+                            <div id="inlineRenameBox-${idx}" style="display:none; gap:8px; align-items:center; padding-top:6px; border-top:1px solid var(--border-hairline);" onclick="event.stopPropagation();">
                                 <input
                                     type="text"
                                     id="inlineRenameInput-${idx}"
                                     value="${safeName}"
-                                    placeholder="Enter new project name..."
-                                    style="margin-bottom:0; padding:7px 10px; font-size:0.8rem; flex:1;"
+                                    placeholder="Project name..."
+                                    style="margin-bottom:0; padding:6px 10px; font-size:0.8rem; flex:1;"
                                     onkeydown="if(event.key==='Enter') saveInlineRename(${idx}); if(event.key==='Escape') cancelInlineRename(${idx});"
                                 />
-                                <button type="button" class="btn-cta" style="padding:7px 12px; font-size:0.7rem;" onclick="saveInlineRename(${idx});">Save</button>
-                                <button type="button" class="btn-ghost" style="padding:7px 10px; font-size:0.7rem;" onclick="cancelInlineRename(${idx});">Cancel</button>
+                                <button type="button" class="btn-primary" style="padding:6px 11px; font-size:0.7rem;" onclick="saveInlineRename(${idx});">Save</button>
+                                <button type="button" class="btn-secondary" style="padding:6px 9px; font-size:0.7rem;" onclick="cancelInlineRename(${idx});">Cancel</button>
                             </div>
                         </div>
                     `;
@@ -1974,19 +2082,13 @@
         function applyCloudProjectToCanvas(idx) {
             const projects = window.__hoknexLoadedCloudProjects || [];
             const proj = projects[idx];
-            if (!proj || !proj.canvasJSON) return showToast('Project canvas data is empty');
-
-            if (proj.themeKey && PALETTES[proj.themeKey]) {
-                currentTheme = proj.themeKey;
-                document.documentElement.setAttribute('data-theme', proj.themeKey);
-            }
-
+            if (!proj || !proj.canvasJSON) return;
             drawCanvas.loadFromJSON(proj.canvasJSON, () => {
                 drawCanvas.renderAll();
                 saveDrawHistory();
                 refreshLayersList();
                 closeCloudProjectsModal();
-                showToast(`Loaded "${proj.name || 'Project'}" onto canvas`);
+                showToast(`Loaded "${proj.name || 'Project'}"`);
             });
         }
 
@@ -1995,10 +2097,7 @@
             const input = document.getElementById(`inlineRenameInput-${idx}`);
             if (!box) return;
             box.style.display = 'flex';
-            if (input) {
-                input.focus();
-                input.select();
-            }
+            if (input) { input.focus(); input.select(); }
         }
 
         function cancelInlineRename(idx) {
@@ -2013,18 +2112,15 @@
             if (!proj || !input) return;
 
             const cleanName = input.value.trim();
-            if (!cleanName) return showToast('Enter a valid project name');
+            if (!cleanName) return showToast('Enter a valid name');
 
             if (proj.id === 'local-autosave') {
-                localStorage.setItem(
-                    'hoknex_pro_autosave_meta',
-                    JSON.stringify({
-                        name: cleanName,
-                        themeKey: proj.themeKey || currentTheme,
-                        updatedAt: new Date().toISOString()
-                    })
-                );
-                showToast(`Renamed local project to "${cleanName}"`);
+                localStorage.setItem('hoknex_pro_autosave_meta', JSON.stringify({
+                    name: cleanName,
+                    themeKey: proj.themeKey || currentTheme,
+                    updatedAt: new Date().toISOString()
+                }));
+                showToast(`Renamed to "${cleanName}"`);
                 loadCloudProjectsList();
                 return;
             }
@@ -2035,16 +2131,11 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: cleanName })
                 });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    showToast(`Renamed project to "${cleanName}"`);
+                if (res.ok) {
+                    showToast(`Renamed to "${cleanName}"`);
                     loadCloudProjectsList();
-                    return;
                 }
-                showToast(data.error || 'Could not rename project on server');
-            } catch (_) {
-                showToast('Server connection error while renaming project');
-            }
+            } catch (_) {}
         }
 
         async function deleteCloudProject(idx) {
@@ -2055,29 +2146,22 @@
             if (proj.id === 'local-autosave') {
                 localStorage.removeItem('hoknex_pro_autosave');
                 localStorage.removeItem('hoknex_pro_autosave_meta');
-                showToast('Removed local browser autosave');
+                showToast('Removed local autosave');
                 loadCloudProjectsList();
                 return;
             }
 
             try {
-                const res = await fetch(`${STUDIO_API}/projects/${encodeURIComponent(proj.id)}`, {
-                    method: 'DELETE'
-                });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    showToast(`Deleted "${proj.name || 'Project'}"`);
+                const res = await fetch(`${STUDIO_API}/projects/${encodeURIComponent(proj.id)}`, { method: 'DELETE' });
+                if (res.ok) {
+                    showToast(`Deleted "${proj.name}"`);
                     loadCloudProjectsList();
-                    return;
                 }
-                showToast(data.error || 'Could not delete project from server');
-            } catch (_) {
-                showToast('Server connection error while deleting project');
-            }
+            } catch (_) {}
         }
 
         function setDrawMode(m) {
-            document.querySelectorAll('.mini-tool').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tool-cell').forEach(t => t.classList.remove('active'));
             if (m === 'draw') {
                 drawCanvas.isDrawingMode = true;
                 drawCanvas.freeDrawingBrush.color = document.getElementById('drawColor').value;
@@ -2088,35 +2172,13 @@
                 document.getElementById('mSelect').classList.add('active');
             }
         }
-        function updateDrawColor(c) {
-            drawCanvas.freeDrawingBrush.color = c;
-            const o = drawCanvas.getActiveObject();
-            if (o) { o.set('fill', c); drawCanvas.renderAll(); }
-        }
-        function updateDrawStroke(c) {
-            const o = drawCanvas.getActiveObject();
-            if (o) { o.set('stroke', c); drawCanvas.renderAll(); }
-        }
-        function updateDrawOpacity(v) {
-            const o = drawCanvas.getActiveObject();
-            if (o) { o.set('opacity', parseFloat(v)); drawCanvas.renderAll(); }
-        }
-        function updateDrawFont(f) {
-            const o = drawCanvas.getActiveObject();
-            if (o && o.fontFamily) { o.set('fontFamily', f); drawCanvas.renderAll(); }
-        }
-        function toggleDrawBold() {
-            const o = drawCanvas.getActiveObject();
-            if (o) { o.set('fontWeight', o.fontWeight === 'bold' ? 'normal' : 'bold'); drawCanvas.renderAll(); }
-        }
-        function toggleDrawItalic() {
-            const o = drawCanvas.getActiveObject();
-            if (o) { o.set('fontStyle', o.fontStyle === 'italic' ? 'normal' : 'italic'); drawCanvas.renderAll(); }
-        }
-        function toggleDrawUnderline() {
-            const o = drawCanvas.getActiveObject();
-            if (o) { o.set('underline', !o.underline); drawCanvas.renderAll(); }
-        }
+        function updateDrawColor(c) { drawCanvas.freeDrawingBrush.color = c; const o = drawCanvas.getActiveObject(); if (o) { o.set('fill', c); drawCanvas.renderAll(); } }
+        function updateDrawStroke(c) { const o = drawCanvas.getActiveObject(); if (o) { o.set('stroke', c); drawCanvas.renderAll(); } }
+        function updateDrawOpacity(v) { const o = drawCanvas.getActiveObject(); if (o) { o.set('opacity', parseFloat(v)); drawCanvas.renderAll(); } }
+        function updateDrawFont(f) { const o = drawCanvas.getActiveObject(); if (o && o.fontFamily) { o.set('fontFamily', f); drawCanvas.renderAll(); } }
+        function toggleDrawBold() { const o = drawCanvas.getActiveObject(); if (o) { o.set('fontWeight', o.fontWeight === 'bold' ? 'normal' : 'bold'); drawCanvas.renderAll(); } }
+        function toggleDrawItalic() { const o = drawCanvas.getActiveObject(); if (o) { o.set('fontStyle', o.fontStyle === 'italic' ? 'normal' : 'italic'); drawCanvas.renderAll(); } }
+        function toggleDrawUnderline() { const o = drawCanvas.getActiveObject(); if (o) { o.set('underline', !o.underline); drawCanvas.renderAll(); } }
         function addCanvasText() { setDrawMode('select'); const t = new fabric.IText('Double-click to edit', { left: 220, top: 180, fontSize: 28, fill: document.getElementById('drawColor').value }); drawCanvas.add(t); }
         function addCanvasRect() { setDrawMode('select'); drawCanvas.add(new fabric.Rect({ left: 180, top: 150, width: 160, height: 100, fill: 'transparent', stroke: document.getElementById('drawColor').value, strokeWidth: 3 })); }
         function addCanvasCircle() { setDrawMode('select'); drawCanvas.add(new fabric.Circle({ left: 250, top: 150, radius: 55, fill: 'transparent', stroke: document.getElementById('drawColor').value, strokeWidth: 3 })); }
@@ -2160,7 +2222,9 @@
             pdf.save(`hoknex-design-${Date.now()}.pdf`);
         }
 
-        // 5. Multi-Page PDF & Document Editor
+        // ====================================================================
+        // 05. MULTI-PAGE PDF EDITOR
+        // ====================================================================
         let loadedPdfDoc = null;
         let currentPdfPage = 1;
         let totalPdfPages = 1;
@@ -2231,7 +2295,6 @@
             if (targetPage < 1 || targetPage > totalPdfPages) return;
             saveCurrentPageAnnotations();
             await renderPdfPageToCanvas(targetPage);
-            showToast(`Switched to PDF Page ${currentPdfPage} of ${totalPdfPages}`);
         }
 
         async function loadOriginalDoc(e) {
@@ -2245,7 +2308,7 @@
                 currentPdfPage = 1;
                 docPageObjectsMap = {};
                 await renderPdfPageToCanvas(1);
-                showToast(`Loaded PDF with ${totalPdfPages} page${totalPdfPages > 1 ? 's' : ''}`);
+                showToast(`Loaded ${totalPdfPages}-page PDF`);
             } else {
                 loadedPdfDoc = null;
                 totalPdfPages = 1;
@@ -2269,7 +2332,7 @@
 
         function addDocAnnotation() {
             docCanvas.isDrawingMode = false;
-            const t = new fabric.IText('Edited Note / Signature', {
+            const t = new fabric.IText('Annotation / Signature', {
                 left: 150, top: 120, fontSize: 22, fill: PALETTES[currentTheme].accent
             });
             docCanvas.add(t);
@@ -2281,7 +2344,7 @@
             docCanvas.isDrawingMode = !docCanvas.isDrawingMode;
             docCanvas.freeDrawingBrush.color = PALETTES[currentTheme].accent;
             docCanvas.freeDrawingBrush.width = 4;
-            showToast(docCanvas.isDrawingMode ? 'Pen ON' : 'Pen OFF');
+            showToast(docCanvas.isDrawingMode ? 'Pen active' : 'Pen off');
         }
 
         async function exportEditedDocPDF() {
@@ -2296,27 +2359,28 @@
                     pdf.addImage(docCanvas.toDataURL('image/png'), 'PNG', 0, 0, docCanvas.width, docCanvas.height);
                 }
                 await renderPdfPageToCanvas(originalPage);
-                pdf.save(`hoknex-doc-multipage-${Date.now()}.pdf`);
-                showToast(`Exported all ${totalPdfPages} edited pages`);
+                pdf.save(`hoknex-document-${Date.now()}.pdf`);
                 return;
             }
             const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [docCanvas.width, docCanvas.height] });
             pdf.addImage(docCanvas.toDataURL('image/png'), 'PNG', 0, 0, docCanvas.width, docCanvas.height);
-            pdf.save(`hoknex-doc-${Date.now()}.pdf`);
+            pdf.save(`hoknex-document-${Date.now()}.pdf`);
         }
 
-        // 6. Password-Protected QR & Link Vault
+        // ====================================================================
+        // 06. CROSS-DEVICE CERTIFICATE QR VAULT
+        // ====================================================================
         async function renderCertificateToVaultCanvas(cert) {
             const pal = PALETTES[cert.themeKey] || PALETTES[currentTheme];
-            const qrUrl = cert.qrUrl || buildShortQrUrl(cert.certId);
+            const qrUrl = cert.qrUrl || buildPublicCertUrl(cert);
             const qrDataUrl = await renderQRInto(document.getElementById('vaultQrContainer'), qrUrl, 84);
 
             vaultCanvas.clear();
             applyCustomBgToFabricCanvas(vaultCanvas, cert.backgroundImage, pal.bg, () => {
                 vaultCanvas.add(new fabric.Rect({
                     left: 22, top: 22, width: vaultCanvas.width - 44, height: vaultCanvas.height - 44,
-                    fill: cert.backgroundImage ? 'rgba(255,255,255,0.88)' : pal.surface,
-                    stroke: pal.accent, strokeWidth: 3, rx: 14, ry: 14, selectable: false
+                    fill: cert.backgroundImage ? 'rgba(255,255,255,0.9)' : pal.surface,
+                    stroke: pal.accent, strokeWidth: 2.5, rx: 12, ry: 12, selectable: false
                 }));
 
                 const cx = vaultCanvas.width / 2;
@@ -2331,7 +2395,7 @@
                     fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center'
                 }));
 
-                vaultCanvas.add(new fabric.IText('PROUDLY PRESENTED TO', {
+                vaultCanvas.add(new fabric.IText('PRESENTED TO', {
                     left: cx, top: 146, fontSize: 11, fill: '#52525B',
                     fontFamily: 'Plus Jakarta Sans', fontWeight: 'bold', originX: 'center', charSpacing: 140
                 }));
@@ -2342,7 +2406,7 @@
                 }));
 
                 vaultCanvas.add(new fabric.Textbox(
-                    cert.description || `Recognized for achievement on ${cert.date || 'Hoknex'}.`,
+                    cert.description || `Recognized for distinguished achievement on ${cert.date || 'Hoknex'}.`,
                     { left: cx, top: 248, width: 520, fontSize: 15, fill: '#3F3F46', textAlign: 'center', originX: 'center' }
                 ));
 
@@ -2395,35 +2459,45 @@
         async function unlockCertificate() {
             const certId = document.getElementById('vaultCertId').value.trim().toUpperCase();
             const password = document.getElementById('vaultPassword').value.trim();
-            if (!certId || !password) return showToast('Enter both Certificate ID and Password');
+            if (!certId || !password) return showToast('Enter both Credential ID and Password');
 
             let match = null;
 
+            // 1. Check active session records
             if (lastAiCertRecord && lastAiCertRecord.certId.toUpperCase() === certId && passwordsMatch(lastAiCertRecord.password, password)) {
                 match = lastAiCertRecord;
             }
             if (!match) {
                 match = bulkRecords.find(r => r.certId.toUpperCase() === certId && passwordsMatch(r.password, password));
             }
+
+            // 2. Check live public backend (primary origin + Render fallback)
             if (!match) {
-                try {
-                    const res = await fetch(`${STUDIO_API}/certificates/unlock`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ certId, password })
-                    });
-                    const data = await res.json();
-                    if (data.valid && data.certificate) match = data.certificate;
-                } catch (_) {}
+                const serverData = await postStudioWithFallback('/certificates/unlock', { certId, password });
+                if (serverData && serverData.valid && serverData.certificate) {
+                    match = serverData.certificate;
+                }
             }
+
+            // 3. Check cross-device portable QR token in URL hash (#v=...)
+            if (!match) {
+                const portable = decodeCertToken(window.location.hash);
+                if (portable && portable.certId.toUpperCase() === certId && passwordsMatch(portable.password, password)) {
+                    match = portable;
+                }
+            }
+
+            // 4. Check device local storage
             if (!match) {
                 const localStore = getLocalCertStore();
                 const localRec = localStore[certId];
-                if (localRec && passwordsMatch(localRec.password, password)) match = localRec;
+                if (localRec && passwordsMatch(localRec.password, password)) {
+                    match = localRec;
+                }
             }
 
             if (!match) {
-                return showToast('Invalid Certificate ID or Password');
+                return showToast('Invalid Credential ID or Password');
             }
 
             activeUnlockedCert = match;
@@ -2433,7 +2507,7 @@
             document.getElementById('vaultCertMeta').textContent = `ID: ${match.certId} • ${match.issuer || 'Hoknex'}`;
 
             await renderCertificateToVaultCanvas(match);
-            showToast('Certificate unlocked');
+            showToast('Credential verified and unlocked');
         }
 
         function downloadUnlockedCertPNG() {
@@ -2453,17 +2527,17 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            syncAccountUI();
-            checkStudioServerHealth();
             renderVaultHistoryList();
             saveDrawHistory();
 
             const params = new URLSearchParams(window.location.search);
             const scannedId = params.get('id') || params.get('certId');
-            if (scannedId) {
-                document.getElementById('vaultCertId').value = scannedId.toUpperCase();
+            const portable = decodeCertToken(window.location.hash);
+
+            if (scannedId || portable) {
+                const resolvedId = (scannedId || portable.certId || '').toUpperCase();
+                document.getElementById('vaultCertId').value = resolvedId;
                 openStage('vaultStage');
-                showToast(`QR/Link opened for ${scannedId.toUpperCase()}. Enter password to unlock.`);
             }
             renderPosterTemplate();
         });
