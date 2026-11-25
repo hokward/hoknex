@@ -806,9 +806,11 @@
                 <label class="field-label">Certificate Password</label>
                 <input type="password" id="vaultPassword" placeholder="Enter password" onkeydown="if(event.key==='Enter') unlockCertificate()">
 
-                <button class="btn-primary" style="width:100%; justify-content:center; margin-bottom:14px;" onclick="unlockCertificate()">
+                <button type="button" class="btn-primary" style="width:100%; justify-content:center; margin-bottom:10px;" onclick="unlockCertificate()">
                     <i class="fa-solid fa-unlock"></i> Unlock Credential
                 </button>
+
+                <div id="vaultStatusMsg" style="font-size:0.78rem; font-weight:600; color:var(--ink-muted); min-height:20px; margin-bottom:10px;"></div>
 
                 <div id="vaultResultBox" style="display:none; padding-top:14px; border-top:1px solid var(--border-hairline);">
                     <h3 id="vaultCertTitle" style="font-family:'Playfair Display',serif; font-size:1.25rem;"></h3>
@@ -821,8 +823,8 @@
                     </div>
 
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button class="btn-secondary" onclick="guardedDownload(() => downloadUnlockedCertPNG())"><i class="fa-solid fa-image"></i> Download PNG</button>
-                        <button class="btn-primary" onclick="guardedDownload(() => downloadUnlockedCertPDF())"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                        <button type="button" class="btn-secondary" onclick="guardedDownload(() => downloadUnlockedCertPNG())"><i class="fa-solid fa-image"></i> Download PNG</button>
+                        <button type="button" class="btn-primary" onclick="guardedDownload(() => downloadUnlockedCertPDF())"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
                     </div>
                 </div>
 
@@ -900,6 +902,15 @@
     </div>
 
     <script>
+        const STUDIO_API = (() => {
+            const { protocol, hostname, port, origin } = window.location;
+            if (port === '5050') return `${origin}/api/studio`;
+            if (hostname === 'localhost' || hostname === '127.0.0.1' || protocol === 'file:') {
+                return 'http://localhost:5050/api/studio';
+            }
+            return 'https://hoknex-backend.onrender.com/api/studio';
+        })();
+
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         const PALETTES = {
@@ -946,6 +957,13 @@
             item.textContent = msg;
             stack.appendChild(item);
             setTimeout(() => item.remove(), 3400);
+        }
+
+        function setVaultStatus(msg, isError = false) {
+            const el = document.getElementById('vaultStatusMsg');
+            if (!el) return;
+            el.style.color = isError ? '#DC2626' : 'var(--accent)';
+            el.textContent = msg || '';
         }
 
         function escapeHtmlText(str) {
@@ -1032,6 +1050,22 @@
             const email = document.getElementById('suEmail').value.trim();
             const password = document.getElementById('suPass').value;
 
+            try {
+                const res = await fetch(`${STUDIO_API}/auth/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.user) {
+                        showToast(`Signed in as ${data.user.name}`);
+                        finishAuthAndRunPending(data.user);
+                        return;
+                    }
+                }
+            } catch (_) {}
+
             const userObj = { id: Date.now().toString(), name, email: email.toLowerCase(), password };
             try {
                 const localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}');
@@ -1050,6 +1084,22 @@
             const email = document.getElementById('siEmail').value.trim().toLowerCase();
             const password = document.getElementById('siPass').value;
 
+            try {
+                const res = await fetch(`${STUDIO_API}/auth/signin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.user) {
+                        showToast(`Signed in as ${data.user.name}`);
+                        finishAuthAndRunPending(data.user);
+                        return;
+                    }
+                }
+            } catch (_) {}
+
             let localUsers = {};
             try { localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}'); } catch (_) {}
             const memUsers = window.__hoknexLocalUsers || {};
@@ -1067,6 +1117,17 @@
         async function handleDeleteAccount(e) {
             e.preventDefault();
             const email = document.getElementById('delEmail').value.trim().toLowerCase();
+            const password = document.getElementById('delPass').value;
+            const current = getCurrentUser() || window.__hoknexSessionUser;
+
+            try {
+                await fetch(`${STUDIO_API}/auth/delete-account`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, token: current?.token })
+                });
+            } catch (_) {}
+
             try {
                 const localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}');
                 delete localUsers[email];
@@ -1083,13 +1144,13 @@
         // ====================================================================
         function encodeCertToken(cert) {
             const payload = {
-                i: cert.certId,
-                p: cert.password,
-                r: cert.recipient,
-                t: cert.title,
-                d: cert.description,
+                i: String(cert.certId || '').trim().toUpperCase(),
+                p: String(cert.password || '').trim(),
+                r: cert.recipient || 'Recipient',
+                t: cert.title || 'HOKNEX CERTIFICATE',
+                d: cert.description || '',
                 s: cert.issuer || 'Hoknex',
-                dt: cert.date,
+                dt: cert.date || '',
                 th: cert.themeKey || 'gallery'
             };
             const json = JSON.stringify(payload);
@@ -1099,12 +1160,10 @@
                 .replace(/=+$/, '');
         }
 
-        function decodeCertToken(hashStr) {
+        function decodeCertToken(rawToken) {
             try {
-                if (!hashStr || !hashStr.includes('v=')) return null;
-                const rawParam = new URLSearchParams(hashStr.replace(/^#/, '')).get('v');
-                if (!rawParam) return null;
-                let b64 = rawParam.replace(/-/g, '+').replace(/_/g, '/');
+                if (!rawToken) return null;
+                let b64 = String(rawToken).trim().replace(/-/g, '+').replace(/_/g, '/');
                 while (b64.length % 4) b64 += '=';
                 const json = decodeURIComponent(escape(atob(b64)));
                 const m = JSON.parse(json);
@@ -1123,14 +1182,27 @@
             }
         }
 
+        function extractTokenFromCurrentUrl() {
+            const queryParams = new URLSearchParams(window.location.search);
+            const qToken = queryParams.get('token') || queryParams.get('v');
+            if (qToken) return decodeCertToken(qToken);
+
+            const hashStr = window.location.hash || '';
+            if (hashStr.includes('v=')) {
+                const match = hashStr.replace(/^#/, '').match(/(?:^|&)v=([^&]+)/);
+                if (match) return decodeCertToken(decodeURIComponent(match[1]));
+            }
+            return null;
+        }
+
         function buildPublicCertUrl(cert) {
             const base = `${window.location.origin}${window.location.pathname}`;
-            const certId = typeof cert === 'string' ? cert : cert.certId;
+            const certId = (typeof cert === 'string' ? cert : cert.certId).trim().toUpperCase();
             if (typeof cert === 'object' && cert.password) {
                 const token = encodeCertToken(cert);
-                return `${base}?id=${encodeURIComponent(certId.toUpperCase())}#v=${token}`;
+                return `${base}?id=${encodeURIComponent(certId)}&token=${encodeURIComponent(token)}#v=${token}`;
             }
-            return `${base}?id=${encodeURIComponent(String(certId).trim().toUpperCase())}`;
+            return `${base}?id=${encodeURIComponent(certId)}`;
         }
 
         window.__hoknexMemCerts = window.__hoknexMemCerts || {};
@@ -1322,6 +1394,12 @@
             certObj.qrUrl = shareUrl;
             lastAiCertRecord = certObj;
             saveCertToLocalStore(certObj);
+
+            fetch(`${STUDIO_API}/certificates/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(certObj)
+            }).catch(() => {});
 
             const qrDataUrl = await renderQRInto(document.getElementById('aiQrContainer'), shareUrl, 78);
 
@@ -1550,6 +1628,19 @@
                 saveCertToLocalStore(rec);
                 return rec;
             });
+
+            fetch(`${STUDIO_API}/certificates/bulk`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    batchName: `Hoknex Batch (${mode})`,
+                    themeKey: currentTheme,
+                    backgroundImage: bulkBgThemeURL,
+                    logo: uploadedLogoURL,
+                    signature: uploadedSigURL,
+                    certificates: bulkRecords
+                })
+            }).catch(() => {});
 
             renderBulkTable();
             showToast(`Issued ${bulkRecords.length} credentials`);
@@ -1786,6 +1877,19 @@
             })();
             const projectName = existingMeta.name || `Hoknex Project ${new Date().toLocaleTimeString()}`;
             const updatedAt = new Date().toISOString();
+
+            try {
+                await fetch(`${STUDIO_API}/projects`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: projectName,
+                        format: 'custom',
+                        themeKey: currentTheme,
+                        canvasJSON: drawCanvas.toJSON()
+                    })
+                });
+            } catch (_) {}
 
             try {
                 localStorage.setItem('hoknex_pro_autosave', JSON.stringify(drawCanvas.toJSON()));
@@ -2134,14 +2238,17 @@
             const qrDataUrl = await renderQRInto(document.getElementById('vaultQrContainer'), qrUrl, 84);
 
             vaultCanvas.clear();
-            applyCustomBgToFabricCanvas(vaultCanvas, cert.backgroundImage, pal.bg, () => {
+            vaultCanvas.setWidth(720);
+            vaultCanvas.setHeight(510);
+
+            const drawForeground = () => {
                 vaultCanvas.add(new fabric.Rect({
-                    left: 22, top: 22, width: vaultCanvas.width - 44, height: vaultCanvas.height - 44,
+                    left: 22, top: 22, width: 676, height: 466,
                     fill: cert.backgroundImage ? 'rgba(255,255,255,0.9)' : pal.surface,
                     stroke: pal.accent, strokeWidth: 2.5, rx: 12, ry: 12, selectable: false
                 }));
 
-                const cx = vaultCanvas.width / 2;
+                const cx = 360;
 
                 vaultCanvas.add(new fabric.IText(`${(cert.issuer || 'HOKNEX').toUpperCase()}  •  VERIFIED CREDENTIAL`, {
                     left: cx, top: 54, fontSize: 12, fill: pal.accent,
@@ -2193,10 +2300,10 @@
                 if (qrDataUrl) {
                     fabric.Image.fromURL(qrDataUrl, (qrImg) => {
                         qrImg.scaleToWidth(82);
-                        qrImg.set({ left: vaultCanvas.width - 126, top: vaultCanvas.height - 134 });
+                        qrImg.set({ left: 594, top: 376 });
                         vaultCanvas.add(qrImg);
                         vaultCanvas.add(new fabric.IText(`ID: ${cert.certId}`, {
-                            left: vaultCanvas.width - 85, top: vaultCanvas.height - 46,
+                            left: 635, top: 464,
                             fontSize: 10, fill: '#3F3F46', fontWeight: 'bold', originX: 'center'
                         }));
                         vaultCanvas.renderAll();
@@ -2204,7 +2311,9 @@
                 }
 
                 vaultCanvas.renderAll();
-            });
+            };
+
+            applyCustomBgToFabricCanvas(vaultCanvas, cert.backgroundImage, pal.bg, drawForeground);
         }
 
         function passwordsMatch(storedPass, enteredPass) {
@@ -2217,27 +2326,26 @@
         async function unlockCertificate() {
             const certId = document.getElementById('vaultCertId').value.trim().toUpperCase();
             const password = document.getElementById('vaultPassword').value.trim();
-            if (!certId || !password) return showToast('Enter both Credential ID and Password');
+            if (!certId || !password) {
+                setVaultStatus('Please enter both Credential ID and Password.', true);
+                return showToast('Enter both Credential ID and Password');
+            }
 
+            setVaultStatus('Verifying credential...');
             let match = null;
 
-            // 1. Check active session records
             if (lastAiCertRecord && lastAiCertRecord.certId.toUpperCase() === certId && passwordsMatch(lastAiCertRecord.password, password)) {
                 match = lastAiCertRecord;
             }
             if (!match) {
                 match = bulkRecords.find(r => r.certId.toUpperCase() === certId && passwordsMatch(r.password, password));
             }
-
-            // 2. Check cross-device QR token in URL hash (#v=...)
             if (!match) {
-                const portable = decodeCertToken(window.location.hash);
+                const portable = extractTokenFromCurrentUrl();
                 if (portable && (!portable.certId || portable.certId.toUpperCase() === certId) && passwordsMatch(portable.password, password)) {
                     match = { ...portable, certId: portable.certId || certId };
                 }
             }
-
-            // 3. Check local storage / memory store
             if (!match) {
                 const localStore = Object.assign({}, window.__hoknexMemCerts, getLocalCertStore());
                 const localRec = localStore[certId];
@@ -2245,11 +2353,28 @@
                     match = localRec;
                 }
             }
+            if (!match) {
+                try {
+                    const res = await fetch(`${STUDIO_API}/certificates/unlock`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ certId, password })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.valid && data.certificate) {
+                            match = data.certificate;
+                        }
+                    }
+                } catch (_) {}
+            }
 
             if (!match) {
+                setVaultStatus('Invalid Credential ID or Password.', true);
                 return showToast('Invalid Credential ID or Password');
             }
 
+            setVaultStatus('Credential verified and unlocked.');
             activeUnlockedCert = match;
             document.getElementById('vaultResultBox').style.display = 'block';
             document.getElementById('vaultCertTitle').textContent = match.title;
@@ -2283,7 +2408,7 @@
 
             const params = new URLSearchParams(window.location.search);
             const scannedId = params.get('id') || params.get('certId');
-            const portable = decodeCertToken(window.location.hash);
+            const portable = extractTokenFromCurrentUrl();
 
             if (scannedId || portable) {
                 const resolvedId = (scannedId || (portable && portable.certId) || '').toUpperCase();
