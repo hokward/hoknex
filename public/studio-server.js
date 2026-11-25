@@ -1,4 +1,4 @@
-// studio-server.js — Hoknex Studio Backend (Auth, Account Deletion, AI & Bulk Certificates, Vault)
+// studio-server.js — Hoknex Studio Backend (Auth, Account Deletion, AI & Bulk Certificates, Vault & Projects)
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
@@ -58,7 +58,8 @@ app.get('/api/studio/health', (req, res) => {
     ok: true,
     brand: 'Hoknex Studio',
     usersCount: db.users.length,
-    certificatesCount: db.certificates.length
+    certificatesCount: db.certificates.length,
+    projectsCount: db.projects.length
   });
 });
 
@@ -120,7 +121,6 @@ app.post('/api/studio/auth/signin', (req, res) => {
   });
 });
 
-// Delete Account Anytime (removes user record & owned projects)
 app.delete('/api/studio/auth/delete-account', (req, res) => {
   const { email, password, token } = req.body;
   const db = readDB();
@@ -310,7 +310,7 @@ app.post('/api/studio/certificates/unlock', (req, res) => {
 });
 
 // ============================================================================
-// STUDIO PROJECTS
+// STUDIO PROJECTS (CREATE, LIST, RENAME, DELETE)
 // ============================================================================
 app.post('/api/studio/projects', (req, res) => {
   const { name, format, themeKey, canvasJSON, ownerId = null } = req.body;
@@ -332,6 +332,48 @@ app.post('/api/studio/projects', (req, res) => {
 app.get('/api/studio/projects', (req, res) => {
   const db = readDB();
   res.json({ projects: db.projects.slice(0, 30) });
+});
+
+app.patch('/api/studio/projects/:id', (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ success: false, error: 'Project ID is required.' });
+  }
+  if (!name || !String(name).trim()) {
+    return res.status(400).json({ success: false, error: 'A valid project name is required.' });
+  }
+
+  const db = readDB();
+  const proj = db.projects.find((p) => String(p.id) === String(id));
+  if (!proj) {
+    return res.status(404).json({ success: false, error: 'Project not found.' });
+  }
+
+  proj.name = String(name).trim();
+  proj.updatedAt = new Date().toISOString();
+  writeDB(db);
+
+  res.json({ success: true, project: proj });
+});
+
+app.delete('/api/studio/projects/:id', (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({ success: false, error: 'Project ID is required.' });
+  }
+
+  const db = readDB();
+  const initialLength = db.projects.length;
+  db.projects = db.projects.filter((p) => String(p.id) !== String(id));
+
+  if (db.projects.length === initialLength) {
+    return res.status(404).json({ success: false, error: 'Project not found.' });
+  }
+
+  writeDB(db);
+  res.json({ success: true, deletedId: id });
 });
 
 app.listen(PORT, () => {
