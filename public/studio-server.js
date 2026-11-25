@@ -10,7 +10,7 @@ const PORT = process.env.STUDIO_PORT || 5050;
 const DATA_FILE = path.join(__dirname, 'hoknex_studio_db.json');
 
 app.use(cors());
-app.use(express.json({ limit: '35mb' }));
+app.use(express.json({ limit: '50mb' }));
 app.use(express.static(__dirname));
 
 if (!fs.existsSync(DATA_FILE)) {
@@ -33,41 +33,10 @@ const readDB = () => {
   }
 };
 
-// Atomic write to prevent JSON corruption during bulk saves
 const writeDB = (data) => {
   const tmpFile = `${DATA_FILE}.tmp`;
   fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2));
   fs.renameSync(tmpFile, DATA_FILE);
-};
-
-const THEMES = {
-  gallery: {
-    bg: '#FAF9F6',
-    surface: '#FFFFFF',
-    ink: '#18181B',
-    muted: '#71717A',
-    accent: '#2563EB',
-    secondary: '#0D9488',
-    badge: 'GALLERY MINIMAL'
-  },
-  editorial: {
-    bg: '#111111',
-    surface: '#1E1E1E',
-    ink: '#F4F4F5',
-    muted: '#A1A1AA',
-    accent: '#F59E0B',
-    secondary: '#A855F7',
-    badge: 'EDITORIAL DARK'
-  },
-  tactile: {
-    bg: '#FBF7F2',
-    surface: '#FFFFFF',
-    ink: '#27221F',
-    muted: '#6B5E55',
-    accent: '#B45309',
-    secondary: '#A3B18A',
-    badge: 'WARM & TACTILE'
-  }
 };
 
 const generateUniquePassword = (prefix = 'HKX-') =>
@@ -80,80 +49,13 @@ const buildShareLink = (req, certId) => {
   return `${baseUrl}?certId=${encodeURIComponent(certId)}`;
 };
 
-// 1. AI Prompt-to-Design Generator (now also issues a unique password & share/QR link)
-app.post('/api/studio/generate-from-prompt', (req, res) => {
-  const {
-    prompt = '',
-    format = 'certificate',
-    recipient = 'Aditya Kumar',
-    themeKey = 'gallery',
-    passwordPrefix = 'HKX-'
-  } = req.body;
-  const p = prompt.toLowerCase();
-
-  let selectedKey = themeKey;
-  if (p.includes('dark') || p.includes('editorial') || p.includes('neon') || p.includes('video')) {
-    selectedKey = 'editorial';
-  } else if (p.includes('warm') || p.includes('tactile') || p.includes('craft') || p.includes('cream')) {
-    selectedKey = 'tactile';
-  } else if (p.includes('minimal') || p.includes('gallery') || p.includes('clean')) {
-    selectedKey = 'gallery';
-  }
-
-  const theme = THEMES[selectedKey] || THEMES.gallery;
-  const cleanTitle = prompt
-    .replace(/create|make|generate|a|an|for|certificate|poster|banner|thumbnail|dark|minimal|warm/gi, '')
-    .trim()
-    .toUpperCase();
-
-  const certId = `HKX-${new Date().getFullYear()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
-  const password = generateUniquePassword(passwordPrefix);
-  const shareLink = buildShareLink(req, certId);
-  const headline = cleanTitle.length > 3 ? cleanTitle : 'CERTIFICATE OF EXCELLENCE';
-  const description =
-    prompt ||
-    'Awarded for outstanding contribution, innovation, and leadership within the Hoknex global campus ecosystem.';
-  const date = new Date().toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  const record = {
-    certId,
-    password,
-    shareLink,
-    recipient,
-    title: headline,
-    description,
-    format,
-    themeKey: selectedKey,
-    date,
-    createdAt: new Date().toISOString()
-  };
-
+// Health check
+app.get('/api/studio/health', (req, res) => {
   const db = readDB();
-  db.certificates.push(record);
-  writeDB(db);
-
-  res.json({
-    success: true,
-    format,
-    certId,
-    password,
-    shareLink,
-    qrPayload: shareLink,
-    theme,
-    content: {
-      headline,
-      recipient,
-      description,
-      date
-    }
-  });
+  res.json({ ok: true, certificatesCount: db.certificates.length });
 });
 
-// 2. Save or Upsert Single Certificate (with password, QR link, optional logo/signature)
+// 1. Save or Upsert Single Certificate (preserves backgroundImage, logo, signature, password)
 app.post('/api/studio/certificates/save', (req, res) => {
   const {
     certId,
@@ -161,10 +63,13 @@ app.post('/api/studio/certificates/save', (req, res) => {
     recipient = 'Participant',
     title = 'HOKNEX CERTIFICATE',
     description = '',
+    issuer = 'Hoknex Global Network',
     format = 'certificate',
     themeKey = 'gallery',
     logo = null,
-    signature = null
+    signature = null,
+    backgroundImage = null,
+    date = null
   } = req.body;
 
   if (!certId) {
@@ -172,29 +77,34 @@ app.post('/api/studio/certificates/save', (req, res) => {
   }
 
   const db = readDB();
-  const finalPassword = password || generateUniquePassword('HKX-');
-  const shareLink = buildShareLink(req, certId);
+  const cleanId = String(certId).trim();
+  const finalPassword = String(password || generateUniquePassword('HKX-')).trim();
+  const shareLink = buildShareLink(req, cleanId);
 
   const existingIdx = db.certificates.findIndex(
-    (c) => c.certId.toLowerCase() === String(certId).toLowerCase()
+    (c) => c.certId.toLowerCase() === cleanId.toLowerCase()
   );
 
   const record = {
-    certId,
+    certId: cleanId,
     password: finalPassword,
     shareLink,
     recipient,
     title,
     description,
+    issuer,
     format,
     themeKey,
     logo,
     signature,
-    date: new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }),
+    backgroundImage,
+    date:
+      date ||
+      new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
     updatedAt: new Date().toISOString()
   };
 
@@ -205,12 +115,19 @@ app.post('/api/studio/certificates/save', (req, res) => {
   }
 
   writeDB(db);
-  res.json({ success: true, certId, password: finalPassword, shareLink, qrPayload: shareLink });
+  res.json({ success: true, certId: cleanId, password: finalPassword, shareLink });
 });
 
-// 3. Save Bulk Certificate Batch (each certificate keeps its own password & share/QR URL)
+// 2. Save Bulk Certificate Batch
 app.post('/api/studio/certificates/bulk', (req, res) => {
-  const { certificates = [], batchName = 'Hoknex Bulk Batch', themeKey = 'gallery' } = req.body;
+  const {
+    certificates = [],
+    batchName = 'Hoknex Bulk Batch',
+    themeKey = 'gallery',
+    backgroundImage = null,
+    logo = null,
+    signature = null
+  } = req.body;
 
   if (!Array.isArray(certificates) || certificates.length === 0) {
     return res.status(400).json({ success: false, error: 'certificates array is required' });
@@ -225,13 +142,14 @@ app.post('/api/studio/certificates/bulk', (req, res) => {
   });
 
   const savedItems = certificates.map((item, idx) => {
-    const certId =
+    const certId = String(
       item.certId ||
-      `HKX-${new Date().getFullYear()}-${String(idx + 1).padStart(3, '0')}-${crypto
-        .randomBytes(2)
-        .toString('hex')
-        .toUpperCase()}`;
-    const password = item.password || generateUniquePassword('HKX-');
+        `HKX-${new Date().getFullYear()}-${String(idx + 1).padStart(3, '0')}-${crypto
+          .randomBytes(2)
+          .toString('hex')
+          .toUpperCase()}`
+    ).trim();
+    const password = String(item.password || generateUniquePassword('HKX-')).trim();
     const shareLink = buildShareLink(req, certId);
 
     const certRecord = {
@@ -244,11 +162,13 @@ app.post('/api/studio/certificates/bulk', (req, res) => {
       description:
         item.description ||
         `Officially issued credential for ${item.recipient || `Recipient #${idx + 1}`}.`,
+      issuer: item.issuer || 'Hoknex Global Network',
       format: 'certificate',
       themeKey: item.themeKey || themeKey,
-      logo: item.logo || null,
-      signature: item.signature || null,
-      date,
+      logo: item.logo || logo || null,
+      signature: item.signature || signature || null,
+      backgroundImage: item.backgroundImage || backgroundImage || null,
+      date: item.date || date,
       createdAt: new Date().toISOString()
     };
 
@@ -266,8 +186,7 @@ app.post('/api/studio/certificates/bulk', (req, res) => {
       password,
       recipient: certRecord.recipient,
       title: certRecord.title,
-      shareLink,
-      qrPayload: shareLink
+      shareLink
     };
   });
 
@@ -282,7 +201,7 @@ app.post('/api/studio/certificates/bulk', (req, res) => {
   res.json({ success: true, batchId, count: savedItems.length, certificates: savedItems });
 });
 
-// 4. Password-Protected Unlock (used when opening shared link or scanning QR in any browser)
+// 3. Password-Protected Unlock (case-insensitive password fallback + exact trim match)
 app.post('/api/studio/certificates/unlock', (req, res) => {
   const { certId, password } = req.body;
   if (!certId || !password) {
@@ -290,10 +209,14 @@ app.post('/api/studio/certificates/unlock', (req, res) => {
   }
 
   const db = readDB();
+  const cleanId = String(certId).trim().toLowerCase();
+  const cleanPass = String(password).trim();
+
   const found = db.certificates.find(
     (c) =>
-      c.certId.toLowerCase() === String(certId).trim().toLowerCase() &&
-      String(c.password) === String(password).trim()
+      c.certId.trim().toLowerCase() === cleanId &&
+      (String(c.password).trim() === cleanPass ||
+        String(c.password).trim().toLowerCase() === cleanPass.toLowerCase())
   );
 
   if (!found) {
@@ -304,39 +227,11 @@ app.post('/api/studio/certificates/unlock', (req, res) => {
   res.json({ valid: true, certificate: safeCertificate });
 });
 
-// 5. Public Metadata Lookup by Cert ID (never exposes the password)
-app.get('/api/studio/verify/:certId', (req, res) => {
+// 4. List Issued Certificates (metadata only, passwords masked)
+app.get('/api/studio/certificates', (req, res) => {
   const db = readDB();
-  const cert = db.certificates.find(
-    (c) => c.certId.toLowerCase() === req.params.certId.toLowerCase()
-  );
-  if (!cert) {
-    return res.status(404).json({ valid: false, message: 'Certificate ID not found' });
-  }
-  const { password: _, ...publicCert } = cert;
-  res.json({ valid: true, passwordRequired: true, cert: publicCert });
-});
-
-// 6. Save Studio Canvas Project
-app.post('/api/studio/projects', (req, res) => {
-  const { name, format, theme, canvasJSON } = req.body;
-  const db = readDB();
-  const project = {
-    id: crypto.randomUUID(),
-    name: name || 'Untitled Hoknex Design',
-    format,
-    theme,
-    canvasJSON,
-    updatedAt: new Date().toISOString()
-  };
-  db.projects.unshift(project);
-  writeDB(db);
-  res.json({ success: true, project });
-});
-
-app.get('/api/studio/projects', (req, res) => {
-  const db = readDB();
-  res.json({ projects: db.projects.slice(0, 25) });
+  const list = db.certificates.slice(-50).reverse().map(({ password, ...rest }) => rest);
+  res.json({ certificates: list });
 });
 
 app.listen(PORT, () => {
