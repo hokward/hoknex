@@ -1,4 +1,4 @@
-// studio-server.js — Hoknex Studio Backend Server
+// studio-server.js — Hoknex Studio Public Credential, Batch & Project Server
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
@@ -8,6 +8,7 @@ const crypto = require('crypto');
 const app = express();
 const PORT = process.env.PORT || process.env.STUDIO_PORT || 5050;
 const DB_FILE = path.join(__dirname, 'hoknex_studio_db.json');
+const ADMIN_STUDIO_KEY = process.env.HOKNEX_ADMIN_KEY || 'HOKNEX-ADMIN-2026';
 
 app.set('trust proxy', 1);
 app.use(cors());
@@ -46,21 +47,39 @@ const makeToken = () => crypto.randomBytes(24).toString('hex');
 const makeCertId = () => `HKX-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 const makeCertPass = () => `P-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 
+function isAdminRequest(req) {
+  const providedKey = String(
+    req.headers['x-hoknex-admin-key'] || (req.body && req.body.adminKey) || ''
+  ).trim();
+  return providedKey.length > 0 && providedKey === ADMIN_STUDIO_KEY;
+}
+
+// Health Check
 app.get('/api/studio/health', (req, res) => {
   const db = readDB();
-  res.json({ ok: true, brand: 'Hoknex Studio', certificatesCount: db.certificates.length });
+  res.json({
+    ok: true,
+    brand: 'Hoknex Studio',
+    certificatesCount: db.certificates.length,
+    projectsCount: db.projects.length
+  });
 });
 
+// ============================================================================
+// ACCOUNT AUTHENTICATION & SELF-SERVICE DELETION
+// ============================================================================
 app.post('/api/studio/auth/signup', (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password } = req.body || {};
   if (!name || !email || !password || String(password).length < 4) {
-    return res.status(400).json({ error: 'Name, email, and password are required.' });
+    return res.status(400).json({ error: 'Name, email, and password (min 4 chars) are required.' });
   }
+
   const db = readDB();
   const normEmail = String(email).trim().toLowerCase();
   if (db.users.some((u) => u.email.toLowerCase() === normEmail)) {
-    return res.status(409).json({ error: 'Account already exists.' });
+    return res.status(409).json({ error: 'An account with this email already exists.' });
   }
+
   const user = {
     id: crypto.randomUUID(),
     name: String(name).trim(),
@@ -69,27 +88,45 @@ app.post('/api/studio/auth/signup', (req, res) => {
     token: makeToken(),
     createdAt: new Date().toISOString()
   };
+
   db.users.push(user);
   writeDB(db);
-  res.json({ success: true, user: { id: user.id, name: user.name, email: user.email, token: user.token } });
+
+  res.json({
+    success: true,
+    user: { id: user.id, name: user.name, email: user.email, token: user.token }
+  });
 });
 
 app.post('/api/studio/auth/signin', (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body || {};
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required.' });
+  }
+
   const db = readDB();
-  const normEmail = String(email || '').trim().toLowerCase();
+  const normEmail = String(email).trim().toLowerCase();
   const user = db.users.find(
-    (u) => u.email.toLowerCase() === normEmail && u.passwordHash === hashPassword(password || '')
+    (u) => u.email.toLowerCase() === normEmail && u.passwordHash === hashPassword(password)
   );
-  if (!user) return res.status(401).json({ error: 'Invalid email or password.' });
+
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid email or password.' });
+  }
+
   user.token = makeToken();
   writeDB(db);
-  res.json({ success: true, user: { id: user.id, name: user.name, email: user.email, token: user.token } });
+
+  res.json({
+    success: true,
+    user: { id: user.id, name: user.name, email: user.email, token: user.token }
+  });
 });
 
 app.delete('/api/studio/auth/delete-account', (req, res) => {
-  const { email, password, token } = req.body;
+  const { email, password, token } = req.body || {};
   const db = readDB();
+
   const idx = db.users.findIndex((u) => {
     if (token && u.token === token) return true;
     if (email && password) {
@@ -100,14 +137,22 @@ app.delete('/api/studio/auth/delete-account', (req, res) => {
     }
     return false;
   });
-  if (idx === -1) return res.status(401).json({ error: 'Account could not be verified.' });
+
+  if (idx === -1) {
+    return res.status(401).json({ error: 'Account could not be verified.' });
+  }
+
   const removed = db.users[idx];
   db.users.splice(idx, 1);
   db.projects = db.projects.filter((p) => p.ownerId !== removed.id);
   writeDB(db);
-  res.json({ success: true });
+
+  res.json({ success: true, message: 'Account and saved projects deleted.' });
 });
 
+// ============================================================================
+// SINGLE & BULK CERTIFICATES + PASSWORD-PROTECTED VAULT UNLOCK
+// ============================================================================
 app.post('/api/studio/certificates/save', (req, res) => {
   const {
     certId,
@@ -123,16 +168,28 @@ app.post('/api/studio/certificates/save', (req, res) => {
     signature = null,
     backgroundImage = null,
     qrUrl = null
-  } = req.body;
+  } = req.body || {};
 
   const cleanId = String(certId || makeCertId()).trim().toUpperCase();
-  const finalPass = String(password || makeCertPass()).trim();
   const db = readDB();
+  const existingIdx = db.certificates.findIndex((c) => c.certId.toUpperCase() === cleanId);
+
+  // Overwriting an existing certificate requires Admin authentication
+  if (existingIdx >= 0 && !isAdminRequest(req)) {
+    return res.status(403).json({
+      success: false,
+      error: 'Only an authenticated Hoknex Admin can edit an existing certificate.'
+    });
+  }
+
+  const finalPass = String(
+    password || (existingIdx >= 0 ? db.certificates[existingIdx].password : makeCertPass())
+  ).trim();
 
   const record = {
     certId: cleanId,
     password: finalPass,
-    qrUrl,
+    qrUrl: qrUrl || (existingIdx >= 0 ? db.certificates[existingIdx].qrUrl : null),
     recipient: String(recipient).trim(),
     title: String(title).trim(),
     description: String(description).trim(),
@@ -141,18 +198,22 @@ app.post('/api/studio/certificates/save', (req, res) => {
     themeKey,
     date:
       date ||
+      (existingIdx >= 0 && db.certificates[existingIdx].date) ||
       new Date().toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       }),
-    logo,
-    signature,
-    backgroundImage,
+    logo: logo !== null ? logo : (existingIdx >= 0 ? db.certificates[existingIdx].logo : null),
+    signature:
+      signature !== null ? signature : (existingIdx >= 0 ? db.certificates[existingIdx].signature : null),
+    backgroundImage:
+      backgroundImage !== null
+        ? backgroundImage
+        : (existingIdx >= 0 ? db.certificates[existingIdx].backgroundImage : null),
     updatedAt: new Date().toISOString()
   };
 
-  const existingIdx = db.certificates.findIndex((c) => c.certId.toUpperCase() === cleanId);
   if (existingIdx >= 0) {
     db.certificates[existingIdx] = { ...db.certificates[existingIdx], ...record };
   } else {
@@ -160,7 +221,7 @@ app.post('/api/studio/certificates/save', (req, res) => {
   }
 
   writeDB(db);
-  res.json({ success: true, certId: cleanId, password: finalPass, qrUrl });
+  res.json({ success: true, certId: cleanId, password: finalPass, qrUrl: record.qrUrl });
 });
 
 app.post('/api/studio/certificates/bulk', (req, res) => {
@@ -172,7 +233,7 @@ app.post('/api/studio/certificates/bulk', (req, res) => {
     logo = null,
     signature = null,
     issuer = 'Hoknex'
-  } = req.body;
+  } = req.body || {};
 
   if (!Array.isArray(certificates) || certificates.length === 0) {
     return res.status(400).json({ error: 'certificates array is required.' });
@@ -244,26 +305,39 @@ app.post('/api/studio/certificates/bulk', (req, res) => {
 });
 
 app.post('/api/studio/certificates/unlock', (req, res) => {
-  const { certId, password } = req.body;
+  const { certId, password } = req.body || {};
+  if (!certId || !password) {
+    return res.status(400).json({ valid: false, error: 'Credential ID and password are required.' });
+  }
+
   const db = readDB();
-  const cleanId = String(certId || '').trim().toUpperCase();
-  const cleanPass = String(password || '').trim();
+  const cleanId = String(certId).trim().toUpperCase();
+  const cleanPass = String(password).trim();
+
   const found = db.certificates.find(
     (c) =>
       c.certId.trim().toUpperCase() === cleanId &&
       (String(c.password).trim() === cleanPass ||
         String(c.password).trim().toLowerCase() === cleanPass.toLowerCase())
   );
-  if (!found) return res.status(401).json({ valid: false, error: 'Invalid Credential ID or Password.' });
+
+  if (!found) {
+    return res.status(401).json({ valid: false, error: 'Invalid Credential ID or Password.' });
+  }
+
   const { password: _, ...safeCert } = found;
   res.json({ valid: true, certificate: safeCert });
 });
 
+// ============================================================================
+// STUDIO PROJECTS (CREATE, LIST, RENAME, DELETE)
+// ============================================================================
 app.post('/api/studio/projects', (req, res) => {
-  const { name, format, themeKey, canvasJSON } = req.body;
+  const { name, format, themeKey, canvasJSON, ownerId = null } = req.body || {};
   const db = readDB();
   const project = {
     id: crypto.randomUUID(),
+    ownerId,
     name: name || 'Hoknex Studio Project',
     format: format || 'certificate',
     themeKey: themeKey || 'gallery',
@@ -282,7 +356,7 @@ app.get('/api/studio/projects', (req, res) => {
 
 app.patch('/api/studio/projects/:id', (req, res) => {
   const { id } = req.params;
-  const { name } = req.body;
+  const { name } = req.body || {};
   if (!id || !name || !String(name).trim()) {
     return res.status(400).json({ success: false, error: 'Valid project ID and name are required.' });
   }
