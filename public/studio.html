@@ -296,7 +296,7 @@
         .qr-box { background: #FFFFFF; padding: 8px; border-radius: 10px; display: inline-block; border: 1px solid var(--border-subtle); }
         .theme-thumb-preview { width: 100%; max-height: 85px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-subtle); margin-bottom: 10px; display: none; }
 
-        /* Auth Modal */
+        /* Modals */
         .modal-backdrop {
             position: fixed;
             inset: 0;
@@ -418,7 +418,7 @@
                 <div>
                     <div class="hub-icon-box"><i class="fa-solid fa-pen-nib"></i></div>
                     <h3>4. Pro Vector, Draw & Layout Editor</h3>
-                    <p>Full canvas editor with freehand brush, shapes, stars/badges, custom images, text styles, layers inspector, undo/redo, and cloud save.</p>
+                    <p>Full canvas editor with freehand brush, shapes, stars/badges, custom images, text styles, layers inspector, undo/redo, and cloud save/load.</p>
                 </div>
                 <span class="hub-open-link">Open Pro Editor <i class="fa-solid fa-arrow-right"></i></span>
             </div>
@@ -688,18 +688,19 @@
     </section>
 
     <!-- ======================================================================
-         FEATURE 4: PRO VECTOR, DRAW & LAYOUT EDITOR (WITH UNDO/REDO & LAYERS)
+         FEATURE 4: PRO VECTOR, DRAW & LAYOUT EDITOR (WITH CLOUD SAVE & LOAD)
          ====================================================================== -->
     <section id="drawStage" class="feature-stage">
         <div class="stage-top-bar">
             <div class="stage-title-group">
                 <h2>Pro Vector, Draw & Layout Editor</h2>
-                <p>Draw freehand, place shapes/stars/images/QR stamps, manage layers, undo/redo, save to cloud, and download PNG or PDF.</p>
+                <p>Draw freehand, place shapes/stars/images/QR stamps, manage layers, undo/redo, save/load cloud projects, and download PNG or PDF.</p>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button class="btn-ghost" onclick="undoDraw()"><i class="fa-solid fa-rotate-left"></i> Undo</button>
                 <button class="btn-ghost" onclick="redoDraw()"><i class="fa-solid fa-rotate-right"></i> Redo</button>
                 <button class="btn-ghost" onclick="saveProProjectToCloud()"><i class="fa-solid fa-cloud-arrow-up"></i> Save Cloud</button>
+                <button class="btn-ghost" onclick="openCloudProjectsModal()"><i class="fa-solid fa-folder-open"></i> Load Cloud</button>
                 <button class="btn-ghost" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Hub</button>
             </div>
         </div>
@@ -871,6 +872,21 @@
     </section>
 
     <!-- ======================================================================
+         CLOUD PROJECTS LOADER MODAL (LOAD, INLINE RENAME & DELETE)
+         ====================================================================== -->
+    <div class="modal-backdrop" id="cloudProjectsModal" onclick="if(event.target === this) closeCloudProjectsModal()">
+        <div class="modal-card" style="max-width:540px;">
+            <button onclick="closeCloudProjectsModal()" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink-muted);">&times;</button>
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.45rem; margin-bottom:4px;">Hoknex Cloud Projects</h3>
+            <p style="font-size:0.8rem; color:var(--ink-muted); margin-bottom:14px;">Load, rename inline, or delete saved canvas projects from Hoknex Studio.</p>
+
+            <div id="cloudProjectsList" style="display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto;">
+                <div style="font-size:0.82rem; color:var(--ink-muted);">Loading saved projects...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
          ACCOUNT MODAL (SIGN IN / SIGN UP FOR DOWNLOADS + DELETE ACCOUNT ANYTIME)
          ====================================================================== -->
     <div class="modal-backdrop" id="authModal" onclick="if(event.target === this) closeAuthModal()">
@@ -923,7 +939,6 @@
 
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        // Shared Hoknex 60-30-10 Design Tokens & CSV Parser
         const PALETTES = {
             gallery:   { bg: '#FAF9F6', surface: '#FFFFFF', ink: '#18181B', muted: '#71717A', accent: '#2563EB', secondary: '#0D9488' },
             editorial: { bg: '#111111', surface: '#1E1E1E', ink: '#F4F4F5', muted: '#A1A1AA', accent: '#F59E0B', secondary: '#A855F7' },
@@ -968,6 +983,14 @@
             el.textContent = msg;
             c.appendChild(el);
             setTimeout(() => el.remove(), 3400);
+        }
+
+        function escapeHtmlText(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
         }
 
         async function checkStudioServerHealth() {
@@ -1175,10 +1198,10 @@
                 return;
             }
             box.innerHTML = items.map(item => `
-                <div class="layer-item" onclick="prefillVault('${item.certId}', '${item.password}')">
+                <div class="layer-item" onclick="prefillVault('${escapeHtmlText(item.certId)}', '${escapeHtmlText(item.password)}')">
                     <div>
-                        <div>${item.recipient}</div>
-                        <div style="font-size:0.68rem; color:var(--ink-muted);">${item.certId} • Pass: ${item.password}</div>
+                        <div>${escapeHtmlText(item.recipient)}</div>
+                        <div style="font-size:0.68rem; color:var(--ink-muted);">${escapeHtmlText(item.certId)} • Pass: ${escapeHtmlText(item.password)}</div>
                     </div>
                     <span style="color:var(--accent); font-size:0.7rem;">Load →</span>
                 </div>
@@ -1602,9 +1625,9 @@
             bulkRecords.forEach((rec, i) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>${rec.recipient}</strong><br><span style="color:var(--ink-muted); font-size:0.75rem;">${rec.title}</span></td>
-                    <td><code>${rec.certId}</code></td>
-                    <td><strong>${rec.password}</strong></td>
+                    <td><strong>${escapeHtmlText(rec.recipient)}</strong><br><span style="color:var(--ink-muted); font-size:0.75rem;">${escapeHtmlText(rec.title)}</span></td>
+                    <td><code>${escapeHtmlText(rec.certId)}</code></td>
+                    <td><strong>${escapeHtmlText(rec.password)}</strong></td>
                     <td><div id="qr-row-${i}" class="qr-box"></div></td>
                     <td style="display:flex; gap:6px; flex-wrap:wrap;">
                         <button class="btn-ghost" onclick="copyShareLink('${rec.qrUrl}', '${rec.password}')">
@@ -1701,7 +1724,7 @@
             a.click();
         }
 
-        // 4. Pro Vector, Draw & Layout Editor (Undo/Redo + Layers Inspector + QR Stamp + Cloud Save)
+        // 4. Pro Vector, Draw & Layout Editor (Undo/Redo + Layers + Cloud Save/Load/Rename/Delete)
         let drawHistory = [];
         let drawHistoryStep = -1;
         let isDrawRestoring = false;
@@ -1756,7 +1779,7 @@
             }
             listEl.innerHTML = objs.slice().reverse().map((obj, revIdx) => {
                 const realIdx = objs.length - 1 - revIdx;
-                const label = obj.text ? `Text: ${obj.text.slice(0, 14)}` : `Layer ${realIdx + 1} (${obj.type})`;
+                const label = obj.text ? `Text: ${escapeHtmlText(obj.text.slice(0, 14))}` : `Layer ${realIdx + 1} (${obj.type})`;
                 const isSel = active === obj;
                 return `
                     <div class="layer-item ${isSel ? 'selected' : ''}" onclick="selectDrawLayer(${realIdx})">
@@ -1817,22 +1840,240 @@
 
         async function saveProProjectToCloud() {
             const user = getCurrentUser();
+            const existingMeta = (() => {
+                try {
+                    return JSON.parse(localStorage.getItem('hoknex_pro_autosave_meta') || '{}');
+                } catch {
+                    return {};
+                }
+            })();
+            const projectName = existingMeta.name || `Hoknex Project ${new Date().toLocaleTimeString()}`;
+            const updatedAt = new Date().toISOString();
+
             try {
                 const res = await fetch(`${STUDIO_API}/projects`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        name: `Hoknex Project ${new Date().toLocaleTimeString()}`,
+                        name: projectName,
                         format: 'custom',
                         themeKey: currentTheme,
                         ownerId: user?.id || null,
                         canvasJSON: drawCanvas.toJSON()
                     })
                 });
-                if (res.ok) return showToast('Saved project to Hoknex Studio Server');
+                if (res.ok) return showToast(`Saved "${projectName}" to Hoknex Studio Server`);
             } catch (_) {}
+
             localStorage.setItem('hoknex_pro_autosave', JSON.stringify(drawCanvas.toJSON()));
-            showToast('Saved project locally in browser');
+            localStorage.setItem(
+                'hoknex_pro_autosave_meta',
+                JSON.stringify({
+                    name: projectName,
+                    themeKey: currentTheme,
+                    updatedAt
+                })
+            );
+            showToast(`Saved "${projectName}" locally in browser`);
+        }
+
+        function openCloudProjectsModal() {
+            document.getElementById('cloudProjectsModal').style.display = 'flex';
+            loadCloudProjectsList();
+        }
+
+        function closeCloudProjectsModal() {
+            document.getElementById('cloudProjectsModal').style.display = 'none';
+        }
+
+        function loadCloudProjectsList() {
+            const listEl = document.getElementById('cloudProjectsList');
+            listEl.innerHTML = '<div style="font-size:0.82rem; color:var(--ink-muted);">Fetching projects from Hoknex Studio Server...</div>';
+
+            (async () => {
+                let projects = [];
+                try {
+                    const res = await fetch(`${STUDIO_API}/projects`);
+                    const data = await res.json();
+                    if (res.ok && Array.isArray(data.projects)) {
+                        projects = data.projects;
+                    }
+                } catch (_) {}
+
+                if (!projects.length) {
+                    const localSave = localStorage.getItem('hoknex_pro_autosave');
+                    if (localSave) {
+                        const localMeta = (() => {
+                            try {
+                                return JSON.parse(localStorage.getItem('hoknex_pro_autosave_meta') || '{}');
+                            } catch {
+                                return {};
+                            }
+                        })();
+                        projects.push({
+                            id: 'local-autosave',
+                            name: localMeta.name || 'Local Browser Autosave',
+                            format: 'custom',
+                            themeKey: localMeta.themeKey || currentTheme,
+                            updatedAt: localMeta.updatedAt || 'Local Device',
+                            canvasJSON: JSON.parse(localSave)
+                        });
+                    }
+                }
+
+                if (!projects.length) {
+                    listEl.innerHTML = '<div style="font-size:0.82rem; color:var(--ink-muted);">No saved projects found yet. Click "Save Cloud" to save your current canvas.</div>';
+                    return;
+                }
+
+                window.__hoknexLoadedCloudProjects = projects;
+
+                listEl.innerHTML = projects.map((proj, idx) => {
+                    const safeName = escapeHtmlText(proj.name || `Project #${idx + 1}`);
+                    const timeLabel = proj.updatedAt && proj.updatedAt !== 'Local Device'
+                        ? new Date(proj.updatedAt).toLocaleString()
+                        : (proj.updatedAt || 'Saved Project');
+                    return `
+                        <div class="layer-item" style="padding:11px 14px; flex-direction:column; align-items:stretch; gap:8px;" onclick="applyCloudProjectToCanvas(${idx})">
+                            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                                <div>
+                                    <div style="font-size:0.86rem;">${safeName}</div>
+                                    <div style="font-size:0.72rem; color:var(--ink-muted);">
+                                        Theme: ${(proj.themeKey || 'gallery').toUpperCase()} • ${timeLabel}
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:6px; align-items:center;">
+                                    <button type="button" class="btn-cta" style="padding:6px 11px; font-size:0.7rem;" onclick="event.stopPropagation(); applyCloudProjectToCanvas(${idx});">Load</button>
+                                    <button type="button" class="btn-ghost" style="padding:6px 10px; font-size:0.7rem;" onclick="event.stopPropagation(); openInlineRenameRow(${idx});" title="Rename Project">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button type="button" class="btn-danger" style="padding:6px 10px; font-size:0.7rem;" onclick="event.stopPropagation(); deleteCloudProject(${idx});" title="Delete Project">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="inlineRenameBox-${idx}" style="display:none; gap:8px; align-items:center; padding-top:6px; border-top:1px solid var(--border-subtle);" onclick="event.stopPropagation();">
+                                <input
+                                    type="text"
+                                    id="inlineRenameInput-${idx}"
+                                    value="${safeName}"
+                                    placeholder="Enter new project name..."
+                                    style="margin-bottom:0; padding:7px 10px; font-size:0.8rem; flex:1;"
+                                    onkeydown="if(event.key==='Enter') saveInlineRename(${idx}); if(event.key==='Escape') cancelInlineRename(${idx});"
+                                />
+                                <button type="button" class="btn-cta" style="padding:7px 12px; font-size:0.7rem;" onclick="saveInlineRename(${idx});">Save</button>
+                                <button type="button" class="btn-ghost" style="padding:7px 10px; font-size:0.7rem;" onclick="cancelInlineRename(${idx});">Cancel</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            })();
+        }
+
+        function applyCloudProjectToCanvas(idx) {
+            const projects = window.__hoknexLoadedCloudProjects || [];
+            const proj = projects[idx];
+            if (!proj || !proj.canvasJSON) return showToast('Project canvas data is empty');
+
+            if (proj.themeKey && PALETTES[proj.themeKey]) {
+                currentTheme = proj.themeKey;
+                document.documentElement.setAttribute('data-theme', proj.themeKey);
+            }
+
+            drawCanvas.loadFromJSON(proj.canvasJSON, () => {
+                drawCanvas.renderAll();
+                saveDrawHistory();
+                refreshLayersList();
+                closeCloudProjectsModal();
+                showToast(`Loaded "${proj.name || 'Project'}" onto canvas`);
+            });
+        }
+
+        function openInlineRenameRow(idx) {
+            const box = document.getElementById(`inlineRenameBox-${idx}`);
+            const input = document.getElementById(`inlineRenameInput-${idx}`);
+            if (!box) return;
+            box.style.display = 'flex';
+            if (input) {
+                input.focus();
+                input.select();
+            }
+        }
+
+        function cancelInlineRename(idx) {
+            const box = document.getElementById(`inlineRenameBox-${idx}`);
+            if (box) box.style.display = 'none';
+        }
+
+        async function saveInlineRename(idx) {
+            const projects = window.__hoknexLoadedCloudProjects || [];
+            const proj = projects[idx];
+            const input = document.getElementById(`inlineRenameInput-${idx}`);
+            if (!proj || !input) return;
+
+            const cleanName = input.value.trim();
+            if (!cleanName) return showToast('Enter a valid project name');
+
+            if (proj.id === 'local-autosave') {
+                localStorage.setItem(
+                    'hoknex_pro_autosave_meta',
+                    JSON.stringify({
+                        name: cleanName,
+                        themeKey: proj.themeKey || currentTheme,
+                        updatedAt: new Date().toISOString()
+                    })
+                );
+                showToast(`Renamed local project to "${cleanName}"`);
+                loadCloudProjectsList();
+                return;
+            }
+
+            try {
+                const res = await fetch(`${STUDIO_API}/projects/${encodeURIComponent(proj.id)}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: cleanName })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast(`Renamed project to "${cleanName}"`);
+                    loadCloudProjectsList();
+                    return;
+                }
+                showToast(data.error || 'Could not rename project on server');
+            } catch (_) {
+                showToast('Server connection error while renaming project');
+            }
+        }
+
+        async function deleteCloudProject(idx) {
+            const projects = window.__hoknexLoadedCloudProjects || [];
+            const proj = projects[idx];
+            if (!proj) return;
+
+            if (proj.id === 'local-autosave') {
+                localStorage.removeItem('hoknex_pro_autosave');
+                localStorage.removeItem('hoknex_pro_autosave_meta');
+                showToast('Removed local browser autosave');
+                loadCloudProjectsList();
+                return;
+            }
+
+            try {
+                const res = await fetch(`${STUDIO_API}/projects/${encodeURIComponent(proj.id)}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast(`Deleted "${proj.name || 'Project'}"`);
+                    loadCloudProjectsList();
+                    return;
+                }
+                showToast(data.error || 'Could not delete project from server');
+            } catch (_) {
+                showToast('Server connection error while deleting project');
+            }
         }
 
         function setDrawMode(m) {
