@@ -787,19 +787,32 @@
     </section>
 
     <!-- ======================================================================
-         06. CERTIFICATE QR VAULT
+         06. CERTIFICATE QR VAULT (VIEW & DOWNLOAD FOR USERS; EDIT FOR ADMIN ONLY)
          ====================================================================== -->
     <section id="vaultStage" class="stage-wrapper">
         <div class="stage-header">
             <div>
                 <h2>Certificate Verification Vault</h2>
-                <p>Enter the certificate ID and password from any device to view and download the verified credential.</p>
+                <p>Enter the credential ID and password to view and download. Editing is restricted to Hoknex Admin.</p>
             </div>
-            <button class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn-secondary" id="adminLockToggleBtn" onclick="toggleAdminVaultMode()">
+                    <i class="fa-solid fa-user-shield"></i> <span id="adminModeLabel">Admin Edit: Locked</span>
+                </button>
+                <button type="button" class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
+            </div>
         </div>
 
         <div class="two-col-studio" style="grid-template-columns: 390px 1fr;">
             <div class="panel-surface">
+                <div id="adminKeyPanel" style="display:none; background:var(--bg-main); border:1px solid var(--accent); border-radius:12px; padding:12px; margin-bottom:14px;">
+                    <label class="field-label" style="color:var(--accent);">Admin Studio Key</label>
+                    <input type="password" id="adminStudioKeyInput" placeholder="Enter Admin Studio Key" style="margin-bottom:8px;" onkeydown="if(event.key==='Enter') verifyAdminVaultKey()">
+                    <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="verifyAdminVaultKey()">
+                        <i class="fa-solid fa-key"></i> Authenticate Admin Edit
+                    </button>
+                </div>
+
                 <label class="field-label">Certificate ID</label>
                 <input type="text" id="vaultCertId" placeholder="HKX-XXXXXX">
 
@@ -819,12 +832,22 @@
 
                     <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
                         <div id="vaultQrContainer" class="qr-frame"></div>
-                        <span style="font-size:0.76rem; color:var(--ink-muted);">Verified QR credential ready for export.</span>
+                        <span style="font-size:0.76rem; color:var(--ink-muted);" id="vaultAccessNotice">View & download only.</span>
                     </div>
 
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
                         <button type="button" class="btn-secondary" onclick="guardedDownload(() => downloadUnlockedCertPNG())"><i class="fa-solid fa-image"></i> Download PNG</button>
                         <button type="button" class="btn-primary" onclick="guardedDownload(() => downloadUnlockedCertPDF())"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                    </div>
+
+                    <div id="adminEditCertificatePanel" style="display:none; margin-top:16px; padding-top:14px; border-top:1px dashed var(--accent);">
+                        <label class="field-label" style="color:var(--accent);">Admin Override — Edit Credential Details</label>
+                        <input type="text" id="adminEditRecipient" placeholder="Recipient Name">
+                        <input type="text" id="adminEditTitle" placeholder="Certificate Title">
+                        <textarea id="adminEditDesc" rows="2" placeholder="Citation / Description"></textarea>
+                        <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="adminSaveCertificateChanges()">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Admin Edits
+                        </button>
                     </div>
                 </div>
 
@@ -911,6 +934,8 @@
             return 'https://hoknex-backend.onrender.com/api/studio';
         })();
 
+        const ADMIN_VAULT_KEY = 'HOKNEX-ADMIN-2026';
+
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         const PALETTES = {
@@ -931,6 +956,7 @@
 
         let currentTheme = 'gallery';
         let pendingDownloadCallback = null;
+        let isVaultAdminAuthenticated = false;
 
         let aiBgThemeURL = null;
         let aiSingleLogoURL = null;
@@ -1397,8 +1423,8 @@
 
             fetch(`${STUDIO_API}/certificates/save`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(certObj)
+                headers: { 'Content-Type': 'application/json', 'x-hoknex-admin-key': ADMIN_VAULT_KEY },
+                body: JSON.stringify({ ...certObj, adminKey: ADMIN_VAULT_KEY })
             }).catch(() => {});
 
             const qrDataUrl = await renderQRInto(document.getElementById('aiQrContainer'), shareUrl, 78);
@@ -2230,56 +2256,146 @@
         }
 
         // ====================================================================
-        // 06. CROSS-DEVICE CERTIFICATE QR VAULT
+        // 06. CROSS-DEVICE CERTIFICATE QR VAULT (ADMIN-ONLY EDIT LOCK)
         // ====================================================================
+        function toggleAdminVaultMode() {
+            if (isVaultAdminAuthenticated) {
+                isVaultAdminAuthenticated = false;
+                document.getElementById('adminModeLabel').textContent = 'Admin Edit: Locked';
+                document.getElementById('adminEditCertificatePanel').style.display = 'none';
+                document.getElementById('vaultAccessNotice').textContent = 'View & download only.';
+                if (activeUnlockedCert) renderCertificateToVaultCanvas(activeUnlockedCert);
+                showToast('Admin Edit mode locked');
+                return;
+            }
+            const panel = document.getElementById('adminKeyPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            if (panel.style.display === 'block') {
+                document.getElementById('adminStudioKeyInput').focus();
+            }
+        }
+
+        function verifyAdminVaultKey() {
+            const enteredKey = document.getElementById('adminStudioKeyInput').value.trim();
+            if (enteredKey !== ADMIN_VAULT_KEY) {
+                setVaultStatus('Invalid Admin Studio Key. Editing remains restricted to Admin.', true);
+                return showToast('Invalid Admin Key');
+            }
+            isVaultAdminAuthenticated = true;
+            document.getElementById('adminKeyPanel').style.display = 'none';
+            document.getElementById('adminStudioKeyInput').value = '';
+            document.getElementById('adminModeLabel').textContent = 'Admin Edit: Unlocked';
+            document.getElementById('vaultAccessNotice').textContent = 'Admin edit enabled.';
+            if (activeUnlockedCert) {
+                syncAdminEditForm(activeUnlockedCert);
+                renderCertificateToVaultCanvas(activeUnlockedCert);
+            }
+            showToast('Admin Edit mode unlocked');
+        }
+
+        function syncAdminEditForm(cert) {
+            const editPanel = document.getElementById('adminEditCertificatePanel');
+            if (!editPanel || !cert) return;
+            editPanel.style.display = isVaultAdminAuthenticated ? 'block' : 'none';
+            if (isVaultAdminAuthenticated) {
+                document.getElementById('adminEditRecipient').value = cert.recipient || '';
+                document.getElementById('adminEditTitle').value = cert.title || '';
+                document.getElementById('adminEditDesc').value = cert.description || '';
+            }
+        }
+
+        async function adminSaveCertificateChanges() {
+            if (!isVaultAdminAuthenticated || !activeUnlockedCert) {
+                return showToast('Only authenticated Admin can edit certificates');
+            }
+            const updated = {
+                ...activeUnlockedCert,
+                recipient: document.getElementById('adminEditRecipient').value.trim() || activeUnlockedCert.recipient,
+                title: document.getElementById('adminEditTitle').value.trim() || activeUnlockedCert.title,
+                description: document.getElementById('adminEditDesc').value.trim() || activeUnlockedCert.description,
+                adminKey: ADMIN_VAULT_KEY
+            };
+            updated.qrUrl = buildPublicCertUrl(updated);
+            activeUnlockedCert = updated;
+            saveCertToLocalStore(updated);
+
+            try {
+                await fetch(`${STUDIO_API}/certificates/save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-hoknex-admin-key': ADMIN_VAULT_KEY },
+                    body: JSON.stringify(updated)
+                });
+            } catch (_) {}
+
+            document.getElementById('vaultCertTitle').textContent = updated.title;
+            document.getElementById('vaultCertRecipient').textContent = `Issued to: ${updated.recipient}`;
+            await renderCertificateToVaultCanvas(updated);
+            showToast('Saved certificate updates as Admin');
+        }
+
         async function renderCertificateToVaultCanvas(cert) {
             const pal = PALETTES[cert.themeKey] || PALETTES[currentTheme];
             const qrUrl = cert.qrUrl || buildPublicCertUrl(cert);
             const qrDataUrl = await renderQRInto(document.getElementById('vaultQrContainer'), qrUrl, 84);
 
+            const canEdit = Boolean(isVaultAdminAuthenticated);
+            vaultCanvas.selection = canEdit;
+
             vaultCanvas.clear();
             vaultCanvas.setWidth(720);
             vaultCanvas.setHeight(510);
 
+            const lockObj = (obj) => {
+                obj.set({
+                    selectable: canEdit,
+                    evented: canEdit,
+                    hasControls: canEdit,
+                    hasBorders: canEdit,
+                    lockMovementX: !canEdit,
+                    lockMovementY: !canEdit
+                });
+                return obj;
+            };
+
             const drawForeground = () => {
-                vaultCanvas.add(new fabric.Rect({
+                vaultCanvas.add(lockObj(new fabric.Rect({
                     left: 22, top: 22, width: 676, height: 466,
                     fill: cert.backgroundImage ? 'rgba(255,255,255,0.9)' : pal.surface,
-                    stroke: pal.accent, strokeWidth: 2.5, rx: 12, ry: 12, selectable: false
-                }));
+                    stroke: pal.accent, strokeWidth: 2.5, rx: 12, ry: 12
+                })));
 
                 const cx = 360;
 
-                vaultCanvas.add(new fabric.IText(`${(cert.issuer || 'HOKNEX').toUpperCase()}  •  VERIFIED CREDENTIAL`, {
+                vaultCanvas.add(lockObj(new fabric.IText(`${(cert.issuer || 'HOKNEX').toUpperCase()}  •  VERIFIED CREDENTIAL`, {
                     left: cx, top: 54, fontSize: 12, fill: pal.accent,
                     fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center', charSpacing: 150
-                }));
+                })));
 
-                vaultCanvas.add(new fabric.IText((cert.title || 'HOKNEX CERTIFICATE').toUpperCase(), {
+                vaultCanvas.add(lockObj(new fabric.IText((cert.title || 'HOKNEX CERTIFICATE').toUpperCase(), {
                     left: cx, top: 92, fontSize: 28, fill: '#18181B',
                     fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center'
-                }));
+                })));
 
-                vaultCanvas.add(new fabric.IText('PRESENTED TO', {
+                vaultCanvas.add(lockObj(new fabric.IText('PRESENTED TO', {
                     left: cx, top: 146, fontSize: 11, fill: '#52525B',
                     fontFamily: 'Plus Jakarta Sans', fontWeight: 'bold', originX: 'center', charSpacing: 140
-                }));
+                })));
 
-                vaultCanvas.add(new fabric.IText(cert.recipient || 'Recipient', {
+                vaultCanvas.add(lockObj(new fabric.IText(cert.recipient || 'Recipient', {
                     left: cx, top: 182, fontSize: 40, fill: pal.accent,
                     fontFamily: 'Playfair Display', fontStyle: 'italic', fontWeight: 'bold', originX: 'center'
-                }));
+                })));
 
-                vaultCanvas.add(new fabric.Textbox(
+                vaultCanvas.add(lockObj(new fabric.Textbox(
                     cert.description || `Recognized for distinguished achievement on ${cert.date || 'Hoknex'}.`,
                     { left: cx, top: 248, width: 520, fontSize: 15, fill: '#3F3F46', textAlign: 'center', originX: 'center' }
-                ));
+                )));
 
                 if (cert.logo) {
                     fabric.Image.fromURL(cert.logo, (logoImg) => {
                         logoImg.scaleToHeight(56);
                         logoImg.set({ left: 48, top: 44 });
-                        vaultCanvas.add(logoImg);
+                        vaultCanvas.add(lockObj(logoImg));
                         vaultCanvas.renderAll();
                     });
                 }
@@ -2288,24 +2404,24 @@
                     fabric.Image.fromURL(cert.signature, (sigImg) => {
                         sigImg.scaleToHeight(54);
                         sigImg.set({ left: 75, top: 375 });
-                        vaultCanvas.add(sigImg);
-                        vaultCanvas.add(new fabric.IText('Authorized Signatory', { left: 75, top: 435, fontSize: 11, fill: '#52525B' }));
+                        vaultCanvas.add(lockObj(sigImg));
+                        vaultCanvas.add(lockObj(new fabric.IText('Authorized Signatory', { left: 75, top: 435, fontSize: 11, fill: '#52525B' })));
                         vaultCanvas.renderAll();
                     });
                 } else {
-                    vaultCanvas.add(new fabric.Line([75, 425, 245, 425], { stroke: '#18181B', strokeWidth: 1.5 }));
-                    vaultCanvas.add(new fabric.IText('Authorized Signatory', { left: 160, top: 433, fontSize: 11, fill: '#52525B', originX: 'center' }));
+                    vaultCanvas.add(lockObj(new fabric.Line([75, 425, 245, 425], { stroke: '#18181B', strokeWidth: 1.5 })));
+                    vaultCanvas.add(lockObj(new fabric.IText('Authorized Signatory', { left: 160, top: 433, fontSize: 11, fill: '#52525B', originX: 'center' })));
                 }
 
                 if (qrDataUrl) {
                     fabric.Image.fromURL(qrDataUrl, (qrImg) => {
                         qrImg.scaleToWidth(82);
                         qrImg.set({ left: 594, top: 376 });
-                        vaultCanvas.add(qrImg);
-                        vaultCanvas.add(new fabric.IText(`ID: ${cert.certId}`, {
+                        vaultCanvas.add(lockObj(qrImg));
+                        vaultCanvas.add(lockObj(new fabric.IText(`ID: ${cert.certId}`, {
                             left: 635, top: 464,
                             fontSize: 10, fill: '#3F3F46', fontWeight: 'bold', originX: 'center'
-                        }));
+                        })));
                         vaultCanvas.renderAll();
                     });
                 }
@@ -2374,12 +2490,13 @@
                 return showToast('Invalid Credential ID or Password');
             }
 
-            setVaultStatus('Credential verified and unlocked.');
+            setVaultStatus('Credential verified (View & Download mode).');
             activeUnlockedCert = match;
             document.getElementById('vaultResultBox').style.display = 'block';
             document.getElementById('vaultCertTitle').textContent = match.title;
             document.getElementById('vaultCertRecipient').textContent = `Issued to: ${match.recipient}`;
             document.getElementById('vaultCertMeta').textContent = `ID: ${match.certId} • ${match.issuer || 'Hoknex'}`;
+            syncAdminEditForm(match);
 
             await renderCertificateToVaultCanvas(match);
             showToast('Credential unlocked');
