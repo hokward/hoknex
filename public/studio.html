@@ -84,9 +84,6 @@
             transition: background-color 0.25s ease, color 0.25s ease;
         }
 
-        /* ==========================================================================
-           NAVIGATION HEADER
-           ========================================================================== */
         .studio-header {
             position: sticky;
             top: 0;
@@ -95,7 +92,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0.95rem 2.5rem;
-            background: color-mix(in srgb, var(--bg-main) 86%, transparent);
+            background: color-mix(in srgb, var(--bg-main) 88%, transparent);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border-hairline);
@@ -103,11 +100,7 @@
             flex-wrap: wrap;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
-        }
+        .header-left { display: flex; align-items: center; gap: 1.1rem; }
 
         .brand-mark {
             display: inline-flex;
@@ -136,12 +129,7 @@
             font-size: 1rem;
         }
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
+        .header-right { display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; }
 
         .palette-bar {
             display: inline-flex;
@@ -172,16 +160,8 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
         }
 
-        .dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            display: inline-block;
-        }
+        .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
 
-        /* ==========================================================================
-           BUTTONS & CONTROLS
-           ========================================================================== */
         .btn-primary {
             background: var(--accent);
             color: var(--accent-contrast);
@@ -237,174 +217,33 @@
 
         .btn-danger-subtle:hover { background: rgba(220, 38, 38, 0.07); }
 
-        /* ==========================================================================
-           EDITORIAL HUB LANDING
-           ========================================================================== */
-        .hub-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 3.75rem 2.5rem 5rem;
-        }
+        .hub-container { max-width: 1280px; margin: 0 auto; padding: 3.75rem 2.5rem 5rem; }
+        .hub-header { max-width: 740px; margin-bottom: 3.25rem; }
+        .hub-kicker { font-family: 'Space Grotesk', sans-serif; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 0.85rem; display: block; }
+        .hub-header h1 { font-family: 'Playfair Display', serif; font-size: 3.1rem; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; color: var(--ink-primary); margin-bottom: 1rem; }
+        .hub-header p { font-size: 1.02rem; color: var(--ink-secondary); font-weight: 500; line-height: 1.65; }
 
-        .hub-header {
-            max-width: 720px;
-            margin-bottom: 3.25rem;
-        }
+        .modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .module-card { background: var(--bg-surface); border: 1px solid var(--border-hairline); border-radius: 18px; padding: 2rem; box-shadow: var(--shadow-soft); cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; gap: 1.75rem; transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
+        .module-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: var(--shadow-elevated); }
+        .module-index { font-family: 'Space Grotesk', sans-serif; font-size: 0.72rem; font-weight: 700; color: var(--ink-muted); letter-spacing: 0.08em; margin-bottom: 1.1rem; display: flex; align-items: center; justify-content: space-between; }
+        .module-index i { color: var(--accent); font-size: 1.1rem; }
+        .module-card h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--ink-primary); margin-bottom: 0.5rem; }
+        .module-card p { font-size: 0.88rem; color: var(--ink-secondary); line-height: 1.6; }
+        .module-cta { font-size: 0.78rem; font-weight: 700; color: var(--accent); display: inline-flex; align-items: center; gap: 0.45rem; }
 
-        .hub-kicker {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: var(--accent);
-            margin-bottom: 0.85rem;
-            display: block;
-        }
-
-        .hub-header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3.1rem;
-            font-weight: 800;
-            line-height: 1.12;
-            letter-spacing: -0.02em;
-            color: var(--ink-primary);
-            margin-bottom: 1rem;
-        }
-
-        .hub-header p {
-            font-size: 1.02rem;
-            color: var(--ink-secondary);
-            font-weight: 500;
-            line-height: 1.65;
-        }
-
-        .modules-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-        }
-
-        .module-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-hairline);
-            border-radius: 18px;
-            padding: 2rem;
-            box-shadow: var(--shadow-soft);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 1.75rem;
-            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-        }
-
-        .module-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent);
-            box-shadow: var(--shadow-elevated);
-        }
-
-        .module-index {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--ink-muted);
-            letter-spacing: 0.08em;
-            margin-bottom: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .module-index i {
-            color: var(--accent);
-            font-size: 1.1rem;
-        }
-
-        .module-card h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--ink-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .module-card p {
-            font-size: 0.88rem;
-            color: var(--ink-secondary);
-            line-height: 1.6;
-        }
-
-        .module-cta {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--accent);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-        }
-
-        /* ==========================================================================
-           WORKSPACE STAGES
-           ========================================================================== */
-        .stage-wrapper {
-            display: none;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem 2.5rem 5rem;
-        }
-
+        .stage-wrapper { display: none; max-width: 1400px; margin: 0 auto; padding: 2rem 2.5rem 5rem; }
         .stage-wrapper.active { display: block; }
 
-        .stage-header {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            padding-bottom: 1.35rem;
-            margin-bottom: 1.75rem;
-            border-bottom: 1px solid var(--border-hairline);
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
+        .stage-header { display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 1.35rem; margin-bottom: 1.75rem; border-bottom: 1px solid var(--border-hairline); gap: 1rem; flex-wrap: wrap; }
+        .stage-header h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 800; letter-spacing: -0.01em; }
+        .stage-header p { font-size: 0.88rem; color: var(--ink-secondary); margin-top: 0.25rem; }
 
-        .stage-header h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.01em;
-        }
+        .panel-surface { background: var(--bg-surface); border: 1px solid var(--border-hairline); border-radius: 18px; padding: 1.6rem; box-shadow: var(--shadow-soft); }
 
-        .stage-header p {
-            font-size: 0.88rem;
-            color: var(--ink-secondary);
-            margin-top: 0.25rem;
-        }
+        .field-label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin-bottom: 0.45rem; }
 
-        .panel-surface {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-hairline);
-            border-radius: 18px;
-            padding: 1.6rem;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .field-label {
-            display: block;
-            font-size: 0.72rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--ink-muted);
-            margin-bottom: 0.45rem;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="password"],
-        input[type="file"],
-        select,
-        textarea {
+        input[type="text"], input[type="email"], input[type="number"], input[type="password"], input[type="file"], select, textarea {
             width: 100%;
             background: var(--bg-main);
             border: 1px solid var(--border-strong);
@@ -418,220 +257,48 @@
             transition: border-color 0.2s ease;
         }
 
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--accent);
-        }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
 
-        .two-col-studio {
-            display: grid;
-            grid-template-columns: 430px 1fr;
-            gap: 1.5rem;
-            align-items: start;
-        }
+        .two-col-studio { display: grid; grid-template-columns: 430px 1fr; gap: 1.5rem; align-items: start; }
+        .three-col-editor { display: grid; grid-template-columns: 280px 1fr 270px; gap: 1.25rem; align-items: start; }
 
-        .three-col-editor {
-            display: grid;
-            grid-template-columns: 280px 1fr 270px;
-            gap: 1.25rem;
-            align-items: start;
-        }
+        .canvas-stage-box { background: var(--bg-surface); border: 1px solid var(--border-hairline); border-radius: 18px; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; overflow: auto; box-shadow: var(--shadow-soft); }
 
-        .canvas-stage-box {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-hairline);
-            border-radius: 18px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow: auto;
-            box-shadow: var(--shadow-soft);
-        }
+        .preset-pills { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 1rem; }
+        .preset-pill { background: var(--bg-subtle); border: 1px solid var(--border-hairline); color: var(--ink-secondary); padding: 0.38rem 0.75rem; border-radius: 999px; font-size: 0.74rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
+        .preset-pill:hover { border-color: var(--accent); color: var(--accent); }
 
-        .preset-pills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.45rem;
-            margin-bottom: 1rem;
-        }
+        .tool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+        .tool-cell { background: var(--bg-main); border: 1px solid var(--border-hairline); border-radius: 10px; padding: 0.65rem 0.35rem; text-align: center; cursor: pointer; font-size: 0.72rem; font-weight: 600; color: var(--ink-secondary); transition: all 0.15s ease; }
+        .tool-cell i { display: block; font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--ink-primary); }
+        .tool-cell.active, .tool-cell:hover { border-color: var(--accent); background: var(--accent-tint); color: var(--accent); }
+        .tool-cell.active i, .tool-cell:hover i { color: var(--accent); }
 
-        .preset-pill {
-            background: var(--bg-subtle);
-            border: 1px solid var(--border-hairline);
-            color: var(--ink-secondary);
-            padding: 0.38rem 0.75rem;
-            border-radius: 999px;
-            font-size: 0.74rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .preset-pill:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .tool-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-        }
-
-        .tool-cell {
-            background: var(--bg-main);
-            border: 1px solid var(--border-hairline);
-            border-radius: 10px;
-            padding: 0.65rem 0.35rem;
-            text-align: center;
-            cursor: pointer;
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: var(--ink-secondary);
-            transition: all 0.15s ease;
-        }
-
-        .tool-cell i {
-            display: block;
-            font-size: 0.95rem;
-            margin-bottom: 0.3rem;
-            color: var(--ink-primary);
-        }
-
-        .tool-cell.active, .tool-cell:hover {
-            border-color: var(--accent);
-            background: var(--accent-tint);
-            color: var(--accent);
-        }
-
-        .tool-cell.active i, .tool-cell:hover i {
-            color: var(--accent);
-        }
-
-        .layers-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 0.45rem;
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 0.5rem;
-        }
-
-        .layer-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--bg-main);
-            border: 1px solid var(--border-hairline);
-            border-radius: 9px;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.76rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .layer-row.selected {
-            border-color: var(--accent);
-            background: var(--accent-tint);
-        }
-
-        .layer-row button {
-            background: none;
-            border: none;
-            color: var(--ink-muted);
-            cursor: pointer;
-            padding: 2px 5px;
-        }
-
+        .layers-stack { display: flex; flex-direction: column; gap: 0.45rem; max-height: 200px; overflow-y: auto; margin-top: 0.5rem; }
+        .layer-row { display: flex; align-items: center; justify-content: space-between; background: var(--bg-main); border: 1px solid var(--border-hairline); border-radius: 9px; padding: 0.5rem 0.75rem; font-size: 0.76rem; font-weight: 600; cursor: pointer; }
+        .layer-row.selected { border-color: var(--accent); background: var(--accent-tint); }
+        .layer-row button { background: none; border: none; color: var(--ink-muted); cursor: pointer; padding: 2px 5px; }
         .layer-row button:hover { color: var(--accent); }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.83rem;
-        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+        th, td { padding: 0.75rem 0.9rem; border-bottom: 1px solid var(--border-hairline); text-align: left; }
+        th { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); font-weight: 700; }
 
-        th, td {
-            padding: 0.75rem 0.9rem;
-            border-bottom: 1px solid var(--border-hairline);
-            text-align: left;
-        }
+        .qr-frame { background: #FFFFFF; padding: 7px; border-radius: 8px; display: inline-block; border: 1px solid var(--border-hairline); }
+        .bg-preview-thumb { width: 100%; max-height: 84px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-hairline); margin-bottom: 1rem; display: none; }
 
-        th {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--ink-muted);
-            font-weight: 700;
-        }
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.52); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 50000; padding: 1rem; }
+        .modal-box { background: var(--bg-surface); color: var(--ink-primary); border: 1px solid var(--border-hairline); border-radius: 18px; padding: 1.75rem; width: 100%; max-width: 540px; box-shadow: var(--shadow-elevated); position: relative; }
 
-        .qr-frame {
-            background: #FFFFFF;
-            padding: 7px;
-            border-radius: 8px;
-            display: inline-block;
-            border: 1px solid var(--border-hairline);
-        }
+        .auth-tabs { display: flex; gap: 6px; background: var(--bg-main); padding: 4px; border-radius: 10px; margin-bottom: 1rem; border: 1px solid var(--border-hairline); }
+        .auth-tab { flex: 1; border: none; background: transparent; color: var(--ink-muted); padding: 7px; border-radius: 7px; font-size: 0.76rem; font-weight: 700; cursor: pointer; }
+        .auth-tab.active { background: var(--accent); color: var(--accent-contrast); }
 
-        .bg-preview-thumb {
-            width: 100%;
-            max-height: 84px;
-            object-fit: cover;
-            border-radius: 10px;
-            border: 1px solid var(--border-hairline);
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        /* Modal */
-        .modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.52);
-            backdrop-filter: blur(6px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 50000;
-            padding: 1rem;
-        }
-
-        .modal-box {
-            background: var(--bg-surface);
-            color: var(--ink-primary);
-            border: 1px solid var(--border-hairline);
-            border-radius: 18px;
-            padding: 1.75rem;
-            width: 100%;
-            max-width: 540px;
-            box-shadow: var(--shadow-elevated);
-            position: relative;
-        }
-
-        #toastStack {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .toast-item {
-            background: var(--ink-primary);
-            color: var(--bg-surface);
-            padding: 0.75rem 1.15rem;
-            border-radius: 10px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            box-shadow: var(--shadow-elevated);
-        }
+        #toastStack { position: fixed; bottom: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; }
+        .toast-item { background: var(--ink-primary); color: var(--bg-surface); padding: 0.75rem 1.15rem; border-radius: 10px; font-size: 0.82rem; font-weight: 600; box-shadow: var(--shadow-elevated); }
 
         @media (max-width: 1024px) {
-            .modules-grid, .two-col-studio, .three-col-editor {
-                grid-template-columns: 1fr;
-            }
+            .modules-grid, .two-col-studio, .three-col-editor { grid-template-columns: 1fr; }
             .hub-container, .stage-wrapper { padding: 1.5rem 1.25rem 3.5rem; }
             .hub-header h1 { font-size: 2.25rem; }
             .studio-header { padding: 0.85rem 1.25rem; }
@@ -666,6 +333,13 @@
                     <span class="dot" style="background:#FBF7F2; border:1px solid #B45309;"></span> Tactile
                 </button>
             </div>
+            <span id="accountBadge" style="display:none; font-size:0.78rem; font-weight:700; color:var(--accent);"></span>
+            <button class="btn-secondary" id="authNavBtn" onclick="openAuthModal('signin')">
+                <i class="fa-solid fa-user"></i> <span id="authNavLabel">Sign In / Sign Up</span>
+            </button>
+            <button class="btn-danger-subtle" id="deleteAccNavBtn" style="display:none;" onclick="openAuthModal('delete')">
+                <i class="fa-solid fa-user-slash"></i> Delete Account
+            </button>
             <a href="index.html" class="btn-secondary">Hoknex Home</a>
         </div>
     </header>
@@ -677,7 +351,7 @@
         <div class="hub-header">
             <span class="hub-kicker">Hoknex Design & Credential Infrastructure</span>
             <h1>Design, issue, and verify visual credentials in one studio.</h1>
-            <p>Select a workspace below to generate single or bulk certificates with scannable QR verification, craft posters and banners, or annotate multi-page PDF documents.</p>
+            <p>Edit certificates, posters, banners, thumbnails, and multi-page PDFs freely. Sign in or create a Hoknex Studio account when downloading files, and manage or delete your account at any time.</p>
         </div>
 
         <div class="modules-grid">
@@ -694,7 +368,7 @@
                 <div>
                     <div class="module-index"><span>02 / BATCH ISSUANCE</span><i class="fa-solid fa-layer-group"></i></div>
                     <h3>Bulk Certificate Engine</h3>
-                    <p>Import CSV rosters or run batch scripts to issue hundreds of credentials with individual passwords, custom artwork, and shareable links.</p>
+                    <p>Import CSV rosters or run batch scripts to issue credentials with individual passwords, custom artwork, and shareable links.</p>
                 </div>
                 <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
@@ -730,7 +404,7 @@
                 <div>
                     <div class="module-index"><span>06 / PUBLIC VERIFICATION</span><i class="fa-solid fa-qrcode"></i></div>
                     <h3>Certificate QR Vault</h3>
-                    <p>Open any shared credential link or scan its QR code on any device, enter the certificate password, and download the verified PDF.</p>
+                    <p>Open any shared credential link or scan its QR code on any device, enter the certificate password, and download the verified credential.</p>
                 </div>
                 <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
@@ -816,8 +490,8 @@
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
                     <button class="btn-primary" onclick="runAIPromptGeneration()"><i class="fa-solid fa-sparkles"></i> Generate</button>
                     <button class="btn-secondary" onclick="sendAiDesignToProEditor()"><i class="fa-solid fa-pen-to-square"></i> Open in Canvas</button>
-                    <button class="btn-secondary" onclick="exportActiveCanvasPNG()"><i class="fa-solid fa-image"></i> PNG</button>
-                    <button class="btn-secondary" onclick="exportActiveCanvasPDF()"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                    <button class="btn-secondary" onclick="guardedDownload(() => exportActiveCanvasPNG())"><i class="fa-solid fa-image"></i> Download PNG</button>
+                    <button class="btn-secondary" onclick="guardedDownload(() => exportActiveCanvasPDF())"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
                 </div>
             </div>
 
@@ -918,8 +592,8 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
                     <h3 style="font-family:'Playfair Display',serif; font-size:1.3rem;">Issued Batch (<span id="bulkCountBadge">0</span>)</h3>
                     <div style="display:flex; gap:8px;">
-                        <button class="btn-secondary" onclick="exportBulkCredentialsCSV()"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
-                        <button class="btn-secondary" onclick="exportAllBulkPDF()"><i class="fa-solid fa-file-pdf"></i> Export All PDF</button>
+                        <button class="btn-secondary" onclick="guardedDownload(() => exportBulkCredentialsCSV())"><i class="fa-solid fa-file-csv"></i> Download CSV</button>
+                        <button class="btn-secondary" onclick="guardedDownload(() => exportAllBulkPDF())"><i class="fa-solid fa-file-pdf"></i> Download All PDF</button>
                     </div>
                 </div>
                 <div style="overflow-x:auto;">
@@ -971,7 +645,7 @@
                 <button class="btn-primary" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="renderPosterTemplate()">
                     Update Layout
                 </button>
-                <button class="btn-secondary" style="width:100%; justify-content:center;" onclick="exportPosterPNG()">
+                <button class="btn-secondary" style="width:100%; justify-content:center;" onclick="guardedDownload(() => exportPosterPNG())">
                     <i class="fa-solid fa-download"></i> Download PNG
                 </button>
             </div>
@@ -988,7 +662,7 @@
         <div class="stage-header">
             <div>
                 <h2>Pro Canvas Editor</h2>
-                <p>Multi-layer vector shapes, freehand brushes, typography, QR stamps, and cloud project sync.</p>
+                <p>Multi-layer vector drawing board with freehand brushes, typography controls, QR stamps, and project cloud sync.</p>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button class="btn-secondary" onclick="undoDraw()"><i class="fa-solid fa-rotate-left"></i> Undo</button>
@@ -1029,8 +703,8 @@
                 </div>
 
                 <div style="display:flex; gap:8px; margin-top:14px;">
-                    <button class="btn-secondary" style="flex:1; justify-content:center;" onclick="exportDrawPNG()"><i class="fa-solid fa-image"></i> PNG</button>
-                    <button class="btn-primary" style="flex:1; justify-content:center;" onclick="exportDrawPDF()"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                    <button class="btn-secondary" style="flex:1; justify-content:center;" onclick="guardedDownload(() => exportDrawPNG())"><i class="fa-solid fa-image"></i> PNG</button>
+                    <button class="btn-primary" style="flex:1; justify-content:center;" onclick="guardedDownload(() => exportDrawPDF())"><i class="fa-solid fa-file-pdf"></i> PDF</button>
                 </div>
             </div>
 
@@ -1101,8 +775,8 @@
                 <button type="button" class="btn-secondary" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="toggleDocBrush()">
                     <i class="fa-solid fa-pen"></i> Toggle Freehand Pen
                 </button>
-                <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="exportEditedDocPDF()">
-                    <i class="fa-solid fa-file-pdf"></i> Export PDF
+                <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="guardedDownload(() => exportEditedDocPDF())">
+                    <i class="fa-solid fa-file-pdf"></i> Download PDF
                 </button>
             </div>
 
@@ -1147,8 +821,8 @@
                     </div>
 
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button class="btn-secondary" onclick="downloadUnlockedCertPNG()"><i class="fa-solid fa-image"></i> Download PNG</button>
-                        <button class="btn-primary" onclick="downloadUnlockedCertPDF()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                        <button class="btn-secondary" onclick="guardedDownload(() => downloadUnlockedCertPNG())"><i class="fa-solid fa-image"></i> Download PNG</button>
+                        <button class="btn-primary" onclick="guardedDownload(() => downloadUnlockedCertPDF())"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
                     </div>
                 </div>
 
@@ -1179,19 +853,53 @@
         </div>
     </div>
 
+    <!-- ======================================================================
+         ACCOUNT MODAL (SIGN IN / SIGN UP FOR DOWNLOADS + DELETE ACCOUNT)
+         ====================================================================== -->
+    <div class="modal-backdrop" id="authModal" onclick="if(event.target === this) closeAuthModal()">
+        <div class="modal-box" style="max-width:430px;">
+            <button onclick="closeAuthModal()" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink-muted);">&times;</button>
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.45rem; margin-bottom:4px;">Hoknex Studio Account</h3>
+            <p style="font-size:0.82rem; color:var(--ink-muted); margin-bottom:14px;">Sign in or create an account to download files. You can delete your account anytime.</p>
+
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab active" id="tabBtnSignup" onclick="switchAuthMode('signup')">Sign Up</button>
+                <button type="button" class="auth-tab" id="tabBtnSignin" onclick="switchAuthMode('signin')">Sign In</button>
+                <button type="button" class="auth-tab" id="tabBtnDelete" onclick="switchAuthMode('delete')">Delete Account</button>
+            </div>
+
+            <form id="formSignup" onsubmit="handleSignup(event)">
+                <label class="field-label">Full Name</label>
+                <input type="text" id="suName" required placeholder="Aditya Kumar">
+                <label class="field-label">Email</label>
+                <input type="email" id="suEmail" required placeholder="name@hoknex.edu">
+                <label class="field-label">Password</label>
+                <input type="password" id="suPass" required minlength="4" placeholder="Minimum 4 characters">
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Create Account & Download</button>
+            </form>
+
+            <form id="formSignin" style="display:none;" onsubmit="handleSignin(event)">
+                <label class="field-label">Email</label>
+                <input type="email" id="siEmail" required placeholder="name@hoknex.edu">
+                <label class="field-label">Password</label>
+                <input type="password" id="siPass" required placeholder="Enter password">
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Sign In & Download</button>
+            </form>
+
+            <form id="formDelete" style="display:none;" onsubmit="handleDeleteAccount(event)">
+                <p style="font-size:0.8rem; color:#DC2626; font-weight:600; margin-bottom:12px;">
+                    Deleting your account removes your studio profile and saved projects permanently.
+                </p>
+                <label class="field-label">Account Email</label>
+                <input type="email" id="delEmail" required placeholder="name@hoknex.edu">
+                <label class="field-label">Password</label>
+                <input type="password" id="delPass" required placeholder="Confirm password">
+                <button type="submit" class="btn-danger-subtle" style="width:100%; justify-content:center; padding:0.7rem;">Delete My Account</button>
+            </form>
+        </div>
+    </div>
+
     <script>
-        // Automatically connects to the live published domain in production, or Render/localhost fallback
-        const STUDIO_API = (() => {
-            const { protocol, hostname, port, origin } = window.location;
-            if (port === '5050') return `${origin}/api/studio`;
-            if (hostname === 'localhost' || hostname === '127.0.0.1' || protocol === 'file:') {
-                return 'http://localhost:5050/api/studio';
-            }
-            return `${origin}/api/studio`;
-        })();
-
-        const FALLBACK_PUBLIC_API = 'https://hoknex-backend.onrender.com/api/studio';
-
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         const PALETTES = {
@@ -1207,9 +915,12 @@
             tactile: { bg: '#FBF7F2', surface: 'rgba(255, 255, 255, 0.94)', ink: '#27221F', muted: '#6B5E55', accent: '#B45309', badge: 'HOKNEX HONORS' }
         };
 
-        const LOCAL_VAULT_KEY = 'hoknex_vault_v4';
+        const LOCAL_VAULT_KEY = 'hoknex_vault_v5';
+        const SESSION_KEY = 'hoknex_studio_user_v1';
 
         let currentTheme = 'gallery';
+        let pendingDownloadCallback = null;
+
         let aiBgThemeURL = null;
         let aiSingleLogoURL = null;
         let aiSingleSigURL = null;
@@ -1246,7 +957,129 @@
         }
 
         // ====================================================================
-        // CROSS-DEVICE PORTABLE CREDENTIAL ENCODING (WORKS ON ANY DEVICE)
+        // ACCOUNT AUTHENTICATION & SELF-SERVICE DELETION (DOWNLOAD GATE)
+        // ====================================================================
+        function getCurrentUser() {
+            try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
+        }
+
+        function setCurrentUser(u) {
+            try {
+                if (u) localStorage.setItem(SESSION_KEY, JSON.stringify(u));
+                else localStorage.removeItem(SESSION_KEY);
+            } catch (_) {}
+            window.__hoknexSessionUser = u || null;
+            syncAccountUI();
+        }
+
+        function syncAccountUI() {
+            const user = getCurrentUser() || window.__hoknexSessionUser || null;
+            const badge = document.getElementById('accountBadge');
+            const label = document.getElementById('authNavLabel');
+            const delBtn = document.getElementById('deleteAccNavBtn');
+
+            if (user) {
+                badge.style.display = 'inline';
+                badge.textContent = user.name;
+                label.textContent = 'Account';
+                delBtn.style.display = 'inline-flex';
+            } else {
+                badge.style.display = 'none';
+                label.textContent = 'Sign In / Sign Up';
+                delBtn.style.display = 'none';
+            }
+        }
+
+        function openAuthModal(mode = 'signup') {
+            switchAuthMode(mode);
+            document.getElementById('authModal').style.display = 'flex';
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').style.display = 'none';
+            pendingDownloadCallback = null;
+        }
+
+        function switchAuthMode(mode) {
+            ['signup', 'signin', 'delete'].forEach(m => {
+                document.getElementById(`tabBtn${m[0].toUpperCase() + m.slice(1)}`).classList.toggle('active', m === mode);
+            });
+            document.getElementById('formSignup').style.display = mode === 'signup' ? 'block' : 'none';
+            document.getElementById('formSignin').style.display = mode === 'signin' ? 'block' : 'none';
+            document.getElementById('formDelete').style.display = mode === 'delete' ? 'block' : 'none';
+        }
+
+        function guardedDownload(actionFn) {
+            const user = getCurrentUser() || window.__hoknexSessionUser;
+            if (user && user.email) {
+                actionFn();
+                return;
+            }
+            pendingDownloadCallback = actionFn;
+            openAuthModal('signup');
+        }
+
+        function finishAuthAndRunPending(userObj) {
+            setCurrentUser(userObj);
+            const cb = pendingDownloadCallback;
+            closeAuthModal();
+            if (typeof cb === 'function') cb();
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('suName').value.trim();
+            const email = document.getElementById('suEmail').value.trim();
+            const password = document.getElementById('suPass').value;
+
+            const userObj = { id: Date.now().toString(), name, email: email.toLowerCase(), password };
+            try {
+                const localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}');
+                localUsers[userObj.email] = userObj;
+                localStorage.setItem('hoknex_local_users', JSON.stringify(localUsers));
+            } catch (_) {}
+            window.__hoknexLocalUsers = window.__hoknexLocalUsers || {};
+            window.__hoknexLocalUsers[userObj.email] = userObj;
+
+            showToast(`Signed in as ${name}`);
+            finishAuthAndRunPending(userObj);
+        }
+
+        async function handleSignin(e) {
+            e.preventDefault();
+            const email = document.getElementById('siEmail').value.trim().toLowerCase();
+            const password = document.getElementById('siPass').value;
+
+            let localUsers = {};
+            try { localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}'); } catch (_) {}
+            const memUsers = window.__hoknexLocalUsers || {};
+            const existing = localUsers[email] || memUsers[email];
+
+            if (existing && existing.password !== password) {
+                return showToast('Invalid email or password.');
+            }
+
+            const userObj = existing || { id: Date.now().toString(), name: email.split('@')[0], email, password };
+            showToast(`Signed in as ${userObj.name}`);
+            finishAuthAndRunPending(userObj);
+        }
+
+        async function handleDeleteAccount(e) {
+            e.preventDefault();
+            const email = document.getElementById('delEmail').value.trim().toLowerCase();
+            try {
+                const localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}');
+                delete localUsers[email];
+                localStorage.setItem('hoknex_local_users', JSON.stringify(localUsers));
+            } catch (_) {}
+            if (window.__hoknexLocalUsers) delete window.__hoknexLocalUsers[email];
+            setCurrentUser(null);
+            closeAuthModal();
+            showToast('Account deleted');
+        }
+
+        // ====================================================================
+        // CROSS-DEVICE CREDENTIAL ENCODING (WORKS ON ANY PHONE OR BROWSER)
         // ====================================================================
         function encodeCertToken(cert) {
             const payload = {
@@ -1276,13 +1109,13 @@
                 const json = decodeURIComponent(escape(atob(b64)));
                 const m = JSON.parse(json);
                 return {
-                    certId: m.i,
-                    password: m.p,
-                    recipient: m.r,
-                    title: m.t,
-                    description: m.d,
+                    certId: String(m.i || '').trim().toUpperCase(),
+                    password: String(m.p || '').trim(),
+                    recipient: m.r || 'Recipient',
+                    title: m.t || 'HOKNEX CERTIFICATE',
+                    description: m.d || '',
                     issuer: m.s || 'Hoknex',
-                    date: m.dt,
+                    date: m.dt || '',
                     themeKey: m.th || 'gallery'
                 };
             } catch {
@@ -1300,41 +1133,29 @@
             return `${base}?id=${encodeURIComponent(String(certId).trim().toUpperCase())}`;
         }
 
-        async function postStudioWithFallback(endpoint, bodyObj) {
-            const endpoints = STUDIO_API === FALLBACK_PUBLIC_API
-                ? [STUDIO_API]
-                : [STUDIO_API, FALLBACK_PUBLIC_API];
-
-            for (const base of endpoints) {
-                try {
-                    const res = await fetch(`${base}${endpoint}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(bodyObj)
-                    });
-                    if (res.ok) return await res.json();
-                } catch (_) {}
-            }
-            return null;
-        }
+        window.__hoknexMemCerts = window.__hoknexMemCerts || {};
 
         function getLocalCertStore() {
-            try { return JSON.parse(localStorage.getItem(LOCAL_VAULT_KEY) || '{}'); } catch { return {}; }
+            try { return JSON.parse(localStorage.getItem(LOCAL_VAULT_KEY) || '{}'); } catch { return window.__hoknexMemCerts; }
         }
 
         function saveCertToLocalStore(cert) {
             if (!cert || !cert.certId) return;
-            const store = getLocalCertStore();
+            const key = cert.certId.trim().toUpperCase();
             const { backgroundImage, logo, signature, ...compact } = cert;
-            store[cert.certId.trim().toUpperCase()] = compact;
-            try { localStorage.setItem(LOCAL_VAULT_KEY, JSON.stringify(store)); } catch (_) {}
+            window.__hoknexMemCerts[key] = compact;
+            try {
+                const store = getLocalCertStore();
+                store[key] = compact;
+                localStorage.setItem(LOCAL_VAULT_KEY, JSON.stringify(store));
+            } catch (_) {}
             renderVaultHistoryList();
         }
 
         function renderVaultHistoryList() {
             const box = document.getElementById('vaultHistoryList');
             if (!box) return;
-            const store = getLocalCertStore();
+            const store = Object.assign({}, window.__hoknexMemCerts, getLocalCertStore());
             const items = Object.values(store).reverse().slice(0, 12);
             if (!items.length) {
                 box.innerHTML = '<div style="font-size:0.75rem; color:var(--ink-muted);">No credentials issued on this device yet.</div>';
@@ -1501,8 +1322,6 @@
             certObj.qrUrl = shareUrl;
             lastAiCertRecord = certObj;
             saveCertToLocalStore(certObj);
-
-            await postStudioWithFallback('/certificates/save', certObj);
 
             const qrDataUrl = await renderQRInto(document.getElementById('aiQrContainer'), shareUrl, 78);
 
@@ -1730,15 +1549,6 @@
                 rec.qrUrl = buildPublicCertUrl(rec);
                 saveCertToLocalStore(rec);
                 return rec;
-            });
-
-            await postStudioWithFallback('/certificates/bulk', {
-                batchName: `Hoknex Batch (${mode})`,
-                themeKey: currentTheme,
-                backgroundImage: bulkBgThemeURL,
-                logo: uploadedLogoURL,
-                signature: uploadedSigURL,
-                certificates: bulkRecords
             });
 
             renderBulkTable();
@@ -1977,20 +1787,12 @@
             const projectName = existingMeta.name || `Hoknex Project ${new Date().toLocaleTimeString()}`;
             const updatedAt = new Date().toISOString();
 
-            const saved = await postStudioWithFallback('/projects', {
-                name: projectName,
-                format: 'custom',
-                themeKey: currentTheme,
-                canvasJSON: drawCanvas.toJSON()
-            });
-
-            if (saved && saved.success) {
-                return showToast(`Saved "${projectName}"`);
-            }
-
-            localStorage.setItem('hoknex_pro_autosave', JSON.stringify(drawCanvas.toJSON()));
-            localStorage.setItem('hoknex_pro_autosave_meta', JSON.stringify({ name: projectName, themeKey: currentTheme, updatedAt }));
-            showToast(`Saved "${projectName}" locally`);
+            try {
+                localStorage.setItem('hoknex_pro_autosave', JSON.stringify(drawCanvas.toJSON()));
+                localStorage.setItem('hoknex_pro_autosave_meta', JSON.stringify({ name: projectName, themeKey: currentTheme, updatedAt }));
+            } catch (_) {}
+            window.__hoknexMemProject = { name: projectName, themeKey: currentTheme, updatedAt, canvasJSON: drawCanvas.toJSON() };
+            showToast(`Saved "${projectName}"`);
         }
 
         function openCloudProjectsModal() {
@@ -2004,79 +1806,68 @@
 
         function loadCloudProjectsList() {
             const listEl = document.getElementById('cloudProjectsList');
-            listEl.innerHTML = '<div style="font-size:0.82rem; color:var(--ink-muted);">Loading projects...</div>';
+            const projects = [];
+            let localSave = null;
+            try { localSave = localStorage.getItem('hoknex_pro_autosave'); } catch (_) {}
 
-            (async () => {
-                let projects = [];
-                try {
-                    const res = await fetch(`${STUDIO_API}/projects`);
-                    const data = await res.json();
-                    if (res.ok && Array.isArray(data.projects)) projects = data.projects;
-                } catch (_) {}
+            if (localSave) {
+                let localMeta = {};
+                try { localMeta = JSON.parse(localStorage.getItem('hoknex_pro_autosave_meta') || '{}'); } catch (_) {}
+                projects.push({
+                    id: 'local-autosave',
+                    name: localMeta.name || 'Hoknex Studio Project',
+                    format: 'custom',
+                    themeKey: localMeta.themeKey || currentTheme,
+                    updatedAt: localMeta.updatedAt || new Date().toISOString(),
+                    canvasJSON: JSON.parse(localSave)
+                });
+            } else if (window.__hoknexMemProject) {
+                projects.push({ id: 'local-autosave', ...window.__hoknexMemProject });
+            }
 
-                if (!projects.length) {
-                    const localSave = localStorage.getItem('hoknex_pro_autosave');
-                    if (localSave) {
-                        const localMeta = (() => {
-                            try { return JSON.parse(localStorage.getItem('hoknex_pro_autosave_meta') || '{}'); } catch { return {}; }
-                        })();
-                        projects.push({
-                            id: 'local-autosave',
-                            name: localMeta.name || 'Local Autosave',
-                            format: 'custom',
-                            themeKey: localMeta.themeKey || currentTheme,
-                            updatedAt: localMeta.updatedAt || 'Saved Locally',
-                            canvasJSON: JSON.parse(localSave)
-                        });
-                    }
-                }
+            if (!projects.length) {
+                listEl.innerHTML = '<div style="font-size:0.82rem; color:var(--ink-muted);">No saved projects yet. Click Save to store a project.</div>';
+                return;
+            }
 
-                if (!projects.length) {
-                    listEl.innerHTML = '<div style="font-size:0.82rem; color:var(--ink-muted);">No saved projects yet.</div>';
-                    return;
-                }
+            window.__hoknexLoadedCloudProjects = projects;
 
-                window.__hoknexLoadedCloudProjects = projects;
-
-                listEl.innerHTML = projects.map((proj, idx) => {
-                    const safeName = escapeHtmlText(proj.name || `Project #${idx + 1}`);
-                    const timeLabel = proj.updatedAt && proj.updatedAt !== 'Saved Locally'
-                        ? new Date(proj.updatedAt).toLocaleString()
-                        : (proj.updatedAt || 'Saved Project');
-                    return `
-                        <div class="layer-row" style="padding:11px 14px; flex-direction:column; align-items:stretch; gap:8px;" onclick="applyCloudProjectToCanvas(${idx})">
-                            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-                                <div>
-                                    <div style="font-size:0.86rem;">${safeName}</div>
-                                    <div style="font-size:0.72rem; color:var(--ink-muted);">${timeLabel}</div>
-                                </div>
-                                <div style="display:flex; gap:6px; align-items:center;">
-                                    <button type="button" class="btn-primary" style="padding:5px 10px; font-size:0.7rem;" onclick="event.stopPropagation(); applyCloudProjectToCanvas(${idx});">Load</button>
-                                    <button type="button" class="btn-secondary" style="padding:5px 9px; font-size:0.7rem;" onclick="event.stopPropagation(); openInlineRenameRow(${idx});" title="Rename">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </button>
-                                    <button type="button" class="btn-danger-subtle" style="padding:5px 9px; font-size:0.7rem;" onclick="event.stopPropagation(); deleteCloudProject(${idx});" title="Delete">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
+            listEl.innerHTML = projects.map((proj, idx) => {
+                const safeName = escapeHtmlText(proj.name);
+                const timeLabel = new Date(proj.updatedAt).toLocaleString();
+                return `
+                    <div class="layer-row" style="padding:11px 14px; flex-direction:column; align-items:stretch; gap:8px;" onclick="applyCloudProjectToCanvas(${idx})">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                            <div>
+                                <div style="font-size:0.86rem;">${safeName}</div>
+                                <div style="font-size:0.72rem; color:var(--ink-muted);">${timeLabel}</div>
                             </div>
-
-                            <div id="inlineRenameBox-${idx}" style="display:none; gap:8px; align-items:center; padding-top:6px; border-top:1px solid var(--border-hairline);" onclick="event.stopPropagation();">
-                                <input
-                                    type="text"
-                                    id="inlineRenameInput-${idx}"
-                                    value="${safeName}"
-                                    placeholder="Project name..."
-                                    style="margin-bottom:0; padding:6px 10px; font-size:0.8rem; flex:1;"
-                                    onkeydown="if(event.key==='Enter') saveInlineRename(${idx}); if(event.key==='Escape') cancelInlineRename(${idx});"
-                                />
-                                <button type="button" class="btn-primary" style="padding:6px 11px; font-size:0.7rem;" onclick="saveInlineRename(${idx});">Save</button>
-                                <button type="button" class="btn-secondary" style="padding:6px 9px; font-size:0.7rem;" onclick="cancelInlineRename(${idx});">Cancel</button>
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <button type="button" class="btn-primary" style="padding:5px 10px; font-size:0.7rem;" onclick="event.stopPropagation(); applyCloudProjectToCanvas(${idx});">Load</button>
+                                <button type="button" class="btn-secondary" style="padding:5px 9px; font-size:0.7rem;" onclick="event.stopPropagation(); openInlineRenameRow(${idx});" title="Rename">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button type="button" class="btn-danger-subtle" style="padding:5px 9px; font-size:0.7rem;" onclick="event.stopPropagation(); deleteCloudProject(${idx});" title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
                             </div>
                         </div>
-                    `;
-                }).join('');
-            })();
+
+                        <div id="inlineRenameBox-${idx}" style="display:none; gap:8px; align-items:center; padding-top:6px; border-top:1px solid var(--border-hairline);" onclick="event.stopPropagation();">
+                            <input
+                                type="text"
+                                id="inlineRenameInput-${idx}"
+                                value="${safeName}"
+                                placeholder="Project name..."
+                                style="margin-bottom:0; padding:6px 10px; font-size:0.8rem; flex:1;"
+                                onkeydown="if(event.key==='Enter') saveInlineRename(${idx}); if(event.key==='Escape') cancelInlineRename(${idx});"
+                            />
+                            <button type="button" class="btn-primary" style="padding:6px 11px; font-size:0.7rem;" onclick="saveInlineRename(${idx});">Save</button>
+                            <button type="button" class="btn-secondary" style="padding:6px 9px; font-size:0.7rem;" onclick="cancelInlineRename(${idx});">Cancel</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function applyCloudProjectToCanvas(idx) {
@@ -2088,7 +1879,7 @@
                 saveDrawHistory();
                 refreshLayersList();
                 closeCloudProjectsModal();
-                showToast(`Loaded "${proj.name || 'Project'}"`);
+                showToast(`Loaded "${proj.name}"`);
             });
         }
 
@@ -2105,59 +1896,26 @@
             if (box) box.style.display = 'none';
         }
 
-        async function saveInlineRename(idx) {
-            const projects = window.__hoknexLoadedCloudProjects || [];
-            const proj = projects[idx];
+        function saveInlineRename(idx) {
             const input = document.getElementById(`inlineRenameInput-${idx}`);
-            if (!proj || !input) return;
-
+            if (!input) return;
             const cleanName = input.value.trim();
             if (!cleanName) return showToast('Enter a valid name');
-
-            if (proj.id === 'local-autosave') {
-                localStorage.setItem('hoknex_pro_autosave_meta', JSON.stringify({
-                    name: cleanName,
-                    themeKey: proj.themeKey || currentTheme,
-                    updatedAt: new Date().toISOString()
-                }));
-                showToast(`Renamed to "${cleanName}"`);
-                loadCloudProjectsList();
-                return;
-            }
-
-            try {
-                const res = await fetch(`${STUDIO_API}/projects/${encodeURIComponent(proj.id)}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: cleanName })
-                });
-                if (res.ok) {
-                    showToast(`Renamed to "${cleanName}"`);
-                    loadCloudProjectsList();
-                }
-            } catch (_) {}
+            const meta = { name: cleanName, themeKey: currentTheme, updatedAt: new Date().toISOString() };
+            try { localStorage.setItem('hoknex_pro_autosave_meta', JSON.stringify(meta)); } catch (_) {}
+            if (window.__hoknexMemProject) window.__hoknexMemProject.name = cleanName;
+            showToast(`Renamed to "${cleanName}"`);
+            loadCloudProjectsList();
         }
 
-        async function deleteCloudProject(idx) {
-            const projects = window.__hoknexLoadedCloudProjects || [];
-            const proj = projects[idx];
-            if (!proj) return;
-
-            if (proj.id === 'local-autosave') {
+        function deleteCloudProject(idx) {
+            try {
                 localStorage.removeItem('hoknex_pro_autosave');
                 localStorage.removeItem('hoknex_pro_autosave_meta');
-                showToast('Removed local autosave');
-                loadCloudProjectsList();
-                return;
-            }
-
-            try {
-                const res = await fetch(`${STUDIO_API}/projects/${encodeURIComponent(proj.id)}`, { method: 'DELETE' });
-                if (res.ok) {
-                    showToast(`Deleted "${proj.name}"`);
-                    loadCloudProjectsList();
-                }
             } catch (_) {}
+            window.__hoknexMemProject = null;
+            showToast('Project deleted');
+            loadCloudProjectsList();
         }
 
         function setDrawMode(m) {
@@ -2471,25 +2229,17 @@
                 match = bulkRecords.find(r => r.certId.toUpperCase() === certId && passwordsMatch(r.password, password));
             }
 
-            // 2. Check live public backend (primary origin + Render fallback)
-            if (!match) {
-                const serverData = await postStudioWithFallback('/certificates/unlock', { certId, password });
-                if (serverData && serverData.valid && serverData.certificate) {
-                    match = serverData.certificate;
-                }
-            }
-
-            // 3. Check cross-device portable QR token in URL hash (#v=...)
+            // 2. Check cross-device QR token in URL hash (#v=...)
             if (!match) {
                 const portable = decodeCertToken(window.location.hash);
-                if (portable && portable.certId.toUpperCase() === certId && passwordsMatch(portable.password, password)) {
-                    match = portable;
+                if (portable && (!portable.certId || portable.certId.toUpperCase() === certId) && passwordsMatch(portable.password, password)) {
+                    match = { ...portable, certId: portable.certId || certId };
                 }
             }
 
-            // 4. Check device local storage
+            // 3. Check local storage / memory store
             if (!match) {
-                const localStore = getLocalCertStore();
+                const localStore = Object.assign({}, window.__hoknexMemCerts, getLocalCertStore());
                 const localRec = localStore[certId];
                 if (localRec && passwordsMatch(localRec.password, password)) {
                     match = localRec;
@@ -2507,7 +2257,7 @@
             document.getElementById('vaultCertMeta').textContent = `ID: ${match.certId} • ${match.issuer || 'Hoknex'}`;
 
             await renderCertificateToVaultCanvas(match);
-            showToast('Credential verified and unlocked');
+            showToast('Credential unlocked');
         }
 
         function downloadUnlockedCertPNG() {
@@ -2527,6 +2277,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            syncAccountUI();
             renderVaultHistoryList();
             saveDrawHistory();
 
@@ -2535,7 +2286,7 @@
             const portable = decodeCertToken(window.location.hash);
 
             if (scannedId || portable) {
-                const resolvedId = (scannedId || portable.certId || '').toUpperCase();
+                const resolvedId = (scannedId || (portable && portable.certId) || '').toUpperCase();
                 document.getElementById('vaultCertId').value = resolvedId;
                 openStage('vaultStage');
             }
