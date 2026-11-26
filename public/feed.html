@@ -1629,40 +1629,74 @@ mainView.innerHTML = `
         container.innerHTML = `<p style="color: var(--accent-coral); text-align: center; font-weight: 700;">Failed to load projects.</p>`;
     }
 }
-           } else if (view === 'clubs') {
-    viewTitle.innerText = 'Hoknex Discord & Slack Hub ⚡';
+          } else if (view === 'clubs') {
+    viewTitle.innerText = 'Hoknex Spaces ⚡';
     mainView.innerHTML = `
-        <div id="discordHubWrapper" style="display:flex; gap:12px; height: calc(100vh - 130px); width: 100%; position:relative; transition: all 0.25s ease;">
-            <!-- Discord-Style Server Rail + Quick Create Trigger -->
-            <div id="serverListSidebar" style="width: 235px; min-width: 235px; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 12px; display:flex; flex-direction:column; gap:10px; overflow-y:auto; height: 100%; box-shadow: var(--shadow-subtle);">
+        <style>
+            #hoknexHubRoot { display:flex; gap:10px; height: calc(100vh - 125px); width: 100%; position:relative; overflow:hidden; }
+            .hkx-pane { background: var(--paper); border: 1px solid var(--border); border-radius: 12px; height: 100%; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow-subtle); }
+            .hkx-mobile-bar { display: none; gap: 6px; padding: 8px 10px; background: var(--canvas); border-bottom: 1px solid var(--border); overflow-x: auto; }
+            @media (max-width: 820px) {
+                #hoknexHubRoot { flex-direction: column; height: calc(100vh - 115px); }
+                .hkx-mobile-bar { display: flex; }
+                #hoknexSpacesPane, #hoknexChannelsPane, #hoknexMembersPane {
+                    position: absolute; top: 44px; left: 0; right: 0; bottom: 0; z-index: 60; width: 100% !important; min-width: 0 !important; display: none;
+                }
+                #hoknexSpacesPane.hkx-mobile-open, #hoknexChannelsPane.hkx-mobile-open, #hoknexMembersPane.hkx-mobile-open { display: flex; }
+            }
+        </style>
+
+        <div id="hoknexHubRoot">
+            <!-- Mobile Quick Switcher Bar -->
+            <div class="hkx-mobile-bar" id="hkxMobileBar">
+                <button class="action-btn" style="font-size:0.75rem; padding:5px 9px;" onclick="toggleMobileHubPane('spaces')">🏠 Spaces</button>
+                <button class="action-btn" style="font-size:0.75rem; padding:5px 9px;" onclick="toggleMobileHubPane('channels')"># Channels</button>
+                <button class="action-btn" style="font-size:0.75rem; padding:5px 9px;" onclick="toggleMobileHubPane('chat')">💬 Chat</button>
+                <button class="action-btn" style="font-size:0.75rem; padding:5px 9px;" onclick="toggleMobileHubPane('members')">👥 Members</button>
+            </div>
+
+            <!-- 1. Left Column: Only Spaces Created or Joined by User + Invite / Discover -->
+            <div id="hoknexSpacesPane" class="hkx-pane" style="width: 230px; min-width: 230px; padding: 10px; gap: 8px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h4 style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-light);">Workspaces & Servers</h4>
-                    <button class="btn-create" style="padding:4px 9px; font-size:0.75rem; border-radius:6px;" onclick="openCreateServerModal()">+ New</button>
+                    <span style="font-size:0.74rem; font-weight:800; text-transform:uppercase; color:var(--ink-light);">My Hoknex Spaces</span>
+                    <button class="btn-create" style="padding:4px 8px; font-size:0.72rem; border-radius:6px;" onclick="openCreateHoknexSpaceModal()">+ Create</button>
                 </div>
-                <input type="text" id="serverSearchFilter" placeholder="Filter servers..." oninput="filterServerSidebarList(this.value)" style="padding:7px 10px; border:1px solid var(--border); border-radius:8px; font-size:0.8rem; font-weight:600; outline:none; background:var(--canvas); color:var(--ink);">
-                <div id="clubServersList" style="display:flex; flex-direction:column; gap:6px; flex:1; overflow-y:auto;"></div>
-                <div style="border-top:1px solid var(--border); padding-top:8px; display:flex; flex-direction:column; gap:6px;">
-                    <span style="font-size:0.7rem; font-weight:700; color:var(--ink-light);">Quick Status</span>
-                    <select id="userPresenceStatus" onchange="saveHubStatus(this.value)" style="padding:6px 8px; border:1px solid var(--border); border-radius:7px; font-size:0.78rem; font-weight:700; background:var(--canvas); color:var(--ink); outline:none;">
-                        <option value="🟢 Online — Building">🟢 Online — Building</option>
-                        <option value="💻 In Deep Focus (Slack Mode)">💻 In Deep Focus</option>
-                        <option value="🎮 Gaming / Jamming">🎮 Gaming / Jamming</option>
+
+                <div style="display:flex; gap:5px;">
+                    <button class="action-btn" style="flex:1; font-size:0.72rem; padding:5px;" onclick="openDiscoverAndInviteModal('discover')">🔎 Discover</button>
+                    <button class="action-btn" style="flex:1; font-size:0.72rem; padding:5px;" onclick="openDiscoverAndInviteModal('invite')">🎟️ Join Link</button>
+                </div>
+
+                <div id="hoknexMySpacesList" style="display:flex; flex-direction:column; gap:6px; flex:1; overflow-y:auto;">
+                    <p style="font-size:0.78rem; color:var(--ink-light); font-weight:600;">Loading your spaces...</p>
+                </div>
+
+                <div style="border-top:1px solid var(--border); padding-top:8px; display:flex; flex-direction:column; gap:4px;">
+                    <span style="font-size:0.68rem; font-weight:800; text-transform:uppercase; color:var(--ink-light);">My Live Activity</span>
+                    <select id="hoknexActivitySelect" onchange="saveHoknexActivity(this.value)" style="padding:6px 8px; border:1px solid var(--border); border-radius:7px; font-size:0.76rem; font-weight:700; background:var(--canvas); color:var(--ink); outline:none;">
+                        <option value="🟢 Active • Online">🟢 Active • Online</option>
+                        <option value="🎮 Gaming">🎮 Gaming</option>
+                        <option value="💻 Building / Coding">💻 Building / Coding</option>
+                        <option value="🎧 Listening / Chilling">🎧 Listening / Chilling</option>
                         <option value="🌙 Away">🌙 Away</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Main Discord + Slack Workspace -->
-            <div id="discordWorkspace" style="flex:1; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; display:flex; align-items:center; justify-content:center; height: 100%; overflow:hidden; position:relative; box-shadow: var(--shadow-subtle);">
-                <p style="font-weight:600; color:var(--ink-light);">Select a server or workspace from the left sidebar to start collaborating!</p>
+            <!-- 2. Center Workspace: Channels + Messages + Thread Drawer -->
+            <div id="hoknexMainWorkspace" class="hkx-pane" style="flex:1; flex-direction:row;">
+                <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:1.5rem; text-align:center;">
+                    <p style="font-weight:600; color:var(--ink-light);">Select one of your Hoknex Spaces or join via invite / discover.</p>
+                </div>
             </div>
         </div>
     `;
-    const savedStatus = localStorage.getItem('hoknex_hub_status');
-    if (savedStatus && document.getElementById('userPresenceStatus')) {
-        document.getElementById('userPresenceStatus').value = savedStatus;
+
+    const savedAct = localStorage.getItem('hoknex_user_activity');
+    if (savedAct && document.getElementById('hoknexActivitySelect')) {
+        document.getElementById('hoknexActivitySelect').value = savedAct;
     }
-    loadDiscordClubs();
+    loadHoknexSpaces();
         } else if (view === 'events') {
         viewTitle.innerText = 'Campus Events & Ticketing 📅';
         
@@ -2713,379 +2747,514 @@ window.toggleStickerPicker = function() {
 window.viewUserProfile = function(usernameOrId) {
     window.location.href = `/profile.html?user=${encodeURIComponent(usernameOrId || window.activeRecipientUsername)}`;
 };
-       // ============================================================================
-// HOKNEX DISCORD + SLACK CLUB WORKSPACE ENGINE
+
+    let activeClubId = localStorage.getItem('hoknex_active_club_id') || null;
+let activeChannelId = localStorage.getItem('hoknex_active_channel_id') || null;
+let activeClubMembers = [];
+let isHubFullScreen = false;
+let allHoknexClubsCache = [];
+let activeThreadMessage = null;
+const HOKNEX_TENOR_KEY = window.HOKNEX_TENOR_KEY || '';
+      // ============================================================================
+// HOKNEX SPACES WORKSPACE ENGINE (FULL HOKNEX BRANDING, MOBILE + DESKTOP)
 // ============================================================================
-let allLoadedClubs = [];
-let activeReplyTarget = null;
-let activeChannelSearchQuery = '';
 
-function saveHubStatus(val) {
-    localStorage.setItem('hoknex_hub_status', val);
+const HOKNEX_STICKER_PACK = [
+    { label: 'Hype Wave', url: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f64c/512.gif' },
+    { label: 'Fire Drop', url: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f525/512.gif' },
+    { label: 'Party Pop', url: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f389/512.gif' },
+    { label: 'Rocket Launch', url: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f680/512.gif' },
+    { label: 'Heart Eyes', url: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f60d/512.gif' },
+    { label: 'Laughing', url: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f602/512.gif' },
+    { label: 'Cool Shades', url: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f60e/512.gif' },
+    { label: 'Sparkles', url: 'https://fonts.gstatic.com/s/e/notoemoji/latest/2728/512.gif' }
+];
+
+function saveHoknexActivity(val) {
+    localStorage.setItem('hoknex_user_activity', val);
 }
 
-function filterServerSidebarList(query) {
-    const q = (query || '').toLowerCase().trim();
-    renderClubServerButtons(q ? allLoadedClubs.filter(c => (c.name || '').toLowerCase().includes(q)) : allLoadedClubs);
+function getCurrentHoknexActivity() {
+    return localStorage.getItem('hoknex_user_activity') || '🟢 Active • Online';
 }
 
-function renderClubServerButtons(clubs) {
-    const list = document.getElementById('clubServersList');
+function toggleMobileHubPane(paneName) {
+    const spaces = document.getElementById('hoknexSpacesPane');
+    const channels = document.getElementById('hoknexChannelsPane');
+    const members = document.getElementById('hoknexMembersPane');
+    [spaces, channels, members].forEach(el => el && el.classList.remove('hkx-mobile-open'));
+    if (paneName === 'spaces' && spaces) spaces.classList.add('hkx-mobile-open');
+    if (paneName === 'channels' && channels) channels.classList.add('hkx-mobile-open');
+    if (paneName === 'members' && members) members.classList.add('hkx-mobile-open');
+}
+
+function getMemberRoleInfo(club, username, userId) {
+    const ownerObj = club.owner;
+    const ownerId = ownerObj ? (ownerObj._id ? ownerObj._id.toString() : ownerObj.toString()) : '';
+    const ownerUser = ownerObj ? (ownerObj.username || '') : '';
+    if ((userId && ownerId === userId.toString()) || (username && ownerUser.toLowerCase() === username.toLowerCase())) {
+        return { role: 'Admin', powers: ['all', 'manage_channels', 'manage_roles', 'manage_mods', 'pin_messages', 'chat', 'thread', 'sticker'], badgeColor: '#ef4444' };
+    }
+    const found = (club.roles || []).find(r => r.username && username && r.username.toLowerCase() === username.toLowerCase());
+    if (found) {
+        const color = found.role === 'Admin' ? '#ef4444' : found.role === 'Moderator' ? '#10b981' : '#8b5cf6';
+        return { role: found.role || 'Member', powers: found.powers || ['chat', 'thread', 'sticker'], badgeColor: color };
+    }
+    return { role: 'Member', powers: ['chat', 'thread', 'sticker'], badgeColor: '#3b82f6' };
+}
+
+function userHasPower(club, currentUsername, currentUserId, powerKey) {
+    const info = getMemberRoleInfo(club, currentUsername, currentUserId);
+    return info.role === 'Admin' || (info.powers || []).includes('all') || (info.powers || []).includes(powerKey);
+}
+
+// Keep compatibility aliases in case anything calls old function names
+async function loadDiscordClubs() { return loadHoknexSpaces(); }
+async function openDiscordClub(clubId) { return openHoknexSpace(clubId); }
+function openCreateServerModal() { return openCreateHoknexSpaceModal(); }
+function toggleHubFullScreen() { return toggleHoknexFullScreen(); }
+
+async function loadHoknexSpaces() {
+    const list = document.getElementById('hoknexMySpacesList');
     if (!list) return;
-    if (!clubs || clubs.length === 0) {
-        list.innerHTML = `<p style="font-size:0.8rem; font-weight:600; color:var(--ink-light);">No servers found.</p>`;
-        return;
-    }
-    list.innerHTML = clubs.map(club => {
-        const isSelected = activeClubId && activeClubId.toString() === club._id.toString();
-        const memberCount = (club.members || []).length;
-        return `
-            <button onclick="openDiscordClub('${club._id}')" class="action-btn" style="display:flex; justify-content:space-between; align-items:center; text-align:left; font-weight:700; padding:9px 10px; border-radius:8px; background:${isSelected ? 'rgba(59, 130, 246, 0.16)' : 'var(--canvas)'}; color:${isSelected ? 'var(--accent-blue)' : 'var(--ink)'}; border-color:${isSelected ? 'var(--accent-blue)' : 'var(--border)'};">
-                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">🔥 ${club.name}</span>
-                <span style="font-size:0.7rem; opacity:0.75; margin-left:6px;">${memberCount}</span>
-            </button>
-        `;
-    }).join('');
-}
-
-async function loadDiscordClubs() {
     try {
-        const res = await fetch(`${API_URL}/api/clubs`);
-        const clubs = await res.json();
-        allLoadedClubs = Array.isArray(clubs) ? clubs : [];
-        const searchVal = document.getElementById('serverSearchFilter')?.value || '';
-        filterServerSidebarList(searchVal);
+        const currentUsername = localStorage.getItem('hoknex_user') || '';
+        const [clubsRes, meRes] = await Promise.all([
+            fetch(`${API_URL}/api/clubs`),
+            currentUsername ? fetch(`${API_URL}/api/users/${encodeURIComponent(currentUsername)}`) : Promise.resolve(null)
+        ]);
+        const clubs = await clubsRes.json();
+        allHoknexClubsCache = Array.isArray(clubs) ? clubs : [];
 
-        if (allLoadedClubs.length > 0 && !activeClubId) {
-            openDiscordClub(allLoadedClubs[0]._id);
-        }
-    } catch (e) {
-        console.error('Failed to load clubs:', e);
-    }
-}
-
-function openCreateServerModal() {
-    document.getElementById('createServerModal')?.remove();
-    const modalHtml = `
-        <div id="createServerModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; z-index:1100; padding:1rem;">
-            <div style="background:var(--paper); border:1px solid var(--border); padding:1.75rem; border-radius:14px; width:100%; max-width:440px; box-shadow:var(--shadow-card); color:var(--ink);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                    <h3 style="font-weight:800; font-size:1.15rem;">🚀 Create Discord / Slack Server</h3>
-                    <button onclick="document.getElementById('createServerModal').remove()" class="action-btn" style="padding:4px 9px;">✕</button>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase;">Server / Club Name *</label>
-                    <input type="text" id="modalNewClubName" placeholder="e.g. Hack Club Builders" style="padding:9px 12px; border:1px solid var(--border); border-radius:8px; font-size:0.88rem; font-weight:600; background:var(--canvas); color:var(--ink); outline:none;">
-                    <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase;">Description</label>
-                    <input type="text" id="modalNewClubDesc" placeholder="What is this workspace about?" style="padding:9px 12px; border:1px solid var(--border); border-radius:8px; font-size:0.88rem; font-weight:600; background:var(--canvas); color:var(--ink); outline:none;">
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                        <div>
-                            <label style="font-size:0.72rem; font-weight:800; text-transform:uppercase;">First Channel</label>
-                            <input type="text" id="modalDefaultChannel" value="general" style="padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-size:0.82rem; font-weight:600; background:var(--canvas); color:var(--ink); width:100%; outline:none;">
-                        </div>
-                        <div>
-                            <label style="font-size:0.72rem; font-weight:800; text-transform:uppercase;">Channel Topic</label>
-                            <input type="text" id="modalChannelTopic" placeholder="Announcements & chat" style="padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-size:0.82rem; font-weight:600; background:var(--canvas); color:var(--ink); width:100%; outline:none;">
-                        </div>
-                    </div>
-                    <button class="btn-create" style="margin-top:8px; padding:10px;" onclick="submitCreateServerModal()">Create Workspace ✨</button>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-}
-
-async function submitCreateServerModal() {
-    const name = document.getElementById('modalNewClubName')?.value.trim();
-    const description = document.getElementById('modalNewClubDesc')?.value.trim();
-    const defaultChannel = document.getElementById('modalDefaultChannel')?.value.trim() || 'general';
-    const channelTopic = document.getElementById('modalChannelTopic')?.value.trim() || '';
-    const username = localStorage.getItem('hoknex_user');
-
-    if (!name) return alert('Please enter a server name.');
-
-    const res = await fetch(`${API_URL}/api/clubs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description, username, defaultChannel, channelTopic })
-    });
-    if (res.ok) {
-        const created = await res.json();
-        activeClubId = created._id;
-        activeChannelId = created.channels?.[0]?._id || null;
-        document.getElementById('createServerModal')?.remove();
-        loadDiscordClubs();
-        if (typeof fetchStats === 'function') fetchStats();
-    } else {
-        const err = await res.json().catch(() => ({}));
-        alert(err.error || 'Could not create server.');
-    }
-}
-
-async function createDiscordClub() {
-    const nameInput = document.getElementById('newClubName');
-    const descInput = document.getElementById('newClubDesc');
-    const name = nameInput?.value.trim() || document.getElementById('modalNewClubName')?.value.trim();
-    const description = descInput?.value.trim() || document.getElementById('modalNewClubDesc')?.value.trim() || '';
-    const username = localStorage.getItem('hoknex_user');
-    if (!name) return alert('Enter a server name');
-
-    const res = await fetch(`${API_URL}/api/clubs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description, username })
-    });
-    if (res.ok) {
-        if (nameInput) nameInput.value = '';
-        if (descInput) descInput.value = '';
-        loadDiscordClubs();
-        if (typeof fetchStats === 'function') fetchStats();
-    }
-}
-
-function toggleServerSidebar() {
-    const sidebar = document.getElementById('channelSidebarPane');
-    const toggleIcon = document.getElementById('serverToggleIcon');
-    if (!sidebar) return;
-    if (sidebar.style.display === 'none') {
-        sidebar.style.display = 'flex';
-        if (toggleIcon) toggleIcon.innerText = '◀';
-    } else {
-        sidebar.style.display = 'none';
-        if (toggleIcon) toggleIcon.innerText = '▶';
-    }
-}
-
-function toggleHubFullScreen() {
-    isHubFullScreen = !isHubFullScreen;
-    const wrapper = document.getElementById('discordHubWrapper');
-    const btn = document.getElementById('fullScreenToggleBtn');
-    if (!wrapper) return;
-    if (isHubFullScreen) {
-        wrapper.style.position = 'fixed';
-        wrapper.style.top = '0';
-        wrapper.style.left = '0';
-        wrapper.style.width = '100vw';
-        wrapper.style.height = '100vh';
-        wrapper.style.zIndex = '999';
-        wrapper.style.padding = '14px';
-        wrapper.style.background = 'var(--canvas)';
-        if (btn) btn.innerText = '🗗 Exit Full Screen';
-    } else {
-        wrapper.style.position = 'relative';
-        wrapper.style.width = '100%';
-        wrapper.style.height = 'calc(100vh - 130px)';
-        wrapper.style.zIndex = '1';
-        wrapper.style.padding = '0';
-        wrapper.style.background = 'transparent';
-        if (btn) btn.innerText = '⛶ Full Screen';
-    }
-}
-
-async function openDiscordClub(clubId) {
-    activeClubId = clubId;
-    activeReplyTarget = null;
-    try {
-        const currentUsername = localStorage.getItem('hoknex_user');
-        if (!currentUsername) return;
-        const meRes = await fetch(`${API_URL}/api/users/${encodeURIComponent(currentUsername)}`);
-        if (!meRes.ok) return;
-        const meData = await meRes.json();
-        const currentUserId = meData._id.toString();
-        localStorage.setItem('hoknex_uid', currentUserId);
-
-        const res = await fetch(`${API_URL}/api/clubs`);
-        const clubs = await res.json();
-        allLoadedClubs = Array.isArray(clubs) ? clubs : [];
-        const club = allLoadedClubs.find(c => c._id.toString() === clubId.toString());
-        if (!club) return;
-
-        filterServerSidebarList(document.getElementById('serverSearchFilter')?.value || '');
-
-        activeClubMembers = club.members || [];
-        const validChannel = (club.channels || []).find(ch => ch._id.toString() === activeChannelId);
-        if (!validChannel && club.channels && club.channels.length > 0) {
-            activeChannelId = club.channels[0]._id.toString();
+        let meId = localStorage.getItem('hoknex_uid') || '';
+        if (meRes && meRes.ok) {
+            const meData = await meRes.json();
+            meId = meData._id ? meData._id.toString() : meId;
+            localStorage.setItem('hoknex_uid', meId);
         }
 
-        const ownerObj = club.owner;
-        const ownerId = ownerObj ? (ownerObj._id ? ownerObj._id.toString() : ownerObj.toString()) : '';
-        const ownerUsername = ownerObj ? (ownerObj.username || '') : '';
-        const isOwner = (ownerId === currentUserId) || (ownerUsername.toLowerCase() === currentUsername.toLowerCase());
-        const isMember = (club.members || []).some(m => (m._id ? m._id.toString() : m.toString()) === currentUserId || (m.username || '').toLowerCase() === currentUsername.toLowerCase());
-        const hasRequested = (club.joinRequests || []).some(req => (req._id ? req._id.toString() : req.toString()) === currentUserId || (req.username || '').toLowerCase() === currentUsername.toLowerCase());
+        // Only show spaces created by or joined by the current user in the main sidebar
+        const mySpaces = allHoknexClubsCache.filter(club => {
+            const ownerId = club.owner ? (club.owner._id ? club.owner._id.toString() : club.owner.toString()) : '';
+            const ownerUser = club.owner ? (club.owner.username || '') : '';
+            const isOwner = (meId && ownerId === meId) || (currentUsername && ownerUser.toLowerCase() === currentUsername.toLowerCase());
+            const isMember = (club.members || []).some(m => {
+                const mId = m._id ? m._id.toString() : m.toString();
+                const mUser = m.username || '';
+                return (meId && mId === meId) || (currentUsername && mUser.toLowerCase() === currentUsername.toLowerCase());
+            });
+            return isOwner || isMember;
+        });
 
-        const workspace = document.getElementById('discordWorkspace');
-        if (!workspace) return;
-        workspace.style.display = 'flex';
-        workspace.style.flexDirection = 'row';
-        workspace.style.height = '100%';
-        workspace.style.width = '100%';
-
-        if (!isMember && !isOwner) {
-            workspace.innerHTML = `
-                <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:15px; padding:2rem; text-align:center;">
-                    <h2 style="font-size:1.65rem; font-weight:800;">🔥 ${club.name}</h2>
-                    <p style="font-weight:600; color:var(--ink-light); max-width:420px; font-size:0.95rem;">${club.description || 'Private campus server. Requires admin approval to join.'}</p>
-                    <div style="font-size:0.82rem; font-weight:700; color:var(--ink-light);">👥 ${(club.members || []).length} Members • 💬 ${(club.channels || []).length} Channels</div>
-                    ${hasRequested
-                        ? '<button class="action-btn" style="background:var(--canvas); color:var(--ink); cursor:default;" disabled>Join Request Pending Approval ⏳</button>'
-                        : `<button class="btn-create" onclick="requestJoinClub('${club._id}')">🔒 Request to Join Server</button>`}
+        if (mySpaces.length === 0) {
+            list.innerHTML = `
+                <div style="padding:10px; background:var(--canvas); border:1px dashed var(--border); border-radius:8px; font-size:0.78rem; color:var(--ink-light); font-weight:600;">
+                    No Spaces yet. Click <b>+ Create</b>, <b>🔎 Discover</b>, or <b>🎟️ Join Link</b>.
                 </div>
             `;
             return;
         }
 
-        workspace.innerHTML = `
-            <!-- Slack + Discord Channel Sidebar -->
-            <div id="channelSidebarPane" style="width: 220px; min-width: 220px; border-right: 1px solid var(--border); background: var(--canvas); padding: 12px; display:flex; flex-direction:column; gap:10px; height:100%; transition: all 0.25s ease;">
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
-                    <h3 style="font-size:0.92rem; font-weight:800; word-break:break-word; color:var(--ink);">${club.name} ${isOwner ? '👑' : ''}</h3>
-                    <button onclick="toggleServerSidebar()" id="serverToggleIcon" class="action-btn" style="font-size:0.72rem; padding:3px 7px;" title="Collapse Channels">◀</button>
-                </div>
-                <p style="font-size:0.74rem; color:var(--ink-light); font-weight:600; line-height:1.35;">${club.description || 'Team workspace & live channels'}</p>
+        list.innerHTML = mySpaces.map(club => {
+            const selected = activeClubId && activeClubId.toString() === club._id.toString();
+            const dpHtml = club.dpUrl
+                ? `<img src="${club.dpUrl}" alt="${club.name}" style="width:28px; height:28px; border-radius:8px; object-fit:cover; border:1px solid var(--border); flex-shrink:0;">`
+                : `<div style="width:28px; height:28px; border-radius:8px; background:var(--accent-blue); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.78rem; font-weight:800; flex-shrink:0;">${(club.name || 'H').charAt(0).toUpperCase()}</div>`;
 
-                ${isOwner && club.joinRequests && club.joinRequests.length > 0 ? `
-                    <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); padding: 8px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; color: var(--accent-yellow);">
-                        🔔 ${club.joinRequests.length} Pending Request(s)
-                        <button onclick="openRequestsModal('${club._id}')" class="action-btn" style="margin-top:6px; display:block; width:100%; font-size:0.75rem; padding:5px; background:var(--paper); color:var(--ink); text-align:center;">Review Requests 🔍</button>
-                    </div>
-                ` : ''}
+            return `
+                <button onclick="openHoknexSpace('${club._id}')" class="action-btn" style="display:flex; align-items:center; gap:8px; text-align:left; font-weight:700; padding:8px; border-radius:9px; background:${selected ? 'rgba(59, 130, 246, 0.16)' : 'var(--canvas)'}; color:${selected ? 'var(--accent-blue)' : 'var(--ink)'}; border-color:${selected ? 'var(--accent-blue)' : 'var(--border)'};">
+                    ${dpHtml}
+                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; font-size:0.84rem;">${club.name}</span>
+                </button>
+            `;
+        }).join('');
 
-                <hr style="border:0.5px solid var(--border);">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h4 style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--ink-light);">Channels 💬</h4>
-                    ${isOwner ? `<button onclick="openCreateChannelModal('${club._id}')" class="action-btn" style="font-size:0.7rem; padding:2px 7px;" title="Create Channel with Topic">+ Add</button>` : ''}
-                </div>
-
-                <div id="channelsList" style="display:flex; flex-direction:column; gap:4px; flex:1; overflow-y:auto;">
-                    ${(club.channels || []).map(ch => {
-                        const isActiveCh = activeChannelId === ch._id.toString();
-                        return `<button onclick="openDiscordChannel('${ch._id}')" class="action-btn" style="text-align:left; font-size:0.82rem; padding:7px 9px; border-radius:7px; background:${isActiveCh ? 'rgba(59, 130, 246, 0.16)' : 'var(--paper)'}; color:${isActiveCh ? 'var(--accent-blue)' : 'var(--ink)'}; border-color:${isActiveCh ? 'var(--accent-blue)' : 'var(--border)'};"># ${ch.name}</button>`;
-                    }).join('')}
-                </div>
-
-                ${isOwner ? `
-                    <div style="display:flex; gap:4px;">
-                        <input type="text" id="newChannelName" placeholder="quick-channel" style="padding:6px 8px; font-size:0.75rem; border:1px solid var(--border); border-radius:6px; width:100%; font-weight:600; outline:none; background:var(--paper); color:var(--ink);">
-                        <button class="btn-create" style="padding:6px 10px; font-size:0.75rem; border-radius:6px;" onclick="createDiscordChannel('${club._id}')">+</button>
-                    </div>
-                    <button class="action-btn" style="background: rgba(239, 68, 68, 0.12); color: var(--accent-coral); width:100%; font-size:0.75rem; padding:7px; border-radius:7px;" onclick="openDeleteServerModal('${club._id}', '${club.name.replace(/'/g, "\\'")}')">🗑️ Delete Server</button>
-                ` : `<button class="action-btn" style="background:var(--paper); color:var(--ink); width:100%; font-size:0.75rem; padding:7px; border-radius:7px;" onclick="leaveServer('${club._id}')">🚪 Leave Server</button>`}
-            </div>
-
-            <!-- Main Chat Canvas -->
-            <div style="flex:1; display:flex; flex-direction:column; height:100%; background:var(--paper); overflow:hidden; position:relative;" id="clubChatArea">
-                <!-- Slack-Style Top Header with Topic & Search -->
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 15px; border-bottom:1px solid var(--border); background:var(--canvas); flex-wrap:wrap;">
-                    <div style="display:flex; align-items:center; gap:8px; min-width:0; flex:1;">
-                        <button onclick="toggleServerSidebar()" class="action-btn" style="font-size:0.75rem; padding:5px 8px;">☰ Channels</button>
-                        <div style="min-width:0;">
-                            <div style="font-weight:800; font-size:0.92rem;" id="activeChannelHeader"># channel</div>
-                            <div style="font-size:0.72rem; color:var(--ink-light); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="activeChannelTopic">Workspace discussion</div>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-                        <input type="text" id="channelMsgSearch" placeholder="Search messages..." oninput="filterActiveChannelMessages(this.value)" style="padding:5px 9px; border-radius:6px; border:1px solid var(--border); font-size:0.75rem; font-weight:600; background:var(--paper); color:var(--ink); width:145px; outline:none;">
-                        <button onclick="toggleHubFullScreen()" id="fullScreenToggleBtn" class="action-btn" style="font-size:0.74rem; font-weight:700; padding:5px 9px;">⛶ Full Screen</button>
-                        <select id="clubWallpaperSelect" onchange="changeClubWallpaper(this.value)" style="padding:5px 8px; border-radius:6px; border:1px solid var(--border); font-size:0.74rem; font-weight:700; background:var(--paper); color:var(--ink); outline:none; cursor:pointer;">
-                            <option value="">🖼️ Wallpapers</option>
-                            <option value="url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80')">Cyberpunk Neon 🌆</option>
-                            <option value="url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=80')">Tropical Beach 🏝️</option>
-                            <option value="url('https://images.unsplash.com/photo-1542224566-6e85f2e6772f?w=1200&auto=format&fit=crop&q=80')">Misty Pine Forest 🌲</option>
-                            <option value="url('https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1200&auto=format&fit=crop&q=80')">Abstract Purple Vibe 🎨</option>
-                            <option value="url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&auto=format&fit=crop&q=80')">Yosemite Sunset 🌇</option>
-                            <option value="url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1200&auto=format&fit=crop&q=80')">Cosmic Galaxy 🌌</option>
-                            <option value="url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80')">Dark Architecture 🏛️</option>
-                            <option value="url('https://images.unsplash.com/photo-1507783592120-694c3c3a9f04?w=1200&auto=format&fit=crop&q=80')">Autumn Maple 🍁</option>
-                            <option value="url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&auto=format&fit=crop&q=80')">Starry Night Sky ✨</option>
-                            <option value="url('https://images.unsplash.com/photo-1428592953211-077101b2021b?w=1200&auto=format&fit=crop&q=80')">Raindrops Glass 🌧️</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Messages Feed -->
-                <div id="discordChatContainer" style="flex:1; overflow-y:auto; padding:15px; display:flex; flex-direction:column; gap:10px;"></div>
-
-                <!-- Reply / Thread Banner -->
-                <div id="replyContextBar" style="display:none; justify-content:space-between; align-items:center; padding:6px 14px; background:rgba(59,130,246,0.1); border-top:1px solid var(--border); font-size:0.78rem; font-weight:700; color:var(--accent-blue);">
-                    <span id="replyContextText">Replying to...</span>
-                    <button onclick="clearReplyTarget()" style="background:none; border:none; color:var(--accent-coral); font-weight:800; cursor:pointer;">✕ Cancel</button>
-                </div>
-
-                <!-- Mention Autocomplete Popup -->
-                <div id="mentionPopup" style="display:none; position:absolute; bottom:66px; left:15px; background:var(--paper); border:1px solid var(--border); border-radius:8px; width:230px; box-shadow:var(--shadow-card); z-index:30; max-height:150px; overflow-y:auto;"></div>
-
-                <!-- Emoji & Sticker Picker Panel -->
-                <div id="clubEmojiPicker" style="display:none; position:absolute; bottom:66px; left:15px; width:300px; height:210px; background:var(--paper); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow-card); padding:10px; overflow-y:auto; z-index:40;">
-                    <div style="font-size:0.7rem; font-weight:800; color:var(--ink-light); margin-bottom:6px;">EMOJIS & STICKERS (Tip: try /shrug or /fire)</div>
-                    <div style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px; font-size:1.15rem; cursor:pointer; text-align:center;">
-                        <span onclick="insertClubEmoji('😀')">😀</span><span onclick="insertClubEmoji('😂')">😂</span><span onclick="insertClubEmoji('😍')">😍</span><span onclick="insertClubEmoji('😎')">😎</span><span onclick="insertClubEmoji('🥳')">🥳</span><span onclick="insertClubEmoji('👍')">👍</span><span onclick="insertClubEmoji('🔥')">🔥</span>
-                        <span onclick="insertClubEmoji('⭐')">⭐</span><span onclick="insertClubEmoji('🎉')">🎉</span><span onclick="insertClubEmoji('❤️')">❤️</span><span onclick="insertClubEmoji('🚀')">🚀</span><span onclick="insertClubEmoji('💡')">💡</span><span onclick="insertClubEmoji('💻')">💻</span><span onclick="insertClubEmoji('🍕')">🍕</span>
-                        <span onclick="insertClubEmoji('✅')">✅</span><span onclick="insertClubEmoji('👀')">👀</span><span onclick="insertClubEmoji('🙌')">🙌</span><span onclick="insertClubEmoji('⚡')">⚡</span><span onclick="insertClubEmoji('🎯')">🎯</span><span onclick="insertClubEmoji('🤝')">🤝</span><span onclick="insertClubEmoji('🏆')">🏆</span>
-                    </div>
-                </div>
-
-                <!-- Composer Bar -->
-                <div style="padding:10px; border-top:1px solid var(--border); display:flex; gap:8px; align-items:center; background:var(--canvas);">
-                    <button class="action-btn" onclick="toggleClubEmojiPicker()" style="font-size:0.9rem; padding:8px 10px;" title="Emoji">😊</button>
-                    <label for="discordMediaFile" style="cursor:pointer; background:var(--paper); color:var(--ink); padding:8px 11px; border-radius:7px; border:1px solid var(--border); font-weight:700; font-size:0.85rem;" title="Upload Image">📷</label>
-                    <input type="file" id="discordMediaFile" accept="image/*" style="display:none;" onchange="updateDiscordMediaName(this)">
-                    <span id="discordMediaName" style="font-size:0.7rem; font-weight:600; color:var(--ink-light); max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
-                    <input type="text" id="discordMessageInput" placeholder="Message #channel (@mention or /shrug, /fire)..." style="flex:1; padding:9px 12px; border:1px solid var(--border); border-radius:7px; font-weight:600; outline:none; background:var(--paper); color:var(--ink); font-size:0.88rem;" oninput="handleMentionInput(event)" onkeypress="if(event.key === 'Enter') sendDiscordMessage()">
-                    <button class="btn-create" onclick="sendDiscordMessage()" style="padding:9px 16px; font-size:0.85rem; border-radius:7px;">Send</button>
-                </div>
-            </div>
-
-            <!-- Members List Sidebar -->
-            <div style="width: 190px; min-width: 190px; border-left: 1px solid var(--border); background: var(--canvas); padding: 12px; overflow-y:auto; height:100%;">
-                <h4 style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--ink-light); margin-bottom:8px;">Members (${(club.members || []).length})</h4>
-                <div style="display:flex; flex-direction:column; gap:6px;">
-                    ${(club.members || []).map(m => `
-                        <div onclick="viewUserProfile('${m.username}')" style="display:flex; align-items:center; gap:7px; font-size:0.82rem; font-weight:600; color:var(--ink); cursor:pointer; padding:5px; border-radius:6px;" onmouseover="this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.background='transparent'">
-                            <div style="width:24px; height:24px; border-radius:50%; background:var(--accent-purple); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:800; color:#fff; flex-shrink:0;">${m.name ? m.name.charAt(0).toUpperCase() : 'U'}</div>
-                            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${m.name}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-
-        const savedClubWallpaper = localStorage.getItem(`hoknex_club_wallpaper_${clubId}`);
-        const chatArea = document.getElementById('clubChatArea');
-        if (chatArea && savedClubWallpaper) {
-            chatArea.style.background = `${savedClubWallpaper} no-repeat center center`;
-            chatArea.style.backgroundSize = 'cover';
+        if (!activeClubId && mySpaces.length > 0) {
+            openHoknexSpace(mySpaces[0]._id);
+        } else if (activeClubId) {
+            const stillThere = mySpaces.some(c => c._id.toString() === activeClubId.toString());
+            if (stillThere) openHoknexSpace(activeClubId);
         }
-        if (activeChannelId) loadDiscordMessages(club, activeChannelId);
     } catch (e) {
-        console.error('Error opening club:', e);
+        console.error('Failed to load Hoknex spaces:', e);
     }
 }
 
-function openCreateChannelModal(clubId) {
-    document.getElementById('createChannelModal')?.remove();
-    const modalHtml = `
-        <div id="createChannelModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1100; padding:1rem;">
-            <div style="background:var(--paper); border:1px solid var(--border); padding:1.5rem; border-radius:12px; width:100%; max-width:380px; box-shadow:var(--shadow-card); color:var(--ink);">
-                <h3 style="font-weight:800; font-size:1.05rem; margin-bottom:10px;"># Create Channel</h3>
-                <input type="text" id="modalChannelNameInput" placeholder="Channel name (e.g. standup, bugs)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:8px; outline:none;">
-                <input type="text" id="modalChannelTopicInput" placeholder="Topic (optional)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:12px; outline:none;">
-                <div style="display:flex; gap:8px;">
-                    <button class="btn-create" style="flex:1; padding:8px;" onclick="submitCreateChannelModal('${clubId}')">Create</button>
-                    <button class="action-btn" style="flex:1; padding:8px;" onclick="document.getElementById('createChannelModal').remove()">Cancel</button>
+function openCreateHoknexSpaceModal() {
+    document.getElementById('hkxCreateSpaceModal')?.remove();
+    const html = `
+        <div id="hkxCreateSpaceModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1200; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); border-radius:14px; padding:1.5rem; width:100%; max-width:430px; box-shadow:var(--shadow-card); color:var(--ink);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h3 style="font-weight:800; font-size:1.1rem;">⚡ Create Hoknex Space</h3>
+                    <button onclick="document.getElementById('hkxCreateSpaceModal').remove()" class="action-btn" style="padding:3px 8px;">✕</button>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:9px;">
+                    <input type="text" id="hkxSpaceName" placeholder="Space Name *" style="padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-weight:600; background:var(--canvas); color:var(--ink); outline:none;">
+                    <input type="text" id="hkxSpaceDesc" placeholder="Short description" style="padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-weight:600; background:var(--canvas); color:var(--ink); outline:none;">
+                    <label style="font-size:0.72rem; font-weight:800; text-transform:uppercase;">Space DP (Avatar Image)</label>
+                    <input type="file" id="hkxSpaceDpFile" accept="image/*" style="font-size:0.78rem; font-weight:600;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <input type="text" id="hkxInitChannel" value="general" placeholder="Initial channel" style="padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-weight:600; background:var(--canvas); color:var(--ink); outline:none;">
+                        <input type="text" id="hkxInitTopic" placeholder="Channel topic" style="padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-weight:600; background:var(--canvas); color:var(--ink); outline:none;">
+                    </div>
+                    <button class="btn-create" style="margin-top:6px; padding:9px;" onclick="submitCreateHoknexSpace()">Launch Space 🚀</button>
                 </div>
             </div>
         </div>
     `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    document.body.insertAdjacentHTML('beforeend', html);
 }
 
-async function submitCreateChannelModal(clubId) {
-    const channelName = document.getElementById('modalChannelNameInput')?.value.trim();
-    const topic = document.getElementById('modalChannelTopicInput')?.value.trim();
+async function submitCreateHoknexSpace() {
+    const name = document.getElementById('hkxSpaceName')?.value.trim();
+    const description = document.getElementById('hkxSpaceDesc')?.value.trim() || '';
+    const defaultChannel = document.getElementById('hkxInitChannel')?.value.trim() || 'general';
+    const channelTopic = document.getElementById('hkxInitTopic')?.value.trim() || '';
+    const dpFile = document.getElementById('hkxSpaceDpFile')?.files?.[0];
+    const username = localStorage.getItem('hoknex_user') || '';
+
+    if (!name) return alert('Enter a Space name.');
+
+    let dpUrl = '';
+    if (dpFile) {
+        const fd = new FormData();
+        fd.append('image', dpFile);
+        const upRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', body: fd });
+        if (upRes.ok) {
+            const upData = await upRes.json();
+            dpUrl = upData.url || '';
+        }
+    }
+
+    const res = await fetch(`${API_URL}/api/clubs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, description, username, dpUrl, defaultChannel, channelTopic })
+    });
+    if (res.ok) {
+        const created = await res.json();
+        activeClubId = created._id;
+        activeChannelId = created.channels?.[0]?._id || null;
+        localStorage.setItem('hoknex_active_club_id', activeClubId);
+        document.getElementById('hkxCreateSpaceModal')?.remove();
+        loadHoknexSpaces();
+        if (typeof fetchStats === 'function') fetchStats();
+    } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || 'Could not create Space.');
+    }
+}
+
+function openDiscoverAndInviteModal(tab = 'discover') {
+    document.getElementById('hkxDiscoverModal')?.remove();
+    const html = `
+        <div id="hkxDiscoverModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1200; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); border-radius:14px; padding:1.5rem; width:100%; max-width:460px; max-height:85vh; overflow-y:auto; box-shadow:var(--shadow-card); color:var(--ink);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h3 style="font-weight:800; font-size:1.08rem;">${tab === 'invite' ? '🎟️ Join Space by Invite Link / Code' : '🔎 Search & Join Hoknex Spaces'}</h3>
+                    <button onclick="document.getElementById('hkxDiscoverModal').remove()" class="action-btn" style="padding:3px 8px;">✕</button>
+                </div>
+
+                <div style="background:var(--canvas); border:1px solid var(--border); padding:10px; border-radius:9px; margin-bottom:12px;">
+                    <label style="font-size:0.72rem; font-weight:800; text-transform:uppercase; display:block; margin-bottom:5px;">Join with Invite Code or Space ID</label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="hkxInviteInput" placeholder="e.g. HKX-9A4B2C or Space ID" style="flex:1; padding:7px 10px; border:1px solid var(--border); border-radius:7px; font-weight:700; font-size:0.82rem; background:var(--paper); color:var(--ink); outline:none;">
+                        <button class="btn-create" style="padding:7px 12px; font-size:0.8rem;" onclick="joinSpaceByInviteCode()">Join</button>
+                    </div>
+                </div>
+
+                <input type="text" id="hkxDiscoverSearchInput" placeholder="Search Hoknex Spaces by name..." oninput="renderDiscoverSpaceResults(this.value)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-weight:600; font-size:0.84rem; background:var(--canvas); color:var(--ink); margin-bottom:10px; outline:none;">
+                <div id="hkxDiscoverResultsList" style="display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+    renderDiscoverSpaceResults('');
+}
+
+function renderDiscoverSpaceResults(query) {
+    const container = document.getElementById('hkxDiscoverResultsList');
+    if (!container) return;
+    const q = (query || '').toLowerCase().trim();
+    const meId = localStorage.getItem('hoknex_uid') || '';
+    const meUser = (localStorage.getItem('hoknex_user') || '').toLowerCase();
+
+    const matches = allHoknexClubsCache.filter(c => !q || (c.name || '').toLowerCase().includes(q) || (c.description || '').toLowerCase().includes(q));
+    if (matches.length === 0) {
+        container.innerHTML = `<p style="font-size:0.82rem; color:var(--ink-light); font-weight:600;">No matching Spaces found.</p>`;
+        return;
+    }
+
+    container.innerHTML = matches.map(club => {
+        const isMember = (club.members || []).some(m => (m._id ? m._id.toString() : m.toString()) === meId || (m.username || '').toLowerCase() === meUser);
+        const ownerUser = (club.owner?.username || '').toLowerCase();
+        const isOwner = ownerUser === meUser;
+        const alreadyJoined = isMember || isOwner;
+
+        return `
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; background:var(--canvas); border:1px solid var(--border); padding:9px 11px; border-radius:9px;">
+                <div style="min-width:0;">
+                    <div style="font-weight:800; font-size:0.88rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${club.name}</div>
+                    <div style="font-size:0.74rem; color:var(--ink-light); font-weight:600;">${club.description || 'Hoknex community space'} • ${(club.members || []).length} members</div>
+                </div>
+                ${alreadyJoined
+                    ? `<button class="action-btn" style="font-size:0.75rem; padding:5px 10px;" onclick="activeClubId='${club._id}'; document.getElementById('hkxDiscoverModal').remove(); loadHoknexSpaces();">Open</button>`
+                    : `<button class="btn-create" style="font-size:0.75rem; padding:5px 10px;" onclick="requestJoinHoknexSpace('${club._id}')">Request Join</button>`}
+            </div>
+        `;
+    }).join('');
+}
+
+async function joinSpaceByInviteCode() {
+    const code = document.getElementById('hkxInviteInput')?.value.trim();
+    const username = localStorage.getItem('hoknex_user') || '';
+    if (!code) return alert('Enter an invite code or Space ID.');
+    const res = await fetch(`${API_URL}/api/clubs/join-by-invite`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inviteCode: code, username })
+    });
+    const data = await res.json();
+    if (res.ok && data.club) {
+        activeClubId = data.club._id;
+        activeChannelId = data.club.channels?.[0]?._id || null;
+        localStorage.setItem('hoknex_active_club_id', activeClubId);
+        document.getElementById('hkxDiscoverModal')?.remove();
+        loadHoknexSpaces();
+    } else {
+        alert(data.error || 'Could not join with invite code.');
+    }
+}
+
+async function requestJoinHoknexSpace(clubId) {
+    const username = localStorage.getItem('hoknex_user') || '';
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/request-join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+    });
+    const data = await res.json();
+    alert(data.message || data.error || 'Done');
+}
+
+async function openHoknexSpace(clubId) {
+    activeClubId = clubId;
+    activeThreadMessage = null;
+    localStorage.setItem('hoknex_active_club_id', clubId);
+
+    try {
+        const currentUsername = localStorage.getItem('hoknex_user') || '';
+        const meRes = currentUsername ? await fetch(`${API_URL}/api/users/${encodeURIComponent(currentUsername)}`) : null;
+        let currentUserId = localStorage.getItem('hoknex_uid') || '';
+        if (meRes && meRes.ok) {
+            const meData = await meRes.json();
+            currentUserId = meData._id.toString();
+            localStorage.setItem('hoknex_uid', currentUserId);
+        }
+
+        const clubsRes = await fetch(`${API_URL}/api/clubs`);
+        const clubs = await clubsRes.json();
+        allHoknexClubsCache = Array.isArray(clubs) ? clubs : [];
+        const club = allHoknexClubsCache.find(c => c._id.toString() === clubId.toString());
+        if (!club) return;
+
+        activeClubMembers = club.members || [];
+        const validChannel = (club.channels || []).find(ch => ch._id.toString() === activeChannelId);
+        if (!validChannel && club.channels && club.channels.length > 0) {
+            activeChannelId = club.channels[0]._id.toString();
+            localStorage.setItem('hoknex_active_channel_id', activeChannelId);
+        }
+
+        const myRoleInfo = getMemberRoleInfo(club, currentUsername, currentUserId);
+        const canManageChannels = userHasPower(club, currentUsername, currentUserId, 'manage_channels');
+        const canManageRoles = userHasPower(club, currentUsername, currentUserId, 'manage_roles');
+        const isAdmin = myRoleInfo.role === 'Admin';
+        const inviteCode = club.inviteCode || club._id.toString().slice(-6).toUpperCase();
+
+        const workspace = document.getElementById('hoknexMainWorkspace');
+        if (!workspace) return;
+
+        workspace.innerHTML = `
+            <div id="hoknexChannelsPane" class="hkx-pane hkx-mobile-open" style="width: 215px; min-width: 215px; border-radius: 0; border-top: 0; border-bottom: 0; border-left: 0; background: var(--canvas); padding: 10px; gap: 8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    ${club.dpUrl
+                        ? `<img src="${club.dpUrl}" style="width:32px; height:32px; border-radius:9px; object-fit:cover; border:1px solid var(--border);">`
+                        : `<div style="width:32px; height:32px; border-radius:9px; background:var(--accent-blue); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800;">${(club.name || 'H').charAt(0).toUpperCase()}</div>`}
+                    <div style="min-width:0; flex:1;">
+                        <div style="font-weight:800; font-size:0.88rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${club.name}</div>
+                        <div style="font-size:0.68rem; font-weight:700; color:${myRoleInfo.badgeColor};">${myRoleInfo.role}</div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                    <button class="action-btn" style="flex:1; font-size:0.7rem; padding:4px 6px;" onclick="copyHoknexInviteLink('${inviteCode}')">🔗 Invite</button>
+                    <button class="action-btn" style="flex:1; font-size:0.7rem; padding:4px 6px;" onclick="openModApplicationModal('${club._id}')">🛡️ Mod App</button>
+                </div>
+
+                ${(isAdmin && ((club.joinRequests && club.joinRequests.length > 0) || (club.modApplications && club.modApplications.some(a => a.status === 'Pending')))) ? `
+                    <div style="background:rgba(245, 158, 11, 0.14); border:1px solid rgba(245, 158, 11, 0.4); border-radius:8px; padding:7px; font-size:0.72rem; font-weight:700;">
+                        <div>🔔 Admin Approvals</div>
+                        <div style="display:flex; gap:4px; margin-top:5px;">
+                            ${club.joinRequests?.length ? `<button class="action-btn" style="flex:1; font-size:0.68rem; padding:3px;" onclick="openRequestsModal('${club._id}')">Joins (${club.joinRequests.length})</button>` : ''}
+                            ${club.modApplications?.some(a => a.status === 'Pending') ? `<button class="action-btn" style="flex:1; font-size:0.68rem; padding:3px;" onclick="openModReviewModal('${club._id}')">Mods</button>` : ''}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                    <span style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:var(--ink-light);">Channels</span>
+                    ${canManageChannels ? `<button class="action-btn" style="font-size:0.68rem; padding:2px 6px;" onclick="openCreateChannelDrawerModal('${club._id}')">+ Channel</button>` : ''}
+                </div>
+
+                <div id="hkxChannelsList" style="display:flex; flex-direction:column; gap:4px; flex:1; overflow-y:auto;">
+                    ${(club.channels || []).map(ch => {
+                        const activeCh = activeChannelId === ch._id.toString();
+                        return `
+                            <div style="display:flex; align-items:center; gap:3px;">
+                                <button onclick="selectHoknexChannel('${club._id}', '${ch._id}')" class="action-btn" style="flex:1; text-align:left; font-size:0.8rem; padding:6px 8px; border-radius:7px; background:${activeCh ? 'rgba(59,130,246,0.16)' : 'var(--paper)'}; color:${activeCh ? 'var(--accent-blue)' : 'var(--ink)'}; border-color:${activeCh ? 'var(--accent-blue)' : 'var(--border)'};">
+                                    # ${ch.name}
+                                </button>
+                                ${canManageChannels && (club.channels || []).length > 1 ? `<button onclick="deleteHoknexChannel('${club._id}', '${ch._id}')" title="Delete Channel" style="background:none; border:none; color:var(--accent-coral); font-size:0.74rem; cursor:pointer; padding:2px;">✕</button>` : ''}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                <div style="border-top:1px solid var(--border); padding-top:7px; display:flex; flex-direction:column; gap:5px;">
+                    ${isAdmin
+                        ? `<button class="action-btn" style="background:rgba(239,68,68,0.12); color:var(--accent-coral); width:100%; font-size:0.72rem; padding:6px;" onclick="openDeleteServerModal('${club._id}', '${(club.name || '').replace(/'/g, "\\'")}')">🗑️ Delete Space</button>`
+                        : `<button class="action-btn" style="width:100%; font-size:0.72rem; padding:6px;" onclick="leaveHoknexSpace('${club._id}')">🚪 Leave Space</button>`}
+                </div>
+            </div>
+
+            <div id="hkxChatColumn" style="flex:1; display:flex; flex-direction:column; height:100%; min-width:0; position:relative; background:var(--paper);">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 12px; border-bottom:1px solid var(--border); background:var(--canvas); flex-wrap:wrap;">
+                    <div style="min-width:0;">
+                        <div style="font-weight:800; font-size:0.88rem;" id="hkxActiveChannelName"># channel</div>
+                        <div style="font-size:0.7rem; color:var(--ink-light); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="hkxActiveChannelTopic">Live Hoknex channel</div>
+                    </div>
+                    <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
+                        <button onclick="toggleHoknexFullScreen()" id="hkxFullScreenBtn" class="action-btn" style="font-size:0.72rem; padding:4px 8px;">⛶ Full</button>
+                        <select id="hkxWallpaperSelect" onchange="applyPersistentSpaceWallpaper(this.value)" style="padding:4px 7px; border-radius:6px; border:1px solid var(--border); font-size:0.72rem; font-weight:700; background:var(--paper); color:var(--ink); outline:none;">
+                            <option value="">🖼️ Wallpaper</option>
+                            <option value="url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80')">Cyberpunk Neon</option>
+                            <option value="url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=80')">Tropical Beach</option>
+                            <option value="url('https://images.unsplash.com/photo-1542224566-6e85f2e6772f?w=1200&auto=format&fit=crop&q=80')">Misty Pine Forest</option>
+                            <option value="url('https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1200&auto=format&fit=crop&q=80')">Abstract Purple</option>
+                            <option value="url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&auto=format&fit=crop&q=80')">Starry Night Sky</option>
+                            <option value="url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1200&auto=format&fit=crop&q=80')">Cosmic Galaxy</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="hkxMessagesStream" style="flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px;"></div>
+
+                <div id="hkxThreadReplyBar" style="display:none; justify-content:space-between; align-items:center; padding:6px 12px; background:rgba(59,130,246,0.12); border-top:1px solid var(--border); font-size:0.76rem; font-weight:700; color:var(--accent-blue);">
+                    <span id="hkxThreadReplyLabel">Replying in thread...</span>
+                    <button onclick="clearHoknexThreadReply()" style="background:none; border:none; color:var(--accent-coral); font-weight:800; cursor:pointer;">✕</button>
+                </div>
+
+                <div id="hkxStickerEmojiPopover" style="display:none; position:absolute; bottom:62px; left:10px; width:310px; max-width:calc(100% - 20px); max-height:260px; overflow-y:auto; background:var(--paper); border:1px solid var(--border); border-radius:10px; padding:10px; box-shadow:var(--shadow-card); z-index:45;">
+                    <div style="font-size:0.68rem; font-weight:800; text-transform:uppercase; color:var(--ink-light); margin-bottom:5px;">Emojis</div>
+                    <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; font-size:1.1rem; text-align:center; cursor:pointer; margin-bottom:8px;">
+                        <span onclick="appendHoknexEmoji('😀')">😀</span><span onclick="appendHoknexEmoji('😂')">😂</span><span onclick="appendHoknexEmoji('🔥')">🔥</span><span onclick="appendHoknexEmoji('❤️')">❤️</span><span onclick="appendHoknexEmoji('🚀')">🚀</span><span onclick="appendHoknexEmoji('👍')">👍</span><span onclick="appendHoknexEmoji('🎉')">🎉</span>
+                        <span onclick="appendHoknexEmoji('💻')">💻</span><span onclick="appendHoknexEmoji('🎮')">🎮</span><span onclick="appendHoknexEmoji('⚡')">⚡</span><span onclick="appendHoknexEmoji('💡')">💡</span><span onclick="appendHoknexEmoji('😎')">😎</span><span onclick="appendHoknexEmoji('🙌')">🙌</span><span onclick="appendHoknexEmoji('✅')">✅</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                        <span style="font-size:0.68rem; font-weight:800; text-transform:uppercase; color:var(--ink-light);">Stickers (Google / Tenor)</span>
+                        <input type="text" id="hkxStickerSearch" placeholder="Search sticker..." onkeydown="if(event.key==='Enter') searchHoknexStickers(this.value)" style="padding:3px 7px; border:1px solid var(--border); border-radius:5px; font-size:0.72rem; width:115px; background:var(--canvas); color:var(--ink); outline:none;">
+                    </div>
+                    <div id="hkxStickerGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:6px;"></div>
+                </div>
+
+                <div style="padding:8px 10px; border-top:1px solid var(--border); display:flex; gap:6px; align-items:center; background:var(--canvas);">
+                    <button class="action-btn" onclick="toggleHoknexStickerPopover()" style="padding:7px 9px; font-size:0.88rem;" title="Emojis & Stickers">✨</button>
+                    <label for="hkxChatImageInput" style="cursor:pointer; background:var(--paper); color:var(--ink); padding:7px 10px; border-radius:7px; border:1px solid var(--border); font-weight:700; font-size:0.84rem;" title="Upload Image">📷</label>
+                    <input type="file" id="hkxChatImageInput" accept="image/*" style="display:none;" onchange="showHoknexSelectedFile(this)">
+                    <span id="hkxSelectedFileLabel" style="font-size:0.68rem; font-weight:600; color:var(--ink-light); max-width:75px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
+                    <input type="text" id="hkxMessageInput" placeholder="Write message or start thread..." style="flex:1; min-width:0; padding:8px 11px; border:1px solid var(--border); border-radius:7px; font-weight:600; font-size:0.86rem; background:var(--paper); color:var(--ink); outline:none;" onkeypress="if(event.key==='Enter') sendHoknexChannelMessage()">
+                    <button class="btn-create" onclick="sendHoknexChannelMessage()" style="padding:8px 14px; font-size:0.82rem; border-radius:7px;">Send</button>
+                </div>
+            </div>
+
+            <div id="hoknexMembersPane" class="hkx-pane" style="width: 215px; min-width: 215px; border-radius: 0; border-top: 0; border-bottom: 0; border-right: 0; background: var(--canvas); padding: 10px; gap: 8px; overflow-y:auto;">
+                <div style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--ink-light);">Members (${(club.members || []).length})</div>
+                <div id="hkxMembersList" style="display:flex; flex-direction:column; gap:7px;">
+                    ${(club.members || []).map(m => {
+                        const mName = m.name || m.username || 'Member';
+                        const mUser = m.username || '';
+                        const mDp = m.dpUrl || '';
+                        const rInfo = getMemberRoleInfo(club, mUser, m._id);
+                        const isSelf = currentUsername && mUser.toLowerCase() === currentUsername.toLowerCase();
+                        const activityLabel = isSelf ? getCurrentHoknexActivity() : (m.activityStatus || '🟢 Active');
+
+                        const avatarEl = mDp
+                            ? `<img src="${mDp}" alt="${mName}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid var(--border); flex-shrink:0;">`
+                            : `<div style="width:28px; height:28px; border-radius:50%; background:var(--accent-purple); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:800; flex-shrink:0;">${mName.charAt(0).toUpperCase()}</div>`;
+
+                        return `
+                            <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; background:var(--paper); border:1px solid var(--border); padding:6px 8px; border-radius:8px;">
+                                <div onclick="viewUserProfile('${mUser}')" style="display:flex; align-items:center; gap:7px; min-width:0; flex:1; cursor:pointer;">
+                                    ${avatarEl}
+                                    <div style="min-width:0; flex:1;">
+                                        <div style="font-size:0.8rem; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${mName}</div>
+                                        <div style="font-size:0.66rem; font-weight:700; color:var(--ink-light); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${activityLabel}</div>
+                                        <span style="display:inline-block; font-size:0.62rem; font-weight:800; color:${rInfo.badgeColor};">${rInfo.role}</span>
+                                    </div>
+                                </div>
+                                ${canManageRoles && !isSelf ? `<button onclick="openRoleAssignModal('${club._id}', '${mUser}', '${mName.replace(/'/g, "\\'")}')" title="Assign Role & Powers" class="action-btn" style="font-size:0.66rem; padding:3px 6px;">Role</button>` : ''}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+
+        const savedWall = localStorage.getItem(`hoknex_space_wallpaper_${clubId}`);
+        const streamEl = document.getElementById('hkxMessagesStream');
+        const wallSelect = document.getElementById('hkxWallpaperSelect');
+        if (streamEl && savedWall) {
+            streamEl.style.background = `${savedWall} no-repeat center center`;
+            streamEl.style.backgroundSize = 'cover';
+            if (wallSelect) wallSelect.value = savedWall;
+        }
+
+        renderHoknexStickerGrid(HOKNEX_STICKER_PACK);
+        if (activeChannelId) renderHoknexChannelMessages(club, activeChannelId, currentUsername, currentUserId);
+    } catch (e) {
+        console.error('Error opening Hoknex space:', e);
+    }
+}
+
+function selectHoknexChannel(clubId, channelId) {
+    activeChannelId = channelId.toString();
+    activeThreadMessage = null;
+    localStorage.setItem('hoknex_active_channel_id', activeChannelId);
+    openHoknexSpace(clubId);
+}
+
+function openCreateChannelDrawerModal(clubId) {
+    document.getElementById('hkxCreateChannelModal')?.remove();
+    const html = `
+        <div id="hkxCreateChannelModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1200; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); border-radius:12px; padding:1.4rem; width:100%; max-width:370px; box-shadow:var(--shadow-card); color:var(--ink);">
+                <h3 style="font-weight:800; font-size:1.02rem; margin-bottom:10px;"># New Hoknex Channel</h3>
+                <input type="text" id="hkxNewChName" placeholder="Channel name (e.g. dev-chat)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:8px; outline:none;">
+                <input type="text" id="hkxNewChTopic" placeholder="Channel topic / description" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:12px; outline:none;">
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-create" style="flex:1; padding:8px;" onclick="submitCreateHoknexChannel('${clubId}')">Create</button>
+                    <button class="action-btn" style="flex:1; padding:8px;" onclick="document.getElementById('hkxCreateChannelModal').remove()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function submitCreateHoknexChannel(clubId) {
+    const channelName = document.getElementById('hkxNewChName')?.value.trim();
+    const topic = document.getElementById('hkxNewChTopic')?.value.trim();
     if (!channelName) return alert('Enter a channel name');
     const res = await fetch(`${API_URL}/api/clubs/${clubId}/channels`, {
         method: 'POST',
@@ -3095,223 +3264,184 @@ async function submitCreateChannelModal(clubId) {
     if (res.ok) {
         const updated = await res.json();
         const newest = updated.channels?.[updated.channels.length - 1];
-        if (newest?._id) activeChannelId = newest._id.toString();
-        document.getElementById('createChannelModal')?.remove();
-        openDiscordClub(clubId);
+        if (newest?._id) {
+            activeChannelId = newest._id.toString();
+            localStorage.setItem('hoknex_active_channel_id', activeChannelId);
+        }
+        document.getElementById('hkxCreateChannelModal')?.remove();
+        openHoknexSpace(clubId);
     }
 }
 
-function setReplyTarget(senderName, snippet) {
-    activeReplyTarget = { senderName, snippet: (snippet || '').slice(0, 60) };
-    const bar = document.getElementById('replyContextBar');
-    const txt = document.getElementById('replyContextText');
-    if (bar && txt) {
+async function deleteHoknexChannel(clubId, channelId) {
+    if (!confirm('Delete this channel?')) return;
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/channels/${channelId}`, { method: 'DELETE' });
+    if (res.ok) {
+        if (activeChannelId === channelId.toString()) activeChannelId = null;
+        openHoknexSpace(clubId);
+    }
+}
+
+function copyHoknexInviteLink(inviteCode) {
+    const shareText = `${window.location.origin}/feed?invite=${inviteCode} (Code: ${inviteCode})`;
+    if (navigator.clipboard) navigator.clipboard.writeText(shareText).catch(() => {});
+    alert(`Hoknex Invite Code: ${inviteCode}\nShare this code so members can join via "Join Link".`);
+}
+
+function applyPersistentSpaceWallpaper(val) {
+    if (!activeClubId) return;
+    const streamEl = document.getElementById('hkxMessagesStream');
+    if (!streamEl) return;
+    if (!val) {
+        localStorage.removeItem(`hoknex_space_wallpaper_${activeClubId}`);
+        streamEl.style.background = 'transparent';
+        streamEl.style.backgroundSize = 'auto';
+        return;
+    }
+    localStorage.setItem(`hoknex_space_wallpaper_${activeClubId}`, val);
+    streamEl.style.background = `${val} no-repeat center center`;
+    streamEl.style.backgroundSize = 'cover';
+}
+
+function toggleHoknexFullScreen() {
+    isHubFullScreen = !isHubFullScreen;
+    const root = document.getElementById('hoknexHubRoot');
+    const btn = document.getElementById('hkxFullScreenBtn');
+    if (!root) return;
+    if (isHubFullScreen) {
+        root.style.position = 'fixed';
+        root.style.top = '0';
+        root.style.left = '0';
+        root.style.width = '100vw';
+        root.style.height = '100vh';
+        root.style.zIndex = '999';
+        root.style.padding = '10px';
+        root.style.background = 'var(--canvas)';
+        if (btn) btn.innerText = '🗗 Exit';
+    } else {
+        root.style.position = 'relative';
+        root.style.width = '100%';
+        root.style.height = 'calc(100vh - 125px)';
+        root.style.zIndex = '1';
+        root.style.padding = '0';
+        root.style.background = 'transparent';
+        if (btn) btn.innerText = '⛶ Full';
+    }
+}
+
+function toggleHoknexStickerPopover() {
+    const pop = document.getElementById('hkxStickerEmojiPopover');
+    if (pop) pop.style.display = pop.style.display === 'block' ? 'none' : 'block';
+}
+
+function appendHoknexEmoji(em) {
+    const inp = document.getElementById('hkxMessageInput');
+    if (inp) { inp.value += em; inp.focus(); }
+    toggleHoknexStickerPopover();
+}
+
+function renderHoknexStickerGrid(items) {
+    const grid = document.getElementById('hkxStickerGrid');
+    if (!grid) return;
+    grid.innerHTML = items.map(st => `
+        <img src="${st.url}" alt="${st.label || 'Sticker'}" onclick="sendHoknexSticker('${st.url}')" title="${st.label || 'Send sticker'}" style="width:100%; height:54px; object-fit:contain; background:var(--canvas); border:1px solid var(--border); border-radius:7px; padding:4px; cursor:pointer;">
+    `).join('');
+}
+
+async function searchHoknexStickers(query) {
+    const q = (query || '').trim();
+    if (!q) return renderHoknexStickerGrid(HOKNEX_STICKER_PACK);
+    if (!HOKNEX_TENOR_KEY) {
+        const filtered = HOKNEX_STICKER_PACK.filter(s => (s.label || '').toLowerCase().includes(q.toLowerCase()));
+        return renderHoknexStickerGrid(filtered.length ? filtered : HOKNEX_STICKER_PACK);
+    }
+    try {
+        const url = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(q)}&key=${encodeURIComponent(HOKNEX_TENOR_KEY)}&searchfilter=sticker&limit=12`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const results = (data.results || []).map(r => ({
+            label: r.content_description || 'Sticker',
+            url: r.media_formats?.gif_transparent?.url || r.media_formats?.tinygif_transparent?.url || r.media_formats?.gif?.url || ''
+        })).filter(x => x.url);
+        renderHoknexStickerGrid(results.length ? results : HOKNEX_STICKER_PACK);
+    } catch (e) {
+        renderHoknexStickerGrid(HOKNEX_STICKER_PACK);
+    }
+}
+
+async function sendHoknexSticker(stickerUrl) {
+    toggleHoknexStickerPopover();
+    await postHoknexMessagePayload({ text: 'Sent a sticker', stickerUrl });
+}
+
+function showHoknexSelectedFile(input) {
+    const lbl = document.getElementById('hkxSelectedFileLabel');
+    if (lbl && input.files && input.files[0]) lbl.innerText = input.files[0].name;
+}
+
+function startHoknexThread(messageId, senderName, snippet) {
+    activeThreadMessage = { id: messageId, senderName, snippet: (snippet || '').slice(0, 65) };
+    const bar = document.getElementById('hkxThreadReplyBar');
+    const lbl = document.getElementById('hkxThreadReplyLabel');
+    if (bar && lbl) {
         bar.style.display = 'flex';
-        txt.innerText = `↩ Replying to @${senderName}: "${activeReplyTarget.snippet}"`;
+        lbl.innerText = `🧵 Thread reply to ${senderName}: "${activeThreadMessage.snippet}"`;
     }
-    document.getElementById('discordMessageInput')?.focus();
+    document.getElementById('hkxMessageInput')?.focus();
 }
 
-function clearReplyTarget() {
-    activeReplyTarget = null;
-    const bar = document.getElementById('replyContextBar');
+function clearHoknexThreadReply() {
+    activeThreadMessage = null;
+    const bar = document.getElementById('hkxThreadReplyBar');
     if (bar) bar.style.display = 'none';
 }
 
-function toggleClubEmojiPicker() {
-    const picker = document.getElementById('clubEmojiPicker');
-    if (picker) picker.style.display = picker.style.display === 'block' ? 'none' : 'block';
-}
-
-function insertClubEmoji(symbol) {
-    const input = document.getElementById('discordMessageInput');
-    if (input) { input.value += symbol; input.focus(); }
-    toggleClubEmojiPicker();
-}
-
-function changeClubWallpaper(val) {
-    if (!activeClubId) return;
-    const chatArea = document.getElementById('clubChatArea');
-    if (!chatArea) return;
-
-    if (!val) {
-        localStorage.removeItem(`hoknex_club_wallpaper_${activeClubId}`);
-        chatArea.style.background = 'var(--paper)';
-        chatArea.style.backgroundSize = 'auto';
-        chatArea.style.backgroundPosition = 'initial';
-        return;
-    }
-
-    localStorage.setItem(`hoknex_club_wallpaper_${activeClubId}`, val);
-    chatArea.style.background = `${val} no-repeat center center`;
-    chatArea.style.backgroundSize = 'cover';
-}
-
-async function handleMentionInput(e) {
-    const val = e.target.value;
-    const popup = document.getElementById('mentionPopup');
-    if (!popup) return;
-
-    const lastAtIndex = val.lastIndexOf('@');
-    if (lastAtIndex !== -1 && (lastAtIndex === 0 || val[lastAtIndex - 1] === ' ')) {
-        const query = val.slice(lastAtIndex + 1).toLowerCase();
-        const matches = activeClubMembers.filter(u => (u.username && u.username.toLowerCase().includes(query)) || (u.name && u.name.toLowerCase().includes(query)));
-
-        if (matches.length > 0) {
-            popup.style.display = 'block';
-            popup.innerHTML = matches.map(u => `
-                <div onclick="selectMention('${u.username}')" style="padding:8px 10px; cursor:pointer; font-size:0.8rem; font-weight:700; border-bottom:1px solid var(--border);" onmouseover="this.style.background='var(--canvas)'" onmouseout="this.style.background='var(--paper)'">
-                    ${u.name} <span style="color:var(--ink-light); font-size:0.72rem;">@${u.username}</span>
-                </div>
-            `).join('');
-        } else {
-            popup.style.display = 'none';
-        }
-    } else {
-        popup.style.display = 'none';
-    }
-}
-
-function selectMention(username) {
-    const input = document.getElementById('discordMessageInput');
-    const popup = document.getElementById('mentionPopup');
-    if (!input || !popup) return;
-    const lastAtIndex = input.value.lastIndexOf('@');
-    input.value = input.value.slice(0, lastAtIndex) + `@${username} `;
-    popup.style.display = 'none';
-    input.focus();
-}
-
-async function requestJoinClub(clubId) {
-    const username = localStorage.getItem('hoknex_user');
-    if (!username) return alert('You must be logged in.');
-    const res = await fetch(`${API_URL}/api/clubs/${clubId}/request-join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username })
-    });
-    const data = await res.json();
-    if (res.ok) { alert(data.message || 'Join request sent!'); openDiscordClub(clubId); }
-    else { alert(data.error || 'Failed to send request.'); }
-}
-
-function updateDiscordMediaName(input) {
-    const span = document.getElementById('discordMediaName');
-    if (span && input.files && input.files[0]) span.innerText = input.files[0].name;
-}
-
-async function openRequestsModal(clubId) {
-    const res = await fetch(`${API_URL}/api/clubs`);
-    const clubs = await res.json();
-    const club = clubs.find(c => c._id.toString() === clubId.toString());
-    if (!club || !club.joinRequests || club.joinRequests.length === 0) return alert('No pending requests.');
-    document.getElementById('reqModal')?.remove();
-    const modalHtml = `
-        <div id="reqModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter: blur(4px); display:flex; align-items:center; justify-content:center; z-index:1100; padding:1rem;">
-            <div style="background:var(--paper); border:1px solid var(--border); padding:1.75rem; border-radius:12px; width:100%; max-width:420px; box-shadow:var(--shadow-card); color:var(--ink);">
-                <h3 style="margin-bottom:1rem; font-weight:800; font-size:1.1rem;">Pending Server Requests 🛡️</h3>
-                <div style="display:flex; flex-direction:column; gap:10px; max-height:300px; overflow-y:auto;">
-                    ${club.joinRequests.map(u => `
-                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--canvas); padding:10px; border:1px solid var(--border); border-radius:8px;">
-                            <div><strong>${u.name || 'User'}</strong><div style="font-size:0.75rem; color:var(--ink-light);">@${u.username || 'user'}</div></div>
-                            <div style="display:flex; gap:6px;">
-                                <button class="btn-create" style="padding:4px 10px; font-size:0.78rem; background:#10b981;" onclick="handleJoinRequest('${club._id}', '${u._id || u}', 'accept')">Approve ✅</button>
-                                <button class="action-btn" style="color:var(--accent-coral);" onclick="handleJoinRequest('${club._id}', '${u._id || u}', 'reject')">Deny ❌</button>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-                <button class="action-btn" style="margin-top:1.25rem; width:100%; background:var(--paper); color:var(--ink);" onclick="document.getElementById('reqModal').remove()">Close</button>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-}
-
-async function handleJoinRequest(clubId, userId, action) {
-    const adminUsername = localStorage.getItem('hoknex_user');
-    const res = await fetch(`${API_URL}/api/clubs/${clubId}/handle-request`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminUsername, userId, action })
-    });
-    if (res.ok) {
-        alert(`Request ${action}ed successfully!`);
-        document.getElementById('reqModal')?.remove();
-        openDiscordClub(clubId);
-        if (typeof fetchNotifications === 'function') fetchNotifications();
-    }
-}
-
-async function openDiscordChannel(channelId) {
-    activeChannelId = channelId.toString();
-    activeChannelSearchQuery = '';
-    const res = await fetch(`${API_URL}/api/clubs`);
-    const clubs = await res.json();
-    const club = clubs.find(c => c._id.toString() === activeClubId.toString());
-    if (club) openDiscordClub(club._id);
-}
-
-async function createDiscordChannel(clubId) {
-    const channelNameInput = document.getElementById('newChannelName');
-    if (!channelNameInput) return;
-    const channelName = channelNameInput.value.trim();
-    if (!channelName) return alert('Enter channel name');
-    const res = await fetch(`${API_URL}/api/clubs/${clubId}/channels`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ channelName })
-    });
-    if (res.ok) openDiscordClub(clubId);
-}
-
-function expandSlashCommands(rawText) {
-    const trimmed = rawText.trim();
-    if (trimmed === '/shrug') return '¯\\_(ツ)_/¯';
-    if (trimmed === '/fire') return '🔥🔥🔥 Ship it!';
-    if (trimmed.startsWith('/status ')) return `📌 Status Update: ${trimmed.slice(8).trim()}`;
-    return rawText;
-}
-
-async function sendDiscordMessage() {
-    const input = document.getElementById('discordMessageInput');
-    const mediaInput = document.getElementById('discordMediaFile');
+async function sendHoknexChannelMessage() {
+    const input = document.getElementById('hkxMessageInput');
+    const fileInput = document.getElementById('hkxChatImageInput');
     if (!input) return;
-    let text = expandSlashCommands(input.value.trim());
-    const mediaFile = mediaInput && mediaInput.files ? mediaInput.files[0] : null;
-    const username = localStorage.getItem('hoknex_user');
+    const text = input.value.trim();
+    const mediaFile = fileInput?.files?.[0] || null;
     if (!text && !mediaFile) return;
-    if (!activeClubId || !activeChannelId) return alert('Please select a channel first!');
 
+    await postHoknexMessagePayload({ text, mediaFile });
+    input.value = '';
+    if (fileInput) fileInput.value = '';
+    const lbl = document.getElementById('hkxSelectedFileLabel');
+    if (lbl) lbl.innerText = '';
+    clearHoknexThreadReply();
+}
+
+async function postHoknexMessagePayload({ text = '', mediaFile = null, stickerUrl = '' }) {
+    if (!activeClubId || !activeChannelId) return alert('Select a channel first.');
+    const username = localStorage.getItem('hoknex_user') || '';
     const formData = new FormData();
-    formData.append('text', text || 'Shared an image 📸');
-    formData.append('username', username || '');
-    if (activeReplyTarget) {
-        formData.append('replyTo', `${activeReplyTarget.senderName}: ${activeReplyTarget.snippet}`);
-    }
+    formData.append('text', text || (mediaFile ? 'Shared an image' : ''));
+    formData.append('username', username);
+    formData.append('activityStatus', getCurrentHoknexActivity());
+    if (stickerUrl) formData.append('stickerUrl', stickerUrl);
     if (mediaFile) formData.append('media', mediaFile);
+    if (activeThreadMessage) {
+        formData.append('parentMessageId', activeThreadMessage.id);
+        formData.append('replyTo', `${activeThreadMessage.senderName}: ${activeThreadMessage.snippet}`);
+    }
 
     const res = await fetch(`${API_URL}/api/clubs/${activeClubId}/channels/${activeChannelId}/messages`, {
         method: 'POST',
         body: formData
     });
     if (res.ok) {
-        input.value = '';
-        clearReplyTarget();
-        if (mediaInput) mediaInput.value = '';
-        const nameSpan = document.getElementById('discordMediaName');
-        if (nameSpan) nameSpan.innerText = '';
-
         const clubsRes = await fetch(`${API_URL}/api/clubs`);
         const clubs = await clubsRes.json();
-        allLoadedClubs = Array.isArray(clubs) ? clubs : [];
-        const updatedClub = allLoadedClubs.find(c => c._id.toString() === activeClubId.toString());
-        if (updatedClub) loadDiscordMessages(updatedClub, activeChannelId);
+        allHoknexClubsCache = Array.isArray(clubs) ? clubs : [];
+        const updatedClub = allHoknexClubsCache.find(c => c._id.toString() === activeClubId.toString());
+        const meId = localStorage.getItem('hoknex_uid') || '';
+        if (updatedClub) renderHoknexChannelMessages(updatedClub, activeChannelId, username, meId);
     }
 }
 
-async function toggleMessageReaction(messageId, emoji) {
-    const username = localStorage.getItem('hoknex_user') || 'Guest';
+async function reactToHoknexMessage(messageId, emoji) {
+    const username = localStorage.getItem('hoknex_user') || 'Member';
     if (!activeClubId || !activeChannelId || !messageId) return;
     const res = await fetch(`${API_URL}/api/clubs/${activeClubId}/channels/${activeChannelId}/messages/${messageId}/react`, {
         method: 'POST',
@@ -3321,127 +3451,264 @@ async function toggleMessageReaction(messageId, emoji) {
     if (res.ok) {
         const clubsRes = await fetch(`${API_URL}/api/clubs`);
         const clubs = await clubsRes.json();
-        allLoadedClubs = Array.isArray(clubs) ? clubs : [];
-        const updatedClub = allLoadedClubs.find(c => c._id.toString() === activeClubId.toString());
-        if (updatedClub) loadDiscordMessages(updatedClub, activeChannelId);
+        allHoknexClubsCache = Array.isArray(clubs) ? clubs : [];
+        const updatedClub = allHoknexClubsCache.find(c => c._id.toString() === activeClubId.toString());
+        const meId = localStorage.getItem('hoknex_uid') || '';
+        if (updatedClub) renderHoknexChannelMessages(updatedClub, activeChannelId, username, meId);
     }
 }
 
-function filterActiveChannelMessages(query) {
-    activeChannelSearchQuery = (query || '').toLowerCase().trim();
-    const club = allLoadedClubs.find(c => c._id.toString() === activeClubId?.toString());
-    if (club && activeChannelId) loadDiscordMessages(club, activeChannelId);
+async function deleteHoknexMessage(messageId) {
+    if (!activeClubId || !activeChannelId || !messageId) return;
+    const res = await fetch(`${API_URL}/api/clubs/${activeClubId}/channels/${activeChannelId}/messages/${messageId}`, { method: 'DELETE' });
+    if (res.ok) {
+        const username = localStorage.getItem('hoknex_user') || '';
+        const meId = localStorage.getItem('hoknex_uid') || '';
+        const clubsRes = await fetch(`${API_URL}/api/clubs`);
+        const clubs = await clubsRes.json();
+        allHoknexClubsCache = Array.isArray(clubs) ? clubs : [];
+        const updatedClub = allHoknexClubsCache.find(c => c._id.toString() === activeClubId.toString());
+        if (updatedClub) renderHoknexChannelMessages(updatedClub, activeChannelId, username, meId);
+    }
 }
 
-async function loadDiscordMessages(club, channelId) {
+function renderHoknexChannelMessages(club, channelId, currentUsername = '', currentUserId = '') {
     const channel = (club.channels || []).find(ch => ch._id.toString() === channelId.toString());
-    const chatContainer = document.getElementById('discordChatContainer');
-    if (!channel || !chatContainer) return;
+    const stream = document.getElementById('hkxMessagesStream');
+    if (!channel || !stream) return;
 
-    const headerEl = document.getElementById('activeChannelHeader');
-    const topicEl = document.getElementById('activeChannelTopic');
-    if (headerEl) headerEl.innerText = `# ${channel.name}`;
-    if (topicEl) topicEl.innerText = channel.topic || 'Workspace channel • Live thread & mentions enabled';
+    const chNameEl = document.getElementById('hkxActiveChannelName');
+    const chTopicEl = document.getElementById('hkxActiveChannelTopic');
+    if (chNameEl) chNameEl.innerText = `# ${channel.name}`;
+    if (chTopicEl) chTopicEl.innerText = channel.topic || 'Hoknex live channel';
 
-    let messages = channel.messages || [];
-    if (activeChannelSearchQuery) {
-        messages = messages.filter(m =>
-            (m.text || '').toLowerCase().includes(activeChannelSearchQuery) ||
-            (m.senderName || '').toLowerCase().includes(activeChannelSearchQuery)
-        );
-    }
+    const myRole = getMemberRoleInfo(club, currentUsername, currentUserId).role;
+    const messages = channel.messages || [];
 
     if (messages.length === 0) {
-        chatContainer.innerHTML = `<p style="text-align:center; font-size:0.85rem; font-weight:600; color:var(--ink-light); margin-top:2rem;">No messages yet in #${channel.name}. Start the conversation!</p>`;
+        stream.innerHTML = `<p style="text-align:center; font-size:0.84rem; font-weight:600; color:var(--ink-light); margin-top:2rem;">No messages yet in #${channel.name}.</p>`;
         return;
     }
 
-    chatContainer.innerHTML = messages.map(m => {
+    stream.innerHTML = messages.map(m => {
         let raw = m.text || '';
-        let replyQuoteHtml = '';
+        let quoteHtml = '';
         if (raw.startsWith('> Replying to ')) {
-            const newlineIdx = raw.indexOf('\n');
-            if (newlineIdx > -1) {
-                const quoteLine = raw.slice(2, newlineIdx);
-                raw = raw.slice(newlineIdx + 1);
-                replyQuoteHtml = `<div style="font-size:0.74rem; color:var(--ink-light); background:var(--canvas); border-left:3px solid var(--accent-blue); padding:4px 8px; border-radius:4px; margin-bottom:5px;">${quoteLine}</div>`;
+            const nl = raw.indexOf('\n');
+            if (nl > -1) {
+                quoteHtml = `<div style="font-size:0.72rem; background:var(--canvas); border-left:3px solid var(--accent-blue); padding:3px 8px; border-radius:4px; margin-bottom:4px; color:var(--ink-light);">${raw.slice(2, nl)}</div>`;
+                raw = raw.slice(nl + 1);
             }
         }
 
-        let formattedText = '';
-        if (raw.includes('[Media]:')) {
+        let bodyHtml = '';
+        if (raw.includes('[Sticker]:')) {
+            const parts = raw.split('[Sticker]:');
+            const sUrl = parts[1].trim();
+            bodyHtml = `<img src="${sUrl}" alt="Sticker" style="width:96px; height:96px; object-fit:contain; display:block;">`;
+        } else if (raw.includes('[Media]:')) {
             const parts = raw.split('[Media]:');
-            const imgUrl = parts[1].trim();
-            const caption = parts[0].trim();
-            formattedText = `
-                ${caption ? `<p style="margin-bottom:6px;">${caption}</p>` : ''}
-                <a href="${imgUrl}" target="_blank">
-                    <img src="${imgUrl}" style="max-width:220px; max-height:220px; border-radius:8px; border:1px solid var(--border); display:block; object-fit:cover;">
-                </a>
-            `;
+            const mUrl = parts[1].trim();
+            const cap = parts[0].trim();
+            bodyHtml = `${cap ? `<div style="margin-bottom:5px;">${cap}</div>` : ''}<a href="${mUrl}" target="_blank"><img src="${mUrl}" style="max-width:220px; max-height:220px; border-radius:8px; border:1px solid var(--border); display:block; object-fit:cover;"></a>`;
         } else {
-            formattedText = raw
-                .replace(/@([a-zA-Z0-9_]+)/g, '<span style="background:rgba(59, 130, 246, 0.15); color:var(--accent-blue); padding:1px 6px; border-radius:4px; font-weight:700;">@$1</span>')
+            bodyHtml = raw
+                .replace(/@([a-zA-Z0-9_]+)/g, '<span style="background:rgba(59,130,246,0.16); color:var(--accent-blue); padding:1px 5px; border-radius:4px; font-weight:700;">@$1</span>')
                 .replace(/#([a-zA-Z0-9_]+)/g, '<span style="color:var(--accent-purple); font-weight:700;">#$1</span>');
         }
 
+        const replies = m.threadReplies || [];
+        const threadHtml = replies.length > 0
+            ? `<div style="margin-top:6px; padding-left:10px; border-left:2px solid var(--accent-purple); display:flex; flex-direction:column; gap:4px;">
+                ${replies.map(tr => `<div style="font-size:0.76rem; background:var(--canvas); padding:4px 8px; border-radius:6px;"><b>${tr.senderName}:</b> ${tr.text}</div>`).join('')}
+               </div>`
+            : '';
+
         const reactionsHtml = (m.reactions || []).map(r => `
-            <button onclick="toggleMessageReaction('${m._id || ''}', '${r.emoji}')" style="background:var(--canvas); border:1px solid var(--border); border-radius:12px; padding:2px 7px; font-size:0.72rem; font-weight:700; cursor:pointer; color:var(--ink);">
-                ${r.emoji} ${(r.users || []).length}
-            </button>
+            <button onclick="reactToHoknexMessage('${m._id || ''}', '${r.emoji}')" style="background:var(--canvas); border:1px solid var(--border); border-radius:11px; padding:2px 6px; font-size:0.7rem; font-weight:700; cursor:pointer; color:var(--ink);">${r.emoji} ${(r.users || []).length}</button>
         `).join('');
 
-        const safeSnippet = raw.replace(/\[Media\]:.*/, '[Image]').replace(/'/g, "\\'");
-        const timeStr = m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        const canDeleteMsg = myRole === 'Admin' || myRole === 'Moderator' || (currentUsername && (m.senderUsername || '').toLowerCase() === currentUsername.toLowerCase());
+        const safeSnippet = raw.replace(/\[Sticker\]:.*/, '[Sticker]').replace(/\[Media\]:.*/, '[Image]').replace(/'/g, "\\'");
+        const senderDpHtml = m.senderDp
+            ? `<img src="${m.senderDp}" style="width:22px; height:22px; border-radius:50%; object-fit:cover; border:1px solid var(--border);">`
+            : `<div style="width:22px; height:22px; border-radius:50%; background:var(--accent-blue); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:800;">${(m.senderName || 'U').charAt(0).toUpperCase()}</div>`;
 
         return `
-            <div style="background:var(--paper); border:1px solid var(--border); color:var(--ink); padding:10px 14px; border-radius:10px; max-width:85%; box-shadow:var(--shadow-subtle);">
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-                    <div>
-                        <strong style="color:var(--accent-blue); font-size:0.83rem; font-weight:800; cursor:pointer;" onclick="viewUserProfile('${m.senderUsername || ''}')">${m.senderName}</strong>
-                        ${timeStr ? `<span style="font-size:0.68rem; color:var(--ink-light); margin-left:6px;">${timeStr}</span>` : ''}
+            <div style="background:var(--paper); border:1px solid var(--border); padding:9px 12px; border-radius:9px; max-width:90%; box-shadow:var(--shadow-subtle);">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                    <div style="display:flex; align-items:center; gap:6px; cursor:pointer;" onclick="viewUserProfile('${m.senderUsername || ''}')">
+                        ${senderDpHtml}
+                        <strong style="color:var(--accent-blue); font-size:0.82rem; font-weight:800;">${m.senderName}</strong>
+                        <span style="font-size:0.64rem; color:var(--ink-light); font-weight:600;">${m.activityStatus || ''}</span>
                     </div>
                     <div style="display:flex; gap:4px; align-items:center;">
-                        <button onclick="setReplyTarget('${(m.senderName || 'Member').replace(/'/g, "\\'")}', '${safeSnippet}')" title="Reply in thread" style="background:none; border:none; font-size:0.72rem; cursor:pointer; color:var(--ink-light); font-weight:700;">↩ Reply</button>
-                        ${m._id ? `
-                            <button onclick="toggleMessageReaction('${m._id}', '👍')" title="Thumbs up" style="background:none; border:none; font-size:0.78rem; cursor:pointer;">👍</button>
-                            <button onclick="toggleMessageReaction('${m._id}', '🔥')" title="Fire" style="background:none; border:none; font-size:0.78rem; cursor:pointer;">🔥</button>
-                        ` : ''}
+                        <button onclick="startHoknexThread('${m._id || ''}', '${(m.senderName || 'Member').replace(/'/g, "\\'")}', '${safeSnippet}')" style="background:none; border:none; font-size:0.7rem; font-weight:700; color:var(--ink-light); cursor:pointer;">🧵 Thread (${replies.length})</button>
+                        <button onclick="reactToHoknexMessage('${m._id || ''}', '👍')" style="background:none; border:none; font-size:0.74rem; cursor:pointer;">👍</button>
+                        <button onclick="reactToHoknexMessage('${m._id || ''}', '🔥')" style="background:none; border:none; font-size:0.74rem; cursor:pointer;">🔥</button>
+                        ${canDeleteMsg && m._id ? `<button onclick="deleteHoknexMessage('${m._id}')" style="background:none; border:none; font-size:0.7rem; color:var(--accent-coral); cursor:pointer;">🗑</button>` : ''}
                     </div>
                 </div>
-                ${replyQuoteHtml}
-                <div style="font-weight:600; font-size:0.9rem; margin-top:4px; word-break:break-word;">${formattedText}</div>
-                ${reactionsHtml ? `<div style="display:flex; gap:5px; flex-wrap:wrap; margin-top:7px;">${reactionsHtml}</div>` : ''}
+                ${quoteHtml}
+                <div style="font-weight:600; font-size:0.88rem; margin-top:4px; word-break:break-word;">${bodyHtml}</div>
+                ${reactionsHtml ? `<div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:6px;">${reactionsHtml}</div>` : ''}
+                ${threadHtml}
             </div>
         `;
     }).join('');
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+    stream.scrollTop = stream.scrollHeight;
 }
 
-async function leaveServer(clubId) {
-    if (!confirm('Are you sure you want to leave this server?')) return;
-    const username = localStorage.getItem('hoknex_user');
+function openRoleAssignModal(clubId, targetUsername, displayName) {
+    document.getElementById('hkxRoleModal')?.remove();
+    const html = `
+        <div id="hkxRoleModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1200; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); border-radius:12px; padding:1.4rem; width:100%; max-width:380px; box-shadow:var(--shadow-card); color:var(--ink);">
+                <h3 style="font-weight:800; font-size:1.05rem; margin-bottom:6px;">👑 Assign Role: ${displayName}</h3>
+                <p style="font-size:0.74rem; color:var(--ink-light); margin-bottom:10px;">Admin has every power automatically.</p>
+                <label style="font-size:0.72rem; font-weight:800; text-transform:uppercase;">Role</label>
+                <select id="hkxRoleSelect" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:7px; font-weight:700; background:var(--canvas); color:var(--ink); margin-bottom:10px;">
+                    <option value="Admin">Admin (Full Power)</option>
+                    <option value="Moderator">Moderator (Channels + Cleanup + Chat)</option>
+                    <option value="Builder">Builder (Chat + Threads + Stickers)</option>
+                    <option value="Member">Member (Standard Access)</option>
+                </select>
+                <div style="display:flex; flex-direction:column; gap:5px; font-size:0.78rem; font-weight:700; margin-bottom:12px;">
+                    <label><input type="checkbox" class="hkxPowerChk" value="chat" checked> Send Messages</label>
+                    <label><input type="checkbox" class="hkxPowerChk" value="thread" checked> Start & Reply in Threads</label>
+                    <label><input type="checkbox" class="hkxPowerChk" value="sticker" checked> Send Stickers & Media</label>
+                    <label><input type="checkbox" class="hkxPowerChk" value="pin_messages"> Moderate & Delete Messages</label>
+                    <label><input type="checkbox" class="hkxPowerChk" value="manage_channels"> Create & Delete Channels</label>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-create" style="flex:1; padding:8px;" onclick="submitRoleAssignment('${clubId}', '${targetUsername}')">Save Role</button>
+                    <button class="action-btn" style="flex:1; padding:8px;" onclick="document.getElementById('hkxRoleModal').remove()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function submitRoleAssignment(clubId, targetUsername) {
+    const role = document.getElementById('hkxRoleSelect')?.value || 'Member';
+    const powers = Array.from(document.querySelectorAll('.hkxPowerChk:checked')).map(c => c.value);
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/roles`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUsername, role, powers })
+    });
+    if (res.ok) {
+        document.getElementById('hkxRoleModal')?.remove();
+        openHoknexSpace(clubId);
+    }
+}
+
+function openModApplicationModal(clubId) {
+    document.getElementById('hkxModAppModal')?.remove();
+    const html = `
+        <div id="hkxModAppModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1200; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); border-radius:12px; padding:1.5rem; width:100%; max-width:410px; box-shadow:var(--shadow-card); color:var(--ink);">
+                <h3 style="font-weight:800; font-size:1.08rem; margin-bottom:8px;">🛡️ Moderator Application</h3>
+                <p style="font-size:0.76rem; color:var(--ink-light); margin-bottom:10px;">Apply to help moderate channels and community threads in this Space.</p>
+                <input type="text" id="hkxModHours" placeholder="Availability (e.g. 6 hrs/week)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:8px; outline:none;">
+                <textarea id="hkxModExp" rows="2" placeholder="Past moderation or community experience..." style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:8px; outline:none;"></textarea>
+                <textarea id="hkxModWhy" rows="2" placeholder="Why should you be a moderator?" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:12px; outline:none;"></textarea>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-create" style="flex:1; padding:8px;" onclick="submitModApplication('${clubId}')">Submit Application</button>
+                    <button class="action-btn" style="flex:1; padding:8px;" onclick="document.getElementById('hkxModAppModal').remove()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function submitModApplication(clubId) {
+    const username = localStorage.getItem('hoknex_user') || '';
+    const hoursPerWeek = document.getElementById('hkxModHours')?.value.trim();
+    const experience = document.getElementById('hkxModExp')?.value.trim();
+    const whyMod = document.getElementById('hkxModWhy')?.value.trim();
+    if (!whyMod) return alert('Please share why you want to moderate.');
+
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/mod-apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, hoursPerWeek, experience, whyMod })
+    });
+    const data = await res.json();
+    if (res.ok) {
+        alert(data.message || 'Moderator application submitted!');
+        document.getElementById('hkxModAppModal')?.remove();
+    } else {
+        alert(data.error || 'Could not submit application.');
+    }
+}
+
+async function openModReviewModal(clubId) {
+    const club = allHoknexClubsCache.find(c => c._id.toString() === clubId.toString());
+    const pendingApps = (club?.modApplications || []).filter(a => a.status === 'Pending');
+    if (!pendingApps.length) return alert('No pending moderator applications.');
+
+    document.getElementById('hkxModReviewModal')?.remove();
+    const html = `
+        <div id="hkxModReviewModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1200; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); border-radius:12px; padding:1.5rem; width:100%; max-width:440px; max-height:80vh; overflow-y:auto; box-shadow:var(--shadow-card); color:var(--ink);">
+                <h3 style="font-weight:800; font-size:1.08rem; margin-bottom:10px;">🛡️ Moderator Applications</h3>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    ${pendingApps.map(app => `
+                        <div style="background:var(--canvas); border:1px solid var(--border); padding:10px; border-radius:8px;">
+                            <div style="font-weight:800; font-size:0.86rem;">@${app.username} • ${app.hoursPerWeek || 'Flexible'}</div>
+                            <div style="font-size:0.76rem; color:var(--ink-light); margin-top:4px;"><b>Exp:</b> ${app.experience || 'N/A'}</div>
+                            <div style="font-size:0.76rem; margin-top:2px;"><b>Reason:</b> ${app.whyMod}</div>
+                            <div style="display:flex; gap:6px; margin-top:8px;">
+                                <button class="btn-create" style="padding:4px 10px; font-size:0.74rem; background:#10b981;" onclick="decideModApplication('${clubId}', '${app._id || app.username}', 'approve')">Approve Mod</button>
+                                <button class="action-btn" style="padding:4px 10px; font-size:0.74rem; color:var(--accent-coral);" onclick="decideModApplication('${clubId}', '${app._id || app.username}', 'reject')">Reject</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="action-btn" style="margin-top:12px; width:100%;" onclick="document.getElementById('hkxModReviewModal').remove()">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function decideModApplication(clubId, appId, decision) {
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/mod-decision`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appId, decision })
+    });
+    if (res.ok) {
+        document.getElementById('hkxModReviewModal')?.remove();
+        openHoknexSpace(clubId);
+    }
+}
+
+async function leaveHoknexSpace(clubId) {
+    if (!confirm('Leave this Hoknex Space?')) return;
+    const username = localStorage.getItem('hoknex_user') || '';
     const res = await fetch(`${API_URL}/api/clubs/${clubId}/leave`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username })
     });
     if (res.ok) {
-        alert('You left the server.');
         activeClubId = null;
-        loadDiscordClubs();
-        const ws = document.getElementById('discordWorkspace');
-        if (ws) ws.innerHTML = `<p style="font-weight:600; color:var(--ink-light);">Select a server from the left sidebar!</p>`;
+        localStorage.removeItem('hoknex_active_club_id');
+        loadHoknexSpaces();
     }
 }
 
 function openDeleteServerModal(clubId, clubName) {
     document.getElementById('delModal')?.remove();
     const modalHtml = `
-        <div id="delModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter: blur(4px); display:flex; align-items:center; justify-content:center; z-index:1100; padding:1rem;">
-            <div style="background:var(--paper); border:1px solid var(--border); padding:2rem; border-radius:var(--radius); width:100%; max-width:400px; box-shadow:var(--shadow-card); color:var(--ink);">
-                <h3 style="margin-bottom:0.5rem; font-weight:800; color:var(--accent-coral); font-size:1.1rem;">Delete Server Request ⚠️</h3>
-                <p style="font-size:0.8rem; color:var(--ink-light); margin-bottom:12px;">Server: <strong>${clubName}</strong></p>
+        <div id="delModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter: blur(4px); display:flex; align-items:center; justify-content:center; z-index:1200; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); padding:1.75rem; border-radius:12px; width:100%; max-width:400px; box-shadow:var(--shadow-card); color:var(--ink);">
+                <h3 style="margin-bottom:0.5rem; font-weight:800; color:var(--accent-coral); font-size:1.1rem;">Delete Space Request ⚠️</h3>
+                <p style="font-size:0.8rem; color:var(--ink-light); margin-bottom:12px;">Space: <strong>${clubName}</strong></p>
                 <select id="delReason" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; font-weight:600; margin-bottom:15px; outline:none; background:var(--canvas); color:var(--ink);">
                     <option value="Community inactive">Community inactive</option>
                     <option value="Duplicate server">Duplicate server</option>
@@ -3458,19 +3725,18 @@ function openDeleteServerModal(clubId, clubName) {
 }
 
 async function submitServerDeletion(clubId) {
-    const reason = document.getElementById('delReason').value;
-    const username = localStorage.getItem('hoknex_user');
+    const reason = document.getElementById('delReason')?.value;
+    const username = localStorage.getItem('hoknex_user') || '';
     const res = await fetch(`${API_URL}/api/clubs/${clubId}/request-deletion`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, reason })
     });
     if (res.ok) {
-        alert('Submitted to support!');
+        alert('Submitted to Hoknex Support!');
         document.getElementById('delModal')?.remove();
     }
 }
-
     // ==========================================
 // UNIFIED PROJECT RENDERER (Matches Style 2)
 // ==========================================
