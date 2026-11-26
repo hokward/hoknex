@@ -19,7 +19,7 @@
       --danger: #EF4444;
       --border: rgba(255, 255, 255, 0.1);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
     body { background: var(--bg); color: var(--ink); min-height: 100vh; }
     header {
       display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
@@ -58,7 +58,7 @@
       <span class="badge">H</span>
       <span>Hoknex Studio Admin Portal</span>
     </div>
-    <div style="display:flex; gap:10px; align-items:center;">
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
       <span id="brevoStatusBadge" style="font-size:0.78rem; color:var(--muted);">Brevo Sender: hoknex.in@gmail.com</span>
       <a href="studio.html" class="btn ghost"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Creator Studio</a>
     </div>
@@ -84,8 +84,8 @@
 
       <div class="tabs">
         <button class="tab active" id="tabPayments" onclick="switchTab('payments')">Pro Pass Verifications</button>
-        <button class="tab" id="tabUsers" onclick="switchTab('users')">Accounts & Perks Manager</button>
-        <button class="tab" id="tabQr" onclick="switchTab('qr')">Payment QR & UPI</button>
+        <button class="tab" id="tabUsers" onclick="switchTab('users')">Accounts &amp; Perks Manager</button>
+        <button class="tab" id="tabQr" onclick="switchTab('qr')">Payment QR &amp; UPI</button>
         <button class="tab" id="tabEmails" onclick="switchTab('emails')">Brevo Email Logs</button>
         <button class="tab" onclick="refreshAll()" style="margin-left:auto;"><i class="fa-solid fa-rotate"></i> Refresh</button>
       </div>
@@ -107,7 +107,7 @@
 
       <!-- QR SETTINGS -->
       <div class="card" id="panelQr" style="display:none;">
-        <h3 style="margin-bottom:12px;">Payment Scanner QR & UPI Configuration</h3>
+        <h3 style="margin-bottom:12px;">Payment Scanner QR &amp; UPI Configuration</h3>
         <div style="display:grid; grid-template-columns:1fr 240px; gap:20px; align-items:start;">
           <div>
             <label style="display:block; font-size:0.76rem; color:var(--muted); margin-bottom:6px;">UPLOAD / REPLACE QR IMAGE</label>
@@ -117,7 +117,7 @@
             <label style="display:block; font-size:0.76rem; color:var(--muted); margin-bottom:6px;">PAYMENT NOTE</label>
             <input type="text" id="paymentNoteInput" style="margin-bottom:14px;" />
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
-              <button class="btn" onclick="saveQrSettings()"><i class="fa-solid fa-floppy-disk"></i> Save QR & UPI</button>
+              <button class="btn" onclick="saveQrSettings()"><i class="fa-solid fa-floppy-disk"></i> Save QR &amp; UPI</button>
               <button class="btn danger" onclick="deleteQrImage()"><i class="fa-solid fa-trash"></i> Delete QR Image</button>
             </div>
           </div>
@@ -197,7 +197,7 @@
         document.getElementById('statPending').textContent = reqs.filter(r => r.status === 'pending').length;
         document.getElementById('statProUsers').textContent = users.filter(u => u.hasProPass).length;
         document.getElementById('statEmails').textContent = logs.length;
-        document.getElementById('brevoStatusBadge').textContent = `Brevo (${data.brevoConfigured ? 'API Active' : 'Set BREVO_API_KEY'}) • ${data.supportEmail}`;
+        document.getElementById('brevoStatusBadge').textContent = `Brevo (${data.brevoApiConfigured || data.brevoSmtpConfigured ? 'Active' : 'Configure Keys'}) • ${data.supportEmail}`;
 
         document.getElementById('upiIdInput').value = data.settings?.paymentUpiId || 'hoknex.in@upi';
         document.getElementById('paymentNoteInput').value = data.settings?.paymentNote || '';
@@ -236,7 +236,7 @@
           </div>
           <div style="display:flex; gap:10px; margin-top:12px; align-items:center; flex-wrap:wrap;">
             <input type="number" id="bonus-${esc(r.id)}" value="0" min="0" placeholder="Extra Perks" style="width:140px;" />
-            <button class="btn ok" onclick="reviewPayment('${esc(r.id)}', 'approve')"><i class="fa-solid fa-check"></i> Approve & Send Brevo Email</button>
+            <button class="btn ok" onclick="reviewPayment('${esc(r.id)}', 'approve')"><i class="fa-solid fa-check"></i> Approve &amp; Send Brevo Email</button>
             <button class="btn danger" onclick="reviewPayment('${esc(r.id)}', 'reject')"><i class="fa-solid fa-xmark"></i> Reject</button>
           </div>
         </div>
