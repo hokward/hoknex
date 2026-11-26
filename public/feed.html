@@ -3076,6 +3076,42 @@ async function requestJoinHoknexSpace(clubId) {
     alert(data.message || data.error || 'Done');
 }
 
+function renderBroadcastBanner(isBroadcast, isAdmin) {
+    let banner = document.getElementById('hkxBroadcastStatusBanner');
+    const chatCol = document.getElementById('hkxChatColumn');
+    const stream = document.getElementById('hkxMessagesStream');
+    const input = document.getElementById('hkxMessageInput');
+    const sendBtn = document.querySelector('#hkxChatColumn button.btn-create');
+
+    if (!banner && chatCol && stream) {
+        banner = document.createElement('div');
+        banner.id = 'hkxBroadcastStatusBanner';
+        banner.style.cssText = 'display:none; justify-content:space-between; align-items:center; gap:8px; padding:7px 12px; background:rgba(245, 158, 11, 0.24); backdrop-filter:blur(6px); border-bottom:1px solid rgba(251, 191, 36, 0.45); font-size:0.75rem; font-weight:800; color:#fef3c7;';
+        chatCol.insertBefore(banner, stream);
+    }
+
+    const lockedForUser = Boolean(isBroadcast && !isAdmin);
+    if (banner) {
+        if (isBroadcast) {
+            banner.style.display = 'flex';
+            banner.innerHTML = `<span>🔒 Broadcast Mode ON — ${isAdmin ? 'Only Admins/Mods can post messages right now.' : 'Read-only mode enabled by Space Admin.'}</span>`;
+        } else {
+            banner.style.display = 'none';
+        }
+    }
+
+    if (input) {
+        input.disabled = lockedForUser;
+        input.placeholder = lockedForUser
+            ? '🔒 Broadcast mode is active — only Admin/Mods can send messages'
+            : 'Write message or start thread...';
+    }
+    if (sendBtn) {
+        sendBtn.disabled = lockedForUser;
+        sendBtn.style.opacity = lockedForUser ? '0.5' : '1';
+    }
+}
+
 async function openHoknexSpace(clubId) {
     activeClubId = clubId;
     activeThreadMessage = null;
@@ -3104,15 +3140,16 @@ async function openHoknexSpace(clubId) {
             localStorage.setItem('hoknex_active_channel_id', activeChannelId);
         }
 
+        const activeChannelObj = (club.channels || []).find(ch => ch._id.toString() === activeChannelId?.toString());
         const myRoleInfo = getMemberRoleInfo(club, currentUsername, currentUserId);
         const canManageChannels = userHasPower(club, currentUsername, currentUserId, 'manage_channels');
         const canManageRoles = userHasPower(club, currentUsername, currentUserId, 'manage_roles');
         const canCreatePoll = userHasPower(club, currentUsername, currentUserId, 'poll');
         const canToggleBroadcast = userHasPower(club, currentUsername, currentUserId, 'announcement_lock');
         const canPin = userHasPower(club, currentUsername, currentUserId, 'pin_messages');
-        const isAdmin = myRoleInfo.role === 'Admin';
+        const isAdmin = myRoleInfo.role === 'Admin' || myRoleInfo.role === 'Moderator';
         const inviteCode = club.inviteCode || club._id.toString().slice(-6).toUpperCase();
-        const isBroadcastLocked = localStorage.getItem(`hoknex_broadcast_lock_${clubId}_${activeChannelId}`) === '1';
+        const isBroadcastLocked = Boolean(activeChannelObj?.isBroadcast) || (localStorage.getItem(`hoknex_broadcast_lock_${clubId}_${activeChannelId}`) === '1');
 
         const workspace = document.getElementById('hoknexMainWorkspace');
         if (!workspace) return;
@@ -3134,7 +3171,7 @@ async function openHoknexSpace(clubId) {
                     <button class="action-btn" style="flex:1; font-size:0.7rem; padding:4px 6px;" onclick="openModApplicationModal('${club._id}')">🛡️ Mod App</button>
                 </div>
 
-                ${(isAdmin && ((club.joinRequests && club.joinRequests.length > 0) || (club.modApplications && club.modApplications.some(a => a.status === 'Pending')))) ? `
+                ${(myRoleInfo.role === 'Admin' && ((club.joinRequests && club.joinRequests.length > 0) || (club.modApplications && club.modApplications.some(a => a.status === 'Pending')))) ? `
                     <div style="background:rgba(245, 158, 11, 0.14); border:1px solid rgba(245, 158, 11, 0.4); border-radius:8px; padding:7px; font-size:0.72rem; font-weight:700;">
                         <div>🔔 Admin Approvals</div>
                         <div style="display:flex; gap:4px; margin-top:5px;">
@@ -3154,33 +3191,33 @@ async function openHoknexSpace(clubId) {
                         const activeCh = activeChannelId === ch._id.toString();
                         return `
                             <div style="display:flex; align-items:center; gap:3px;">
-                                <button onclick="selectHoknexChannel('${club._id}', '${ch._id}')" class="action-btn" style="flex:1; text-align:left; font-size:0.8rem; padding:6px 8px; border-radius:7px; background:${activeCh ? 'rgba(59,130,246,0.18)' : 'var(--paper)'}; color:${activeCh ? 'var(--accent-blue)' : 'var(--ink)'}; border-color:${activeCh ? 'var(--accent-blue)' : 'var(--border)'};">
+                                <button onclick="selectHoknexChannel('${club._id}', '${ch._id}')" class="action-btn" style="flex:1; text-align:left; font-size:0.8rem; padding:6px 8px; border-radius:7px; background:${activeCh ? 'rgba(59,130,246,0.16)' : 'var(--paper)'}; color:${activeCh ? 'var(--accent-blue)' : 'var(--ink)'}; border-color:${activeCh ? 'var(--accent-blue)' : 'var(--border)'};">
                                     # ${ch.name}
                                 </button>
-                                ${canManageChannels && (club.channels || []).length > 1 ? `<button onclick="deleteHoknexChannel('${club._id}', '${ch._id}')" title="Delete Channel" class="action-btn" style="font-size:0.68rem; padding:4px 6px; color:var(--accent-coral);">🗑</button>` : ''}
+                                ${canManageChannels && (club.channels || []).length > 1 ? `<button onclick="deleteHoknexChannel('${club._id}', '${ch._id}')" title="Delete Channel" style="background:none; border:none; color:var(--accent-coral); font-size:0.74rem; cursor:pointer; padding:2px;">✕</button>` : ''}
                             </div>
                         `;
                     }).join('')}
                 </div>
 
                 <div style="border-top:1px solid var(--border); padding-top:7px; display:flex; flex-direction:column; gap:5px;">
-                    ${isAdmin
+                    ${myRoleInfo.role === 'Admin'
                         ? `<button class="action-btn" style="background:rgba(239,68,68,0.12); color:var(--accent-coral); width:100%; font-size:0.72rem; padding:6px;" onclick="openDeleteServerModal('${club._id}', '${(club.name || '').replace(/'/g, "\\'")}')">🗑️ Delete Space</button>`
                         : `<button class="action-btn" style="width:100%; font-size:0.72rem; padding:6px;" onclick="leaveHoknexSpace('${club._id}')">🚪 Leave Space</button>`}
                 </div>
             </div>
 
-            <div id="hkxChatColumn" style="flex:1; display:flex; flex-direction:column; height:100%; min-width:0; position:relative; background:transparent;">
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 12px; border-bottom:1px solid var(--border); background:rgba(15, 23, 42, 0.75); backdrop-filter:blur(8px); flex-wrap:wrap; color:#fff;">
+            <div id="hkxChatColumn" style="flex:1; display:flex; flex-direction:column; height:100%; min-width:0; position:relative; background:var(--paper);">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 12px; border-bottom:1px solid var(--border); background:var(--canvas); flex-wrap:wrap;">
                     <div style="min-width:0;">
                         <div style="font-weight:800; font-size:0.88rem;" id="hkxActiveChannelName"># channel</div>
-                        <div style="font-size:0.7rem; opacity:0.82; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="hkxActiveChannelTopic">Hoknex live channel</div>
+                        <div style="font-size:0.7rem; color:var(--ink-light); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="hkxActiveChannelTopic">Hoknex live channel</div>
                     </div>
                     <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap;">
-                        ${canCreatePoll ? `<button onclick="openQuickPollModal('${club._id}', '${activeChannelId}')" class="action-btn" style="font-size:0.72rem; padding:4px 8px; background:rgba(255,255,255,0.12); color:#fff;">📊 Poll</button>` : ''}
-                        ${canToggleBroadcast ? `<button onclick="toggleBroadcastMode('${club._id}', '${activeChannelId}')" class="action-btn" style="font-size:0.72rem; padding:4px 8px; background:rgba(255,255,255,0.12); color:#fff;">${isBroadcastLocked ? '🔓 Unlock' : '🔒 Broadcast'}</button>` : ''}
-                        <button onclick="toggleHoknexFullScreen()" id="hkxFullScreenBtn" class="action-btn" style="font-size:0.72rem; padding:4px 8px; background:rgba(255,255,255,0.12); color:#fff;">⛶ Full</button>
-                        <select id="hkxWallpaperSelect" onchange="applyPersistentSpaceWallpaper(this.value)" style="padding:4px 7px; border-radius:6px; border:1px solid rgba(255,255,255,0.25); font-size:0.72rem; font-weight:700; background:rgba(15,23,42,0.85); color:#fff; outline:none;">
+                        ${canCreatePoll ? `<button onclick="openQuickPollModal('${club._id}', '${activeChannelId}')" class="action-btn" style="font-size:0.72rem; padding:4px 8px;">📊 Poll</button>` : ''}
+                        ${canToggleBroadcast ? `<button onclick="toggleBroadcastMode('${club._id}', '${activeChannelId}')" class="action-btn" style="font-size:0.72rem; padding:4px 8px;">${isBroadcastLocked ? '🔓 Unlock' : '🔒 Broadcast'}</button>` : ''}
+                        <button onclick="toggleHoknexFullScreen()" id="hkxFullScreenBtn" class="action-btn" style="font-size:0.72rem; padding:4px 8px;">⛶ Full</button>
+                        <select id="hkxWallpaperSelect" onchange="applyPersistentSpaceWallpaper(this.value)" style="padding:4px 7px; border-radius:6px; border:1px solid var(--border); font-size:0.72rem; font-weight:700; background:var(--paper); color:var(--ink); outline:none;">
                             <option value="">🖼️ Wallpaper</option>
                             <option value="url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80')">Cyberpunk Neon</option>
                             <option value="url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=80')">Tropical Beach</option>
@@ -3192,39 +3229,33 @@ async function openHoknexSpace(clubId) {
                     </div>
                 </div>
 
-                <!-- Feature #1: Pinned Channel Notice Banner -->
-                <div id="hkxPinnedNoticeBar" style="display:none; justify-content:space-between; align-items:center; gap:8px; padding:6px 12px; background:rgba(59,130,246,0.22); backdrop-filter:blur(6px); border-bottom:1px solid rgba(255,255,255,0.18); font-size:0.75rem; font-weight:700; color:#fff;">
-                    <span id="hkxPinnedNoticeText">📌 Pinned Notice</span>
-                    ${canPin ? `<button onclick="clearChannelPin('${clubId}', '${activeChannelId}')" style="background:none; border:none; color:#fca5a5; font-weight:800; cursor:pointer; font-size:0.72rem;">Unpin</button>` : ''}
-                </div>
+                <div id="hkxMessagesStream" style="flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px;"></div>
 
-                <div id="hkxMessagesStream" style="flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px; background-color:transparent;"></div>
-
-                <div id="hkxThreadReplyBar" style="display:none; justify-content:space-between; align-items:center; padding:6px 12px; background:rgba(59,130,246,0.22); backdrop-filter:blur(6px); border-top:1px solid rgba(255,255,255,0.16); font-size:0.76rem; font-weight:700; color:#fff;">
+                <div id="hkxThreadReplyBar" style="display:none; justify-content:space-between; align-items:center; padding:6px 12px; background:rgba(59,130,246,0.12); border-top:1px solid var(--border); font-size:0.76rem; font-weight:700; color:var(--accent-blue);">
                     <span id="hkxThreadReplyLabel">Replying in thread...</span>
-                    <button onclick="clearHoknexThreadReply()" style="background:none; border:none; color:#fca5a5; font-weight:800; cursor:pointer;">✕</button>
+                    <button onclick="clearHoknexThreadReply()" style="background:none; border:none; color:var(--accent-coral); font-weight:800; cursor:pointer;">✕</button>
                 </div>
 
-                <div id="hkxStickerEmojiPopover" style="display:none; position:absolute; bottom:62px; left:10px; width:310px; max-width:calc(100% - 20px); max-height:260px; overflow-y:auto; background:rgba(15,23,42,0.92); backdrop-filter:blur(10px); color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:10px; padding:10px; box-shadow:var(--shadow-card); z-index:45;">
-                    <div style="font-size:0.68rem; font-weight:800; text-transform:uppercase; opacity:0.75; margin-bottom:5px;">Emojis</div>
+                <div id="hkxStickerEmojiPopover" style="display:none; position:absolute; bottom:62px; left:10px; width:310px; max-width:calc(100% - 20px); max-height:260px; overflow-y:auto; background:var(--paper); border:1px solid var(--border); border-radius:10px; padding:10px; box-shadow:var(--shadow-card); z-index:45;">
+                    <div style="font-size:0.68rem; font-weight:800; text-transform:uppercase; color:var(--ink-light); margin-bottom:5px;">Emojis</div>
                     <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; font-size:1.1rem; text-align:center; cursor:pointer; margin-bottom:8px;">
                         <span onclick="appendHoknexEmoji('😀')">😀</span><span onclick="appendHoknexEmoji('😂')">😂</span><span onclick="appendHoknexEmoji('🔥')">🔥</span><span onclick="appendHoknexEmoji('❤️')">❤️</span><span onclick="appendHoknexEmoji('🚀')">🚀</span><span onclick="appendHoknexEmoji('👍')">👍</span><span onclick="appendHoknexEmoji('🎉')">🎉</span>
                         <span onclick="appendHoknexEmoji('💻')">💻</span><span onclick="appendHoknexEmoji('🎮')">🎮</span><span onclick="appendHoknexEmoji('⚡')">⚡</span><span onclick="appendHoknexEmoji('💡')">💡</span><span onclick="appendHoknexEmoji('😎')">😎</span><span onclick="appendHoknexEmoji('🙌')">🙌</span><span onclick="appendHoknexEmoji('✅')">✅</span>
                     </div>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                        <span style="font-size:0.68rem; font-weight:800; text-transform:uppercase; opacity:0.75;">Stickers (Google / Tenor)</span>
-                        <input type="text" id="hkxStickerSearch" placeholder="Search sticker..." onkeydown="if(event.key==='Enter') searchHoknexStickers(this.value)" style="padding:3px 7px; border:1px solid rgba(255,255,255,0.25); border-radius:5px; font-size:0.72rem; width:115px; background:rgba(255,255,255,0.1); color:#fff; outline:none;">
+                        <span style="font-size:0.68rem; font-weight:800; text-transform:uppercase; color:var(--ink-light);">Stickers (Google / Tenor)</span>
+                        <input type="text" id="hkxStickerSearch" placeholder="Search sticker..." onkeydown="if(event.key==='Enter') searchHoknexStickers(this.value)" style="padding:3px 7px; border:1px solid var(--border); border-radius:5px; font-size:0.72rem; width:115px; background:var(--canvas); color:var(--ink); outline:none;">
                     </div>
                     <div id="hkxStickerGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:6px;"></div>
                 </div>
 
-                <div style="padding:8px 10px; border-top:1px solid var(--border); display:flex; gap:6px; align-items:center; background:rgba(15,23,42,0.78); backdrop-filter:blur(8px); color:#fff;">
-                    <button class="action-btn" onclick="toggleHoknexStickerPopover()" style="padding:7px 9px; font-size:0.88rem; background:rgba(255,255,255,0.12); color:#fff;" title="Emojis & Stickers">✨</button>
-                    <label for="hkxChatImageInput" style="cursor:pointer; background:rgba(255,255,255,0.12); color:#fff; padding:7px 10px; border-radius:7px; border:1px solid rgba(255,255,255,0.2); font-weight:700; font-size:0.84rem;" title="Upload Image">📷</label>
+                <div style="padding:8px 10px; border-top:1px solid var(--border); display:flex; gap:6px; align-items:center; background:var(--canvas);">
+                    <button class="action-btn" onclick="toggleHoknexStickerPopover()" style="padding:7px 9px; font-size:0.88rem;" title="Emojis & Stickers">✨</button>
+                    <label for="hkxChatImageInput" style="cursor:pointer; background:var(--paper); color:var(--ink); padding:7px 10px; border-radius:7px; border:1px solid var(--border); font-weight:700; font-size:0.84rem;" title="Upload Image">📷</label>
                     <input type="file" id="hkxChatImageInput" accept="image/*" style="display:none;" onchange="showHoknexSelectedFile(this)">
-                    <span id="hkxSelectedFileLabel" style="font-size:0.68rem; font-weight:600; opacity:0.85; max-width:75px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
-                    <input type="text" id="hkxMessageInput" placeholder="${isBroadcastLocked && !isAdmin ? 'Broadcast mode active (Admin only)' : 'Write message or start thread...'}" ${isBroadcastLocked && !isAdmin ? 'disabled' : ''} style="flex:1; min-width:0; padding:8px 11px; border:1px solid rgba(255,255,255,0.25); border-radius:7px; font-weight:600; font-size:0.86rem; background:rgba(255,255,255,0.1); color:#fff; outline:none;" onkeypress="if(event.key==='Enter') sendHoknexChannelMessage()">
-                    <button class="btn-create" onclick="sendHoknexChannelMessage()" ${isBroadcastLocked && !isAdmin ? 'disabled' : ''} style="padding:8px 14px; font-size:0.82rem; border-radius:7px;">Send</button>
+                    <span id="hkxSelectedFileLabel" style="font-size:0.68rem; font-weight:600; color:var(--ink-light); max-width:75px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
+                    <input type="text" id="hkxMessageInput" placeholder="Write message or start thread..." style="flex:1; min-width:0; padding:8px 11px; border:1px solid var(--border); border-radius:7px; font-weight:600; font-size:0.86rem; background:var(--paper); color:var(--ink); outline:none;" onkeypress="if(event.key==='Enter') sendHoknexChannelMessage()">
+                    <button class="btn-create" onclick="sendHoknexChannelMessage()" style="padding:8px 14px; font-size:0.82rem; border-radius:7px;">Send</button>
                 </div>
             </div>
 
@@ -3253,7 +3284,7 @@ async function openHoknexSpace(clubId) {
                                         <span style="display:inline-block; font-size:0.62rem; font-weight:800; color:${rInfo.badgeColor};">${rInfo.role}</span>
                                     </div>
                                 </div>
-                                ${canManageRoles && !isSelf ? `<button onclick="openRoleAssignModal('${club._id}', '${mUser}', '${mName.replace(/'/g, "\\'")}')" title="Assign Role & 18 Powers" class="action-btn" style="font-size:0.66rem; padding:3px 6px;">Role</button>` : ''}
+                                ${canManageRoles && !isSelf ? `<button onclick="openRoleAssignModal('${club._id}', '${mUser}', '${mName.replace(/'/g, "\\'")}')" title="Assign Role & Powers" class="action-btn" style="font-size:0.66rem; padding:3px 6px;">Role</button>` : ''}
                             </div>
                         `;
                     }).join('')}
@@ -3265,14 +3296,12 @@ async function openHoknexSpace(clubId) {
         const streamEl = document.getElementById('hkxMessagesStream');
         const wallSelect = document.getElementById('hkxWallpaperSelect');
         if (streamEl && savedWall) {
-            streamEl.style.backgroundImage = savedWall;
+            streamEl.style.background = `${savedWall} no-repeat center center`;
             streamEl.style.backgroundSize = 'cover';
-            streamEl.style.backgroundPosition = 'center center';
-            streamEl.style.backgroundRepeat = 'no-repeat';
             if (wallSelect) wallSelect.value = savedWall;
         }
 
-        renderPinnedNoticeBanner(clubId, activeChannelId);
+        renderBroadcastBanner(isBroadcastLocked, isAdmin);
         renderHoknexStickerGrid(HOKNEX_STICKER_PACK);
         if (activeChannelId) renderHoknexChannelMessages(club, activeChannelId, currentUsername, currentUserId);
     } catch (e) {
@@ -3280,50 +3309,44 @@ async function openHoknexSpace(clubId) {
     }
 }
 
-// Feature #1: Pinned Channel Notice
-function pinMessageToChannel(clubId, channelId, text) {
-    localStorage.setItem(`hoknex_pin_${clubId}_${channelId}`, text);
-    renderPinnedNoticeBanner(clubId, channelId);
-}
+async function toggleBroadcastMode(clubId, channelId) {
+    if (!clubId || !channelId) return alert('Select a channel first.');
+    const club = allHoknexClubsCache.find(c => c._id.toString() === clubId.toString());
+    const channel = (club?.channels || []).find(ch => ch._id.toString() === channelId.toString());
+    const localKey = `hoknex_broadcast_lock_${clubId}_${channelId}`;
+    const currentState = Boolean(channel?.isBroadcast) || (localStorage.getItem(localKey) === '1');
+    const nextState = !currentState;
 
-function clearChannelPin(clubId, channelId) {
-    localStorage.removeItem(`hoknex_pin_${clubId}_${channelId}`);
-    renderPinnedNoticeBanner(clubId, channelId);
-}
-
-function renderPinnedNoticeBanner(clubId, channelId) {
-    const bar = document.getElementById('hkxPinnedNoticeBar');
-    const txt = document.getElementById('hkxPinnedNoticeText');
-    if (!bar || !txt) return;
-    const pinned = localStorage.getItem(`hoknex_pin_${clubId}_${channelId}`);
-    if (pinned) {
-        txt.innerText = `📌 Pinned: ${pinned}`;
-        bar.style.display = 'flex';
-    } else {
-        bar.style.display = 'none';
+    localStorage.setItem(localKey, nextState ? '1' : '0');
+    try {
+        await fetch(`${API_URL}/api/clubs/${clubId}/channels/${channelId}/settings`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isBroadcast: nextState })
+        });
+    } catch (e) {
+        console.error('Broadcast toggle error:', e);
     }
+    await openHoknexSpace(clubId);
 }
 
-// Feature #2: Broadcast / Read Mode Toggle
-function toggleBroadcastMode(clubId, channelId) {
-    const key = `hoknex_broadcast_lock_${clubId}_${channelId}`;
-    const current = localStorage.getItem(key) === '1';
-    localStorage.setItem(key, current ? '0' : '1');
-    openHoknexSpace(clubId);
-}
-
-// Feature #3: Quick Channel Poll Modal
 function openQuickPollModal(clubId, channelId) {
     document.getElementById('hkxPollModal')?.remove();
     const html = `
-        <div id="hkxPollModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1200; padding:1rem;">
-            <div style="background:var(--paper); border:1px solid var(--border); border-radius:12px; padding:1.4rem; width:100%; max-width:380px; box-shadow:var(--shadow-card); color:var(--ink);">
-                <h3 style="font-weight:800; font-size:1.05rem; margin-bottom:10px;">📊 Create Channel Poll</h3>
-                <input type="text" id="hkxPollQuestion" placeholder="Poll question..." style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:8px; outline:none;">
-                <input type="text" id="hkxPollOpt1" placeholder="Option 1" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:6px; outline:none;">
-                <input type="text" id="hkxPollOpt2" placeholder="Option 2" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:12px; outline:none;">
+        <div id="hkxPollModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.65); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1200; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); border-radius:12px; padding:1.4rem; width:100%; max-width:390px; box-shadow:var(--shadow-card); color:var(--ink);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h3 style="font-weight:800; font-size:1.05rem;">📊 Create Interactive Poll</h3>
+                    <button onclick="document.getElementById('hkxPollModal').remove()" class="action-btn" style="padding:3px 8px;">✕</button>
+                </div>
+                <input type="text" id="hkxPollQuestion" placeholder="Ask a question..." style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:8px; outline:none;">
+                <div id="hkxPollOptionsList" style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;">
+                    <input type="text" class="hkxPollOptInput" placeholder="Option 1" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); outline:none;">
+                    <input type="text" class="hkxPollOptInput" placeholder="Option 2" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); outline:none;">
+                </div>
+                <button type="button" class="action-btn" style="width:100%; font-size:0.75rem; padding:6px; margin-bottom:10px;" onclick="addPollOptionField()">+ Add Another Option</button>
                 <div style="display:flex; gap:8px;">
-                    <button class="btn-create" style="flex:1; padding:8px;" onclick="submitQuickPoll('${clubId}', '${channelId}')">Post Poll</button>
+                    <button class="btn-create" style="flex:1; padding:8px;" onclick="submitQuickPoll('${clubId}', '${channelId}')">Launch Poll 🚀</button>
                     <button class="action-btn" style="flex:1; padding:8px;" onclick="document.getElementById('hkxPollModal').remove()">Cancel</button>
                 </div>
             </div>
@@ -3332,16 +3355,97 @@ function openQuickPollModal(clubId, channelId) {
     document.body.insertAdjacentHTML('beforeend', html);
 }
 
+function addPollOptionField() {
+    const list = document.getElementById('hkxPollOptionsList');
+    if (!list) return;
+    const count = list.querySelectorAll('.hkxPollOptInput').length + 1;
+    if (count > 6) return;
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = 'hkxPollOptInput';
+    inp.placeholder = `Option ${count}`;
+    inp.style.cssText = 'width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); outline:none;';
+    list.appendChild(inp);
+}
+
 async function submitQuickPoll(clubId, channelId) {
-    const q = document.getElementById('hkxPollQuestion')?.value.trim();
-    const o1 = document.getElementById('hkxPollOpt1')?.value.trim() || 'Yes';
-    const o2 = document.getElementById('hkxPollOpt2')?.value.trim() || 'No';
-    if (!q) return alert('Enter a poll question.');
-    const pollMsg = `📊 POLL: ${q}\n• Option A: ${o1}\n• Option B: ${o2}\n(React with 👍 for ${o1} or 🔥 for ${o2})`;
-    activeClubId = clubId;
-    activeChannelId = channelId;
-    await postHoknexMessagePayload({ text: pollMsg });
-    document.getElementById('hkxPollModal')?.remove();
+    const question = document.getElementById('hkxPollQuestion')?.value.trim();
+    const options = Array.from(document.querySelectorAll('.hkxPollOptInput'))
+        .map(el => el.value.trim())
+        .filter(Boolean);
+    const createdBy = localStorage.getItem('hoknex_user') || 'Member';
+
+    if (!question) return alert('Please enter a poll question.');
+    if (options.length < 2) return alert('Please enter at least 2 poll options.');
+
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/channels/${channelId}/polls`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, options, createdBy })
+    });
+
+    if (res.ok) {
+        document.getElementById('hkxPollModal')?.remove();
+        await openHoknexSpace(clubId);
+    } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || 'Could not create poll.');
+    }
+}
+
+async function voteOnChannelPoll(clubId, channelId, pollId, optionIndex) {
+    const username = localStorage.getItem('hoknex_user') || 'Member';
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/channels/${channelId}/polls/${pollId}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ optionIndex, username })
+    });
+    if (res.ok) {
+        await openHoknexSpace(clubId);
+    }
+}
+
+function renderChannelPollsPanel(club, channelId, currentUsername = '') {
+    const stream = document.getElementById('hkxMessagesStream');
+    const channel = (club.channels || []).find(ch => ch._id.toString() === channelId.toString());
+    if (!stream || !channel) return;
+
+    const polls = channel.polls || [];
+    if (polls.length === 0) return;
+
+    const pollsHtml = polls.map(poll => {
+        const totalVotes = (poll.options || []).reduce((sum, opt) => sum + ((opt.votes || []).length), 0);
+        const optionsHtml = (poll.options || []).map((opt, idx) => {
+            const voters = opt.votes || [];
+            const count = voters.length;
+            const pct = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+            const votedByMe = currentUsername && voters.includes(currentUsername);
+
+            return `
+                <button type="button" onclick="voteOnChannelPoll('${club._id}', '${channelId}', '${poll._id}', ${idx})" style="position:relative; overflow:hidden; width:100%; text-align:left; padding:8px 10px; border-radius:8px; border:1px solid ${votedByMe ? '#60a5fa' : 'rgba(255,255,255,0.2)'}; background:rgba(15,23,42,0.72); color:#fff; cursor:pointer; font-weight:700; font-size:0.8rem;">
+                    <div style="position:absolute; top:0; left:0; bottom:0; width:${pct}%; background:${votedByMe ? 'rgba(59,130,246,0.38)' : 'rgba(148,163,184,0.2)'}; pointer-events:none;"></div>
+                    <div style="position:relative; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                        <span>${votedByMe ? '✓ ' : ''}${opt.label}</span>
+                        <span style="font-size:0.72rem; opacity:0.9;">${count} (${pct}%)</span>
+                    </div>
+                </button>
+            `;
+        }).join('');
+
+        return `
+            <div style="background:rgba(15, 23, 42, 0.78); backdrop-filter:blur(8px); border:1px solid rgba(96, 165, 250, 0.35); border-radius:11px; padding:11px 13px; color:#f8fafc; display:flex; flex-direction:column; gap:7px; max-width:92%;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                    <span style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:#93c5fd;">📊 Live Channel Poll</span>
+                    <span style="font-size:0.68rem; color:#cbd5e1; font-weight:600;">${totalVotes} vote${totalVotes === 1 ? '' : 's'}</span>
+                </div>
+                <div style="font-weight:800; font-size:0.9rem;">${poll.question}</div>
+                <div style="display:flex; flex-direction:column; gap:6px;">${optionsHtml}</div>
+            </div>
+        `;
+    }).join('');
+
+    stream.insertAdjacentHTML('beforeend', `<div style="display:flex; flex-direction:column; gap:8px; margin-bottom:6px;">${pollsHtml}</div>`);
+    stream.scrollTop = stream.scrollHeight;
 }
 
 function selectHoknexChannel(clubId, channelId) {
@@ -3411,14 +3515,13 @@ function applyPersistentSpaceWallpaper(val) {
     if (!streamEl) return;
     if (!val) {
         localStorage.removeItem(`hoknex_space_wallpaper_${activeClubId}`);
-        streamEl.style.backgroundImage = 'none';
+        streamEl.style.background = 'transparent';
+        streamEl.style.backgroundSize = 'auto';
         return;
     }
     localStorage.setItem(`hoknex_space_wallpaper_${activeClubId}`, val);
-    streamEl.style.backgroundImage = val;
+    streamEl.style.background = `${val} no-repeat center center`;
     streamEl.style.backgroundSize = 'cover';
-    streamEl.style.backgroundPosition = 'center center';
-    streamEl.style.backgroundRepeat = 'no-repeat';
 }
 
 function toggleHoknexFullScreen() {
@@ -3462,7 +3565,7 @@ function renderHoknexStickerGrid(items) {
     const grid = document.getElementById('hkxStickerGrid');
     if (!grid) return;
     grid.innerHTML = items.map(st => `
-        <img src="${st.url}" alt="${st.label || 'Sticker'}" onclick="sendHoknexSticker('${st.url}')" title="${st.label || 'Send sticker'}" style="width:100%; height:54px; object-fit:contain; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.16); border-radius:7px; padding:4px; cursor:pointer;">
+        <img src="${st.url}" alt="${st.label || 'Sticker'}" onclick="sendHoknexSticker('${st.url}')" title="${st.label || 'Send sticker'}" style="width:100%; height:54px; object-fit:contain; background:var(--canvas); border:1px solid var(--border); border-radius:7px; padding:4px; cursor:pointer;">
     `).join('');
 }
 
@@ -3600,172 +3703,104 @@ function renderHoknexChannelMessages(club, channelId, currentUsername = '', curr
     if (chNameEl) chNameEl.innerText = `# ${channel.name}`;
     if (chTopicEl) chTopicEl.innerText = channel.topic || 'Hoknex live channel';
 
-    const canDeleteAny = userHasPower(club, currentUsername, currentUserId, 'delete_messages');
-    const canPin = userHasPower(club, currentUsername, currentUserId, 'pin_messages');
+    const myRole = getMemberRoleInfo(club, currentUsername, currentUserId).role;
     const messages = channel.messages || [];
 
     if (messages.length === 0) {
-        stream.innerHTML = `<p style="text-align:center; font-size:0.84rem; font-weight:700; color:#fff; background:rgba(15,23,42,0.55); padding:8px 12px; border-radius:8px; margin:2rem auto;">No messages yet in #${channel.name}.</p>`;
-        return;
+        stream.innerHTML = `<p style="text-align:center; font-size:0.84rem; font-weight:600; color:var(--ink-light); margin-top:2rem;">No messages yet in #${channel.name}.</p>`;
+    } else {
+        stream.innerHTML = messages.map(m => {
+            let raw = m.text || '';
+            let quoteHtml = '';
+            if (raw.startsWith('> Replying to ')) {
+                const nl = raw.indexOf('\n');
+                if (nl > -1) {
+                    quoteHtml = `<div style="font-size:0.72rem; background:var(--canvas); border-left:3px solid var(--accent-blue); padding:3px 8px; border-radius:4px; margin-bottom:4px; color:var(--ink-light);">${raw.slice(2, nl)}</div>`;
+                    raw = raw.slice(nl + 1);
+                }
+            }
+
+            let bodyHtml = '';
+            if (raw.includes('[Sticker]:')) {
+                const parts = raw.split('[Sticker]:');
+                const sUrl = parts[1].trim();
+                bodyHtml = `<img src="${sUrl}" alt="Sticker" style="width:96px; height:96px; object-fit:contain; display:block;">`;
+            } else if (raw.includes('[Media]:')) {
+                const parts = raw.split('[Media]:');
+                const mUrl = parts[1].trim();
+                const cap = parts[0].trim();
+                bodyHtml = `${cap ? `<div style="margin-bottom:5px;">${cap}</div>` : ''}<a href="${mUrl}" target="_blank"><img src="${mUrl}" style="max-width:220px; max-height:220px; border-radius:8px; border:1px solid var(--border); display:block; object-fit:cover;"></a>`;
+            } else {
+                bodyHtml = raw
+                    .replace(/@([a-zA-Z0-9_]+)/g, '<span style="background:rgba(59,130,246,0.16); color:var(--accent-blue); padding:1px 5px; border-radius:4px; font-weight:700;">@$1</span>')
+                    .replace(/#([a-zA-Z0-9_]+)/g, '<span style="color:var(--accent-purple); font-weight:700;">#$1</span>');
+            }
+
+            const replies = m.threadReplies || [];
+            const threadHtml = replies.length > 0
+                ? `<div style="margin-top:6px; padding-left:10px; border-left:2px solid var(--accent-purple); display:flex; flex-direction:column; gap:4px;">
+                    ${replies.map(tr => `<div style="font-size:0.76rem; background:var(--canvas); padding:4px 8px; border-radius:6px;"><b>${tr.senderName}:</b> ${tr.text}</div>`).join('')}
+                   </div>`
+                : '';
+
+            const reactionsHtml = (m.reactions || []).map(r => `
+                <button onclick="reactToHoknexMessage('${m._id || ''}', '${r.emoji}')" style="background:var(--canvas); border:1px solid var(--border); border-radius:11px; padding:2px 6px; font-size:0.7rem; font-weight:700; cursor:pointer; color:var(--ink);">${r.emoji} ${(r.users || []).length}</button>
+            `).join('');
+
+            const canDeleteMsg = myRole === 'Admin' || myRole === 'Moderator' || (currentUsername && (m.senderUsername || '').toLowerCase() === currentUsername.toLowerCase());
+            const safeSnippet = raw.replace(/\[Sticker\]:.*/, '[Sticker]').replace(/\[Media\]:.*/, '[Image]').replace(/'/g, "\\'");
+            const senderDpHtml = m.senderDp
+                ? `<img src="${m.senderDp}" style="width:22px; height:22px; border-radius:50%; object-fit:cover; border:1px solid var(--border);">`
+                : `<div style="width:22px; height:22px; border-radius:50%; background:var(--accent-blue); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:800;">${(m.senderName || 'U').charAt(0).toUpperCase()}</div>`;
+
+            return `
+                <div style="background:var(--paper); border:1px solid var(--border); padding:9px 12px; border-radius:9px; max-width:90%; box-shadow:var(--shadow-subtle);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                        <div style="display:flex; align-items:center; gap:6px; cursor:pointer;" onclick="viewUserProfile('${m.senderUsername || ''}')">
+                            ${senderDpHtml}
+                            <strong style="color:var(--accent-blue); font-size:0.82rem; font-weight:800;">${m.senderName}</strong>
+                            <span style="font-size:0.64rem; color:var(--ink-light); font-weight:600;">${m.activityStatus || ''}</span>
+                        </div>
+                        <div style="display:flex; gap:4px; align-items:center;">
+                            <button onclick="startHoknexThread('${m._id || ''}', '${(m.senderName || 'Member').replace(/'/g, "\\'")}', '${safeSnippet}')" style="background:none; border:none; font-size:0.7rem; font-weight:700; color:var(--ink-light); cursor:pointer;">🧵 Thread (${replies.length})</button>
+                            <button onclick="reactToHoknexMessage('${m._id || ''}', '👍')" style="background:none; border:none; font-size:0.74rem; cursor:pointer;">👍</button>
+                            <button onclick="reactToHoknexMessage('${m._id || ''}', '🔥')" style="background:none; border:none; font-size:0.74rem; cursor:pointer;">🔥</button>
+                            ${canDeleteMsg && m._id ? `<button onclick="deleteHoknexMessage('${m._id}')" style="background:none; border:none; font-size:0.7rem; color:var(--accent-coral); cursor:pointer;">🗑</button>` : ''}
+                        </div>
+                    </div>
+                    ${quoteHtml}
+                    <div style="font-weight:600; font-size:0.88rem; margin-top:4px; word-break:break-word;">${bodyHtml}</div>
+                    ${reactionsHtml ? `<div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:6px;">${reactionsHtml}</div>` : ''}
+                    ${threadHtml}
+                </div>
+            `;
+        }).join('');
     }
 
-    stream.innerHTML = messages.map(m => {
-        let raw = m.text || '';
-        let quoteHtml = '';
-        if (raw.startsWith('> Replying to ')) {
-            const nl = raw.indexOf('\n');
-            if (nl > -1) {
-                quoteHtml = `<div style="font-size:0.72rem; background:rgba(255,255,255,0.08); border-left:3px solid #60a5fa; padding:3px 8px; border-radius:4px; margin-bottom:4px; color:#e2e8f0;">${raw.slice(2, nl)}</div>`;
-                raw = raw.slice(nl + 1);
-            }
-        }
-
-        let bodyHtml = '';
-        if (raw.includes('[Sticker]:')) {
-            const parts = raw.split('[Sticker]:');
-            const sUrl = parts[1].trim();
-            bodyHtml = `<img src="${sUrl}" alt="Sticker" style="width:96px; height:96px; object-fit:contain; display:block;">`;
-        } else if (raw.includes('[Media]:')) {
-            const parts = raw.split('[Media]:');
-            const mUrl = parts[1].trim();
-            const cap = parts[0].trim();
-            bodyHtml = `${cap ? `<div style="margin-bottom:5px;">${cap}</div>` : ''}<a href="${mUrl}" target="_blank"><img src="${mUrl}" style="max-width:220px; max-height:220px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); display:block; object-fit:cover;"></a>`;
-        } else {
-            bodyHtml = raw
-                .replace(/@([a-zA-Z0-9_]+)/g, '<span style="background:rgba(59,130,246,0.28); color:#93c5fd; padding:1px 5px; border-radius:4px; font-weight:700;">@$1</span>')
-                .replace(/#([a-zA-Z0-9_]+)/g, '<span style="color:#c4b5fd; font-weight:700;">#$1</span>');
-        }
-
-        const replies = m.threadReplies || [];
-        const threadHtml = replies.length > 0
-            ? `<div style="margin-top:6px; padding-left:10px; border-left:2px solid #a78bfa; display:flex; flex-direction:column; gap:4px;">
-                ${replies.map(tr => `<div style="font-size:0.76rem; background:rgba(15,23,42,0.65); padding:4px 8px; border-radius:6px; color:#f1f5f9;"><b>${tr.senderName}:</b> ${tr.text}</div>`).join('')}
-               </div>`
-            : '';
-
-        const reactionsHtml = (m.reactions || []).map(r => `
-            <button onclick="reactToHoknexMessage('${m._id || ''}', '${r.emoji}')" style="background:rgba(15,23,42,0.72); border:1px solid rgba(255,255,255,0.22); border-radius:11px; padding:2px 6px; font-size:0.7rem; font-weight:700; cursor:pointer; color:#fff;">${r.emoji} ${(r.users || []).length}</button>
-        `).join('');
-
-        const canDeleteMsg = canDeleteAny || (currentUsername && (m.senderUsername || '').toLowerCase() === currentUsername.toLowerCase());
-        const safeSnippet = raw.replace(/\[Sticker\]:.*/, '[Sticker]').replace(/\[Media\]:.*/, '[Image]').replace(/'/g, "\\'").replace(/\n/g, ' ');
-        const senderDpHtml = m.senderDp
-            ? `<img src="${m.senderDp}" style="width:22px; height:22px; border-radius:50%; object-fit:cover; border:1px solid rgba(255,255,255,0.25);">`
-            : `<div style="width:22px; height:22px; border-radius:50%; background:var(--accent-purple); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:800;">${(m.senderName || 'U').charAt(0).toUpperCase()}</div>`;
-
-        // Transparent glass bubble so wallpaper stays clearly visible
-        return `
-            <div style="background:rgba(15, 23, 42, 0.68); backdrop-filter:blur(8px); border:1px solid rgba(255, 255, 255, 0.16); color:#f8fafc; padding:9px 12px; border-radius:10px; max-width:90%; box-shadow:0 4px 14px rgba(0,0,0,0.22);">
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-                    <div style="display:flex; align-items:center; gap:6px; cursor:pointer;" onclick="viewUserProfile('${m.senderUsername || ''}')">
-                        ${senderDpHtml}
-                        <strong style="color:#93c5fd; font-size:0.82rem; font-weight:800;">${m.senderName}</strong>
-                        <span style="font-size:0.64rem; color:#cbd5e1; font-weight:600;">${m.activityStatus || ''}</span>
-                    </div>
-                    <div style="display:flex; gap:4px; align-items:center;">
-                        <button onclick="startHoknexThread('${m._id || ''}', '${(m.senderName || 'Member').replace(/'/g, "\\'")}', '${safeSnippet}')" style="background:none; border:none; font-size:0.7rem; font-weight:700; color:#e2e8f0; cursor:pointer;">🧵 (${replies.length})</button>
-                        ${canPin ? `<button onclick="pinMessageToChannel('${club._id}', '${channelId}', '${safeSnippet}')" title="Pin Notice" style="background:none; border:none; font-size:0.7rem; color:#fde68a; cursor:pointer;">📌</button>` : ''}
-                        <button onclick="reactToHoknexMessage('${m._id || ''}', '👍')" style="background:none; border:none; font-size:0.74rem; cursor:pointer;">👍</button>
-                        <button onclick="reactToHoknexMessage('${m._id || ''}', '🔥')" style="background:none; border:none; font-size:0.74rem; cursor:pointer;">🔥</button>
-                        ${canDeleteMsg && m._id ? `<button onclick="deleteHoknexMessage('${m._id}')" style="background:none; border:none; font-size:0.7rem; color:#fca5a5; cursor:pointer;">🗑</button>` : ''}
-                    </div>
-                </div>
-                ${quoteHtml}
-                <div style="font-weight:600; font-size:0.88rem; margin-top:4px; word-break:break-word;">${bodyHtml}</div>
-                ${reactionsHtml ? `<div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:6px;">${reactionsHtml}</div>` : ''}
-                ${threadHtml}
-            </div>
-        `;
-    }).join('');
+    renderChannelPollsPanel(club, channelId, currentUsername);
     stream.scrollTop = stream.scrollHeight;
 }
 
-// Feature #1: Pinned Channel Notice
-function pinMessageToChannel(clubId, channelId, text) {
-    localStorage.setItem(`hoknex_pin_${clubId}_${channelId}`, text);
-    renderPinnedNoticeBanner(clubId, channelId);
-}
-
-function clearChannelPin(clubId, channelId) {
-    localStorage.removeItem(`hoknex_pin_${clubId}_${channelId}`);
-    renderPinnedNoticeBanner(clubId, channelId);
-}
-
-function renderPinnedNoticeBanner(clubId, channelId) {
-    const bar = document.getElementById('hkxPinnedNoticeBar');
-    const txt = document.getElementById('hkxPinnedNoticeText');
-    if (!bar || !txt) return;
-    const pinned = localStorage.getItem(`hoknex_pin_${clubId}_${channelId}`);
-    if (pinned) {
-        txt.innerText = `📌 Pinned: ${pinned}`;
-        bar.style.display = 'flex';
-    } else {
-        bar.style.display = 'none';
-    }
-}
-
-// Feature #2: Broadcast / Read Mode Toggle
-function toggleBroadcastMode(clubId, channelId) {
-    const key = `hoknex_broadcast_lock_${clubId}_${channelId}`;
-    const current = localStorage.getItem(key) === '1';
-    localStorage.setItem(key, current ? '0' : '1');
-    openHoknexSpace(clubId);
-}
-
-// Feature #3: Quick Channel Poll Modal
-function openQuickPollModal(clubId, channelId) {
-    document.getElementById('hkxPollModal')?.remove();
-    const html = `
-        <div id="hkxPollModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1200; padding:1rem;">
-            <div style="background:var(--paper); border:1px solid var(--border); border-radius:12px; padding:1.4rem; width:100%; max-width:380px; box-shadow:var(--shadow-card); color:var(--ink);">
-                <h3 style="font-weight:800; font-size:1.05rem; margin-bottom:10px;">📊 Create Channel Poll</h3>
-                <input type="text" id="hkxPollQuestion" placeholder="Poll question..." style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:8px; outline:none;">
-                <input type="text" id="hkxPollOpt1" placeholder="Option 1" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:6px; outline:none;">
-                <input type="text" id="hkxPollOpt2" placeholder="Option 2" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:12px; outline:none;">
-                <div style="display:flex; gap:8px;">
-                    <button class="btn-create" style="flex:1; padding:8px;" onclick="submitQuickPoll('${clubId}', '${channelId}')">Post Poll</button>
-                    <button class="action-btn" style="flex:1; padding:8px;" onclick="document.getElementById('hkxPollModal').remove()">Cancel</button>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', html);
-}
-
-async function submitQuickPoll(clubId, channelId) {
-    const q = document.getElementById('hkxPollQuestion')?.value.trim();
-    const o1 = document.getElementById('hkxPollOpt1')?.value.trim() || 'Yes';
-    const o2 = document.getElementById('hkxPollOpt2')?.value.trim() || 'No';
-    if (!q) return alert('Enter a poll question.');
-    const pollMsg = `📊 POLL: ${q}\n• Option A: ${o1}\n• Option B: ${o2}\n(React with 👍 for ${o1} or 🔥 for ${o2})`;
-    activeClubId = clubId;
-    activeChannelId = channelId;
-    await postHoknexMessagePayload({ text: pollMsg });
-    document.getElementById('hkxPollModal')?.remove();
-}
-
-// Role & 18 Powers Modal
 function openRoleAssignModal(clubId, targetUsername, displayName) {
     document.getElementById('hkxRoleModal')?.remove();
     const html = `
-        <div id="hkxRoleModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.65); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1200; padding:1rem;">
-            <div style="background:var(--paper); border:1px solid var(--border); border-radius:12px; padding:1.4rem; width:100%; max-width:420px; max-height:85vh; overflow-y:auto; box-shadow:var(--shadow-card); color:var(--ink);">
-                <h3 style="font-weight:800; font-size:1.05rem; margin-bottom:4px;">👑 Assign Role: ${displayName}</h3>
-                <p style="font-size:0.72rem; color:var(--ink-light); margin-bottom:10px;">Admin has all 18 powers automatically. Members get core collaboration powers by default.</p>
+        <div id="hkxRoleModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1200; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); border-radius:12px; padding:1.4rem; width:100%; max-width:380px; box-shadow:var(--shadow-card); color:var(--ink);">
+                <h3 style="font-weight:800; font-size:1.05rem; margin-bottom:6px;">👑 Assign Role: ${displayName}</h3>
+                <p style="font-size:0.74rem; color:var(--ink-light); margin-bottom:10px;">Admin has every power automatically.</p>
                 <label style="font-size:0.72rem; font-weight:800; text-transform:uppercase;">Role</label>
-                <select id="hkxRoleSelect" onchange="syncRolePresetCheckboxes(this.value)" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:7px; font-weight:700; background:var(--canvas); color:var(--ink); margin-bottom:10px;">
-                    <option value="Member">Member (Default Powers)</option>
-                    <option value="Builder">Builder</option>
-                    <option value="Moderator">Moderator</option>
-                    <option value="Admin">Admin (All 18 Powers)</option>
+                <select id="hkxRoleSelect" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:7px; font-weight:700; background:var(--canvas); color:var(--ink); margin-bottom:10px;">
+                    <option value="Admin">Admin (Full Power)</option>
+                    <option value="Moderator">Moderator (Channels + Cleanup + Chat)</option>
+                    <option value="Builder">Builder (Chat + Threads + Stickers)</option>
+                    <option value="Member">Member (Standard Access)</option>
                 </select>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.74rem; font-weight:700; margin-bottom:12px;">
-                    ${HOKNEX_ALL_POWERS.map(p => `
-                        <label style="display:flex; align-items:center; gap:5px; background:var(--canvas); padding:5px 7px; border-radius:6px; border:1px solid var(--border);">
-                            <input type="checkbox" class="hkxPowerChk" value="${p.key}" ${p.defaultMember ? 'checked' : ''}>
-                            <span>${p.label}</span>
-                        </label>
-                    `).join('')}
+                <div style="display:flex; flex-direction:column; gap:5px; font-size:0.78rem; font-weight:700; margin-bottom:12px;">
+                    <label><input type="checkbox" class="hkxPowerChk" value="chat" checked> Send Messages</label>
+                    <label><input type="checkbox" class="hkxPowerChk" value="thread" checked> Start & Reply in Threads</label>
+                    <label><input type="checkbox" class="hkxPowerChk" value="sticker" checked> Send Stickers & Media</label>
+                    <label><input type="checkbox" class="hkxPowerChk" value="pin_messages"> Moderate & Delete Messages</label>
+                    <label><input type="checkbox" class="hkxPowerChk" value="manage_channels"> Create & Delete Channels</label>
                 </div>
                 <div style="display:flex; gap:8px;">
                     <button class="btn-create" style="flex:1; padding:8px;" onclick="submitRoleAssignment('${clubId}', '${targetUsername}')">Save Role</button>
@@ -3775,21 +3810,6 @@ function openRoleAssignModal(clubId, targetUsername, displayName) {
         </div>
     `;
     document.body.insertAdjacentHTML('beforeend', html);
-}
-
-function syncRolePresetCheckboxes(roleVal) {
-    const boxes = document.querySelectorAll('.hkxPowerChk');
-    boxes.forEach(box => {
-        if (roleVal === 'Admin') {
-            box.checked = true;
-        } else if (roleVal === 'Moderator') {
-            box.checked = ['chat', 'thread', 'sticker', 'react', 'mention', 'poll', 'search_msgs', 'manage_channels', 'edit_topic', 'pin_messages', 'delete_messages', 'announcement_lock'].includes(box.value);
-        } else if (roleVal === 'Builder') {
-            box.checked = ['chat', 'thread', 'sticker', 'react', 'mention', 'poll', 'search_msgs', 'edit_topic'].includes(box.value);
-        } else {
-            box.checked = HOKNEX_DEFAULT_MEMBER_POWERS.includes(box.value);
-        }
-    });
 }
 
 async function submitRoleAssignment(clubId, targetUsername) {
