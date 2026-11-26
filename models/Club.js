@@ -24,9 +24,24 @@ const messageSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
+const pollOptionSchema = new mongoose.Schema({
+    label: { type: String, required: true },
+    votes: [{ type: String }]
+}, { _id: false });
+
+const channelPollSchema = new mongoose.Schema({
+    question: { type: String, required: true },
+    createdBy: { type: String, default: 'Member' },
+    options: [pollOptionSchema],
+    createdAt: { type: Date, default: Date.now }
+});
+
 const channelSchema = new mongoose.Schema({
     name: { type: String, required: true },
     topic: { type: String, default: 'Hoknex live channel' },
+    isBroadcast: { type: Boolean, default: false },
+    pinnedNotice: { type: String, default: '' },
+    polls: [channelPollSchema],
     messages: [messageSchema]
 });
 
@@ -52,7 +67,7 @@ const ClubSchema = new mongoose.Schema({
     inviteCode: { type: String, default: '' },
     category: String,
     color: String,
-    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     joinRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     roles: [roleAssignmentSchema],
