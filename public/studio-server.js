@@ -1,22 +1,17 @@
-// studio-server.js — Hoknex Studio Perks, Pro Pass, Admin Portal, Mailer, Library & Project Server
+// studio-server.js — Hoknex Studio Server (Brevo Mailer, Perks, Pro Pass, Library & Admin API)
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-let nodemailer = null;
-try {
-  nodemailer = require('nodemailer');
-} catch (_) {
-  nodemailer = null;
-}
-
 const app = express();
 const PORT = process.env.PORT || process.env.STUDIO_PORT || 5050;
 const DB_FILE = path.join(__dirname, 'hoknex_studio_db.json');
 const ADMIN_STUDIO_KEY = process.env.HOKNEX_ADMIN_KEY || 'HOKNEX-ADMIN-2026';
 const STUDIO_FROM_EMAIL = process.env.STUDIO_EMAIL || 'hoknex.in@gmail.com';
+const STUDIO_FROM_NAME = process.env.STUDIO_SENDER_NAME || 'Hoknex Studio';
+const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
 
 const NEW_USER_PERKS = 250;
 const DAILY_CLAIM_PERKS = 25;
@@ -85,46 +80,60 @@ function isAdminRequest(req) {
   return providedKey.length > 0 && providedKey === ADMIN_STUDIO_KEY;
 }
 
-function getSmtpTransport() {
-  if (!nodemailer || !process.env.SMTP_USER || !process.env.SMTP_PASS) return null;
-  return nodemailer.createTransport({
-    service: process.env.SMTP_SERVICE || 'gmail',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
-    }
-  });
-}
-
-async function sendStudioEmail(db, { to, subject, text }) {
+// ============================================================================
+// BREVO TRANSACTIONAL EMAIL DISPATCHER (hoknex.in@gmail.com)
+// ============================================================================
+async function sendStudioEmail(db, { to, subject, text, recipientName = '' }) {
   if (!to) return;
+  const cleanTo = String(to).trim().toLowerCase();
   const entry = {
     id: crypto.randomUUID(),
+    provider: 'Brevo',
     from: STUDIO_FROM_EMAIL,
-    to: String(to).trim().toLowerCase(),
+    to: cleanTo,
     subject,
     text,
     sentAt: new Date().toISOString(),
-    delivery: 'logged'
+    delivery: BREVO_API_KEY ? 'brevo_pending' : 'brevo_key_missing_logged'
   };
 
-  const transporter = getSmtpTransport();
-  if (transporter) {
+  if (BREVO_API_KEY) {
     try {
-      await transporter.sendMail({
-        from: `"Hoknex Studio" <${STUDIO_FROM_EMAIL}>`,
-        to: entry.to,
-        subject,
-        text
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'api-key': BREVO_API_KEY,
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          sender: { name: STUDIO_FROM_NAME, email: STUDIO_FROM_EMAIL },
+          to: [{ email: cleanTo, name: recipientName || cleanTo.split('@')[0] }],
+          subject,
+          textContent: text,
+          htmlContent: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#18181B;max-width:560px;margin:auto;padding:20px;border:1px solid #E4E4E7;border-radius:12px;">
+            <h2 style="margin:0 0 12px;color:#2563EB;">${subject}</h2>
+            <p style="white-space:pre-line;margin:0 0 16px;">${text}</p>
+            <hr style="border:none;border-top:1px solid #E4E4E7;margin:16px 0;" />
+            <small style="color:#71717A;">Hoknex Studio &bull; Official Support: ${STUDIO_FROM_EMAIL}</small>
+          </div>`
+        })
       });
-      entry.delivery = 'smtp_sent';
+
+      if (response.ok) {
+        const resData = await response.json().catch(() => ({}));
+        entry.delivery = `brevo_sent${resData.messageId ? ` (${resData.messageId})` : ''}`;
+      } else {
+        const errText = await response.text().catch(() => '');
+        entry.delivery = `brevo_error_${response.status}: ${errText.slice(0, 120)}`;
+      }
     } catch (err) {
-      entry.delivery = `smtp_fallback:${err.message}`;
+      entry.delivery = `brevo_network_error: ${err.message}`;
     }
   }
 
   db.emailLogs.unshift(entry);
-  if (db.emailLogs.length > 200) db.emailLogs = db.emailLogs.slice(0, 200);
+  if (db.emailLogs.length > 250) db.emailLogs = db.emailLogs.slice(0, 250);
 }
 
 async function checkAndTriggerLowPerkEmail(db, user) {
@@ -134,8 +143,9 @@ async function checkAndTriggerLowPerkEmail(db, user) {
     user.lowPerkAlertSent = true;
     await sendStudioEmail(db, {
       to: user.email,
+      recipientName: user.name,
       subject: 'Hoknex Studio Reminder: Only 25 Perks Left — Join Pro Pass',
-      text: `Hi ${user.name},\n\nYou have ${perks} Hoknex Studio Perks remaining. Upgrade to Hoknex Pro Pass to claim unlimited packs and perks.\n\nSupport: ${STUDIO_FROM_EMAIL}`
+      text: `Hi ${user.name},\n\nYou have ${perks} Hoknex Studio Perks remaining. Join Hoknex Pro Pass to claim unlimited packs and perks for all Studio features.\n\nSupport: ${STUDIO_FROM_EMAIL}`
     });
     return true;
   }
@@ -181,6 +191,8 @@ app.get('/api/studio/health', (req, res) => {
   res.json({
     ok: true,
     brand: 'Hoknex Studio',
+    emailProvider: 'Brevo',
+    brevoConfigured: Boolean(BREVO_API_KEY),
     supportEmail: STUDIO_FROM_EMAIL,
     usersCount: db.users.length,
     certificatesCount: db.certificates.length,
@@ -241,6 +253,7 @@ app.post('/api/studio/auth/signup', async (req, res) => {
   db.users.push(user);
   await sendStudioEmail(db, {
     to: user.email,
+    recipientName: user.name,
     subject: 'Welcome to Hoknex Studio — 250 Perks Credited',
     text: `Hi ${user.name},\n\nWelcome to Hoknex Studio! ${NEW_USER_PERKS} Perks have been added to your account.\n\nSupport: ${STUDIO_FROM_EMAIL}`
   });
@@ -432,7 +445,7 @@ app.delete('/api/studio/auth/delete-account', (req, res) => {
 });
 
 // ============================================================================
-// PRO PASS PAYMENT REQUESTS & STUDIO ADMIN PORTAL
+// PRO PASS PAYMENT REQUESTS & SEPARATE STUDIO ADMIN PORTAL API
 // ============================================================================
 app.post('/api/studio/pro-pass/submit-payment', async (req, res) => {
   const {
@@ -484,6 +497,7 @@ app.post('/api/studio/pro-pass/submit-payment', async (req, res) => {
 
   await sendStudioEmail(db, {
     to: cleanEmail,
+    recipientName: fullName,
     subject: 'Hoknex Studio: Pro Pass Payment Screenshot Received',
     text: `Hi ${fullName},\n\nWe received your Pro Pass payment screenshot for packs (${packs.join(', ')}) and amount ₹${requestRecord.amount}. Studio Admin will verify shortly.\n\nContact: ${STUDIO_FROM_EMAIL}`
   });
@@ -499,11 +513,13 @@ app.get('/api/studio/admin/overview', (req, res) => {
   const db = readDB();
   res.json({
     ok: true,
+    emailProvider: 'Brevo',
+    brevoConfigured: Boolean(BREVO_API_KEY),
     supportEmail: STUDIO_FROM_EMAIL,
     settings: db.settings,
     users: db.users.map(sanitizeUser),
     paymentRequests: db.paymentRequests,
-    emailLogs: db.emailLogs.slice(0, 50)
+    emailLogs: db.emailLogs.slice(0, 80)
   });
 });
 
@@ -548,6 +564,7 @@ app.post('/api/studio/admin/payment-review', async (req, res) => {
     reqItem.reviewedAt = new Date().toISOString();
     await sendStudioEmail(db, {
       to: reqItem.userEmail,
+      recipientName: reqItem.fullName,
       subject: 'Hoknex Studio: Pro Pass Payment Update',
       text: `Hi ${reqItem.fullName},\n\nYour Pro Pass payment screenshot could not be verified. Please contact ${STUDIO_FROM_EMAIL} or resubmit with a clear payment receipt.`
     });
@@ -581,8 +598,9 @@ app.post('/api/studio/admin/payment-review', async (req, res) => {
 
   await sendStudioEmail(db, {
     to: reqItem.userEmail,
-    subject: 'Hoknex Studio: Pro Pass Confirmed & Perks Credited!',
-    text: `Hi ${reqItem.fullName},\n\nYour payment is verified! Your Hoknex Pro Pass is now active for (${reqItem.packs.join(', ')}) and ${totalGranted} Perks have been credited.\n\nSent from: ${STUDIO_FROM_EMAIL}`
+    recipientName: reqItem.fullName,
+    subject: 'Hoknex Studio: Pro Pass Payment Confirmed & Perks Credited!',
+    text: `Hi ${reqItem.fullName},\n\nYour payment is verified! Your Hoknex Pro Pass is now active for (${reqItem.packs.join(', ')}) and ${totalGranted} Perks have been credited to your account.\n\nSent via Brevo from: ${STUDIO_FROM_EMAIL}`
   });
 
   writeDB(db);
@@ -618,32 +636,53 @@ app.post('/api/studio/admin/grant-perks', async (req, res) => {
 
   await sendStudioEmail(db, {
     to: user.email,
-    subject: `Hoknex Studio: +${amount} Free Perks Sent to Your Account`,
-    text: `Hi ${user.name},\n\nStudio Admin sent +${amount} Perks to your Hoknex Studio account (${note}). Your current balance is ${user.perks} Perks.\n\nSent from: ${STUDIO_FROM_EMAIL}`
+    recipientName: user.name,
+    subject: `Hoknex Studio: +${amount} Perks Sent to Your Account`,
+    text: `Hi ${user.name},\n\nStudio Admin sent +${amount} Perks to your Hoknex Studio account (${note}). Your updated balance is ${user.perks} Perks.\n\nSent via Brevo from: ${STUDIO_FROM_EMAIL}`
   });
 
   writeDB(db);
   res.json({ success: true, user: sanitizeUser(user) });
 });
 
+app.post('/api/studio/admin/toggle-pro', async (req, res) => {
+  if (!isAdminRequest(req)) {
+    return res.status(403).json({ error: 'Unauthorized: Invalid Admin Studio Key.' });
+  }
+  const { userId, hasProPass, proPacks = ['all_access'] } = req.body || {};
+  const db = readDB();
+  const user = db.users.find((u) => u.id === userId);
+  if (!user) return res.status(404).json({ error: 'User not found.' });
+
+  user.hasProPass = Boolean(hasProPass);
+  user.proPacks = user.hasProPass ? proPacks : [];
+  if (user.hasProPass) user.lowPerkAlertSent = false;
+  writeDB(db);
+  res.json({ success: true, user: sanitizeUser(user) });
+});
+
+app.delete('/api/studio/admin/users/:id', (req, res) => {
+  if (!isAdminRequest(req)) {
+    return res.status(403).json({ error: 'Unauthorized: Invalid Admin Studio Key.' });
+  }
+  const db = readDB();
+  const before = db.users.length;
+  db.users = db.users.filter((u) => u.id !== req.params.id);
+  if (db.users.length === before) return res.status(404).json({ error: 'User not found.' });
+  writeDB(db);
+  res.json({ success: true });
+});
+
 // ============================================================================
-// SINGLE & BULK CERTIFICATES + PASSWORD-PROTECTED VAULT UNLOCK
+// CERTIFICATES & PROJECTS
 // ============================================================================
 app.post('/api/studio/certificates/save', (req, res) => {
   const {
-    certId,
-    password,
-    recipient = 'Hoknex Member',
+    certId, password, recipient = 'Hoknex Member',
     title = 'HOKNEX CERTIFICATE OF ACHIEVEMENT',
     description = 'Awarded for distinguished achievement within Hoknex.',
-    issuer = 'Hoknex',
-    format = 'certificate',
-    themeKey = 'gallery',
-    date = null,
-    logo = null,
-    signature = null,
-    backgroundImage = null,
-    qrUrl = null
+    issuer = 'Hoknex', format = 'certificate', themeKey = 'gallery',
+    date = null, logo = null, signature = null, backgroundImage = null, qrUrl = null
   } = req.body || {};
 
   const cleanId = String(certId || makeCertId()).trim().toUpperCase();
@@ -651,16 +690,10 @@ app.post('/api/studio/certificates/save', (req, res) => {
   const existingIdx = db.certificates.findIndex((c) => c.certId.toUpperCase() === cleanId);
 
   if (existingIdx >= 0 && !isAdminRequest(req)) {
-    return res.status(403).json({
-      success: false,
-      error: 'Only an authenticated Hoknex Admin can edit an existing certificate.'
-    });
+    return res.status(403).json({ success: false, error: 'Only an authenticated Hoknex Admin can edit an existing certificate.' });
   }
 
-  const finalPass = String(
-    password || (existingIdx >= 0 ? db.certificates[existingIdx].password : makeCertPass())
-  ).trim();
-
+  const finalPass = String(password || (existingIdx >= 0 ? db.certificates[existingIdx].password : makeCertPass())).trim();
   const record = {
     certId: cleanId,
     password: finalPass,
@@ -671,154 +704,70 @@ app.post('/api/studio/certificates/save', (req, res) => {
     issuer: String(issuer).trim() || 'Hoknex',
     format,
     themeKey,
-    date:
-      date ||
-      (existingIdx >= 0 && db.certificates[existingIdx].date) ||
-      new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      }),
+    date: date || (existingIdx >= 0 && db.certificates[existingIdx].date) || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
     logo: logo !== null ? logo : (existingIdx >= 0 ? db.certificates[existingIdx].logo : null),
-    signature:
-      signature !== null ? signature : (existingIdx >= 0 ? db.certificates[existingIdx].signature : null),
-    backgroundImage:
-      backgroundImage !== null
-        ? backgroundImage
-        : (existingIdx >= 0 ? db.certificates[existingIdx].backgroundImage : null),
+    signature: signature !== null ? signature : (existingIdx >= 0 ? db.certificates[existingIdx].signature : null),
+    backgroundImage: backgroundImage !== null ? backgroundImage : (existingIdx >= 0 ? db.certificates[existingIdx].backgroundImage : null),
     updatedAt: new Date().toISOString()
   };
 
-  if (existingIdx >= 0) {
-    db.certificates[existingIdx] = { ...db.certificates[existingIdx], ...record };
-  } else {
-    db.certificates.push({ ...record, createdAt: new Date().toISOString() });
-  }
+  if (existingIdx >= 0) db.certificates[existingIdx] = { ...db.certificates[existingIdx], ...record };
+  else db.certificates.push({ ...record, createdAt: new Date().toISOString() });
 
   writeDB(db);
   res.json({ success: true, certId: cleanId, password: finalPass, qrUrl: record.qrUrl });
 });
 
 app.post('/api/studio/certificates/bulk', (req, res) => {
-  const {
-    certificates = [],
-    batchName = 'Hoknex Bulk Batch',
-    themeKey = 'gallery',
-    backgroundImage = null,
-    logo = null,
-    signature = null,
-    issuer = 'Hoknex'
-  } = req.body || {};
-
-  if (!Array.isArray(certificates) || certificates.length === 0) {
-    return res.status(400).json({ error: 'certificates array is required.' });
-  }
+  const { certificates = [], batchName = 'Hoknex Bulk Batch', themeKey = 'gallery', backgroundImage = null, logo = null, signature = null, issuer = 'Hoknex' } = req.body || {};
+  if (!Array.isArray(certificates) || certificates.length === 0) return res.status(400).json({ error: 'certificates array is required.' });
 
   const db = readDB();
   const batchId = `BATCH-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
-  const date = new Date().toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const saved = certificates.map((item, idx) => {
-    const certId = String(
-      item.certId ||
-        `HKX-${String(idx + 1).padStart(3, '0')}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`
-    )
-      .trim()
-      .toUpperCase();
+    const certId = String(item.certId || `HKX-${String(idx + 1).padStart(3, '0')}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`).trim().toUpperCase();
     const password = String(item.password || makeCertPass()).trim();
-
     const certRecord = {
-      certId,
-      batchId,
-      password,
+      certId, batchId, password,
       qrUrl: item.qrUrl || null,
       recipient: String(item.recipient || `Recipient #${idx + 1}`).trim(),
       title: String(item.title || 'HOKNEX VERIFIED CREDENTIAL').trim(),
-      description: String(
-        item.description ||
-          `Officially awarded to ${item.recipient || `Recipient #${idx + 1}`} by ${issuer}.`
-      ).trim(),
+      description: String(item.description || `Officially awarded to ${item.recipient || `Recipient #${idx + 1}`} by ${issuer}.`).trim(),
       issuer: String(item.issuer || issuer || 'Hoknex').trim(),
-      format: 'certificate',
-      themeKey: item.themeKey || themeKey,
-      date: item.date || date,
-      logo: item.logo || logo || null,
-      signature: item.signature || signature || null,
+      format: 'certificate', themeKey: item.themeKey || themeKey, date: item.date || date,
+      logo: item.logo || logo || null, signature: item.signature || signature || null,
       backgroundImage: item.backgroundImage || backgroundImage || null,
       createdAt: new Date().toISOString()
     };
-
     const existingIdx = db.certificates.findIndex((c) => c.certId.toUpperCase() === certId);
-    if (existingIdx >= 0) {
-      db.certificates[existingIdx] = { ...db.certificates[existingIdx], ...certRecord };
-    } else {
-      db.certificates.push(certRecord);
-    }
-
-    return {
-      certId,
-      password,
-      recipient: certRecord.recipient,
-      title: certRecord.title,
-      qrUrl: certRecord.qrUrl
-    };
+    if (existingIdx >= 0) db.certificates[existingIdx] = { ...db.certificates[existingIdx], ...certRecord };
+    else db.certificates.push(certRecord);
+    return { certId, password, recipient: certRecord.recipient, title: certRecord.title, qrUrl: certRecord.qrUrl };
   });
 
-  db.bulkBatches.unshift({
-    batchId,
-    batchName,
-    count: saved.length,
-    createdAt: new Date().toISOString()
-  });
-
+  db.bulkBatches.unshift({ batchId, batchName, count: saved.length, createdAt: new Date().toISOString() });
   writeDB(db);
   res.json({ success: true, batchId, count: saved.length, certificates: saved });
 });
 
 app.post('/api/studio/certificates/unlock', (req, res) => {
   const { certId, password } = req.body || {};
-  if (!certId || !password) {
-    return res.status(400).json({ valid: false, error: 'Credential ID and password are required.' });
-  }
-
+  if (!certId || !password) return res.status(400).json({ valid: false, error: 'Credential ID and password are required.' });
   const db = readDB();
   const cleanId = String(certId).trim().toUpperCase();
   const cleanPass = String(password).trim();
-
-  const found = db.certificates.find(
-    (c) =>
-      c.certId.trim().toUpperCase() === cleanId &&
-      (String(c.password).trim() === cleanPass ||
-        String(c.password).trim().toLowerCase() === cleanPass.toLowerCase())
-  );
-
-  if (!found) {
-    return res.status(401).json({ valid: false, error: 'Invalid Credential ID or Password.' });
-  }
-
+  const found = db.certificates.find((c) => c.certId.trim().toUpperCase() === cleanId && (String(c.password).trim() === cleanPass || String(c.password).trim().toLowerCase() === cleanPass.toLowerCase()));
+  if (!found) return res.status(401).json({ valid: false, error: 'Invalid Credential ID or Password.' });
   const { password: _, ...safeCert } = found;
   res.json({ valid: true, certificate: safeCert });
 });
 
-// ============================================================================
-// STUDIO PROJECTS (CREATE, LIST, RENAME, DELETE)
-// ============================================================================
 app.post('/api/studio/projects', (req, res) => {
   const { name, format, themeKey, canvasJSON, ownerId = null } = req.body || {};
   const db = readDB();
-  const project = {
-    id: crypto.randomUUID(),
-    ownerId,
-    name: name || 'Hoknex Studio Project',
-    format: format || 'certificate',
-    themeKey: themeKey || 'gallery',
-    canvasJSON,
-    updatedAt: new Date().toISOString()
-  };
+  const project = { id: crypto.randomUUID(), ownerId, name: name || 'Hoknex Studio Project', format: format || 'certificate', themeKey: themeKey || 'gallery', canvasJSON, updatedAt: new Date().toISOString() };
   db.projects.unshift(project);
   writeDB(db);
   res.json({ success: true, project });
@@ -832,14 +781,10 @@ app.get('/api/studio/projects', (req, res) => {
 app.patch('/api/studio/projects/:id', (req, res) => {
   const { id } = req.params;
   const { name } = req.body || {};
-  if (!id || !name || !String(name).trim()) {
-    return res.status(400).json({ success: false, error: 'Valid project ID and name are required.' });
-  }
+  if (!id || !name || !String(name).trim()) return res.status(400).json({ success: false, error: 'Valid project ID and name are required.' });
   const db = readDB();
   const proj = db.projects.find((p) => String(p.id) === String(id));
-  if (!proj) {
-    return res.status(404).json({ success: false, error: 'Project not found.' });
-  }
+  if (!proj) return res.status(404).json({ success: false, error: 'Project not found.' });
   proj.name = String(name).trim();
   proj.updatedAt = new Date().toISOString();
   writeDB(db);
@@ -851,13 +796,11 @@ app.delete('/api/studio/projects/:id', (req, res) => {
   const db = readDB();
   const before = db.projects.length;
   db.projects = db.projects.filter((p) => String(p.id) !== String(id));
-  if (db.projects.length === before) {
-    return res.status(404).json({ success: false, error: 'Project not found.' });
-  }
+  if (db.projects.length === before) return res.status(404).json({ success: false, error: 'Project not found.' });
   writeDB(db);
   res.json({ success: true, deletedId: id });
 });
 
 app.listen(PORT, () => {
-  console.log(`Hoknex Studio Server running on port ${PORT} (Support: ${STUDIO_FROM_EMAIL})`);
+  console.log(`Hoknex Studio Server running on port ${PORT} (Brevo Sender: ${STUDIO_FROM_EMAIL})`);
 });
