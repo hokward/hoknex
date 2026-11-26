@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hoknex Studio Admin Portal — Control Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #0B0F17;
+      --surface: #131A26;
+      --subtle: #1B2436;
+      --ink: #F4F6FA;
+      --muted: #94A3B8;
+      --accent: #2563EB;
+      --gold: #F59E0B;
+      --ok: #10B981;
+      --danger: #EF4444;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: var(--bg); color: var(--ink); min-height: 100vh; }
+    header {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      padding: 1rem 2rem; background: var(--surface); border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 800; }
+    .badge { width: 32px; height: 32px; border-radius: 8px; background: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-weight: 800; }
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 2rem; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 1.5rem; }
+    .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem; }
+    .stat strong { display: block; font-size: 1.55rem; color: var(--gold); }
+    .stat span { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .tab { background: var(--subtle); color: var(--muted); border: 1px solid var(--border); padding: 0.6rem 1.1rem; border-radius: 10px; font-weight: 700; font-size: 0.82rem; cursor: pointer; }
+    .tab.active { background: var(--accent); color: #FFF; border-color: var(--accent); }
+    input, select {
+      background: var(--bg); color: var(--ink); border: 1px solid var(--border);
+      padding: 0.65rem 0.85rem; border-radius: 10px; font-size: 0.86rem; width: 100%;
+    }
+    .btn { background: var(--accent); color: #FFF; border: none; padding: 0.65rem 1.1rem; border-radius: 10px; font-weight: 700; font-size: 0.82rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+    .btn.ok { background: var(--ok); color: #051B11; }
+    .btn.danger { background: rgba(239, 68, 68, 0.16); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .btn.ghost { background: var(--subtle); color: var(--ink); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    th, td { padding: 0.8rem; border-bottom: 1px solid var(--border); text-align: left; }
+    th { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; }
+    .req-card { background: var(--subtle); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem; margin-bottom: 1rem; }
+    .toast { position: fixed; bottom: 20px; right: 20px; background: #FFF; color: #0B0F17; padding: 0.75rem 1.2rem; border-radius: 10px; font-weight: 700; font-size: 0.84rem; z-index: 9999; }
+    @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="badge">H</span>
+      <span>Hoknex Studio Admin Portal</span>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <span id="brevoStatusBadge" style="font-size:0.78rem; color:var(--muted);">Brevo Sender: hoknex.in@gmail.com</span>
+      <a href="studio.html" class="btn ghost"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Creator Studio</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="card" id="loginCard">
+      <h2 style="margin-bottom:6px;">Authenticate Studio Admin</h2>
+      <p style="color:var(--muted); font-size:0.86rem; margin-bottom:14px;">Enter your Admin Studio Key to manage Pro Pass screenshots, user Perks, payment QR codes, and Brevo email notifications.</p>
+      <div style="display:flex; gap:10px; max-width:520px;">
+        <input type="password" id="adminKeyInput" placeholder="Enter HOKNEX_ADMIN_KEY" onkeydown="if(event.key==='Enter') unlockAdminPortal()" />
+        <button class="btn" onclick="unlockAdminPortal()"><i class="fa-solid fa-shield-halved"></i> Unlock</button>
+      </div>
+    </div>
+
+    <div id="dashboardArea" style="display:none;">
+      <div class="stats">
+        <div class="stat"><strong id="statUsers">0</strong><span>Total Accounts</span></div>
+        <div class="stat"><strong id="statPending">0</strong><span>Pending Payments</span></div>
+        <div class="stat"><strong id="statProUsers">0</strong><span>Active Pro Pass</span></div>
+        <div class="stat"><strong id="statEmails">0</strong><span>Brevo Emails Logged</span></div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" id="tabPayments" onclick="switchTab('payments')">Pro Pass Verifications</button>
+        <button class="tab" id="tabUsers" onclick="switchTab('users')">Accounts & Perks Manager</button>
+        <button class="tab" id="tabQr" onclick="switchTab('qr')">Payment QR & UPI</button>
+        <button class="tab" id="tabEmails" onclick="switchTab('emails')">Brevo Email Logs</button>
+        <button class="tab" onclick="refreshAll()" style="margin-left:auto;"><i class="fa-solid fa-rotate"></i> Refresh</button>
+      </div>
+
+      <!-- PAYMENTS -->
+      <div class="card" id="panelPayments"></div>
+
+      <!-- USERS & PERKS -->
+      <div class="card" id="panelUsers" style="display:none;">
+        <h3 style="margin-bottom:10px;">Send Free Perks to Any Account (Triggers Brevo Email)</h3>
+        <div style="display:grid; grid-template-columns:1.3fr 130px 1.4fr auto; gap:10px; margin-bottom:1.25rem;">
+          <input type="email" id="grantEmail" placeholder="User email address" />
+          <input type="number" id="grantAmount" value="100" min="1" />
+          <input type="text" id="grantNote" value="Studio Admin Bonus Perks" placeholder="Reason / Note" />
+          <button class="btn ok" onclick="sendFreePerks()"><i class="fa-solid fa-gift"></i> Send Perks</button>
+        </div>
+        <div id="usersTableContainer" style="overflow-x:auto;"></div>
+      </div>
+
+      <!-- QR SETTINGS -->
+      <div class="card" id="panelQr" style="display:none;">
+        <h3 style="margin-bottom:12px;">Payment Scanner QR & UPI Configuration</h3>
+        <div style="display:grid; grid-template-columns:1fr 240px; gap:20px; align-items:start;">
+          <div>
+            <label style="display:block; font-size:0.76rem; color:var(--muted); margin-bottom:6px;">UPLOAD / REPLACE QR IMAGE</label>
+            <input type="file" id="qrFileInput" accept="image/*" onchange="previewNewQr(event)" style="margin-bottom:12px;" />
+            <label style="display:block; font-size:0.76rem; color:var(--muted); margin-bottom:6px;">UPI ID</label>
+            <input type="text" id="upiIdInput" placeholder="hoknex.in@upi" style="margin-bottom:12px;" />
+            <label style="display:block; font-size:0.76rem; color:var(--muted); margin-bottom:6px;">PAYMENT NOTE</label>
+            <input type="text" id="paymentNoteInput" style="margin-bottom:14px;" />
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn" onclick="saveQrSettings()"><i class="fa-solid fa-floppy-disk"></i> Save QR & UPI</button>
+              <button class="btn danger" onclick="deleteQrImage()"><i class="fa-solid fa-trash"></i> Delete QR Image</button>
+            </div>
+          </div>
+          <div style="background:var(--subtle); border:1px solid var(--border); border-radius:12px; padding:12px; text-align:center;">
+            <div style="font-size:0.74rem; color:var(--muted); margin-bottom:8px;">Active Payment QR</div>
+            <div id="currentQrPreviewBox">No QR uploaded</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BREVO LOGS -->
+      <div class="card" id="panelEmails" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script>
+    const STUDIO_API = (() => {
+      const { protocol, hostname, port, origin } = window.location;
+      if (port === '5050') return `${origin}/api/studio`;
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || protocol === 'file:') {
+        return 'http://localhost:5050/api/studio';
+      }
+      return 'https://hoknex-backend.onrender.com/api/studio';
+    })();
+
+    let adminKey = sessionStorage.getItem('hoknex_admin_session_key') || '';
+    let pendingQrBase64 = '';
+
+    function toast(msg) {
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3200);
+    }
+
+    function esc(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function switchTab(name) {
+      ['payments', 'users', 'qr', 'emails'].forEach(t => {
+        const cap = t[0].toUpperCase() + t.slice(1);
+        document.getElementById(`tab${cap}`).classList.toggle('active', t === name);
+        document.getElementById(`panel${cap}`).style.display = t === name ? 'block' : 'none';
+      });
+    }
+
+    async function unlockAdminPortal() {
+      const val = document.getElementById('adminKeyInput').value.trim();
+      if (!val) return toast('Enter Admin Studio Key');
+      adminKey = val;
+      const ok = await refreshAll();
+      if (ok) {
+        sessionStorage.setItem('hoknex_admin_session_key', adminKey);
+        document.getElementById('loginCard').style.display = 'none';
+        document.getElementById('dashboardArea').style.display = 'block';
+      }
+    }
+
+    async function refreshAll() {
+      try {
+        const res = await fetch(`${STUDIO_API}/admin/overview`, {
+          headers: { 'x-hoknex-admin-key': adminKey }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          toast(data.error || 'Invalid Admin Studio Key');
+          return false;
+        }
+
+        const users = data.users || [];
+        const reqs = data.paymentRequests || [];
+        const logs = data.emailLogs || [];
+
+        document.getElementById('statUsers').textContent = users.length;
+        document.getElementById('statPending').textContent = reqs.filter(r => r.status === 'pending').length;
+        document.getElementById('statProUsers').textContent = users.filter(u => u.hasProPass).length;
+        document.getElementById('statEmails').textContent = logs.length;
+        document.getElementById('brevoStatusBadge').textContent = `Brevo (${data.brevoConfigured ? 'API Active' : 'Set BREVO_API_KEY'}) • ${data.supportEmail}`;
+
+        document.getElementById('upiIdInput').value = data.settings?.paymentUpiId || 'hoknex.in@upi';
+        document.getElementById('paymentNoteInput').value = data.settings?.paymentNote || '';
+        const qrBox = document.getElementById('currentQrPreviewBox');
+        if (data.settings?.paymentQrImage) {
+          qrBox.innerHTML = `<img src="${data.settings.paymentQrImage}" style="max-width:190px; border-radius:10px;" />`;
+        } else {
+          qrBox.textContent = 'No QR uploaded';
+        }
+
+        renderPayments(reqs);
+        renderUsers(users);
+        renderEmails(logs);
+        return true;
+      } catch {
+        toast('Unable to connect to Studio Server');
+        return false;
+      }
+    }
+
+    function renderPayments(reqs) {
+      const box = document.getElementById('panelPayments');
+      if (!reqs.length) {
+        box.innerHTML = '<p style="color:var(--muted);">No Pro Pass screenshot submissions yet.</p>';
+        return;
+      }
+      box.innerHTML = reqs.map(r => `
+        <div class="req-card">
+          <div style="display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;">
+            <div>
+              <strong>${esc(r.fullName)}</strong> (${esc(r.userEmail)}) &mdash; <span style="color:var(--gold); font-weight:800;">${esc(r.status.toUpperCase())}</span>
+              <div style="font-size:0.82rem; color:var(--muted); margin-top:4px;">Packs: <strong>${esc((r.packs || []).join(', '))}</strong> | Amount: <strong>₹${r.amount}</strong> | Phone: ${esc(r.contactPhone || 'N/A')}</div>
+              <div style="font-size:0.75rem; color:var(--muted);">Submitted: ${new Date(r.submittedAt).toLocaleString()}</div>
+            </div>
+            ${r.screenshotData ? `<a href="${r.screenshotData}" target="_blank"><img src="${r.screenshotData}" style="max-height:92px; border-radius:8px; border:1px solid var(--border);" /></a>` : ''}
+          </div>
+          <div style="display:flex; gap:10px; margin-top:12px; align-items:center; flex-wrap:wrap;">
+            <input type="number" id="bonus-${esc(r.id)}" value="0" min="0" placeholder="Extra Perks" style="width:140px;" />
+            <button class="btn ok" onclick="reviewPayment('${esc(r.id)}', 'approve')"><i class="fa-solid fa-check"></i> Approve & Send Brevo Email</button>
+            <button class="btn danger" onclick="reviewPayment('${esc(r.id)}', 'reject')"><i class="fa-solid fa-xmark"></i> Reject</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function reviewPayment(requestId, decision) {
+      const extraPerks = Number(document.getElementById(`bonus-${requestId}`)?.value || 0);
+      const res = await fetch(`${STUDIO_API}/admin/payment-review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-hoknex-admin-key': adminKey },
+        body: JSON.stringify({ requestId, decision, extraPerks })
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error || 'Review failed');
+      toast(`Payment ${decision}d & Brevo email triggered`);
+      refreshAll();
+    }
+
+    function renderUsers(users) {
+      const box = document.getElementById('usersTableContainer');
+      if (!users.length) {
+        box.innerHTML = '<p style="color:var(--muted);">No users registered yet.</p>';
+        return;
+      }
+      box.innerHTML = `
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Perks</th><th>Pro Pass</th><th>Actions</th></tr></thead>
+          <tbody>
+            ${users.map(u => `
+              <tr>
+                <td>${esc(u.name)}</td>
+                <td>${esc(u.email)}</td>
+                <td><strong>${u.perks}</strong></td>
+                <td>${u.hasProPass ? '<span style="color:var(--ok);font-weight:700;">ACTIVE</span>' : 'Standard'}</td>
+                <td style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <button class="btn ghost" onclick="document.getElementById('grantEmail').value='${esc(u.email)}'">Select</button>
+                  <button class="btn ghost" onclick="togglePro('${esc(u.id)}', ${!u.hasProPass})">${u.hasProPass ? 'Revoke Pro' : 'Grant Pro'}</button>
+                  <button class="btn danger" onclick="deleteUser('${esc(u.id)}')">Delete</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    async function sendFreePerks() {
+      const email = document.getElementById('grantEmail').value.trim();
+      const perksAmount = Number(document.getElementById('grantAmount').value || 0);
+      const note = document.getElementById('grantNote').value.trim();
+      if (!email || perksAmount <= 0) return toast('Enter email and valid perks');
+
+      const res = await fetch(`${STUDIO_API}/admin/grant-perks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-hoknex-admin-key': adminKey },
+        body: JSON.stringify({ email, perksAmount, note })
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error || 'Failed to send perks');
+      toast(`Sent +${perksAmount} Perks & Brevo notification`);
+      refreshAll();
+    }
+
+    async function togglePro(userId, hasProPass) {
+      await fetch(`${STUDIO_API}/admin/toggle-pro`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-hoknex-admin-key': adminKey },
+        body: JSON.stringify({ userId, hasProPass, proPacks: ['all_access'] })
+      });
+      toast(hasProPass ? 'Pro Pass granted' : 'Pro Pass revoked');
+      refreshAll();
+    }
+
+    async function deleteUser(userId) {
+      await fetch(`${STUDIO_API}/admin/users/${encodeURIComponent(userId)}`, {
+        method: 'DELETE',
+        headers: { 'x-hoknex-admin-key': adminKey }
+      });
+      toast('User deleted');
+      refreshAll();
+    }
+
+    function previewNewQr(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        pendingQrBase64 = ev.target.result;
+        document.getElementById('currentQrPreviewBox').innerHTML = `<img src="${pendingQrBase64}" style="max-width:190px; border-radius:10px;" />`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function saveQrSettings() {
+      const payload = {
+        paymentUpiId: document.getElementById('upiIdInput').value.trim(),
+        paymentNote: document.getElementById('paymentNoteInput').value.trim()
+      };
+      if (pendingQrBase64) payload.paymentQrImage = pendingQrBase64;
+      const res = await fetch(`${STUDIO_API}/admin/qr`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-hoknex-admin-key': adminKey },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        toast('Payment QR & UPI updated');
+        refreshAll();
+      }
+    }
+
+    async function deleteQrImage() {
+      const res = await fetch(`${STUDIO_API}/admin/qr`, {
+        method: 'DELETE',
+        headers: { 'x-hoknex-admin-key': adminKey }
+      });
+      if (res.ok) {
+        pendingQrBase64 = '';
+        toast('Payment QR image deleted');
+        refreshAll();
+      }
+    }
+
+    function renderEmails(logs) {
+      const box = document.getElementById('panelEmails');
+      if (!logs.length) {
+        box.innerHTML = '<p style="color:var(--muted);">No Brevo email logs recorded yet.</p>';
+        return;
+      }
+      box.innerHTML = logs.map(l => `
+        <div class="req-card">
+          <div style="font-size:0.82rem;"><strong>To:</strong> ${esc(l.to)} &bull; <strong>From:</strong> ${esc(l.from)} &bull; <span style="color:var(--gold);">${esc(l.delivery)}</span></div>
+          <div style="font-weight:700; margin:4px 0;">${esc(l.subject)}</div>
+          <div style="font-size:0.75rem; color:var(--muted);">${new Date(l.sentAt).toLocaleString()}</div>
+        </div>
+      `).join('');
+    }
+
+    if (adminKey) {
+      document.getElementById('adminKeyInput').value = adminKey;
+      unlockAdminPortal();
+    }
+  </script>
+</body>
+</html>
