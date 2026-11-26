@@ -129,7 +129,7 @@
             font-size: 1rem;
         }
 
-        .header-right { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+        .header-right { display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; }
 
         .palette-bar {
             display: inline-flex;
@@ -166,7 +166,7 @@
             background: var(--accent);
             color: var(--accent-contrast);
             border: none;
-            padding: 0.62rem 1.15rem;
+            padding: 0.62rem 1.2rem;
             border-radius: 10px;
             font-size: 0.78rem;
             font-weight: 700;
@@ -186,7 +186,7 @@
             background: var(--bg-surface);
             color: var(--ink-primary);
             border: 1px solid var(--border-strong);
-            padding: 0.6rem 1.05rem;
+            padding: 0.6rem 1.1rem;
             border-radius: 10px;
             font-size: 0.78rem;
             font-weight: 600;
@@ -201,38 +201,24 @@
         .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
         .btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 
+        /* Perks & Account Banner Pill Button in Navbar */
         .perks-pill-btn {
             background: var(--accent-tint);
             color: var(--accent);
             border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-            padding: 0.56rem 0.95rem;
+            padding: 0.56rem 1rem;
             border-radius: 999px;
-            font-size: 0.75rem;
+            font-size: 0.76rem;
             font-weight: 700;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.45rem;
             transition: all 0.2s ease;
         }
         .perks-pill-btn:hover {
             background: var(--accent);
             color: var(--accent-contrast);
-        }
-
-        .pro-pass-btn {
-            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-            color: #FFFFFF;
-            border: none;
-            padding: 0.58rem 1rem;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            box-shadow: var(--shadow-soft);
         }
 
         .btn-danger-subtle {
@@ -251,20 +237,11 @@
 
         .btn-danger-subtle:hover { background: rgba(220, 38, 38, 0.07); }
 
-        .nav-user-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1.5px solid var(--accent);
-            display: none;
-        }
-
-        .hub-container { max-width: 1280px; margin: 0 auto; padding: 3.5rem 2.5rem 4rem; }
-        .hub-header { max-width: 780px; margin-bottom: 3rem; }
+        .hub-container { max-width: 1280px; margin: 0 auto; padding: 3.75rem 2.5rem 5rem; }
+        .hub-header { max-width: 740px; margin-bottom: 3.25rem; }
         .hub-kicker { font-family: 'Space Grotesk', sans-serif; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 0.85rem; display: block; }
-        .hub-header h1 { font-family: 'Playfair Display', serif; font-size: 3.05rem; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; color: var(--ink-primary); margin-bottom: 1rem; }
-        .hub-header p { font-size: 1rem; color: var(--ink-secondary); font-weight: 500; line-height: 1.65; }
+        .hub-header h1 { font-family: 'Playfair Display', serif; font-size: 3.1rem; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; color: var(--ink-primary); margin-bottom: 1rem; }
+        .hub-header p { font-size: 1.02rem; color: var(--ink-secondary); font-weight: 500; line-height: 1.65; }
 
         .modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
         .module-card { background: var(--bg-surface); border: 1px solid var(--border-hairline); border-radius: 18px; padding: 2rem; box-shadow: var(--shadow-soft); cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; gap: 1.75rem; transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
@@ -275,7 +252,7 @@
         .module-card p { font-size: 0.88rem; color: var(--ink-secondary); line-height: 1.6; }
         .module-cta { font-size: 0.78rem; font-weight: 700; color: var(--accent); display: inline-flex; align-items: center; gap: 0.45rem; }
 
-        .stage-wrapper { display: none; max-width: 1400px; margin: 0 auto; padding: 2rem 2.5rem 4.5rem; }
+        .stage-wrapper { display: none; max-width: 1400px; margin: 0 auto; padding: 2rem 2.5rem 5rem; }
         .stage-wrapper.active { display: block; }
 
         .stage-header { display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 1.35rem; margin-bottom: 1.75rem; border-bottom: 1px solid var(--border-hairline); gap: 1rem; flex-wrap: wrap; }
@@ -311,6 +288,7 @@
         .preset-pill { background: var(--bg-subtle); border: 1px solid var(--border-hairline); color: var(--ink-secondary); padding: 0.38rem 0.75rem; border-radius: 999px; font-size: 0.74rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
         .preset-pill:hover, .preset-pill.active { border-color: var(--accent); color: var(--accent); background: var(--accent-tint); }
 
+        /* Bulk Background Swatch Gallery */
         .bg-gallery-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -353,8 +331,8 @@
         .tool-cell.active, .tool-cell:hover { border-color: var(--accent); background: var(--accent-tint); color: var(--accent); }
         .tool-cell.active i, .tool-cell:hover i { color: var(--accent); }
 
-        .layers-stack { display: flex; flex-direction: column; gap: 0.45rem; max-height: 240px; overflow-y: auto; margin-top: 0.5rem; }
-        .layer-row { display: flex; align-items: center; justify-content: space-between; background: var(--bg-main); border: 1px solid var(--border-hairline); border-radius: 9px; padding: 0.55rem 0.75rem; font-size: 0.76rem; font-weight: 600; cursor: pointer; }
+        .layers-stack { display: flex; flex-direction: column; gap: 0.45rem; max-height: 200px; overflow-y: auto; margin-top: 0.5rem; }
+        .layer-row { display: flex; align-items: center; justify-content: space-between; background: var(--bg-main); border: 1px solid var(--border-hairline); border-radius: 9px; padding: 0.5rem 0.75rem; font-size: 0.76rem; font-weight: 600; cursor: pointer; }
         .layer-row.selected { border-color: var(--accent); background: var(--accent-tint); }
         .layer-row button { background: none; border: none; color: var(--ink-muted); cursor: pointer; padding: 2px 5px; }
         .layer-row button:hover { color: var(--accent); }
@@ -366,13 +344,14 @@
         .qr-frame { background: #FFFFFF; padding: 7px; border-radius: 8px; display: inline-block; border: 1px solid var(--border-hairline); }
         .bg-preview-thumb { width: 100%; max-height: 84px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-hairline); margin-bottom: 1rem; display: none; }
 
-        .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 50000; padding: 1rem; }
-        .modal-box { background: var(--bg-surface); color: var(--ink-primary); border: 1px solid var(--border-hairline); border-radius: 18px; padding: 1.75rem; width: 100%; max-width: 560px; box-shadow: var(--shadow-elevated); position: relative; max-height: 92vh; overflow-y: auto; }
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.52); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 50000; padding: 1rem; }
+        .modal-box { background: var(--bg-surface); color: var(--ink-primary); border: 1px solid var(--border-hairline); border-radius: 18px; padding: 1.75rem; width: 100%; max-width: 540px; box-shadow: var(--shadow-elevated); position: relative; max-height: 92vh; overflow-y: auto; }
 
-        .auth-tabs { display: flex; gap: 5px; background: var(--bg-main); padding: 4px; border-radius: 10px; margin-bottom: 1rem; border: 1px solid var(--border-hairline); flex-wrap: wrap; }
-        .auth-tab { flex: 1; min-width: 72px; border: none; background: transparent; color: var(--ink-muted); padding: 7px 6px; border-radius: 7px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
+        .auth-tabs { display: flex; gap: 6px; background: var(--bg-main); padding: 4px; border-radius: 10px; margin-bottom: 1rem; border: 1px solid var(--border-hairline); }
+        .auth-tab { flex: 1; border: none; background: transparent; color: var(--ink-muted); padding: 7px; border-radius: 7px; font-size: 0.74rem; font-weight: 700; cursor: pointer; }
         .auth-tab.active { background: var(--accent); color: var(--accent-contrast); }
 
+        /* Account Perks Banner Inside Account Modal */
         .account-perks-strip {
             background: var(--accent-tint);
             border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
@@ -385,7 +364,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 6px 10px;
             margin-top: 8px;
-            font-size: 0.74rem;
+            font-size: 0.75rem;
             color: var(--ink-primary);
             font-weight: 600;
         }
@@ -416,53 +395,12 @@
             font-weight: 700;
         }
 
-        .pack-option-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            background: var(--bg-main);
-            border: 1px solid var(--border-strong);
-            border-radius: 11px;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            font-size: 0.82rem;
-        }
-        .pack-option-card input[type="checkbox"] {
-            width: auto;
-            margin-bottom: 0;
-            accent-color: var(--accent);
-        }
-
-        .studio-footer {
-            max-width: 1280px;
-            margin: 2rem auto 0;
-            padding: 1.5rem 2.5rem 2.75rem;
-            border-top: 1px solid var(--border-hairline);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            flex-wrap: wrap;
-            font-size: 0.8rem;
-            color: var(--ink-muted);
-        }
-        .footer-links { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-        .footer-links a {
-            color: var(--ink-secondary);
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .footer-links a:hover { color: var(--accent); }
-
-        #toastStack { position: fixed; bottom: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; max-width: 380px; }
+        #toastStack { position: fixed; bottom: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; }
         .toast-item { background: var(--ink-primary); color: var(--bg-surface); padding: 0.75rem 1.15rem; border-radius: 10px; font-size: 0.82rem; font-weight: 600; box-shadow: var(--shadow-elevated); }
 
         @media (max-width: 1024px) {
             .modules-grid, .two-col-studio, .three-col-editor { grid-template-columns: 1fr; }
-            .hub-container, .stage-wrapper, .studio-footer { padding: 1.5rem 1.25rem 3.5rem; }
+            .hub-container, .stage-wrapper { padding: 1.5rem 1.25rem 3.5rem; }
             .hub-header h1 { font-size: 2.25rem; }
             .studio-header { padding: 0.85rem 1.25rem; }
         }
@@ -497,24 +435,17 @@
                 </button>
             </div>
 
+            <!-- Integrated Creator Perks & Pro Banner Button -->
             <button type="button" class="perks-pill-btn" id="headerPerksBannerBtn" onclick="openAuthModal('perks')">
-                <i class="fa-solid fa-coins"></i> <span id="headerCreditsLabel">250 Perks</span>
+                <i class="fa-solid fa-crown"></i> <span id="headerCreditsLabel">50 Free Credits & Perks</span>
             </button>
 
-            <button type="button" class="pro-pass-btn" onclick="openProPassModal()">
-                <i class="fa-solid fa-crown"></i> <span id="headerProBadge">Pro Pass</span>
-            </button>
-
-            <img id="headerUserDp" class="nav-user-avatar" alt="Profile DP">
             <span id="accountBadge" style="display:none; font-size:0.78rem; font-weight:700; color:var(--accent);"></span>
             <button class="btn-secondary" id="authNavBtn" onclick="openAuthModal('signin')">
                 <i class="fa-solid fa-user"></i> <span id="authNavLabel">Sign In / Sign Up</span>
             </button>
-            <button class="btn-secondary" onclick="openAdminPortalModal()">
-                <i class="fa-solid fa-shield-halved"></i> Admin Portal
-            </button>
             <button class="btn-danger-subtle" id="deleteAccNavBtn" style="display:none;" onclick="openAuthModal('delete')">
-                <i class="fa-solid fa-user-slash"></i> Delete
+                <i class="fa-solid fa-user-slash"></i> Delete Account
             </button>
             <a href="index.html" class="btn-secondary">Hoknex Home</a>
         </div>
@@ -526,8 +457,8 @@
     <main id="hubView" class="hub-container">
         <div class="hub-header">
             <span class="hub-kicker">Hoknex Design & Credential Infrastructure</span>
-            <h1>Design, issue, and verify visual credentials with real Perk credits.</h1>
-            <p>New users start with <strong>250 Perks</strong> and can claim <strong>+25 Perks daily</strong>. Every studio edit or export uses <strong>25 Perks</strong>—or unlock unlimited packs with <strong>Hoknex Pro Pass</strong>.</p>
+            <h1>Design, issue, and verify visual credentials in one studio.</h1>
+            <p>Edit certificates, posters, banners, thumbnails, multi-page PDFs, and AI image/video media freely. Sign in or create a Hoknex Studio account when downloading files, and manage or delete your account at any time.</p>
         </div>
 
         <div class="modules-grid">
@@ -537,7 +468,7 @@
                     <h3>Prompt Studio</h3>
                     <p>Compose certificates, posters, banners, or thumbnails from structured prompts with custom logos, signatures, and scannable QR verification.</p>
                 </div>
-                <span class="module-cta">Launch Workspace (25 Perks) <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
             <div class="module-card" onclick="openStage('bulkStage')">
@@ -546,7 +477,7 @@
                     <h3>Bulk Certificate Engine</h3>
                     <p>Import CSV rosters or run batch scripts to issue credentials with individual passwords, custom artwork, and shareable links.</p>
                 </div>
-                <span class="module-cta">Launch Workspace (25 Perks) <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
             <div class="module-card" onclick="openStage('posterStage')">
@@ -555,7 +486,7 @@
                     <h3>Poster, Banner & Thumbnail</h3>
                     <p>Produce print-ready event posters, widescreen web banners, and media thumbnails calibrated to exact aspect ratios.</p>
                 </div>
-                <span class="module-cta">Launch Workspace (25 Perks) <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
             <div class="module-card" onclick="openStage('drawStage')">
@@ -564,7 +495,7 @@
                     <h3>Pro Canvas Editor</h3>
                     <p>Full multi-layer vector drawing board with freehand brushes, typography controls, QR stamps, undo history, and project cloud sync.</p>
                 </div>
-                <span class="module-cta">Launch Workspace (25 Perks) <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
             <div class="module-card" onclick="openStage('docStage')">
@@ -573,7 +504,7 @@
                     <h3>Multi-Page PDF Editor</h3>
                     <p>Load multi-page PDF files or scans, navigate across pages, place signatures or text annotations per page, and export a compiled PDF.</p>
                 </div>
-                <span class="module-cta">Launch Workspace (25 Perks) <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
             <div class="module-card" onclick="openStage('vaultStage')">
@@ -582,7 +513,7 @@
                     <h3>Certificate QR Vault</h3>
                     <p>Open any shared credential link or scan its QR code on any device, enter the certificate password, and download the verified credential.</p>
                 </div>
-                <span class="module-cta">Launch Workspace (25 Perks) <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
             <div class="module-card" onclick="openStage('mediaStage')" style="grid-column: span 3;">
@@ -592,20 +523,20 @@
                         <h3>Background Remover, Backdrop Studio & Quality / Size Optimizer (Image & Video)</h3>
                         <p>Remove backgrounds from any image or video, replace with custom uploads or a curated bulk backdrop gallery, enhance sharpness & clarity, or compress file size with instant download.</p>
                     </div>
-                    <span class="module-cta" style="align-self:center;">Launch Media Lab (25 Perks) <i class="fa-solid fa-arrow-right"></i></span>
+                    <span class="module-cta" style="align-self:center;">Launch Media Lab <i class="fa-solid fa-arrow-right"></i></span>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- ======================================================================
-01. PROMPT STUDIO
+         01. PROMPT STUDIO
          ====================================================================== -->
     <section id="aiStage" class="stage-wrapper">
         <div class="stage-header">
             <div>
                 <h2>Prompt Studio</h2>
-                <p>Generate certificates, posters, banners, and thumbnails with embedded QR verification (25 Perks per edit/export).</p>
+                <p>Generate certificates, posters, banners, and thumbnails with embedded QR verification.</p>
             </div>
             <button class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
         </div>
@@ -675,10 +606,10 @@
                 <textarea id="aiPromptText" rows="3" placeholder="Describe the award title, event, or design brief..."></textarea>
 
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="btn-primary" onclick="runAIPromptGeneration()"><i class="fa-solid fa-sparkles"></i> Generate (25 Perks)</button>
+                    <button class="btn-primary" onclick="runAIPromptGeneration()"><i class="fa-solid fa-sparkles"></i> Generate</button>
                     <button class="btn-secondary" onclick="sendAiDesignToProEditor()"><i class="fa-solid fa-pen-to-square"></i> Open in Canvas</button>
-                    <button class="btn-secondary" onclick="guardedDownload(() => exportActiveCanvasPNG(), 'Prompt Studio PNG Export', 'design_pack')"><i class="fa-solid fa-image"></i> Download PNG</button>
-                    <button class="btn-secondary" onclick="guardedDownload(() => exportActiveCanvasPDF(), 'Prompt Studio PDF Export', 'credentials_pack')"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                    <button class="btn-secondary" onclick="guardedDownload(() => exportActiveCanvasPNG())"><i class="fa-solid fa-image"></i> Download PNG</button>
+                    <button class="btn-secondary" onclick="guardedDownload(() => exportActiveCanvasPDF())"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
                 </div>
             </div>
 
@@ -704,13 +635,13 @@
     </section>
 
     <!-- ======================================================================
-02. BULK CERTIFICATE ENGINE
+         02. BULK CERTIFICATE ENGINE
          ====================================================================== -->
     <section id="bulkStage" class="stage-wrapper">
         <div class="stage-header">
             <div>
                 <h2>Bulk Certificate Engine</h2>
-                <p>Issue multi-recipient batches via CSV, roster list, or script with individual access passwords and QR codes (25 Perks per batch/export).</p>
+                <p>Issue multi-recipient batches via CSV, roster list, or script with individual access passwords and QR codes.</p>
             </div>
             <button class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
         </div>
@@ -771,7 +702,7 @@
                 <input type="text" id="bulkPassPrefix" value="HKX-">
 
                 <button class="btn-primary" style="width:100%; justify-content:center;" onclick="generateBulkCertificates()">
-                    <i class="fa-solid fa-gears"></i> Issue Bulk Batch (25 Perks)
+                    <i class="fa-solid fa-gears"></i> Issue Bulk Batch
                 </button>
             </div>
 
@@ -779,8 +710,8 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
                     <h3 style="font-family:'Playfair Display',serif; font-size:1.3rem;">Issued Batch (<span id="bulkCountBadge">0</span>)</h3>
                     <div style="display:flex; gap:8px;">
-                        <button class="btn-secondary" onclick="guardedDownload(() => exportBulkCredentialsCSV(), 'Bulk CSV Export', 'credentials_pack')"><i class="fa-solid fa-file-csv"></i> Download CSV</button>
-                        <button class="btn-secondary" onclick="guardedDownload(() => exportAllBulkPDF(), 'Bulk PDF Batch Export', 'credentials_pack')"><i class="fa-solid fa-file-pdf"></i> Download All PDF</button>
+                        <button class="btn-secondary" onclick="guardedDownload(() => exportBulkCredentialsCSV())"><i class="fa-solid fa-file-csv"></i> Download CSV</button>
+                        <button class="btn-secondary" onclick="guardedDownload(() => exportAllBulkPDF())"><i class="fa-solid fa-file-pdf"></i> Download All PDF</button>
                     </div>
                 </div>
                 <div style="overflow-x:auto;">
@@ -804,13 +735,13 @@
     </section>
 
     <!-- ======================================================================
-03. POSTER, BANNER & THUMBNAIL STUDIO
+         03. POSTER, BANNER & THUMBNAIL STUDIO
          ====================================================================== -->
     <section id="posterStage" class="stage-wrapper">
         <div class="stage-header">
             <div>
                 <h2>Poster, Banner & Thumbnail Studio</h2>
-                <p>Calibrated dimensions for print posters, widescreen banners, and media thumbnails (25 Perks per layout update/export).</p>
+                <p>Calibrated dimensions for print posters, widescreen banners, and media thumbnails.</p>
             </div>
             <button class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
         </div>
@@ -829,10 +760,10 @@
                 <input type="text" id="posterHeadline" value="HOKNEX GLOBAL SUMMIT">
                 <label class="field-label">Subtitle</label>
                 <input type="text" id="posterSub" value="Where Student Builders Ship the Future">
-                <button class="btn-primary" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="consumePerksForEdit('Poster/Banner Layout Edit', 'design_pack', () => renderPosterTemplate())">
-                    Update Layout (25 Perks)
+                <button class="btn-primary" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="renderPosterTemplate()">
+                    Update Layout
                 </button>
-                <button class="btn-secondary" style="width:100%; justify-content:center;" onclick="guardedDownload(() => exportPosterPNG(), 'Poster/Banner PNG Export', 'design_pack')">
+                <button class="btn-secondary" style="width:100%; justify-content:center;" onclick="guardedDownload(() => exportPosterPNG())">
                     <i class="fa-solid fa-download"></i> Download PNG
                 </button>
             </div>
@@ -843,18 +774,18 @@
     </section>
 
     <!-- ======================================================================
-04. PRO CANVAS EDITOR
+         04. PRO CANVAS EDITOR
          ====================================================================== -->
     <section id="drawStage" class="stage-wrapper">
         <div class="stage-header">
             <div>
                 <h2>Pro Canvas Editor</h2>
-                <p>Multi-layer vector drawing board with freehand brushes, typography controls, QR stamps, undo history, and project cloud sync.</p>
+                <p>Multi-layer vector drawing board with freehand brushes, typography controls, QR stamps, and project cloud sync.</p>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button class="btn-secondary" onclick="undoDraw()"><i class="fa-solid fa-rotate-left"></i> Undo</button>
                 <button class="btn-secondary" onclick="redoDraw()"><i class="fa-solid fa-rotate-right"></i> Redo</button>
-                <button class="btn-secondary" onclick="saveProProjectToCloud()"><i class="fa-solid fa-cloud-arrow-up"></i> Save (25 Perks)</button>
+                <button class="btn-secondary" onclick="saveProProjectToCloud()"><i class="fa-solid fa-cloud-arrow-up"></i> Save</button>
                 <button class="btn-secondary" onclick="openCloudProjectsModal()"><i class="fa-solid fa-folder-open"></i> Projects</button>
                 <button class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
             </div>
@@ -866,12 +797,12 @@
                 <div class="tool-grid">
                     <div class="tool-cell active" id="mSelect" onclick="setDrawMode('select')"><i class="fa-solid fa-arrow-pointer"></i>Select</div>
                     <div class="tool-cell" id="mBrush" onclick="setDrawMode('draw')"><i class="fa-solid fa-paintbrush"></i>Brush</div>
-                    <div class="tool-cell" onclick="consumePerksForEdit('Canvas Text Layer', 'design_pack', addCanvasText)"><i class="fa-solid fa-font"></i>Text</div>
-                    <div class="tool-cell" onclick="consumePerksForEdit('Canvas Box Layer', 'design_pack', addCanvasRect)"><i class="fa-regular fa-square"></i>Box</div>
-                    <div class="tool-cell" onclick="consumePerksForEdit('Canvas Circle Layer', 'design_pack', addCanvasCircle)"><i class="fa-regular fa-circle"></i>Circle</div>
-                    <div class="tool-cell" onclick="consumePerksForEdit('Canvas Badge Layer', 'design_pack', addCanvasStar)"><i class="fa-regular fa-star"></i>Badge</div>
+                    <div class="tool-cell" onclick="addCanvasText()"><i class="fa-solid fa-font"></i>Text</div>
+                    <div class="tool-cell" onclick="addCanvasRect()"><i class="fa-regular fa-square"></i>Box</div>
+                    <div class="tool-cell" onclick="addCanvasCircle()"><i class="fa-regular fa-circle"></i>Circle</div>
+                    <div class="tool-cell" onclick="addCanvasStar()"><i class="fa-regular fa-star"></i>Badge</div>
                     <div class="tool-cell" onclick="document.getElementById('proImgUpload').click()"><i class="fa-regular fa-image"></i>Image</div>
-                    <div class="tool-cell" onclick="consumePerksForEdit('Canvas QR Stamp', 'credentials_pack', insertQrStampOnProCanvas)"><i class="fa-solid fa-qrcode"></i>QR Stamp</div>
+                    <div class="tool-cell" onclick="insertQrStampOnProCanvas()"><i class="fa-solid fa-qrcode"></i>QR Stamp</div>
                     <div class="tool-cell" onclick="duplicateDrawObj()"><i class="fa-regular fa-copy"></i>Clone</div>
                 </div>
                 <input type="file" id="proImgUpload" accept="image/*" style="display:none" onchange="uploadImageToProCanvas(event)">
@@ -890,8 +821,8 @@
                 </div>
 
                 <div style="display:flex; gap:8px; margin-top:14px;">
-                    <button class="btn-secondary" style="flex:1; justify-content:center;" onclick="guardedDownload(() => exportDrawPNG(), 'Pro Canvas PNG Export', 'design_pack')"><i class="fa-solid fa-image"></i> PNG</button>
-                    <button class="btn-primary" style="flex:1; justify-content:center;" onclick="guardedDownload(() => exportDrawPDF(), 'Pro Canvas PDF Export', 'design_pack')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                    <button class="btn-secondary" style="flex:1; justify-content:center;" onclick="guardedDownload(() => exportDrawPNG())"><i class="fa-solid fa-image"></i> PNG</button>
+                    <button class="btn-primary" style="flex:1; justify-content:center;" onclick="guardedDownload(() => exportDrawPDF())"><i class="fa-solid fa-file-pdf"></i> PDF</button>
                 </div>
             </div>
 
@@ -927,13 +858,13 @@
     </section>
 
     <!-- ======================================================================
-05. MULTI-PAGE PDF EDITOR
+         05. MULTI-PAGE PDF EDITOR
          ====================================================================== -->
     <section id="docStage" class="stage-wrapper">
         <div class="stage-header">
             <div>
                 <h2>Multi-Page PDF & Document Editor</h2>
-                <p>Navigate multi-page PDF files, annotate or sign individual pages, and export a compiled document (25 Perks per edit/export).</p>
+                <p>Navigate multi-page PDF files, annotate or sign individual pages, and export a compiled document.</p>
             </div>
             <button class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
         </div>
@@ -956,13 +887,13 @@
                     </div>
                 </div>
 
-                <button type="button" class="btn-secondary" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="consumePerksForEdit('PDF Text Annotation', 'media_pack', addDocAnnotation)">
-                    <i class="fa-solid fa-plus"></i> Insert Text Note (25 Perks)
+                <button type="button" class="btn-secondary" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="addDocAnnotation()">
+                    <i class="fa-solid fa-plus"></i> Insert Text Note
                 </button>
-                <button type="button" class="btn-secondary" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="consumePerksForEdit('PDF Pen Markup', 'media_pack', toggleDocBrush)">
-                    <i class="fa-solid fa-pen"></i> Toggle Freehand Pen (25 Perks)
+                <button type="button" class="btn-secondary" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="toggleDocBrush()">
+                    <i class="fa-solid fa-pen"></i> Toggle Freehand Pen
                 </button>
-                <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="guardedDownload(() => exportEditedDocPDF(), 'Edited PDF Export', 'media_pack')">
+                <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="guardedDownload(() => exportEditedDocPDF())">
                     <i class="fa-solid fa-file-pdf"></i> Download PDF
                 </button>
             </div>
@@ -974,7 +905,7 @@
     </section>
 
     <!-- ======================================================================
-06. CERTIFICATE QR VAULT
+         06. CERTIFICATE QR VAULT (VIEW & DOWNLOAD FOR USERS; EDIT FOR ADMIN ONLY)
          ====================================================================== -->
     <section id="vaultStage" class="stage-wrapper">
         <div class="stage-header">
@@ -1023,8 +954,8 @@
                     </div>
 
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button type="button" class="btn-secondary" onclick="guardedDownload(() => downloadUnlockedCertPNG(), 'Vault Certificate PNG', 'credentials_pack')"><i class="fa-solid fa-image"></i> Download PNG</button>
-                        <button type="button" class="btn-primary" onclick="guardedDownload(() => downloadUnlockedCertPDF(), 'Vault Certificate PDF', 'credentials_pack')"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                        <button type="button" class="btn-secondary" onclick="guardedDownload(() => downloadUnlockedCertPNG())"><i class="fa-solid fa-image"></i> Download PNG</button>
+                        <button type="button" class="btn-primary" onclick="guardedDownload(() => downloadUnlockedCertPDF())"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
                     </div>
 
                     <div id="adminEditCertificatePanel" style="display:none; margin-top:16px; padding-top:14px; border-top:1px dashed var(--accent);">
@@ -1051,13 +982,13 @@
     </section>
 
     <!-- ======================================================================
-07. AI MEDIA LAB — IMAGE & VIDEO BACKGROUND REMOVER, ENHANCER & COMPRESSOR
+         07. AI MEDIA LAB — IMAGE & VIDEO BACKGROUND REMOVER, ENHANCER & COMPRESSOR
          ====================================================================== -->
     <section id="mediaStage" class="stage-wrapper">
         <div class="stage-header">
             <div>
                 <h2>AI Media Lab — Image & Video Studio</h2>
-                <p>Remove backgrounds, apply custom or bulk studio backdrops, enhance sharpness & quality, and reduce file size (25 Perks per edit/export).</p>
+                <p>Remove backgrounds, apply custom or bulk studio backdrops, enhance sharpness & quality, and reduce file size.</p>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button type="button" class="btn-primary" id="tabMediaImageBtn" onclick="switchMediaLabTab('image')"><i class="fa-solid fa-image"></i> Image Studio</button>
@@ -1066,14 +997,15 @@
             </div>
         </div>
 
+        <!-- IMAGE STUDIO PANEL -->
         <div id="mediaImageWorkspace" class="two-col-studio">
             <div class="panel-surface">
                 <label class="field-label">1. Upload Image</label>
                 <input type="file" id="mediaImgInput" accept="image/*" onchange="loadMediaImage(event)">
 
                 <div style="display:flex; gap:8px; margin-bottom:12px;">
-                    <button type="button" class="btn-primary" style="flex:1; justify-content:center;" onclick="consumePerksForEdit('Image Background Removal', 'media_pack', removeMediaImageBackground)">
-                        <i class="fa-solid fa-eraser"></i> Remove BG (25 Perks)
+                    <button type="button" class="btn-primary" style="flex:1; justify-content:center;" onclick="removeMediaImageBackground()">
+                        <i class="fa-solid fa-eraser"></i> Remove Background
                     </button>
                     <button type="button" class="btn-secondary" onclick="resetMediaImage()">Reset</button>
                 </div>
@@ -1125,7 +1057,7 @@
                     Upload an image to inspect original vs. optimized size.
                 </div>
 
-                <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="guardedDownload(() => downloadProcessedMediaImage(), 'Processed Image Export', 'media_pack')">
+                <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="guardedDownload(() => downloadProcessedMediaImage())">
                     <i class="fa-solid fa-download"></i> Download Processed Image
                 </button>
             </div>
@@ -1135,13 +1067,14 @@
             </div>
         </div>
 
+        <!-- VIDEO STUDIO PANEL -->
         <div id="mediaVideoWorkspace" class="two-col-studio" style="display:none;">
             <div class="panel-surface">
                 <label class="field-label">1. Upload Video (MP4 / WebM)</label>
                 <input type="file" id="mediaVidInput" accept="video/*" onchange="loadMediaVideo(event)">
 
                 <div style="display:flex; gap:8px; margin-bottom:12px;">
-                    <button type="button" class="btn-primary" id="toggleVidBgRemoveBtn" style="flex:1; justify-content:center;" onclick="consumePerksForEdit('Video Background Toggle', 'media_pack', toggleVideoBgRemoval)">
+                    <button type="button" class="btn-primary" id="toggleVidBgRemoveBtn" style="flex:1; justify-content:center;" onclick="toggleVideoBgRemoval()">
                         <i class="fa-solid fa-eraser"></i> <span id="vidBgRemoveLabel">Remove Video BG: OFF</span>
                     </button>
                 </div>
@@ -1178,7 +1111,7 @@
                     Upload a video to preview and render your processed export.
                 </div>
 
-                <button type="button" class="btn-primary" id="exportVidBtn" style="width:100%; justify-content:center;" onclick="guardedDownload(() => exportProcessedMediaVideo(), 'Processed Video Export', 'media_pack')">
+                <button type="button" class="btn-primary" id="exportVidBtn" style="width:100%; justify-content:center;" onclick="guardedDownload(() => exportProcessedMediaVideo())">
                     <i class="fa-solid fa-film"></i> Render & Download Video
                 </button>
             </div>
@@ -1209,83 +1142,70 @@
     </div>
 
     <!-- ======================================================================
-         ACCOUNT MODAL (PERKS, PROFILE DP, MY LIBRARY, SIGN UP/IN & DELETE)
+         ACCOUNT MODAL (PERKS, CREDITS, REFERRALS, SIGN UP/IN & DELETE ACCOUNT)
          ====================================================================== -->
     <div class="modal-backdrop" id="authModal" onclick="if(event.target === this) closeAuthModal()">
-        <div class="modal-box">
+        <div class="modal-box" style="max-width:460px;">
             <button onclick="closeAuthModal()" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink-muted);">&times;</button>
-            <h3 style="font-family:'Playfair Display',serif; font-size:1.45rem; margin-bottom:4px;">Hoknex Studio Account & Library</h3>
-            <p style="font-size:0.82rem; color:var(--ink-muted); margin-bottom:12px;">250 signup perks, +25 daily perks, 25 perks per studio action/download, and full export history.</p>
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.45rem; margin-bottom:4px;">Hoknex Studio Account</h3>
+            <p style="font-size:0.82rem; color:var(--ink-muted); margin-bottom:12px;">Unlock creator credits, referral rewards, cloud project sync, and HD exports.</p>
 
+            <!-- Creator Benefits Strip -->
             <div class="account-perks-strip">
                 <div style="font-size:0.74rem; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.06em;">
-                    Perk Economy Rules
+                    Member Benefits & Rewards
                 </div>
                 <div class="perks-grid">
-                    <span><i class="fa-solid fa-bolt"></i> 250 Perks on Sign Up</span>
-                    <span><i class="fa-solid fa-sun"></i> +25 Perks Daily Claim</span>
-                    <span><i class="fa-solid fa-sliders"></i> 25 Perks per Edit/Export</span>
-                    <span><i class="fa-solid fa-crown"></i> Pro Pass = Unlimited Packs</span>
+                    <span><i class="fa-solid fa-bolt"></i> 50 Free Studio Credits</span>
+                    <span><i class="fa-solid fa-gift"></i> +25 Credits per Referral</span>
+                    <span><i class="fa-solid fa-cloud"></i> Cloud Canvas & QR Sync</span>
+                    <span><i class="fa-solid fa-file-export"></i> Unlimited HD Downloads</span>
                 </div>
             </div>
 
             <div class="auth-tabs">
-                <button type="button" class="auth-tab" id="tabBtnPerks" onclick="switchAuthMode('perks')">Perks</button>
-                <button type="button" class="auth-tab" id="tabBtnLibrary" onclick="switchAuthMode('library')">My Library</button>
+                <button type="button" class="auth-tab" id="tabBtnPerks" onclick="switchAuthMode('perks')">My Perks</button>
                 <button type="button" class="auth-tab active" id="tabBtnSignup" onclick="switchAuthMode('signup')">Sign Up</button>
                 <button type="button" class="auth-tab" id="tabBtnSignin" onclick="switchAuthMode('signin')">Sign In</button>
                 <button type="button" class="auth-tab" id="tabBtnDelete" onclick="switchAuthMode('delete')">Delete</button>
             </div>
 
-            <!-- Perks & Profile DP Tab -->
+            <!-- My Perks & Referral Dashboard -->
             <div id="formPerks" style="display:none;">
-                <div style="display:flex; align-items:center; gap:12px; background:var(--bg-main); border:1px solid var(--border-hairline); border-radius:12px; padding:10px 12px; margin-bottom:12px;">
-                    <img id="modalProfileDpPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' rx='32' fill='%232563EB'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='24' font-family='sans-serif'%3EH%3C/text%3E%3C/svg%3E" style="width:52px; height:52px; border-radius:50%; object-fit:cover;">
-                    <div style="flex:1;">
-                        <label class="field-label" style="margin-bottom:4px;">Profile Display Picture (DP)</label>
-                        <input type="file" accept="image/*" style="margin-bottom:0; padding:0.35rem; font-size:0.75rem;" onchange="handleUserDpUpload(event)">
+                <div class="stat-mini-grid">
+                    <div class="stat-mini-card">
+                        <strong id="perkCreditsCount">50</strong>
+                        <span>Credits</span>
+                    </div>
+                    <div class="stat-mini-card">
+                        <strong id="perkDownloadsCount">0</strong>
+                        <span>Exports</span>
+                    </div>
+                    <div class="stat-mini-card">
+                        <strong id="perkPlanLabel">Creator</strong>
+                        <span>Tier</span>
                     </div>
                 </div>
 
-                <div class="stat-mini-grid">
-                    <div class="stat-mini-card">
-                        <strong id="perkCreditsCount">250</strong>
-                        <span>Perks Left</span>
-                    </div>
-                    <div class="stat-mini-card">
-                        <strong id="perkLibraryCount">0</strong>
-                        <span>Library Items</span>
-                    </div>
-                    <div class="stat-mini-card">
-                        <strong id="perkPlanLabel">Standard</strong>
-                        <span>Pass Status</span>
-                    </div>
+                <label class="field-label">Your Referral Code (Share to Earn +25 Credits)</label>
+                <div style="display:flex; gap:8px; margin-bottom:12px;">
+                    <input type="text" id="userReferralCodeInput" readonly value="HKX-GUEST" style="margin-bottom:0; font-weight:700;">
+                    <button type="button" class="btn-secondary" onclick="copyUserReferralCode()"><i class="fa-solid fa-copy"></i> Copy</button>
                 </div>
 
                 <div id="perksCtaGuest" style="display:block;">
                     <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="switchAuthMode('signup')">
-                        Create Account & Claim 250 Perks
+                        Claim 50 Free Credits — Create Account
                     </button>
                 </div>
                 <div id="perksCtaMember" style="display:none; gap:8px; flex-direction:column;">
                     <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="claimDailyBonusCredits()">
-                        <i class="fa-solid fa-sparkles"></i> Claim +25 Daily Perks
+                        <i class="fa-solid fa-sparkles"></i> Claim +10 Daily Creator Credits
                     </button>
-                    <button type="button" class="btn-secondary" style="width:100%; justify-content:center;" onclick="closeAuthModal(); openProPassModal();">
-                        <i class="fa-solid fa-crown"></i> Select Unlimited Packs (Pro Pass)
-                    </button>
+                    <a href="store.html" class="btn-secondary" style="width:100%; justify-content:center;">
+                        <i class="fa-solid fa-crown"></i> Upgrade to Hoknex Pro Pass
+                    </a>
                 </div>
-            </div>
-
-            <!-- My Library Tab -->
-            <div id="formLibrary" style="display:none;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px;">
-                    <span style="font-size:0.78rem; font-weight:700; color:var(--ink-secondary);">Created & Exported Studio History</span>
-                    <button type="button" class="btn-danger-subtle" style="padding:0.35rem 0.7rem; font-size:0.72rem;" onclick="clearAllLibraryHistory()">
-                        <i class="fa-solid fa-trash"></i> Delete All
-                    </button>
-                </div>
-                <div id="userLibraryList" class="layers-stack" style="max-height:280px;"></div>
             </div>
 
             <form id="formSignup" onsubmit="handleSignup(event)">
@@ -1295,7 +1215,9 @@
                 <input type="email" id="suEmail" required placeholder="name@hoknex.edu">
                 <label class="field-label">Password</label>
                 <input type="password" id="suPass" required minlength="4" placeholder="Minimum 4 characters">
-                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Create Account & Get 250 Perks</button>
+                <label class="field-label">Referral Code (Optional — +25 Bonus Credits)</label>
+                <input type="text" id="suReferral" placeholder="e.g. HKX-ADITYA">
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Create Account & Claim 50 Credits</button>
             </form>
 
             <form id="formSignin" style="display:none;" onsubmit="handleSignin(event)">
@@ -1303,12 +1225,12 @@
                 <input type="email" id="siEmail" required placeholder="name@hoknex.edu">
                 <label class="field-label">Password</label>
                 <input type="password" id="siPass" required placeholder="Enter password">
-                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Sign In</button>
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Sign In & Continue</button>
             </form>
 
             <form id="formDelete" style="display:none;" onsubmit="handleDeleteAccount(event)">
                 <p style="font-size:0.8rem; color:#DC2626; font-weight:600; margin-bottom:12px;">
-                    Deleting your account removes your studio profile, perks, library history, and saved projects permanently.
+                    Deleting your account removes your studio profile, credits, and saved projects permanently.
                 </p>
                 <label class="field-label">Account Email</label>
                 <input type="email" id="delEmail" required placeholder="name@hoknex.edu">
@@ -1318,160 +1240,6 @@
             </form>
         </div>
     </div>
-
-    <!-- ======================================================================
-         PRO PASS UNLIMITED PACKS, DETAILS, QR SCANNER & SCREENSHOT VERIFICATION
-         ====================================================================== -->
-    <div class="modal-backdrop" id="proPassModal" onclick="if(event.target === this) closeProPassModal()">
-        <div class="modal-box">
-            <button onclick="closeProPassModal()" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink-muted);">&times;</button>
-            <h3 style="font-family:'Playfair Display',serif; font-size:1.45rem; margin-bottom:4px;">Hoknex Pro Pass — Unlimited Packs</h3>
-            <p style="font-size:0.82rem; color:var(--ink-muted); margin-bottom:14px;">Select unlimited packs, enter your details, scan the payment QR, and upload your screenshot for verification by <strong>hoknex.in@gmail.com</strong>.</p>
-
-            <label class="field-label">1. Select Unlimited Packs</label>
-            <label class="pack-option-card">
-                <span><input type="checkbox" class="pro-pack-cb" value="credentials_pack" data-price="149" onchange="recalculateProTotal()"> <strong>Credentials & QR Vault Pack</strong> (Prompt, Bulk CSV, QR Verification)</span>
-                <strong>₹149</strong>
-            </label>
-            <label class="pack-option-card">
-                <span><input type="checkbox" class="pro-pack-cb" value="design_pack" data-price="149" onchange="recalculateProTotal()"> <strong>Design & Canvas Pack</strong> (Posters, Banners, Pro Canvas Layers)</span>
-                <strong>₹149</strong>
-            </label>
-            <label class="pack-option-card">
-                <span><input type="checkbox" class="pro-pack-cb" value="media_pack" data-price="199" onchange="recalculateProTotal()"> <strong>AI Media & PDF Pack</strong> (Image/Video BG Remover, Enhancer, PDF Editor)</span>
-                <strong>₹199</strong>
-            </label>
-            <label class="pack-option-card">
-                <span><input type="checkbox" class="pro-pack-cb" id="packAllAccess" value="all_access" data-price="299" checked onchange="recalculateProTotal()"> <strong>All-Access Unlimited Studio Bundle</strong> (Every Tool + Bonus Perks)</span>
-                <strong>₹299</strong>
-            </label>
-
-            <div style="background:var(--accent-tint); border-radius:10px; padding:10px 14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; font-weight:800; font-size:0.9rem; color:var(--accent);">
-                <span>Selected Total Amount</span>
-                <span id="proPassTotalAmount">₹299</span>
-            </div>
-
-            <label class="field-label">2. Enter Your Details</label>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <input type="text" id="proBuyerName" placeholder="Full Name" style="margin-bottom:10px;">
-                <input type="email" id="proBuyerEmail" placeholder="Email for Confirmation" style="margin-bottom:10px;">
-            </div>
-            <input type="text" id="proBuyerPhone" placeholder="Phone / UPI Reference Note (Optional)">
-
-            <button type="button" class="btn-primary" style="width:100%; justify-content:center; margin-bottom:12px;" onclick="revealPaymentScanner()">
-                <i class="fa-solid fa-qrcode"></i> Pay Money — Show Payment Scanner
-            </button>
-
-            <div id="paymentScannerSection" style="display:none; background:var(--bg-main); border:1px solid var(--accent); border-radius:14px; padding:14px; text-align:center;">
-                <label class="field-label" style="color:var(--accent);">3. Scan Payment QR & Upload Screenshot</label>
-                <div id="scannerQrDisplay" style="margin:8px auto 10px;"></div>
-                <p id="scannerUpiText" style="font-size:0.78rem; font-weight:700; color:var(--ink-secondary); margin-bottom:10px;"></p>
-
-                <label class="field-label">Upload Payment Screenshot</label>
-                <input type="file" id="proPaymentScreenshot" accept="image/*" onchange="handleProScreenshotUpload(event)">
-                <img id="proScreenshotPreview" class="bg-preview-thumb" alt="Payment screenshot preview">
-
-                <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="submitProPassPaymentRequest()">
-                    <i class="fa-solid fa-paper-plane"></i> Submit Screenshot for Verification
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ======================================================================
-         STUDIO ADMIN PORTAL MODAL (PAYMENTS, USERS, FREE PERKS & QR MANAGER)
-         ====================================================================== -->
-    <div class="modal-backdrop" id="adminPortalModal" onclick="if(event.target === this) closeAdminPortalModal()">
-        <div class="modal-box" style="max-width:740px;">
-            <button onclick="closeAdminPortalModal()" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink-muted);">&times;</button>
-            <h3 style="font-family:'Playfair Display',serif; font-size:1.45rem; margin-bottom:4px;">Hoknex Studio Admin Portal</h3>
-            <p style="font-size:0.8rem; color:var(--ink-muted); margin-bottom:12px;">Verify payments, grant free perks, manage user accounts, and update/delete the payment QR (Notifications via <strong>hoknex.in@gmail.com</strong>).</p>
-
-            <div id="adminPortalAuthBox">
-                <label class="field-label">Admin Studio Key</label>
-                <div style="display:flex; gap:8px;">
-                    <input type="password" id="portalAdminKeyInput" placeholder="Enter Admin Key (e.g. HOKNEX-ADMIN-2026)" style="margin-bottom:0;" onkeydown="if(event.key==='Enter') unlockAdminPortal()">
-                    <button type="button" class="btn-primary" onclick="unlockAdminPortal()">Unlock Portal</button>
-                </div>
-            </div>
-
-            <div id="adminPortalDashboard" style="display:none; margin-top:12px;">
-                <div class="auth-tabs">
-                    <button type="button" class="auth-tab active" id="admTabPayments" onclick="switchAdminTab('payments')">Payments</button>
-                    <button type="button" class="auth-tab" id="admTabUsers" onclick="switchAdminTab('users')">Accounts & Perks</button>
-                    <button type="button" class="auth-tab" id="admTabQr" onclick="switchAdminTab('qr')">Payment QR</button>
-                    <button type="button" class="auth-tab" id="admTabEmails" onclick="switchAdminTab('emails')">Email Logs</button>
-                </div>
-
-                <!-- Pending & All Payments -->
-                <div id="admSectionPayments">
-                    <div id="adminPaymentsList" class="layers-stack" style="max-height:340px;"></div>
-                </div>
-
-                <!-- Users & Free Perks Grant -->
-                <div id="admSectionUsers" style="display:none;">
-                    <div style="display:grid; grid-template-columns:1fr 120px 1fr auto; gap:8px; margin-bottom:12px; align-items:center;">
-                        <input type="email" id="grantTargetEmail" placeholder="User email..." style="margin-bottom:0;">
-                        <input type="number" id="grantPerksAmount" value="100" min="1" style="margin-bottom:0;">
-                        <input type="text" id="grantPerksNote" placeholder="Reason / note..." style="margin-bottom:0;">
-                        <button type="button" class="btn-primary" onclick="adminGrantFreePerks()">Send Perks</button>
-                    </div>
-                    <div style="overflow-x:auto; max-height:260px;">
-                        <table>
-                            <thead>
-                                <tr><th>Name</th><th>Email</th><th>Perks</th><th>Pro Pass</th><th>Action</th></tr>
-                            </thead>
-                            <tbody id="adminUsersTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- QR Upload / Change / Delete -->
-                <div id="admSectionQr" style="display:none;">
-                    <label class="field-label">Upload or Replace Payment QR Image</label>
-                    <input type="file" accept="image/*" onchange="handleAdminQrUpload(event)">
-                    <label class="field-label">UPI ID / Payment Label</label>
-                    <input type="text" id="adminUpiIdInput" placeholder="hoknex@upi">
-                    <div id="adminCurrentQrPreviewBox" style="margin-bottom:12px;"></div>
-                    <div style="display:flex; gap:8px;">
-                        <button type="button" class="btn-primary" onclick="saveAdminQrSettings()"><i class="fa-solid fa-floppy-disk"></i> Save QR & UPI</button>
-                        <button type="button" class="btn-danger-subtle" onclick="deleteAdminQrImage()"><i class="fa-solid fa-trash"></i> Delete QR</button>
-                    </div>
-                </div>
-
-                <!-- Email Notifications Log -->
-                <div id="admSectionEmails" style="display:none;">
-                    <div id="adminEmailLogsList" class="layers-stack" style="max-height:300px;"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ======================================================================
-         PRIVACY POLICY & TERMS AND CONDITIONS MODAL
-         ====================================================================== -->
-    <div class="modal-backdrop" id="legalModal" onclick="if(event.target === this) closeLegalModal()">
-        <div class="modal-box" style="max-width:640px;">
-            <button onclick="closeLegalModal()" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink-muted);">&times;</button>
-            <h3 id="legalModalTitle" style="font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:10px;">Privacy Policy</h3>
-            <div id="legalModalBody" style="font-size:0.84rem; color:var(--ink-secondary); line-height:1.7;"></div>
-        </div>
-    </div>
-
-    <!-- ======================================================================
-         STUDIO FOOTER (PRIVACY, TERMS & CONTACT)
-         ====================================================================== -->
-    <footer class="studio-footer">
-        <div>
-            <strong>Hoknex Studio</strong> — Visual Credentials, Design & Media Suite • Support: <strong>hoknex.in@gmail.com</strong>
-        </div>
-        <div class="footer-links">
-            <a onclick="openLegalModal('privacy')">Privacy Policy</a>
-            <a onclick="openLegalModal('terms')">Terms & Conditions</a>
-            <a onclick="openAuthModal('library')">My Library</a>
-            <a onclick="openProPassModal()">Pro Pass</a>
-        </div>
-    </footer>
 
     <script>
         const STUDIO_API = (() => {
@@ -1484,10 +1252,6 @@
         })();
 
         const ADMIN_VAULT_KEY = 'HOKNEX-ADMIN-2026';
-        const SUPPORT_EMAIL = 'hoknex.in@gmail.com';
-        const NEW_USER_PERKS = 250;
-        const DAILY_CLAIM_PERKS = 25;
-        const ACTION_PERK_COST = 25;
 
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -1505,13 +1269,11 @@
         };
 
         const LOCAL_VAULT_KEY = 'hoknex_vault_v5';
-        const SESSION_KEY = 'hoknex_studio_user_v2';
-        const LOCAL_ADMIN_STORE_KEY = 'hoknex_studio_local_admin_v1';
+        const SESSION_KEY = 'hoknex_studio_user_v1';
 
         let currentTheme = 'gallery';
         let pendingDownloadCallback = null;
         let isVaultAdminAuthenticated = false;
-        let activeAdminKey = '';
 
         let aiBgThemeURL = null;
         let aiSingleLogoURL = null;
@@ -1525,9 +1287,6 @@
         let bulkRecords = [];
         let activeUnlockedCert = null;
 
-        let proScreenshotDataUrl = '';
-        let adminQrDraftDataUrl = '';
-
         const aiCanvas = new fabric.Canvas('aiCanvas', { width: 560, height: 395, backgroundColor: '#FAF9F6' });
         const posterCanvas = new fabric.Canvas('posterCanvas', { width: 460, height: 650, backgroundColor: '#FAF9F6' });
         const drawCanvas = new fabric.Canvas('drawCanvas', { width: 640, height: 440, backgroundColor: '#FFFFFF', preserveObjectStacking: true });
@@ -1540,7 +1299,7 @@
             item.className = 'toast-item';
             item.textContent = msg;
             stack.appendChild(item);
-            setTimeout(() => item.remove(), 3800);
+            setTimeout(() => item.remove(), 3400);
         }
 
         function setVaultStatus(msg, isError = false) {
@@ -1558,49 +1317,8 @@
                 .replace(/"/g, '&quot;');
         }
 
-        function getLocalAdminData() {
-            try {
-                const raw = JSON.parse(localStorage.getItem(LOCAL_ADMIN_STORE_KEY) || '{}');
-                return {
-                    paymentRequests: Array.isArray(raw.paymentRequests) ? raw.paymentRequests : [],
-                    emailLogs: Array.isArray(raw.emailLogs) ? raw.emailLogs : [],
-                    settings: raw.settings && typeof raw.settings === 'object'
-                        ? raw.settings
-                        : { paymentQrImage: '', paymentUpiId: 'hoknex@upi' }
-                };
-            } catch {
-                return { paymentRequests: [], emailLogs: [], settings: { paymentQrImage: '', paymentUpiId: 'hoknex@upi' } };
-            }
-        }
-
-        function saveLocalAdminData(data) {
-            try { localStorage.setItem(LOCAL_ADMIN_STORE_KEY, JSON.stringify(data)); } catch (_) {}
-        }
-
-        function logLocalEmail(to, subject, text) {
-            const adm = getLocalAdminData();
-            adm.emailLogs.unshift({
-                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-                from: SUPPORT_EMAIL,
-                to,
-                subject,
-                text,
-                sentAt: new Date().toISOString()
-            });
-            saveLocalAdminData(adm);
-        }
-
-        function saveUserToLocalStore(u) {
-            if (!u || !u.email) return;
-            try {
-                const users = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}');
-                users[u.email.toLowerCase()] = u;
-                localStorage.setItem('hoknex_local_users', JSON.stringify(users));
-            } catch (_) {}
-        }
-
         // ====================================================================
-        // ACCOUNT, PERKS ECONOMY, PROFILE DP & MY LIBRARY
+        // ACCOUNT AUTHENTICATION, CREDITS, REFERRALS & SELF-SERVICE DELETION
         // ====================================================================
         function getCurrentUser() {
             try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
@@ -1611,15 +1329,14 @@
                 if (u) localStorage.setItem(SESSION_KEY, JSON.stringify(u));
                 else localStorage.removeItem(SESSION_KEY);
             } catch (_) {}
-            if (u) saveUserToLocalStore(u);
             window.__hoknexSessionUser = u || null;
             syncAccountUI();
         }
 
-        function isPackCoveredByPro(user, packId) {
-            if (!user || !user.hasProPass) return false;
-            const packs = Array.isArray(user.proPacks) ? user.proPacks : [];
-            return packs.includes('all_access') || !packId || packs.includes(packId);
+        function makeReferralCode(name) {
+            const clean = String(name || 'HKX').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 5) || 'HKX';
+            const rand = Math.random().toString(36).substring(2, 5).toUpperCase();
+            return `HKX-${clean}-${rand}`;
         }
 
         function syncAccountUI() {
@@ -1628,262 +1345,64 @@
             const label = document.getElementById('authNavLabel');
             const delBtn = document.getElementById('deleteAccNavBtn');
             const creditsLabel = document.getElementById('headerCreditsLabel');
-            const proBadge = document.getElementById('headerProBadge');
-            const headerDp = document.getElementById('headerUserDp');
-            const modalDp = document.getElementById('modalProfileDpPreview');
 
             const perkCredits = document.getElementById('perkCreditsCount');
-            const perkLibraryCount = document.getElementById('perkLibraryCount');
+            const perkDownloads = document.getElementById('perkDownloadsCount');
             const perkPlan = document.getElementById('perkPlanLabel');
+            const refInput = document.getElementById('userReferralCodeInput');
             const ctaGuest = document.getElementById('perksCtaGuest');
             const ctaMember = document.getElementById('perksCtaMember');
 
             if (user) {
-                const perks = typeof user.perks === 'number' ? user.perks : NEW_USER_PERKS;
-                const lib = Array.isArray(user.library) ? user.library : [];
+                const credits = typeof user.credits === 'number' ? user.credits : 50;
+                const exportsCount = typeof user.exportsCount === 'number' ? user.exportsCount : 0;
+                const refCode = user.referralCode || makeReferralCode(user.name);
 
                 badge.style.display = 'inline';
                 badge.textContent = user.name;
                 label.textContent = 'Account';
                 delBtn.style.display = 'inline-flex';
-                if (creditsLabel) creditsLabel.textContent = user.hasProPass ? `${perks} Perks • UNLIMITED` : `${perks} Perks`;
-                if (proBadge) proBadge.textContent = user.hasProPass ? 'Pro Pass Active' : 'Pro Pass';
+                if (creditsLabel) creditsLabel.textContent = `${credits} Studio Credits`;
 
-                if (user.dp) {
-                    headerDp.src = user.dp;
-                    headerDp.style.display = 'inline-block';
-                    if (modalDp) modalDp.src = user.dp;
-                } else {
-                    headerDp.style.display = 'none';
-                }
-
-                if (perkCredits) perkCredits.textContent = perks;
-                if (perkLibraryCount) perkLibraryCount.textContent = lib.length;
-                if (perkPlan) perkPlan.textContent = user.hasProPass ? 'Pro Pass' : 'Standard';
+                if (perkCredits) perkCredits.textContent = credits;
+                if (perkDownloads) perkDownloads.textContent = exportsCount;
+                if (perkPlan) perkPlan.textContent = user.plan || 'Creator';
+                if (refInput) refInput.value = refCode;
                 if (ctaGuest) ctaGuest.style.display = 'none';
                 if (ctaMember) ctaMember.style.display = 'flex';
-                renderUserLibraryList(lib);
             } else {
                 badge.style.display = 'none';
-                headerDp.style.display = 'none';
                 label.textContent = 'Sign In / Sign Up';
                 delBtn.style.display = 'none';
-                if (creditsLabel) creditsLabel.textContent = `${NEW_USER_PERKS} Perks`;
-                if (proBadge) proBadge.textContent = 'Pro Pass';
+                if (creditsLabel) creditsLabel.textContent = '50 Free Credits & Perks';
 
-                if (perkCredits) perkCredits.textContent = String(NEW_USER_PERKS);
-                if (perkLibraryCount) perkLibraryCount.textContent = '0';
-                if (perkPlan) perkPlan.textContent = 'Standard';
+                if (perkCredits) perkCredits.textContent = '50';
+                if (perkDownloads) perkDownloads.textContent = '0';
+                if (perkPlan) perkPlan.textContent = 'Free';
+                if (refInput) refInput.value = 'SIGN-UP-TO-UNLOCK';
                 if (ctaGuest) ctaGuest.style.display = 'block';
                 if (ctaMember) ctaMember.style.display = 'none';
-                renderUserLibraryList([]);
             }
         }
 
-        function handleUserDpUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const user = getCurrentUser() || window.__hoknexSessionUser;
-            if (!user) return showToast('Sign in first to set your profile DP');
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                user.dp = ev.target.result;
-                setCurrentUser(user);
-                try {
-                    await fetch(`${STUDIO_API}/user/profile`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ token: user.token, email: user.email, dp: user.dp })
-                    });
-                } catch (_) {}
-                showToast('Profile display picture updated');
-            };
-            reader.readAsDataURL(file);
+        function copyUserReferralCode() {
+            const input = document.getElementById('userReferralCodeInput');
+            if (!input) return;
+            navigator.clipboard.writeText(`Join Hoknex Studio with my referral code ${input.value} for +25 bonus credits: ${window.location.origin}${window.location.pathname}`);
+            showToast('Copied referral invite link & code');
         }
 
-        async function claimDailyBonusCredits() {
+        function claimDailyBonusCredits() {
             const user = getCurrentUser() || window.__hoknexSessionUser;
             if (!user) return openAuthModal('signup');
             const today = new Date().toISOString().slice(0, 10);
-            if (user.lastDailyClaim === today) {
-                return showToast('Daily 25 Perks already claimed today');
+            if (user.lastBonusDate === today) {
+                return showToast('Daily creator credits already claimed today');
             }
-
-            try {
-                const res = await fetch(`${STUDIO_API}/perks/claim-daily`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: user.token, email: user.email })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.user) {
-                        setCurrentUser(data.user);
-                        return showToast(`+${DAILY_CLAIM_PERKS} Daily Perks claimed!`);
-                    }
-                }
-            } catch (_) {}
-
-            user.lastDailyClaim = today;
-            user.perks = Number(user.perks || 0) + DAILY_CLAIM_PERKS;
-            user.library = user.library || [];
-            user.library.unshift({
-                id: Date.now().toString(36),
-                action: 'Daily Perks Claim',
-                detail: `Daily reward claimed for ${today}`,
-                perkDelta: `+${DAILY_CLAIM_PERKS}`,
-                timestamp: new Date().toISOString()
-            });
+            user.credits = (typeof user.credits === 'number' ? user.credits : 50) + 10;
+            user.lastBonusDate = today;
             setCurrentUser(user);
-            showToast(`+${DAILY_CLAIM_PERKS} Daily Perks claimed!`);
-        }
-
-        async function chargeStudioPerks(actionLabel, packId, detailText = '') {
-            const user = getCurrentUser() || window.__hoknexSessionUser;
-            if (!user || !user.email) {
-                openAuthModal('signup');
-                return false;
-            }
-
-            if (isPackCoveredByPro(user, packId)) {
-                user.library = user.library || [];
-                user.library.unshift({
-                    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
-                    action: actionLabel,
-                    detail: detailText || 'Pro Pass Unlimited Access',
-                    perkDelta: 'PRO FREE',
-                    timestamp: new Date().toISOString()
-                });
-                setCurrentUser(user);
-                return true;
-            }
-
-            const currentPerks = Number(user.perks ?? NEW_USER_PERKS);
-            if (currentPerks < ACTION_PERK_COST) {
-                showToast(`Only ${currentPerks} Perks left! Claim daily perks or join Pro Pass.`);
-                openProPassModal();
-                return false;
-            }
-
-            try {
-                const res = await fetch(`${STUDIO_API}/perks/consume`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        token: user.token,
-                        email: user.email,
-                        action: actionLabel,
-                        detail: detailText || `${ACTION_PERK_COST} Perks used`,
-                        packId,
-                        amount: ACTION_PERK_COST
-                    })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.user) {
-                        setCurrentUser(data.user);
-                        if (data.user.perks <= ACTION_PERK_COST) {
-                            showToast(`Low Perks Alert: ${data.user.perks} Perks left! Check ${SUPPORT_EMAIL} & Pro Pass.`);
-                        }
-                        return true;
-                    }
-                }
-            } catch (_) {}
-
-            user.perks = currentPerks - ACTION_PERK_COST;
-            user.library = user.library || [];
-            user.library.unshift({
-                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
-                action: actionLabel,
-                detail: detailText || `${ACTION_PERK_COST} Perks used`,
-                perkDelta: `-${ACTION_PERK_COST}`,
-                timestamp: new Date().toISOString()
-            });
-
-            if (user.perks <= ACTION_PERK_COST && !user.lowPerkAlertSent) {
-                user.lowPerkAlertSent = true;
-                logLocalEmail(
-                    user.email,
-                    'Hoknex Studio Alert: 25 Perks Left — Join Pro Pass',
-                    `Hi ${user.name}, you have ${user.perks} Perks remaining. Join Hoknex Pro Pass for unlimited packs. Sent by ${SUPPORT_EMAIL}.`
-                );
-                showToast(`Only ${user.perks} Perks left! Reminder sent to ${user.email}`);
-            }
-
-            setCurrentUser(user);
-            return true;
-        }
-
-        async function consumePerksForEdit(actionLabel, packId, fn) {
-            const ok = await chargeStudioPerks(actionLabel, packId, actionLabel);
-            if (!ok) return;
-            if (typeof fn === 'function') fn();
-        }
-
-        function guardedDownload(actionFn, actionLabel = 'Studio Export', packId = 'design_pack') {
-            const user = getCurrentUser() || window.__hoknexSessionUser;
-            if (!user || !user.email) {
-                pendingDownloadCallback = { actionFn, actionLabel, packId };
-                return openAuthModal('signup');
-            }
-            (async () => {
-                const ok = await chargeStudioPerks(actionLabel, packId, actionLabel);
-                if (ok && typeof actionFn === 'function') actionFn();
-            })();
-        }
-
-        function renderUserLibraryList(items) {
-            const listEl = document.getElementById('userLibraryList');
-            if (!listEl) return;
-            if (!items || !items.length) {
-                listEl.innerHTML = '<div style="font-size:0.78rem; color:var(--ink-muted);">No creations or exports in your library yet.</div>';
-                return;
-            }
-            listEl.innerHTML = items.map((item) => {
-                const dt = new Date(item.timestamp || Date.now());
-                const formattedTime = `${dt.toLocaleDateString()} • ${dt.toLocaleTimeString()}`;
-                return `
-                    <div class="layer-row" style="align-items:center; gap:10px;">
-                        <div style="flex:1;">
-                            <div style="font-size:0.8rem;">${escapeHtmlText(item.action)} <span style="color:var(--accent); font-weight:800;">(${escapeHtmlText(item.perkDelta)})</span></div>
-                            <div style="font-size:0.7rem; color:var(--ink-muted);">${escapeHtmlText(item.detail || '')} • ${escapeHtmlText(formattedTime)}</div>
-                        </div>
-                        <button type="button" onclick="deleteSingleLibraryItem('${escapeHtmlText(item.id)}')" title="Delete entry" style="color:#DC2626;">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        async function deleteSingleLibraryItem(itemId) {
-            const user = getCurrentUser() || window.__hoknexSessionUser;
-            if (!user) return;
-            try {
-                await fetch(`${STUDIO_API}/library/item`, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: user.token, email: user.email, itemId })
-                });
-            } catch (_) {}
-            user.library = (user.library || []).filter((i) => i.id !== itemId);
-            setCurrentUser(user);
-            showToast('Library item removed');
-        }
-
-        async function clearAllLibraryHistory() {
-            const user = getCurrentUser() || window.__hoknexSessionUser;
-            if (!user) return;
-            try {
-                await fetch(`${STUDIO_API}/library/all`, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: user.token, email: user.email })
-                });
-            } catch (_) {}
-            user.library = [];
-            setCurrentUser(user);
-            showToast('Cleared all library history');
+            showToast('+10 Daily Creator Credits added!');
         }
 
         function openAuthModal(mode = 'signup') {
@@ -1898,24 +1417,36 @@
         }
 
         function switchAuthMode(mode) {
-            ['perks', 'library', 'signup', 'signin', 'delete'].forEach(m => {
+            ['perks', 'signup', 'signin', 'delete'].forEach(m => {
                 const btn = document.getElementById(`tabBtn${m[0].toUpperCase() + m.slice(1)}`);
                 if (btn) btn.classList.toggle('active', m === mode);
             });
             document.getElementById('formPerks').style.display = mode === 'perks' ? 'block' : 'none';
-            document.getElementById('formLibrary').style.display = mode === 'library' ? 'block' : 'none';
             document.getElementById('formSignup').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('formSignin').style.display = mode === 'signin' ? 'block' : 'none';
             document.getElementById('formDelete').style.display = mode === 'delete' ? 'block' : 'none';
         }
 
-        async function finishAuthAndRunPending(userObj) {
+        function guardedDownload(actionFn) {
+            const user = getCurrentUser() || window.__hoknexSessionUser;
+            if (user && user.email) {
+                user.exportsCount = (user.exportsCount || 0) + 1;
+                setCurrentUser(user);
+                actionFn();
+                return;
+            }
+            pendingDownloadCallback = actionFn;
+            openAuthModal('signup');
+        }
+
+        function finishAuthAndRunPending(userObj) {
             setCurrentUser(userObj);
-            const pending = pendingDownloadCallback;
+            const cb = pendingDownloadCallback;
             closeAuthModal();
-            if (pending && typeof pending.actionFn === 'function') {
-                const ok = await chargeStudioPerks(pending.actionLabel, pending.packId, pending.actionLabel);
-                if (ok) pending.actionFn();
+            if (typeof cb === 'function') {
+                userObj.exportsCount = (userObj.exportsCount || 0) + 1;
+                setCurrentUser(userObj);
+                cb();
             }
         }
 
@@ -1924,45 +1455,45 @@
             const name = document.getElementById('suName').value.trim();
             const email = document.getElementById('suEmail').value.trim();
             const password = document.getElementById('suPass').value;
+            const referralUsed = document.getElementById('suReferral').value.trim();
 
             try {
                 const res = await fetch(`${STUDIO_API}/auth/signup`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password })
+                    body: JSON.stringify({ name, email, password, referralUsed })
                 });
                 if (res.ok) {
                     const data = await res.json();
                     if (data.user) {
-                        showToast(`Welcome ${data.user.name}! ${data.user.perks} Perks credited.`);
-                        await finishAuthAndRunPending(data.user);
+                        showToast(`Welcome ${data.user.name}! ${data.user.credits || 50} credits unlocked.`);
+                        finishAuthAndRunPending(data.user);
                         return;
                     }
                 }
             } catch (_) {}
 
-            const nowIso = new Date().toISOString();
+            const startingCredits = referralUsed ? 75 : 50;
             const userObj = {
                 id: Date.now().toString(),
                 name,
                 email: email.toLowerCase(),
                 password,
-                dp: '',
-                perks: NEW_USER_PERKS,
-                hasProPass: false,
-                proPacks: [],
-                lastDailyClaim: '',
-                library: [{
-                    id: Date.now().toString(36),
-                    action: 'Signup Welcome Bonus',
-                    detail: 'New Hoknex Studio account created',
-                    perkDelta: `+${NEW_USER_PERKS}`,
-                    timestamp: nowIso
-                }]
+                credits: startingCredits,
+                exportsCount: 0,
+                plan: 'Creator',
+                referralCode: makeReferralCode(name)
             };
-            logLocalEmail(userObj.email, 'Welcome to Hoknex Studio — 250 Perks Credited', `Hi ${name}, ${NEW_USER_PERKS} Perks added. Support: ${SUPPORT_EMAIL}`);
-            showToast(`Account created! ${NEW_USER_PERKS} Perks unlocked.`);
-            await finishAuthAndRunPending(userObj);
+            try {
+                const localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}');
+                localUsers[userObj.email] = userObj;
+                localStorage.setItem('hoknex_local_users', JSON.stringify(localUsers));
+            } catch (_) {}
+            window.__hoknexLocalUsers = window.__hoknexLocalUsers || {};
+            window.__hoknexLocalUsers[userObj.email] = userObj;
+
+            showToast(`Account created! ${startingCredits} Studio Credits unlocked.`);
+            finishAuthAndRunPending(userObj);
         }
 
         async function handleSignin(e) {
@@ -1980,7 +1511,7 @@
                     const data = await res.json();
                     if (data.user) {
                         showToast(`Signed in as ${data.user.name}`);
-                        await finishAuthAndRunPending(data.user);
+                        finishAuthAndRunPending(data.user);
                         return;
                     }
                 }
@@ -1988,8 +1519,10 @@
 
             let localUsers = {};
             try { localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}'); } catch (_) {}
-            const existing = localUsers[email];
-            if (existing && existing.password && existing.password !== password) {
+            const memUsers = window.__hoknexLocalUsers || {};
+            const existing = localUsers[email] || memUsers[email];
+
+            if (existing && existing.password !== password) {
                 return showToast('Invalid email or password.');
             }
 
@@ -1998,15 +1531,13 @@
                 name: email.split('@')[0],
                 email,
                 password,
-                dp: '',
-                perks: NEW_USER_PERKS,
-                hasProPass: false,
-                proPacks: [],
-                lastDailyClaim: '',
-                library: []
+                credits: 50,
+                exportsCount: 0,
+                plan: 'Creator',
+                referralCode: makeReferralCode(email.split('@')[0])
             };
             showToast(`Signed in as ${userObj.name}`);
-            await finishAuthAndRunPending(userObj);
+            finishAuthAndRunPending(userObj);
         }
 
         async function handleDeleteAccount(e) {
@@ -2028,438 +1559,10 @@
                 delete localUsers[email];
                 localStorage.setItem('hoknex_local_users', JSON.stringify(localUsers));
             } catch (_) {}
+            if (window.__hoknexLocalUsers) delete window.__hoknexLocalUsers[email];
             setCurrentUser(null);
             closeAuthModal();
             showToast('Account deleted');
-        }
-
-        // ====================================================================
-        // PRO PASS PACKS, DETAILS, QR SCANNER & SCREENSHOT UPLOAD
-        // ====================================================================
-        function openProPassModal() {
-            const user = getCurrentUser() || window.__hoknexSessionUser;
-            if (user) {
-                document.getElementById('proBuyerName').value = user.name || '';
-                document.getElementById('proBuyerEmail').value = user.email || '';
-            }
-            recalculateProTotal();
-            document.getElementById('paymentScannerSection').style.display = 'none';
-            document.getElementById('proPassModal').style.display = 'flex';
-        }
-
-        function closeProPassModal() {
-            document.getElementById('proPassModal').style.display = 'none';
-        }
-
-        function getSelectedProPacks() {
-            const allAccess = document.getElementById('packAllAccess');
-            if (allAccess && allAccess.checked) {
-                return [{ value: 'all_access', price: 299 }];
-            }
-            return Array.from(document.querySelectorAll('.pro-pack-cb:checked')).map(cb => ({
-                value: cb.value,
-                price: Number(cb.dataset.price || 0)
-            }));
-        }
-
-        function recalculateProTotal() {
-            const selected = getSelectedProPacks();
-            const total = selected.reduce((sum, p) => sum + p.price, 0);
-            document.getElementById('proPassTotalAmount').textContent = `₹${total}`;
-            return total;
-        }
-
-        async function revealPaymentScanner() {
-            const name = document.getElementById('proBuyerName').value.trim();
-            const email = document.getElementById('proBuyerEmail').value.trim();
-            const packs = getSelectedProPacks();
-            if (!packs.length) return showToast('Select at least one pack first');
-            if (!name || !email) return showToast('Enter your full name and email');
-
-            const total = recalculateProTotal();
-            const scannerBox = document.getElementById('paymentScannerSection');
-            const qrDisp = document.getElementById('scannerQrDisplay');
-            const upiText = document.getElementById('scannerUpiText');
-
-            let qrImage = getLocalAdminData().settings.paymentQrImage || '';
-            let upiId = getLocalAdminData().settings.paymentUpiId || 'hoknex@upi';
-
-            try {
-                const res = await fetch(`${STUDIO_API}/settings`);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.settings) {
-                        qrImage = data.settings.paymentQrImage || qrImage;
-                        upiId = data.settings.paymentUpiId || upiId;
-                    }
-                }
-            } catch (_) {}
-
-            qrDisp.innerHTML = '';
-            if (qrImage) {
-                qrDisp.innerHTML = `<img src="${qrImage}" alt="Payment QR" style="max-width:190px; max-height:190px; border-radius:10px; border:2px solid var(--accent);">`;
-            } else {
-                const frame = document.createElement('div');
-                frame.className = 'qr-frame';
-                qrDisp.appendChild(frame);
-                await renderQRInto(frame, `upi://pay?pa=${encodeURIComponent(upiId)}&pn=Hoknex%20Studio&am=${total}&cu=INR`, 156);
-            }
-            upiText.textContent = `Pay ₹${total} to UPI: ${upiId} (${SUPPORT_EMAIL})`;
-            scannerBox.style.display = 'block';
-        }
-
-        function handleProScreenshotUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                proScreenshotDataUrl = ev.target.result;
-                const img = document.getElementById('proScreenshotPreview');
-                img.src = proScreenshotDataUrl;
-                img.style.display = 'block';
-                showToast('Screenshot attached');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function submitProPassPaymentRequest() {
-            const fullName = document.getElementById('proBuyerName').value.trim();
-            const userEmail = document.getElementById('proBuyerEmail').value.trim().toLowerCase();
-            const contactPhone = document.getElementById('proBuyerPhone').value.trim();
-            const packs = getSelectedProPacks().map(p => p.value);
-            const amount = recalculateProTotal();
-            const user = getCurrentUser() || window.__hoknexSessionUser;
-
-            if (!fullName || !userEmail) return showToast('Name and email are required');
-            if (!packs.length) return showToast('Select at least one pack');
-            if (!proScreenshotDataUrl) return showToast('Please upload your payment screenshot');
-
-            const payload = {
-                token: user?.token || '',
-                userId: user?.id || null,
-                userEmail,
-                fullName,
-                contactPhone,
-                packs,
-                amount,
-                screenshotData: proScreenshotDataUrl
-            };
-
-            try {
-                const res = await fetch(`${STUDIO_API}/pro-pass/submit-payment`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (res.ok) {
-                    showToast('Payment screenshot submitted for Admin verification!');
-                    closeProPassModal();
-                    return;
-                }
-            } catch (_) {}
-
-            const adm = getLocalAdminData();
-            adm.paymentRequests.unshift({
-                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
-                userId: user?.id || null,
-                userEmail,
-                fullName,
-                contactPhone,
-                packs,
-                amount,
-                screenshotData: proScreenshotDataUrl,
-                status: 'pending',
-                submittedAt: new Date().toISOString()
-            });
-            saveLocalAdminData(adm);
-            logLocalEmail(userEmail, 'Hoknex Studio: Pro Pass Screenshot Submitted', `Submitted ₹${amount} for packs: ${packs.join(', ')}. Support: ${SUPPORT_EMAIL}`);
-            showToast('Submitted for Admin verification!');
-            closeProPassModal();
-        }
-
-        // ====================================================================
-        // STUDIO ADMIN PORTAL (PAYMENTS, USERS, FREE PERKS & QR MANAGER)
-        // ====================================================================
-        function openAdminPortalModal() {
-            document.getElementById('adminPortalModal').style.display = 'flex';
-            if (activeAdminKey) refreshAdminPortalData();
-        }
-
-        function closeAdminPortalModal() {
-            document.getElementById('adminPortalModal').style.display = 'none';
-        }
-
-        function unlockAdminPortal() {
-            const key = document.getElementById('portalAdminKeyInput').value.trim();
-            if (key !== ADMIN_VAULT_KEY) {
-                return showToast('Invalid Admin Studio Key');
-            }
-            activeAdminKey = key;
-            document.getElementById('adminPortalAuthBox').style.display = 'none';
-            document.getElementById('adminPortalDashboard').style.display = 'block';
-            refreshAdminPortalData();
-            showToast('Studio Admin Portal unlocked');
-        }
-
-        function switchAdminTab(tab) {
-            ['payments', 'users', 'qr', 'emails'].forEach(t => {
-                const btn = document.getElementById(`admTab${t[0].toUpperCase() + t.slice(1)}`);
-                if (btn) btn.classList.toggle('active', t === tab);
-                const sec = document.getElementById(`admSection${t[0].toUpperCase() + t.slice(1)}`);
-                if (sec) sec.style.display = t === tab ? 'block' : 'none';
-            });
-        }
-
-        async function refreshAdminPortalData() {
-            let users = [];
-            let paymentRequests = [];
-            let emailLogs = [];
-            let settings = getLocalAdminData().settings;
-
-            try {
-                const res = await fetch(`${STUDIO_API}/admin/overview`, {
-                    headers: { 'x-hoknex-admin-key': activeAdminKey }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    users = data.users || [];
-                    paymentRequests = data.paymentRequests || [];
-                    emailLogs = data.emailLogs || [];
-                    if (data.settings) settings = data.settings;
-                }
-            } catch (_) {}
-
-            if (!paymentRequests.length) {
-                paymentRequests = getLocalAdminData().paymentRequests;
-            }
-            if (!emailLogs.length) {
-                emailLogs = getLocalAdminData().emailLogs;
-            }
-            if (!users.length) {
-                try {
-                    const map = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}');
-                    users = Object.values(map);
-                } catch (_) {}
-            }
-
-            // Render payments
-            const payList = document.getElementById('adminPaymentsList');
-            if (!paymentRequests.length) {
-                payList.innerHTML = '<div style="font-size:0.8rem; color:var(--ink-muted);">No Pro Pass payment requests yet.</div>';
-            } else {
-                payList.innerHTML = paymentRequests.map(p => `
-                    <div class="layer-row" style="flex-direction:column; align-items:stretch; gap:8px; padding:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                            <div>
-                                <strong>${escapeHtmlText(p.fullName)}</strong> (${escapeHtmlText(p.userEmail)}) • <strong>₹${p.amount}</strong>
-                                <div style="font-size:0.72rem; color:var(--ink-muted);">Packs: ${escapeHtmlText((p.packs || []).join(', '))} • Status: <strong>${escapeHtmlText(p.status)}</strong></div>
-                            </div>
-                            <div style="display:flex; gap:6px; align-items:center;">
-                                <input type="number" id="extraPerks-${p.id}" value="100" min="0" style="width:76px; margin-bottom:0; padding:5px 8px; font-size:0.75rem;" title="Extra perks">
-                                <button type="button" class="btn-primary" style="padding:5px 10px; font-size:0.72rem;" onclick="reviewAdminPayment('${p.id}', 'approve')">Approve</button>
-                                <button type="button" class="btn-danger-subtle" style="padding:5px 10px; font-size:0.72rem;" onclick="reviewAdminPayment('${p.id}', 'reject')">Reject</button>
-                            </div>
-                        </div>
-                        ${p.screenshotData ? `<img src="${p.screenshotData}" alt="Payment proof" style="max-height:130px; object-fit:contain; border-radius:8px; border:1px solid var(--border-hairline);">` : ''}
-                    </div>
-                `).join('');
-            }
-
-            // Render users table
-            const uBody = document.getElementById('adminUsersTableBody');
-            uBody.innerHTML = users.length ? users.map(u => `
-                <tr>
-                    <td>${escapeHtmlText(u.name)}</td>
-                    <td>${escapeHtmlText(u.email)}</td>
-                    <td><strong>${Number(u.perks || 0)}</strong></td>
-                    <td>${u.hasProPass ? 'Active' : 'No'}</td>
-                    <td><button type="button" class="btn-secondary" style="padding:4px 8px; font-size:0.7rem;" onclick="prefillGrantUser('${escapeHtmlText(u.email)}')">+ Perks</button></td>
-                </tr>
-            `).join('') : '<tr><td colspan="5" style="text-align:center; color:var(--ink-muted);">No accounts loaded yet.</td></tr>';
-
-            // Render QR settings
-            document.getElementById('adminUpiIdInput').value = settings.paymentUpiId || 'hoknex@upi';
-            const qrBox = document.getElementById('adminCurrentQrPreviewBox');
-            qrBox.innerHTML = settings.paymentQrImage
-                ? `<img src="${settings.paymentQrImage}" alt="Current QR" style="max-height:140px; border-radius:10px; border:1px solid var(--border-hairline);">`
-                : '<span style="font-size:0.78rem; color:var(--ink-muted);">No custom QR uploaded (using dynamic UPI QR fallback).</span>';
-
-            // Render email logs
-            const eList = document.getElementById('adminEmailLogsList');
-            eList.innerHTML = emailLogs.length ? emailLogs.map(m => `
-                <div class="layer-row" style="flex-direction:column; align-items:flex-start; gap:3px;">
-                    <div style="font-size:0.78rem;"><strong>To:</strong> ${escapeHtmlText(m.to)} • <strong>${escapeHtmlText(m.subject)}</strong></div>
-                    <div style="font-size:0.7rem; color:var(--ink-muted);">${escapeHtmlText(m.text)} (${new Date(m.sentAt).toLocaleString()})</div>
-                </div>
-            `).join('') : '<div style="font-size:0.78rem; color:var(--ink-muted);">No email notifications logged yet.</div>';
-        }
-
-        function prefillGrantUser(email) {
-            document.getElementById('grantTargetEmail').value = email;
-            document.getElementById('grantPerksAmount').focus();
-        }
-
-        async function reviewAdminPayment(requestId, decision) {
-            const extraInput = document.getElementById(`extraPerks-${requestId}`);
-            const extraPerks = extraInput ? parseInt(extraInput.value, 10) || 0 : 0;
-
-            try {
-                const res = await fetch(`${STUDIO_API}/admin/payment-review`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'x-hoknex-admin-key': activeAdminKey },
-                    body: JSON.stringify({ requestId, decision, extraPerks, adminKey: activeAdminKey })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    const cur = getCurrentUser();
-                    if (data.user && cur && cur.email.toLowerCase() === data.user.email.toLowerCase()) {
-                        setCurrentUser(data.user);
-                    }
-                    showToast(`Payment ${decision}d! Notification sent from ${SUPPORT_EMAIL}`);
-                    return refreshAdminPortalData();
-                }
-            } catch (_) {}
-
-            const adm = getLocalAdminData();
-            const item = adm.paymentRequests.find(p => p.id === requestId);
-            if (item) {
-                item.status = decision === 'approve' ? 'approved' : 'rejected';
-                saveLocalAdminData(adm);
-                if (decision === 'approve') {
-                    const granted = (item.packs.includes('all_access') ? 1000 : item.packs.length * 300) + extraPerks;
-                    const cur = getCurrentUser();
-                    if (cur && cur.email.toLowerCase() === item.userEmail.toLowerCase()) {
-                        cur.hasProPass = true;
-                        cur.proPacks = Array.from(new Set([...(cur.proPacks || []), ...(item.packs || [])]));
-                        cur.perks = Number(cur.perks || 0) + granted;
-                        setCurrentUser(cur);
-                    }
-                    logLocalEmail(item.userEmail, 'Hoknex Studio: Pro Pass Confirmed', `Approved! +${granted} Perks granted. Sent from ${SUPPORT_EMAIL}`);
-                }
-            }
-            showToast(`Payment ${decision}d`);
-            refreshAdminPortalData();
-        }
-
-        async function adminGrantFreePerks() {
-            const email = document.getElementById('grantTargetEmail').value.trim().toLowerCase();
-            const perksAmount = parseInt(document.getElementById('grantPerksAmount').value, 10) || 0;
-            const note = document.getElementById('grantPerksNote').value.trim() || 'Admin Free Perks';
-            if (!email || perksAmount <= 0) return showToast('Enter user email and perks amount');
-
-            try {
-                const res = await fetch(`${STUDIO_API}/admin/grant-perks`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'x-hoknex-admin-key': activeAdminKey },
-                    body: JSON.stringify({ email, perksAmount, note, adminKey: activeAdminKey })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    const cur = getCurrentUser();
-                    if (data.user && cur && cur.email.toLowerCase() === data.user.email.toLowerCase()) {
-                        setCurrentUser(data.user);
-                    }
-                    showToast(`Sent +${perksAmount} Perks to ${email} (Email sent via ${SUPPORT_EMAIL})`);
-                    return refreshAdminPortalData();
-                }
-            } catch (_) {}
-
-            const cur = getCurrentUser();
-            if (cur && cur.email.toLowerCase() === email) {
-                cur.perks = Number(cur.perks || 0) + perksAmount;
-                cur.library = cur.library || [];
-                cur.library.unshift({
-                    id: Date.now().toString(36),
-                    action: 'Admin Perks Sent',
-                    detail: note,
-                    perkDelta: `+${perksAmount}`,
-                    timestamp: new Date().toISOString()
-                });
-                setCurrentUser(cur);
-            }
-            logLocalEmail(email, `Hoknex Studio: +${perksAmount} Free Perks Sent`, `${note}. Sent from ${SUPPORT_EMAIL}`);
-            showToast(`Sent +${perksAmount} Perks to ${email}`);
-            refreshAdminPortalData();
-        }
-
-        function handleAdminQrUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                adminQrDraftDataUrl = ev.target.result;
-                document.getElementById('adminCurrentQrPreviewBox').innerHTML =
-                    `<img src="${adminQrDraftDataUrl}" alt="New QR" style="max-height:140px; border-radius:10px; border:1px solid var(--accent);">`;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function saveAdminQrSettings() {
-            const paymentUpiId = document.getElementById('adminUpiIdInput').value.trim() || 'hoknex@upi';
-            const adm = getLocalAdminData();
-            const finalQr = adminQrDraftDataUrl || adm.settings.paymentQrImage || '';
-            adm.settings.paymentQrImage = finalQr;
-            adm.settings.paymentUpiId = paymentUpiId;
-            saveLocalAdminData(adm);
-
-            try {
-                await fetch(`${STUDIO_API}/admin/qr`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'x-hoknex-admin-key': activeAdminKey },
-                    body: JSON.stringify({ paymentQrImage: finalQr, paymentUpiId, adminKey: activeAdminKey })
-                });
-            } catch (_) {}
-
-            adminQrDraftDataUrl = '';
-            showToast('Updated payment QR & UPI settings');
-            refreshAdminPortalData();
-        }
-
-        async function deleteAdminQrImage() {
-            const adm = getLocalAdminData();
-            adm.settings.paymentQrImage = '';
-            adminQrDraftDataUrl = '';
-            saveLocalAdminData(adm);
-
-            try {
-                await fetch(`${STUDIO_API}/admin/qr`, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json', 'x-hoknex-admin-key': activeAdminKey },
-                    body: JSON.stringify({ adminKey: activeAdminKey })
-                });
-            } catch (_) {}
-
-            showToast('Deleted custom payment QR');
-            refreshAdminPortalData();
-        }
-
-        // ====================================================================
-        // PRIVACY POLICY & TERMS AND CONDITIONS
-        // ====================================================================
-        function openLegalModal(type) {
-            const titleEl = document.getElementById('legalModalTitle');
-            const bodyEl = document.getElementById('legalModalBody');
-            if (type === 'terms') {
-                titleEl.textContent = 'Terms & Conditions — Hoknex Studio';
-                bodyEl.innerHTML = `
-                    <p><strong>1. Perk Credits & Pro Pass:</strong> New Hoknex Studio accounts receive 250 Perks upon registration and may claim +25 Perks once per calendar day. Standard studio edits and exports deduct 25 Perks per action unless covered by an active Pro Pass pack.</p>
-                    <p style="margin-top:8px;"><strong>2. Payments & Verification:</strong> Pro Pass pack purchases require payment via the official QR/UPI instructions and screenshot upload. Access and perk grants activate upon Studio Admin verification.</p>
-                    <p style="margin-top:8px;"><strong>3. User Content & Credentials:</strong> You retain rights to your uploaded designs, media, and issued credentials, and agree not to issue fraudulent or unauthorized certificates.</p>
-                    <p style="margin-top:8px;"><strong>4. Support & Contact:</strong> For billing, perk adjustments, or account inquiries, contact <strong>${SUPPORT_EMAIL}</strong>.</p>
-                `;
-            } else {
-                titleEl.textContent = 'Privacy Policy — Hoknex Studio';
-                bodyEl.innerHTML = `
-                    <p><strong>1. Data Collected:</strong> Hoknex Studio stores account details (name, email, optional profile display picture), Perk balances, My Library export logs, saved projects, and Pro Pass payment screenshots submitted for verification.</p>
-                    <p style="margin-top:8px;"><strong>2. How Information Is Used:</strong> Data is used solely to operate studio workspaces, verify credentials, deliver Perk/Pro Pass notifications from <strong>${SUPPORT_EMAIL}</strong>, and maintain your library history.</p>
-                    <p style="margin-top:8px;"><strong>3. Deletion & Control:</strong> You can delete individual or all items inside <strong>My Library</strong>, or permanently delete your account and associated profile/project data at any time.</p>
-                `;
-            }
-            document.getElementById('legalModal').style.display = 'flex';
-        }
-
-        function closeLegalModal() {
-            document.getElementById('legalModal').style.display = 'none';
         }
 
         // ====================================================================
@@ -2476,4 +1579,1750 @@
                 dt: cert.date || '',
                 th: cert.themeKey || 'gallery'
             };
-            const json = JSON
+            const json = JSON.stringify(payload);
+            return btoa(unescape(encodeURIComponent(json)))
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/, '');
+        }
+
+        function decodeCertToken(rawToken) {
+            try {
+                if (!rawToken) return null;
+                let b64 = String(rawToken).trim().replace(/-/g, '+').replace(/_/g, '/');
+                while (b64.length % 4) b64 += '=';
+                const json = decodeURIComponent(escape(atob(b64)));
+                const m = JSON.parse(json);
+                return {
+                    certId: String(m.i || '').trim().toUpperCase(),
+                    password: String(m.p || '').trim(),
+                    recipient: m.r || 'Recipient',
+                    title: m.t || 'HOKNEX CERTIFICATE',
+                    description: m.d || '',
+                    issuer: m.s || 'Hoknex',
+                    date: m.dt || '',
+                    themeKey: m.th || 'gallery'
+                };
+            } catch {
+                return null;
+            }
+        }
+
+        function extractTokenFromCurrentUrl() {
+            const queryParams = new URLSearchParams(window.location.search);
+            const qToken = queryParams.get('token') || queryParams.get('v');
+            if (qToken) return decodeCertToken(qToken);
+
+            const hashStr = window.location.hash || '';
+            if (hashStr.includes('v=')) {
+                const match = hashStr.replace(/^#/, '').match(/(?:^|&)v=([^&]+)/);
+                if (match) return decodeCertToken(decodeURIComponent(match[1]));
+            }
+            return null;
+        }
+
+        function buildPublicCertUrl(cert) {
+            const base = `${window.location.origin}${window.location.pathname}`;
+            const certId = (typeof cert === 'string' ? cert : cert.certId).trim().toUpperCase();
+            if (typeof cert === 'object' && cert.password) {
+                const token = encodeCertToken(cert);
+                return `${base}?id=${encodeURIComponent(certId)}&token=${encodeURIComponent(token)}#v=${token}`;
+            }
+            return `${base}?id=${encodeURIComponent(certId)}`;
+        }
+
+        window.__hoknexMemCerts = window.__hoknexMemCerts || {};
+
+        function getLocalCertStore() {
+            try { return JSON.parse(localStorage.getItem(LOCAL_VAULT_KEY) || '{}'); } catch { return window.__hoknexMemCerts; }
+        }
+
+        function saveCertToLocalStore(cert) {
+            if (!cert || !cert.certId) return;
+            const key = cert.certId.trim().toUpperCase();
+            const { backgroundImage, logo, signature, ...compact } = cert;
+            window.__hoknexMemCerts[key] = compact;
+            try {
+                const store = getLocalCertStore();
+                store[key] = compact;
+                localStorage.setItem(LOCAL_VAULT_KEY, JSON.stringify(store));
+            } catch (_) {}
+            renderVaultHistoryList();
+        }
+
+        function renderVaultHistoryList() {
+            const box = document.getElementById('vaultHistoryList');
+            if (!box) return;
+            const store = Object.assign({}, window.__hoknexMemCerts, getLocalCertStore());
+            const items = Object.values(store).reverse().slice(0, 12);
+            if (!items.length) {
+                box.innerHTML = '<div style="font-size:0.75rem; color:var(--ink-muted);">No credentials issued on this device yet.</div>';
+                return;
+            }
+            box.innerHTML = items.map(item => `
+                <div class="layer-row" onclick="prefillVault('${escapeHtmlText(item.certId)}', '${escapeHtmlText(item.password)}')">
+                    <div>
+                        <div>${escapeHtmlText(item.recipient)}</div>
+                        <div style="font-size:0.68rem; color:var(--ink-muted);">${escapeHtmlText(item.certId)} • Pass: ${escapeHtmlText(item.password)}</div>
+                    </div>
+                    <span style="color:var(--accent); font-size:0.72rem;">Open</span>
+                </div>
+            `).join('');
+        }
+
+        function prefillVault(id, pass) {
+            document.getElementById('vaultCertId').value = id;
+            document.getElementById('vaultPassword').value = pass;
+            unlockCertificate();
+        }
+
+        function setTheme(key, btn) {
+            currentTheme = key;
+            document.documentElement.setAttribute('data-theme', key);
+            document.querySelectorAll('.palette-btn').forEach(p => p.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+        }
+
+        function openHub() {
+            document.querySelectorAll('.stage-wrapper').forEach(s => s.classList.remove('active'));
+            document.getElementById('hubView').style.display = 'block';
+            document.getElementById('backToHubBtn').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openStage(stageId) {
+            document.getElementById('hubView').style.display = 'none';
+            document.querySelectorAll('.stage-wrapper').forEach(s => s.classList.remove('active'));
+            document.getElementById(stageId).classList.add('active');
+            document.getElementById('backToHubBtn').style.display = 'inline-flex';
+            if (stageId === 'vaultStage') renderVaultHistoryList();
+            if (stageId === 'drawStage') refreshLayersList();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderQRInto(containerEl, url, size = 80) {
+            containerEl.innerHTML = '';
+            new QRCode(containerEl, {
+                text: url,
+                width: size,
+                height: size,
+                correctLevel: QRCode.CorrectLevel.L
+            });
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const img = containerEl.querySelector('img');
+                    const cvs = containerEl.querySelector('canvas');
+                    if (img && img.src) resolve(img.src);
+                    else if (cvs) resolve(cvs.toDataURL('image/png'));
+                    else resolve(null);
+                }, 80);
+            });
+        }
+
+        function handleBgThemeUpload(e, target) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                if (target === 'ai') {
+                    aiBgThemeURL = ev.target.result;
+                    const img = document.getElementById('aiBgPreview');
+                    img.src = aiBgThemeURL;
+                    img.style.display = 'block';
+                } else {
+                    bulkBgThemeURL = ev.target.result;
+                    const img = document.getElementById('bulkBgPreview');
+                    img.src = bulkBgThemeURL;
+                    img.style.display = 'block';
+                }
+                showToast('Background image applied');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleSingleAsset(e, kind) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                if (kind === 'logo') aiSingleLogoURL = ev.target.result;
+                if (kind === 'sig') aiSingleSigURL = ev.target.result;
+                showToast(`${kind === 'logo' ? 'Logo' : 'Signature'} attached`);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function applyCustomBgToFabricCanvas(targetCanvas, bgUrl, fallbackBg, cb) {
+            if (!bgUrl) {
+                targetCanvas.setBackgroundColor(fallbackBg, cb);
+                return;
+            }
+            fabric.Image.fromURL(bgUrl, (img) => {
+                img.scaleToWidth(targetCanvas.width);
+                if (img.height * img.scaleX < targetCanvas.height) {
+                    img.scaleToHeight(targetCanvas.height);
+                }
+                targetCanvas.setBackgroundImage(img, cb);
+            });
+        }
+
+        // ====================================================================
+        // 01. PROMPT STUDIO
+        // ====================================================================
+        function useAiPreset(text) {
+            document.getElementById('aiPromptText').value = text;
+            document.getElementById('aiFormat').value = text.toLowerCase().includes('poster') ? 'poster' : 'certificate';
+            runAIPromptGeneration();
+        }
+
+        function detectAiStyle(prompt, explicitKey) {
+            if (explicitKey && explicitKey !== 'auto') return AI_STYLES[explicitKey] || AI_STYLES.minimal;
+            const p = prompt.toLowerCase();
+            if (p.includes('gold') || p.includes('royal') || p.includes('winner')) return AI_STYLES.gold;
+            if (p.includes('cyber') || p.includes('neon') || p.includes('iot') || p.includes('hack')) return AI_STYLES.cyber;
+            if (p.includes('warm') || p.includes('tactile') || p.includes('cream')) return AI_STYLES.tactile;
+            return AI_STYLES.minimal;
+        }
+
+        async function runAIPromptGeneration() {
+            const prompt = document.getElementById('aiPromptText').value.trim();
+            const recipient = document.getElementById('aiRecipient').value.trim() || 'Aditya Kumar';
+            const issuer = document.getElementById('aiIssuer').value.trim() || 'Hoknex';
+            const format = document.getElementById('aiFormat').value;
+            const styleKey = document.getElementById('aiStylePreset').value;
+            const customPass = document.getElementById('aiCustomPass').value.trim();
+
+            const style = detectAiStyle(prompt, styleKey);
+            const certId = `HKX-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+            const pass = customPass || `P-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+            const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            const headline = prompt
+                ? prompt.replace(/create|make|generate|a|an|for|certificate|poster|banner|thumbnail|gold|royal|cyberpunk|neon|minimal/gi, '').trim().toUpperCase().slice(0, 44)
+                : 'CERTIFICATE OF EXCELLENCE';
+
+            const certObj = {
+                certId,
+                password: pass,
+                recipient,
+                title: headline.length > 3 ? headline : 'CERTIFICATE OF EXCELLENCE',
+                description: prompt || `Awarded for distinguished achievement and contribution within ${issuer}.`,
+                issuer,
+                format,
+                themeKey: currentTheme,
+                date: dateStr,
+                logo: aiSingleLogoURL,
+                signature: aiSingleSigURL,
+                backgroundImage: aiBgThemeURL
+            };
+
+            const shareUrl = buildPublicCertUrl(certObj);
+            certObj.qrUrl = shareUrl;
+            lastAiCertRecord = certObj;
+            saveCertToLocalStore(certObj);
+
+            fetch(`${STUDIO_API}/certificates/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-hoknex-admin-key': ADMIN_VAULT_KEY },
+                body: JSON.stringify({ ...certObj, adminKey: ADMIN_VAULT_KEY })
+            }).catch(() => {});
+
+            const qrDataUrl = await renderQRInto(document.getElementById('aiQrContainer'), shareUrl, 78);
+
+            aiCanvas.clear();
+            applyCustomBgToFabricCanvas(aiCanvas, aiBgThemeURL, style.bg, () => {
+                aiCanvas.add(new fabric.Rect({
+                    left: 16, top: 16, width: 528, height: 363,
+                    fill: aiBgThemeURL ? 'rgba(255,255,255,0.9)' : style.surface,
+                    stroke: style.accent, strokeWidth: 2, rx: 10, selectable: false
+                }));
+
+                const textInk = aiBgThemeURL ? '#18181B' : style.ink;
+                const textMuted = aiBgThemeURL ? '#52525B' : style.muted;
+
+                aiCanvas.add(new fabric.IText(`${issuer.toUpperCase()}  •  ${style.badge}`, {
+                    left: 280, top: 42, fontSize: 10, fill: style.accent,
+                    fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center', charSpacing: 140
+                }));
+
+                aiCanvas.add(new fabric.IText(certObj.title, {
+                    left: 280, top: 76, fontSize: 21, fill: textInk,
+                    fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center'
+                }));
+
+                if (format === 'certificate') {
+                    aiCanvas.add(new fabric.IText('PRESENTED TO', {
+                        left: 280, top: 116, fontSize: 9, fill: textMuted,
+                        fontFamily: 'Plus Jakarta Sans', fontWeight: 'bold', originX: 'center', charSpacing: 140
+                    }));
+                    aiCanvas.add(new fabric.IText(recipient, {
+                        left: 280, top: 142, fontSize: 32, fill: style.accent,
+                        fontFamily: 'Playfair Display', fontStyle: 'italic', fontWeight: 'bold', originX: 'center'
+                    }));
+                }
+
+                aiCanvas.add(new fabric.Textbox(certObj.description, {
+                    left: 280, top: 204, width: 410, fontSize: 12, fill: textMuted, textAlign: 'center', originX: 'center'
+                }));
+
+                if (aiSingleLogoURL) {
+                    fabric.Image.fromURL(aiSingleLogoURL, (lImg) => {
+                        lImg.scaleToHeight(42);
+                        lImg.set({ left: 36, top: 34 });
+                        aiCanvas.add(lImg);
+                        aiCanvas.renderAll();
+                    });
+                }
+
+                if (aiSingleSigURL) {
+                    fabric.Image.fromURL(aiSingleSigURL, (sImg) => {
+                        sImg.scaleToHeight(40);
+                        sImg.set({ left: 54, top: 295 });
+                        aiCanvas.add(sImg);
+                        aiCanvas.renderAll();
+                    });
+                } else {
+                    aiCanvas.add(new fabric.Line([54, 330, 185, 330], { stroke: style.accent, strokeWidth: 1.5 }));
+                    aiCanvas.add(new fabric.IText('Authorized Signatory', { left: 119, top: 336, fontSize: 9, fill: textMuted, originX: 'center' }));
+                }
+
+                if (qrDataUrl) {
+                    fabric.Image.fromURL(qrDataUrl, (qImg) => {
+                        qImg.scaleToWidth(58);
+                        qImg.set({ left: 466, top: 292 });
+                        aiCanvas.add(qImg);
+                        aiCanvas.renderAll();
+                    });
+                }
+
+                aiCanvas.add(new fabric.IText(`Issued: ${dateStr}  |  ID: ${certId}`, {
+                    left: 280, top: 356, fontSize: 9, fill: textMuted, originX: 'center'
+                }));
+                aiCanvas.renderAll();
+            });
+
+            document.getElementById('aiCertIdLabel').textContent = `Credential ID: ${certId}`;
+            document.getElementById('aiCertPassLabel').textContent = `Access Password: ${pass}`;
+            document.getElementById('aiCopyLinkBtn').disabled = false;
+            document.getElementById('aiTestVaultBtn').disabled = false;
+
+            showToast(`Credential ${certId} created`);
+        }
+
+        function copyLastAiLink() {
+            if (!lastAiCertRecord) return;
+            navigator.clipboard.writeText(`${lastAiCertRecord.qrUrl}\nCredential ID: ${lastAiCertRecord.certId}\nPassword: ${lastAiCertRecord.password}`);
+            showToast(`Copied link and password (${lastAiCertRecord.password})`);
+        }
+
+        function testLastAiInVault() {
+            if (!lastAiCertRecord) return;
+            document.getElementById('vaultCertId').value = lastAiCertRecord.certId;
+            document.getElementById('vaultPassword').value = lastAiCertRecord.password;
+            openStage('vaultStage');
+            unlockCertificate();
+        }
+
+        function sendAiDesignToProEditor() {
+            const json = aiCanvas.toJSON();
+            openStage('drawStage');
+            drawCanvas.setWidth(560);
+            drawCanvas.setHeight(395);
+            drawCanvas.loadFromJSON(json, () => {
+                drawCanvas.renderAll();
+                saveDrawHistory();
+                refreshLayersList();
+            });
+            showToast('Opened in Pro Canvas');
+        }
+
+        function exportActiveCanvasPNG() {
+            const a = document.createElement('a');
+            a.href = aiCanvas.toDataURL({ format: 'png', multiplier: 2 });
+            a.download = `hoknex-credential-${Date.now()}.png`;
+            a.click();
+        }
+
+        function exportActiveCanvasPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [560, 395] });
+            pdf.addImage(aiCanvas.toDataURL({ format: 'png', multiplier: 2 }), 'PNG', 0, 0, 560, 395);
+            pdf.save(`hoknex-credential-${Date.now()}.pdf`);
+        }
+
+        // ====================================================================
+        // 02. BULK CERTIFICATE ENGINE
+        // ====================================================================
+        function toggleBulkScriptInput() {
+            const mode = document.getElementById('bulkMode').value;
+            document.getElementById('bulkNamesBox').style.display = mode === 'names' ? 'block' : 'none';
+            document.getElementById('bulkCsvBox').style.display = mode === 'csv' ? 'block' : 'none';
+            document.getElementById('bulkCountBox').style.display = mode === 'count' ? 'block' : 'none';
+            document.getElementById('bulkScriptBox').style.display = mode === 'script' ? 'block' : 'none';
+        }
+
+        function parseCsvText(csvText) {
+            const lines = csvText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            if (!lines.length) return [];
+            const firstCells = lines[0].split(',').map(c => c.trim().toLowerCase());
+            const hasHeader = firstCells[0] === 'name' || firstCells[0] === 'participant' || firstCells[0] === 'recipient';
+            const dataLines = hasHeader ? lines.slice(1) : lines;
+            return dataLines.map((line, idx) => {
+                const cols = line.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+                return {
+                    name: cols[0] || `Participant ${idx + 1}`,
+                    role: cols[1] || 'Hoknex Verified Member',
+                    password: cols[2] || ''
+                };
+            });
+        }
+
+        function handleCsvFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                csvParsedEntries = parseCsvText(ev.target.result);
+                document.getElementById('bulkCsvStatus').textContent = `Loaded ${csvParsedEntries.length} rows from ${file.name}`;
+                showToast(`Parsed ${csvParsedEntries.length} CSV entries`);
+            };
+            reader.readAsText(file);
+        }
+
+        function handleAssetUpload(e, kind) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                if (kind === 'logo') uploadedLogoURL = ev.target.result;
+                if (kind === 'sig') uploadedSigURL = ev.target.result;
+                showToast(`${kind === 'logo' ? 'Logo' : 'Signature'} uploaded`);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function generateBulkCertificates() {
+            const mode = document.getElementById('bulkMode').value;
+            const prefix = document.getElementById('bulkPassPrefix').value.trim() || 'HKX-';
+            let entries = [];
+
+            if (mode === 'names') {
+                const lines = document.getElementById('bulkNamesInput').value.split('\n').map(l => l.trim()).filter(Boolean);
+                entries = lines.map((line, i) => {
+                    const [name, role, password] = line.split('|').map(s => s && s.trim());
+                    return { name: name || `Participant ${i + 1}`, role: role || 'Hoknex Verified Member', password: password || '' };
+                });
+            } else if (mode === 'csv') {
+                if (!csvParsedEntries.length) return showToast('Upload a CSV file first');
+                entries = csvParsedEntries;
+            } else if (mode === 'count') {
+                const count = Math.min(200, Math.max(1, parseInt(document.getElementById('bulkCountInput').value, 10) || 1));
+                const basePrompt = document.getElementById('bulkBasePrompt').value || 'Hoknex Credential';
+                for (let i = 1; i <= count; i++) {
+                    entries.push({ name: `Recipient #${i}`, role: basePrompt, password: '' });
+                }
+            } else {
+                try {
+                    const fn = new Function(document.getElementById('bulkScriptInput').value);
+                    const result = fn();
+                    if (Array.isArray(result)) entries = result;
+                } catch (err) {
+                    return showToast('Script error: ' + err.message);
+                }
+            }
+
+            if (!entries.length) return showToast('Add at least one recipient');
+            const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            bulkRecords = entries.map((item, idx) => {
+                const certId = `HKX-${String(idx + 1).padStart(3, '0')}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
+                const password = (item.password && item.password.trim()) ? item.password.trim() : `${prefix}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+                const rec = {
+                    certId,
+                    password,
+                    recipient: item.name || `Member ${idx + 1}`,
+                    title: item.role || 'Hoknex Credential',
+                    description: `Officially awarded to ${item.name || `Member ${idx + 1}`} for ${item.role || 'Hoknex Credential'}.`,
+                    issuer: 'Hoknex',
+                    date: dateStr,
+                    themeKey: currentTheme,
+                    logo: uploadedLogoURL,
+                    signature: uploadedSigURL,
+                    backgroundImage: bulkBgThemeURL
+                };
+                rec.qrUrl = buildPublicCertUrl(rec);
+                saveCertToLocalStore(rec);
+                return rec;
+            });
+
+            fetch(`${STUDIO_API}/certificates/bulk`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    batchName: `Hoknex Batch (${mode})`,
+                    themeKey: currentTheme,
+                    backgroundImage: bulkBgThemeURL,
+                    logo: uploadedLogoURL,
+                    signature: uploadedSigURL,
+                    certificates: bulkRecords
+                })
+            }).catch(() => {});
+
+            renderBulkTable();
+            showToast(`Issued ${bulkRecords.length} credentials`);
+        }
+
+        function renderBulkTable() {
+            const tbody = document.getElementById('bulkTableBody');
+            document.getElementById('bulkCountBadge').textContent = bulkRecords.length;
+            tbody.innerHTML = '';
+
+            bulkRecords.forEach((rec, i) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${escapeHtmlText(rec.recipient)}</strong><br><span style="color:var(--ink-muted); font-size:0.75rem;">${escapeHtmlText(rec.title)}</span></td>
+                    <td><code>${escapeHtmlText(rec.certId)}</code></td>
+                    <td><strong>${escapeHtmlText(rec.password)}</strong></td>
+                    <td><div id="qr-row-${i}" class="qr-frame"></div></td>
+                    <td style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="btn-secondary" onclick="copyShareLink('${rec.qrUrl}', '${rec.password}')">
+                            <i class="fa-solid fa-link"></i> Copy
+                        </button>
+                        <button class="btn-primary" onclick="openBulkCertInVault(${i})">
+                            Open
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+                renderQRInto(document.getElementById(`qr-row-${i}`), rec.qrUrl, 56);
+            });
+        }
+
+        function openBulkCertInVault(idx) {
+            const rec = bulkRecords[idx];
+            if (!rec) return;
+            document.getElementById('vaultCertId').value = rec.certId;
+            document.getElementById('vaultPassword').value = rec.password;
+            openStage('vaultStage');
+            unlockCertificate();
+        }
+
+        function copyShareLink(link, pass) {
+            navigator.clipboard.writeText(`${link}\nPassword: ${pass}`);
+            showToast(`Copied link & password (${pass})`);
+        }
+
+        function exportBulkCredentialsCSV() {
+            if (!bulkRecords.length) return showToast('Issue a batch first');
+            const rows = [
+                ['certId', 'recipient', 'title', 'password', 'shareUrl'],
+                ...bulkRecords.map(r => [r.certId, r.recipient, r.title, r.password, r.qrUrl])
+            ];
+            const csv = rows.map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `hoknex-batch-${Date.now()}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportAllBulkPDF() {
+            if (!bulkRecords.length) return showToast('Issue a batch first');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+            bulkRecords.forEach((rec, idx) => {
+                if (idx > 0) pdf.addPage();
+                pdf.setFontSize(24);
+                pdf.text('HOKNEX OFFICIAL CREDENTIAL', 120, 120);
+                pdf.setFontSize(16);
+                pdf.text(`Awarded to: ${rec.recipient}`, 120, 180);
+                pdf.text(`Title: ${rec.title}`, 120, 215);
+                pdf.setFontSize(12);
+                pdf.text(`Credential ID: ${rec.certId}  |  Access Password: ${rec.password}`, 120, 260);
+            });
+            pdf.save(`hoknex-batch-certificates-${Date.now()}.pdf`);
+        }
+
+        // ====================================================================
+        // 03. POSTER, BANNER & THUMBNAIL STUDIO
+        // ====================================================================
+        const POSTER_DIMS = {
+            poster:    { w: 420, h: 594 },
+            banner:    { w: 680, h: 170 },
+            thumbnail: { w: 640, h: 360 }
+        };
+
+        function initPosterCanvas() {
+            const dim = POSTER_DIMS[document.getElementById('posterFormatSelect').value];
+            posterCanvas.setWidth(dim.w);
+            posterCanvas.setHeight(dim.h);
+            renderPosterTemplate();
+        }
+
+        function renderPosterTemplate() {
+            const pal = PALETTES[currentTheme];
+            const badge = document.getElementById('posterBadge').value || 'HOKNEX OFFICIAL';
+            const headline = document.getElementById('posterHeadline').value || 'HOKNEX GLOBAL SUMMIT';
+            const sub = document.getElementById('posterSub').value || 'Where Student Builders Ship the Future';
+            posterCanvas.clear();
+            posterCanvas.setBackgroundColor(pal.bg, posterCanvas.renderAll.bind(posterCanvas));
+            posterCanvas.add(new fabric.Rect({ left: 14, top: 14, width: posterCanvas.width - 28, height: posterCanvas.height - 28, fill: pal.surface, stroke: pal.accent, strokeWidth: 2, rx: 10 }));
+            posterCanvas.add(new fabric.IText(badge.toUpperCase(), { left: posterCanvas.width / 2, top: posterCanvas.height * 0.22, fontSize: 12, fill: pal.accent, fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center' }));
+            posterCanvas.add(new fabric.IText(headline.toUpperCase(), { left: posterCanvas.width / 2, top: posterCanvas.height * 0.38, fontSize: 28, fill: pal.ink, fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center' }));
+            posterCanvas.add(new fabric.IText(sub, { left: posterCanvas.width / 2, top: posterCanvas.height * 0.58, fontSize: 16, fill: pal.muted, fontFamily: 'Plus Jakarta Sans', fontWeight: 'bold', originX: 'center' }));
+        }
+
+        function exportPosterPNG() {
+            const a = document.createElement('a');
+            a.href = posterCanvas.toDataURL({ format: 'png', multiplier: 2 });
+            a.download = `hoknex-${document.getElementById('posterFormatSelect').value}-${Date.now()}.png`;
+            a.click();
+        }
+
+        // ====================================================================
+        // 04. PRO CANVAS EDITOR
+        // ====================================================================
+        let drawHistory = [];
+        let drawHistoryStep = -1;
+        let isDrawRestoring = false;
+
+        function saveDrawHistory() {
+            if (isDrawRestoring) return;
+            drawHistory = drawHistory.slice(0, drawHistoryStep + 1);
+            drawHistory.push(JSON.stringify(drawCanvas.toJSON()));
+            drawHistoryStep++;
+            refreshLayersList();
+        }
+
+        drawCanvas.on('object:added', saveDrawHistory);
+        drawCanvas.on('object:modified', saveDrawHistory);
+        drawCanvas.on('object:removed', saveDrawHistory);
+        drawCanvas.on('selection:created', refreshLayersList);
+        drawCanvas.on('selection:updated', refreshLayersList);
+        drawCanvas.on('selection:cleared', refreshLayersList);
+
+        function undoDraw() {
+            if (drawHistoryStep > 0) {
+                isDrawRestoring = true;
+                drawHistoryStep--;
+                drawCanvas.loadFromJSON(drawHistory[drawHistoryStep], () => {
+                    drawCanvas.renderAll();
+                    isDrawRestoring = false;
+                    refreshLayersList();
+                });
+            }
+        }
+
+        function redoDraw() {
+            if (drawHistoryStep < drawHistory.length - 1) {
+                isDrawRestoring = true;
+                drawHistoryStep++;
+                drawCanvas.loadFromJSON(drawHistory[drawHistoryStep], () => {
+                    drawCanvas.renderAll();
+                    isDrawRestoring = false;
+                    refreshLayersList();
+                });
+            }
+        }
+
+        function refreshLayersList() {
+            const listEl = document.getElementById('proLayersList');
+            if (!listEl) return;
+            const objs = drawCanvas.getObjects();
+            const active = drawCanvas.getActiveObject();
+            if (!objs.length) {
+                listEl.innerHTML = '<div style="font-size:0.75rem; color:var(--ink-muted);">No layers yet.</div>';
+                return;
+            }
+            listEl.innerHTML = objs.slice().reverse().map((obj, revIdx) => {
+                const realIdx = objs.length - 1 - revIdx;
+                const label = obj.text ? `Text: ${escapeHtmlText(obj.text.slice(0, 14))}` : `Layer ${realIdx + 1} (${obj.type})`;
+                const isSel = active === obj;
+                return `
+                    <div class="layer-row ${isSel ? 'selected' : ''}" onclick="selectDrawLayer(${realIdx})">
+                        <span>${label}</span>
+                        <span>
+                            <button onclick="event.stopPropagation(); toggleLayerVis(${realIdx})" title="Show/Hide">
+                                <i class="fa-solid ${obj.visible ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); toggleLayerLock(${realIdx})" title="Lock/Unlock">
+                                <i class="fa-solid ${obj.selectable ? 'fa-lock-open' : 'fa-lock'}"></i>
+                            </button>
+                        </span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectDrawLayer(idx) {
+            const obj = drawCanvas.getObjects()[idx];
+            if (obj && obj.selectable) {
+                drawCanvas.setActiveObject(obj);
+                drawCanvas.renderAll();
+                refreshLayersList();
+            }
+        }
+
+        function toggleLayerVis(idx) {
+            const obj = drawCanvas.getObjects()[idx];
+            if (!obj) return;
+            obj.visible = !obj.visible;
+            drawCanvas.renderAll();
+            refreshLayersList();
+        }
+
+        function toggleLayerLock(idx) {
+            const obj = drawCanvas.getObjects()[idx];
+            if (!obj) return;
+            obj.selectable = !obj.selectable;
+            obj.evented = obj.selectable;
+            if (!obj.selectable) drawCanvas.discardActiveObject();
+            drawCanvas.renderAll();
+            refreshLayersList();
+        }
+
+        async function insertQrStampOnProCanvas() {
+            const certId = lastAiCertRecord?.certId || `HKX-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+            const qrUrl = lastAiCertRecord?.qrUrl || buildPublicCertUrl(certId);
+            const tempDiv = document.createElement('div');
+            const qrImgUrl = await renderQRInto(tempDiv, qrUrl, 90);
+            if (!qrImgUrl) return;
+            fabric.Image.fromURL(qrImgUrl, (img) => {
+                img.set({ left: drawCanvas.width - 120, top: drawCanvas.height - 120 });
+                drawCanvas.add(img);
+                drawCanvas.setActiveObject(img);
+                showToast(`Inserted QR Stamp (${certId})`);
+            });
+        }
+
+        async function saveProProjectToCloud() {
+            const existingMeta = (() => {
+                try { return JSON.parse(localStorage.getItem('hoknex_pro_autosave_meta') || '{}'); } catch { return {}; }
+            })();
+            const projectName = existingMeta.name || `Hoknex Project ${new Date().toLocaleTimeString()}`;
+            const updatedAt = new Date().toISOString();
+
+            try {
+                await fetch(`${STUDIO_API}/projects`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: projectName,
+                        format: 'custom',
+                        themeKey: currentTheme,
+                        canvasJSON: drawCanvas.toJSON()
+                    })
+                });
+            } catch (_) {}
+
+            try {
+                localStorage.setItem('hoknex_pro_autosave', JSON.stringify(drawCanvas.toJSON()));
+                localStorage.setItem('hoknex_pro_autosave_meta', JSON.stringify({ name: projectName, themeKey: currentTheme, updatedAt }));
+            } catch (_) {}
+            window.__hoknexMemProject = { name: projectName, themeKey: currentTheme, updatedAt, canvasJSON: drawCanvas.toJSON() };
+            showToast(`Saved "${projectName}"`);
+        }
+
+        function openCloudProjectsModal() {
+            document.getElementById('cloudProjectsModal').style.display = 'flex';
+            loadCloudProjectsList();
+        }
+
+        function closeCloudProjectsModal() {
+            document.getElementById('cloudProjectsModal').style.display = 'none';
+        }
+
+        function loadCloudProjectsList() {
+            const listEl = document.getElementById('cloudProjectsList');
+            const projects = [];
+            let localSave = null;
+            try { localSave = localStorage.getItem('hoknex_pro_autosave'); } catch (_) {}
+
+            if (localSave) {
+                let localMeta = {};
+                try { localMeta = JSON.parse(localStorage.getItem('hoknex_pro_autosave_meta') || '{}'); } catch (_) {}
+                projects.push({
+                    id: 'local-autosave',
+                    name: localMeta.name || 'Hoknex Studio Project',
+                    format: 'custom',
+                    themeKey: localMeta.themeKey || currentTheme,
+                    updatedAt: localMeta.updatedAt || new Date().toISOString(),
+                    canvasJSON: JSON.parse(localSave)
+                });
+            } else if (window.__hoknexMemProject) {
+                projects.push({ id: 'local-autosave', ...window.__hoknexMemProject });
+            }
+
+            if (!projects.length) {
+                listEl.innerHTML = '<div style="font-size:0.82rem; color:var(--ink-muted);">No saved projects yet. Click Save to store a project.</div>';
+                return;
+            }
+
+            window.__hoknexLoadedCloudProjects = projects;
+
+            listEl.innerHTML = projects.map((proj, idx) => {
+                const safeName = escapeHtmlText(proj.name);
+                const timeLabel = new Date(proj.updatedAt).toLocaleString();
+                return `
+                    <div class="layer-row" style="padding:11px 14px; flex-direction:column; align-items:stretch; gap:8px;" onclick="applyCloudProjectToCanvas(${idx})">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                            <div>
+                                <div style="font-size:0.86rem;">${safeName}</div>
+                                <div style="font-size:0.72rem; color:var(--ink-muted);">${timeLabel}</div>
+                            </div>
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <button type="button" class="btn-primary" style="padding:5px 10px; font-size:0.7rem;" onclick="event.stopPropagation(); applyCloudProjectToCanvas(${idx});">Load</button>
+                                <button type="button" class="btn-secondary" style="padding:5px 9px; font-size:0.7rem;" onclick="event.stopPropagation(); openInlineRenameRow(${idx});" title="Rename">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button type="button" class="btn-danger-subtle" style="padding:5px 9px; font-size:0.7rem;" onclick="event.stopPropagation(); deleteCloudProject(${idx});" title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="inlineRenameBox-${idx}" style="display:none; gap:8px; align-items:center; padding-top:6px; border-top:1px solid var(--border-hairline);" onclick="event.stopPropagation();">
+                            <input
+                                type="text"
+                                id="inlineRenameInput-${idx}"
+                                value="${safeName}"
+                                placeholder="Project name..."
+                                style="margin-bottom:0; padding:6px 10px; font-size:0.8rem; flex:1;"
+                                onkeydown="if(event.key==='Enter') saveInlineRename(${idx}); if(event.key==='Escape') cancelInlineRename(${idx});"
+                            />
+                            <button type="button" class="btn-primary" style="padding:6px 11px; font-size:0.7rem;" onclick="saveInlineRename(${idx});">Save</button>
+                            <button type="button" class="btn-secondary" style="padding:6px 9px; font-size:0.7rem;" onclick="cancelInlineRename(${idx});">Cancel</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function applyCloudProjectToCanvas(idx) {
+            const projects = window.__hoknexLoadedCloudProjects || [];
+            const proj = projects[idx];
+            if (!proj || !proj.canvasJSON) return;
+            drawCanvas.loadFromJSON(proj.canvasJSON, () => {
+                drawCanvas.renderAll();
+                saveDrawHistory();
+                refreshLayersList();
+                closeCloudProjectsModal();
+                showToast(`Loaded "${proj.name}"`);
+            });
+        }
+
+        function openInlineRenameRow(idx) {
+            const box = document.getElementById(`inlineRenameBox-${idx}`);
+            const input = document.getElementById(`inlineRenameInput-${idx}`);
+            if (!box) return;
+            box.style.display = 'flex';
+            if (input) { input.focus(); input.select(); }
+        }
+
+        function cancelInlineRename(idx) {
+            const box = document.getElementById(`inlineRenameBox-${idx}`);
+            if (box) box.style.display = 'none';
+        }
+
+        function saveInlineRename(idx) {
+            const input = document.getElementById(`inlineRenameInput-${idx}`);
+            if (!input) return;
+            const cleanName = input.value.trim();
+            if (!cleanName) return showToast('Enter a valid name');
+            const meta = { name: cleanName, themeKey: currentTheme, updatedAt: new Date().toISOString() };
+            try { localStorage.setItem('hoknex_pro_autosave_meta', JSON.stringify(meta)); } catch (_) {}
+            if (window.__hoknexMemProject) window.__hoknexMemProject.name = cleanName;
+            showToast(`Renamed to "${cleanName}"`);
+            loadCloudProjectsList();
+        }
+
+        function deleteCloudProject(idx) {
+            try {
+                localStorage.removeItem('hoknex_pro_autosave');
+                localStorage.removeItem('hoknex_pro_autosave_meta');
+            } catch (_) {}
+            window.__hoknexMemProject = null;
+            showToast('Project deleted');
+            loadCloudProjectsList();
+        }
+
+        function setDrawMode(m) {
+            document.querySelectorAll('.tool-cell').forEach(t => t.classList.remove('active'));
+            if (m === 'draw') {
+                drawCanvas.isDrawingMode = true;
+                drawCanvas.freeDrawingBrush.color = document.getElementById('drawColor').value;
+                drawCanvas.freeDrawingBrush.width = parseInt(document.getElementById('drawSize').value, 10);
+                document.getElementById('mBrush').classList.add('active');
+            } else {
+                drawCanvas.isDrawingMode = false;
+                document.getElementById('mSelect').classList.add('active');
+            }
+        }
+        function updateDrawColor(c) { drawCanvas.freeDrawingBrush.color = c; const o = drawCanvas.getActiveObject(); if (o) { o.set('fill', c); drawCanvas.renderAll(); } }
+        function updateDrawStroke(c) { const o = drawCanvas.getActiveObject(); if (o) { o.set('stroke', c); drawCanvas.renderAll(); } }
+        function updateDrawOpacity(v) { const o = drawCanvas.getActiveObject(); if (o) { o.set('opacity', parseFloat(v)); drawCanvas.renderAll(); } }
+        function updateDrawFont(f) { const o = drawCanvas.getActiveObject(); if (o && o.fontFamily) { o.set('fontFamily', f); drawCanvas.renderAll(); } }
+        function toggleDrawBold() { const o = drawCanvas.getActiveObject(); if (o) { o.set('fontWeight', o.fontWeight === 'bold' ? 'normal' : 'bold'); drawCanvas.renderAll(); } }
+        function toggleDrawItalic() { const o = drawCanvas.getActiveObject(); if (o) { o.set('fontStyle', o.fontStyle === 'italic' ? 'normal' : 'italic'); drawCanvas.renderAll(); } }
+        function toggleDrawUnderline() { const o = drawCanvas.getActiveObject(); if (o) { o.set('underline', !o.underline); drawCanvas.renderAll(); } }
+        function addCanvasText() { setDrawMode('select'); const t = new fabric.IText('Double-click to edit', { left: 220, top: 180, fontSize: 28, fill: document.getElementById('drawColor').value }); drawCanvas.add(t); }
+        function addCanvasRect() { setDrawMode('select'); drawCanvas.add(new fabric.Rect({ left: 180, top: 150, width: 160, height: 100, fill: 'transparent', stroke: document.getElementById('drawColor').value, strokeWidth: 3 })); }
+        function addCanvasCircle() { setDrawMode('select'); drawCanvas.add(new fabric.Circle({ left: 250, top: 150, radius: 55, fill: 'transparent', stroke: document.getElementById('drawColor').value, strokeWidth: 3 })); }
+        function addCanvasStar() {
+            setDrawMode('select');
+            const poly = new fabric.Polygon([
+                {x: 0, y: -50}, {x: 14, y: -15}, {x: 50, y: -15}, {x: 22, y: 8},
+                {x: 32, y: 45}, {x: 0, y: 22}, {x: -32, y: 45}, {x: -22, y: 8},
+                {x: -50, y: -15}, {x: -14, y: -15}
+            ], { left: 260, top: 180, fill: document.getElementById('drawColor').value });
+            drawCanvas.add(poly);
+        }
+        function uploadImageToProCanvas(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                fabric.Image.fromURL(ev.target.result, (img) => {
+                    img.scaleToWidth(260);
+                    drawCanvas.add(img);
+                    drawCanvas.centerObject(img);
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+        function duplicateDrawObj() {
+            const o = drawCanvas.getActiveObject();
+            if (!o) return;
+            o.clone((cloned) => {
+                cloned.set({ left: o.left + 24, top: o.top + 24 });
+                drawCanvas.add(cloned);
+                drawCanvas.setActiveObject(cloned);
+            });
+        }
+        function delDrawObj() { const o = drawCanvas.getActiveObject(); if (o) drawCanvas.remove(o); }
+        function exportDrawPNG() { const a = document.createElement('a'); a.href = drawCanvas.toDataURL({ format: 'png', multiplier: 2 }); a.download = `hoknex-design-${Date.now()}.png`; a.click(); }
+        function exportDrawPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [drawCanvas.width, drawCanvas.height] });
+            pdf.addImage(drawCanvas.toDataURL({ format: 'png', multiplier: 2 }), 'PNG', 0, 0, drawCanvas.width, drawCanvas.height);
+            pdf.save(`hoknex-design-${Date.now()}.pdf`);
+        }
+
+        // ====================================================================
+        // 05. MULTI-PAGE PDF EDITOR
+        // ====================================================================
+        let loadedPdfDoc = null;
+        let currentPdfPage = 1;
+        let totalPdfPages = 1;
+        let docPageObjectsMap = {};
+
+        function updatePdfNavUI() {
+            const navBox = document.getElementById('pdfPageNav');
+            const indicator = document.getElementById('pdfPageIndicator');
+            const prevBtn = document.getElementById('prevPdfPageBtn');
+            const nextBtn = document.getElementById('nextPdfPageBtn');
+            navBox.style.display = loadedPdfDoc ? 'block' : 'none';
+            indicator.textContent = `Page ${currentPdfPage} of ${totalPdfPages}`;
+            prevBtn.disabled = !loadedPdfDoc || currentPdfPage <= 1;
+            nextBtn.disabled = !loadedPdfDoc || currentPdfPage >= totalPdfPages;
+        }
+
+        function saveCurrentPageAnnotations() {
+            if (!loadedPdfDoc) return;
+            const userObjs = docCanvas.getObjects().filter(obj => !obj.isPdfPageBackground);
+            docPageObjectsMap[currentPdfPage] = userObjs.map(obj => obj.toObject(['isPdfPageBackground']));
+        }
+
+        async function renderPdfPageToCanvas(pageNum) {
+            if (!loadedPdfDoc) return;
+            currentPdfPage = Math.min(Math.max(1, pageNum), totalPdfPages);
+            docCanvas.isDrawingMode = false;
+
+            const page = await loadedPdfDoc.getPage(currentPdfPage);
+            const vp = page.getViewport({ scale: 1.3 });
+            const temp = document.createElement('canvas');
+            temp.width = vp.width;
+            temp.height = vp.height;
+            await page.render({ canvasContext: temp.getContext('2d'), viewport: vp }).promise;
+
+            docCanvas.clear();
+            docCanvas.setWidth(640);
+            docCanvas.setHeight(Math.min(780, Math.round((vp.height / vp.width) * 600) + 40));
+
+            fabric.Image.fromURL(temp.toDataURL('image/png'), (img) => {
+                img.scaleToWidth(600);
+                img.set({
+                    left: (docCanvas.width - img.getScaledWidth()) / 2,
+                    top: 16,
+                    selectable: false,
+                    evented: false,
+                    isPdfPageBackground: true
+                });
+                docCanvas.add(img);
+                docCanvas.sendToBack(img);
+
+                const savedObjs = docPageObjectsMap[currentPdfPage] || [];
+                if (savedObjs.length > 0) {
+                    fabric.util.enlivenObjects(savedObjs, (enlivened) => {
+                        enlivened.forEach(o => docCanvas.add(o));
+                        docCanvas.renderAll();
+                    });
+                } else {
+                    docCanvas.renderAll();
+                }
+            });
+
+            updatePdfNavUI();
+        }
+
+        async function changePdfPage(delta) {
+            if (!loadedPdfDoc) return;
+            const targetPage = currentPdfPage + delta;
+            if (targetPage < 1 || targetPage > totalPdfPages) return;
+            saveCurrentPageAnnotations();
+            await renderPdfPageToCanvas(targetPage);
+        }
+
+        async function loadOriginalDoc(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.type === 'application/pdf') {
+                const buf = await file.arrayBuffer();
+                loadedPdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
+                totalPdfPages = loadedPdfDoc.numPages;
+                currentPdfPage = 1;
+                docPageObjectsMap = {};
+                await renderPdfPageToCanvas(1);
+                showToast(`Loaded ${totalPdfPages}-page PDF`);
+            } else {
+                loadedPdfDoc = null;
+                totalPdfPages = 1;
+                currentPdfPage = 1;
+                docPageObjectsMap = {};
+                document.getElementById('pdfPageNav').style.display = 'none';
+
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    docCanvas.clear();
+                    fabric.Image.fromURL(ev.target.result, (img) => {
+                        img.scaleToWidth(520);
+                        docCanvas.add(img);
+                        docCanvas.centerObject(img);
+                        docCanvas.renderAll();
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addDocAnnotation() {
+            docCanvas.isDrawingMode = false;
+            const t = new fabric.IText('Annotation / Signature', {
+                left: 150, top: 120, fontSize: 22, fill: PALETTES[currentTheme].accent
+            });
+            docCanvas.add(t);
+            docCanvas.setActiveObject(t);
+            saveCurrentPageAnnotations();
+        }
+
+        function toggleDocBrush() {
+            docCanvas.isDrawingMode = !docCanvas.isDrawingMode;
+            docCanvas.freeDrawingBrush.color = PALETTES[currentTheme].accent;
+            docCanvas.freeDrawingBrush.width = 4;
+            showToast(docCanvas.isDrawingMode ? 'Pen active' : 'Pen off');
+        }
+
+        async function exportEditedDocPDF() {
+            saveCurrentPageAnnotations();
+            const { jsPDF } = window.jspdf;
+            if (loadedPdfDoc && totalPdfPages > 1) {
+                const originalPage = currentPdfPage;
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [docCanvas.width, docCanvas.height] });
+                for (let p = 1; p <= totalPdfPages; p++) {
+                    if (p > 1) pdf.addPage([docCanvas.width, docCanvas.height], 'portrait');
+                    await renderPdfPageToCanvas(p);
+                    pdf.addImage(docCanvas.toDataURL('image/png'), 'PNG', 0, 0, docCanvas.width, docCanvas.height);
+                }
+                await renderPdfPageToCanvas(originalPage);
+                pdf.save(`hoknex-document-${Date.now()}.pdf`);
+                return;
+            }
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [docCanvas.width, docCanvas.height] });
+            pdf.addImage(docCanvas.toDataURL('image/png'), 'PNG', 0, 0, docCanvas.width, docCanvas.height);
+            pdf.save(`hoknex-document-${Date.now()}.pdf`);
+        }
+
+        // ====================================================================
+        // 06. CROSS-DEVICE CERTIFICATE QR VAULT (ADMIN-ONLY EDIT LOCK)
+        // ====================================================================
+        function toggleAdminVaultMode() {
+            if (isVaultAdminAuthenticated) {
+                isVaultAdminAuthenticated = false;
+                document.getElementById('adminModeLabel').textContent = 'Admin Edit: Locked';
+                document.getElementById('adminEditCertificatePanel').style.display = 'none';
+                document.getElementById('vaultAccessNotice').textContent = 'View & download only.';
+                if (activeUnlockedCert) renderCertificateToVaultCanvas(activeUnlockedCert);
+                showToast('Admin Edit mode locked');
+                return;
+            }
+            const panel = document.getElementById('adminKeyPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            if (panel.style.display === 'block') {
+                document.getElementById('adminStudioKeyInput').focus();
+            }
+        }
+
+        function verifyAdminVaultKey() {
+            const enteredKey = document.getElementById('adminStudioKeyInput').value.trim();
+            if (enteredKey !== ADMIN_VAULT_KEY) {
+                setVaultStatus('Invalid Admin Studio Key. Editing remains restricted to Admin.', true);
+                return showToast('Invalid Admin Key');
+            }
+            isVaultAdminAuthenticated = true;
+            document.getElementById('adminKeyPanel').style.display = 'none';
+            document.getElementById('adminStudioKeyInput').value = '';
+            document.getElementById('adminModeLabel').textContent = 'Admin Edit: Unlocked';
+            document.getElementById('vaultAccessNotice').textContent = 'Admin edit enabled.';
+            if (activeUnlockedCert) {
+                syncAdminEditForm(activeUnlockedCert);
+                renderCertificateToVaultCanvas(activeUnlockedCert);
+            }
+            showToast('Admin Edit mode unlocked');
+        }
+
+        function syncAdminEditForm(cert) {
+            const editPanel = document.getElementById('adminEditCertificatePanel');
+            if (!editPanel || !cert) return;
+            editPanel.style.display = isVaultAdminAuthenticated ? 'block' : 'none';
+            if (isVaultAdminAuthenticated) {
+                document.getElementById('adminEditRecipient').value = cert.recipient || '';
+                document.getElementById('adminEditTitle').value = cert.title || '';
+                document.getElementById('adminEditDesc').value = cert.description || '';
+            }
+        }
+
+        async function adminSaveCertificateChanges() {
+            if (!isVaultAdminAuthenticated || !activeUnlockedCert) {
+                return showToast('Only authenticated Admin can edit certificates');
+            }
+            const updated = {
+                ...activeUnlockedCert,
+                recipient: document.getElementById('adminEditRecipient').value.trim() || activeUnlockedCert.recipient,
+                title: document.getElementById('adminEditTitle').value.trim() || activeUnlockedCert.title,
+                description: document.getElementById('adminEditDesc').value.trim() || activeUnlockedCert.description,
+                adminKey: ADMIN_VAULT_KEY
+            };
+            updated.qrUrl = buildPublicCertUrl(updated);
+            activeUnlockedCert = updated;
+            saveCertToLocalStore(updated);
+
+            try {
+                await fetch(`${STUDIO_API}/certificates/save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-hoknex-admin-key': ADMIN_VAULT_KEY },
+                    body: JSON.stringify(updated)
+                });
+            } catch (_) {}
+
+            document.getElementById('vaultCertTitle').textContent = updated.title;
+            document.getElementById('vaultCertRecipient').textContent = `Issued to: ${updated.recipient}`;
+            await renderCertificateToVaultCanvas(updated);
+            showToast('Saved certificate updates as Admin');
+        }
+
+        async function renderCertificateToVaultCanvas(cert) {
+            const pal = PALETTES[cert.themeKey] || PALETTES[currentTheme];
+            const qrUrl = cert.qrUrl || buildPublicCertUrl(cert);
+            const qrDataUrl = await renderQRInto(document.getElementById('vaultQrContainer'), qrUrl, 84);
+
+            const canEdit = Boolean(isVaultAdminAuthenticated);
+            vaultCanvas.selection = canEdit;
+
+            vaultCanvas.clear();
+            vaultCanvas.setWidth(720);
+            vaultCanvas.setHeight(510);
+
+            const lockObj = (obj) => {
+                obj.set({
+                    selectable: canEdit,
+                    evented: canEdit,
+                    hasControls: canEdit,
+                    hasBorders: canEdit,
+                    lockMovementX: !canEdit,
+                    lockMovementY: !canEdit
+                });
+                return obj;
+            };
+
+            const drawForeground = () => {
+                vaultCanvas.add(lockObj(new fabric.Rect({
+                    left: 22, top: 22, width: 676, height: 466,
+                    fill: cert.backgroundImage ? 'rgba(255,255,255,0.9)' : pal.surface,
+                    stroke: pal.accent, strokeWidth: 2.5, rx: 12, ry: 12
+                })));
+
+                const cx = 360;
+
+                vaultCanvas.add(lockObj(new fabric.IText(`${(cert.issuer || 'HOKNEX').toUpperCase()}  •  VERIFIED CREDENTIAL`, {
+                    left: cx, top: 54, fontSize: 12, fill: pal.accent,
+                    fontFamily: 'Space Grotesk', fontWeight: 'bold', originX: 'center', charSpacing: 150
+                })));
+
+                vaultCanvas.add(lockObj(new fabric.IText((cert.title || 'HOKNEX CERTIFICATE').toUpperCase(), {
+                    left: cx, top: 92, fontSize: 28, fill: '#18181B',
+                    fontFamily: 'Playfair Display', fontWeight: 'bold', originX: 'center'
+                })));
+
+                vaultCanvas.add(lockObj(new fabric.IText('PRESENTED TO', {
+                    left: cx, top: 146, fontSize: 11, fill: '#52525B',
+                    fontFamily: 'Plus Jakarta Sans', fontWeight: 'bold', originX: 'center', charSpacing: 140
+                })));
+
+                vaultCanvas.add(lockObj(new fabric.IText(cert.recipient || 'Recipient', {
+                    left: cx, top: 182, fontSize: 40, fill: pal.accent,
+                    fontFamily: 'Playfair Display', fontStyle: 'italic', fontWeight: 'bold', originX: 'center'
+                })));
+
+                vaultCanvas.add(lockObj(new fabric.Textbox(
+                    cert.description || `Recognized for distinguished achievement on ${cert.date || 'Hoknex'}.`,
+                    { left: cx, top: 248, width: 520, fontSize: 15, fill: '#3F3F46', textAlign: 'center', originX: 'center' }
+                )));
+
+                if (cert.logo) {
+                    fabric.Image.fromURL(cert.logo, (logoImg) => {
+                        logoImg.scaleToHeight(56);
+                        logoImg.set({ left: 48, top: 44 });
+                        vaultCanvas.add(lockObj(logoImg));
+                        vaultCanvas.renderAll();
+                    });
+                }
+
+                if (cert.signature) {
+                    fabric.Image.fromURL(cert.signature, (sigImg) => {
+                        sigImg.scaleToHeight(54);
+                        sigImg.set({ left: 75, top: 375 });
+                        vaultCanvas.add(lockObj(sigImg));
+                        vaultCanvas.add(lockObj(new fabric.IText('Authorized Signatory', { left: 75, top: 435, fontSize: 11, fill: '#52525B' })));
+                        vaultCanvas.renderAll();
+                    });
+                } else {
+                    vaultCanvas.add(lockObj(new fabric.Line([75, 425, 245, 425], { stroke: '#18181B', strokeWidth: 1.5 })));
+                    vaultCanvas.add(lockObj(new fabric.IText('Authorized Signatory', { left: 160, top: 433, fontSize: 11, fill: '#52525B', originX: 'center' })));
+                }
+
+                if (qrDataUrl) {
+                    fabric.Image.fromURL(qrDataUrl, (qrImg) => {
+                        qrImg.scaleToWidth(82);
+                        qrImg.set({ left: 594, top: 376 });
+                        vaultCanvas.add(lockObj(qrImg));
+                        vaultCanvas.add(lockObj(new fabric.IText(`ID: ${cert.certId}`, {
+                            left: 635, top: 464,
+                            fontSize: 10, fill: '#3F3F46', fontWeight: 'bold', originX: 'center'
+                        })));
+                        vaultCanvas.renderAll();
+                    });
+                }
+
+                vaultCanvas.renderAll();
+            };
+
+            applyCustomBgToFabricCanvas(vaultCanvas, cert.backgroundImage, pal.bg, drawForeground);
+        }
+
+        function passwordsMatch(storedPass, enteredPass) {
+            if (!storedPass || !enteredPass) return false;
+            const a = String(storedPass).trim();
+            const b = String(enteredPass).trim();
+            return a === b || a.toLowerCase() === b.toLowerCase();
+        }
+
+        async function unlockCertificate() {
+            const certId = document.getElementById('vaultCertId').value.trim().toUpperCase();
+            const password = document.getElementById('vaultPassword').value.trim();
+            if (!certId || !password) {
+                setVaultStatus('Please enter both Credential ID and Password.', true);
+                return showToast('Enter both Credential ID and Password');
+            }
+
+            setVaultStatus('Verifying credential...');
+            let match = null;
+
+            if (lastAiCertRecord && lastAiCertRecord.certId.toUpperCase() === certId && passwordsMatch(lastAiCertRecord.password, password)) {
+                match = lastAiCertRecord;
+            }
+            if (!match) {
+                match = bulkRecords.find(r => r.certId.toUpperCase() === certId && passwordsMatch(r.password, password));
+            }
+            if (!match) {
+                const portable = extractTokenFromCurrentUrl();
+                if (portable && (!portable.certId || portable.certId.toUpperCase() === certId) && passwordsMatch(portable.password, password)) {
+                    match = { ...portable, certId: portable.certId || certId };
+                }
+            }
+            if (!match) {
+                const localStore = Object.assign({}, window.__hoknexMemCerts, getLocalCertStore());
+                const localRec = localStore[certId];
+                if (localRec && passwordsMatch(localRec.password, password)) {
+                    match = localRec;
+                }
+            }
+            if (!match) {
+                try {
+                    const res = await fetch(`${STUDIO_API}/certificates/unlock`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ certId, password })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.valid && data.certificate) {
+                            match = data.certificate;
+                        }
+                    }
+                } catch (_) {}
+            }
+
+            if (!match) {
+                setVaultStatus('Invalid Credential ID or Password.', true);
+                return showToast('Invalid Credential ID or Password');
+            }
+
+            setVaultStatus('Credential verified (View & Download mode).');
+            activeUnlockedCert = match;
+            document.getElementById('vaultResultBox').style.display = 'block';
+            document.getElementById('vaultCertTitle').textContent = match.title;
+            document.getElementById('vaultCertRecipient').textContent = `Issued to: ${match.recipient}`;
+            document.getElementById('vaultCertMeta').textContent = `ID: ${match.certId} • ${match.issuer || 'Hoknex'}`;
+            syncAdminEditForm(match);
+
+            await renderCertificateToVaultCanvas(match);
+            showToast('Credential unlocked');
+        }
+
+        function downloadUnlockedCertPNG() {
+            if (!activeUnlockedCert) return;
+            const a = document.createElement('a');
+            a.href = vaultCanvas.toDataURL({ format: 'png', multiplier: 2 });
+            a.download = `${activeUnlockedCert.certId}.png`;
+            a.click();
+        }
+
+        function downloadUnlockedCertPDF() {
+            if (!activeUnlockedCert) return;
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [vaultCanvas.width, vaultCanvas.height] });
+            pdf.addImage(vaultCanvas.toDataURL({ format: 'png', multiplier: 2 }), 'PNG', 0, 0, vaultCanvas.width, vaultCanvas.height);
+            pdf.save(`${activeUnlockedCert.certId}.pdf`);
+        }
+
+        // ====================================================================
+        // 07. AI MEDIA LAB — IMAGE & VIDEO BG REMOVER, ENHANCER & COMPRESSOR
+        // ====================================================================
+        const BULK_BACKDROPS = [
+            { id: 'transparent', label: 'Transparent', css: 'repeating-conic-gradient(#cbd5e1 0% 25%, #fff 0% 50%) 50% / 12px 12px', type: 'transparent' },
+            { id: 'pure-white', label: 'Studio White', css: '#FFFFFF', type: 'color', value: '#FFFFFF' },
+            { id: 'obsidian-gold', label: 'Obsidian Gold', css: 'linear-gradient(135deg, #0C0A09 0%, #292524 65%, #B45309 100%)', type: 'gradient', colors: ['#0C0A09', '#292524', '#B45309'] },
+            { id: 'royal-blue', label: 'Hoknex Blue', css: 'linear-gradient(135deg, #1E3A8A 0%, #2563EB 60%, #0D9488 100%)', type: 'gradient', colors: ['#1E3A8A', '#2563EB', '#0D9488'] },
+            { id: 'cyber-grid', label: 'Cyber Midnight', css: 'linear-gradient(135deg, #050811 0%, #0F172A 60%, #0284C7 100%)', type: 'gradient', colors: ['#050811', '#0F172A', '#0284C7'] },
+            { id: 'warm-ivory', label: 'Warm Tactile', css: 'linear-gradient(135deg, #FBF7F2 0%, #E6CCB2 100%)', type: 'gradient', colors: ['#FBF7F2', '#E6CCB2'] },
+            { id: 'emerald-stage', label: 'Deep Teal', css: 'linear-gradient(135deg, #064E3B 0%, #143734 55%, #D97706 100%)', type: 'gradient', colors: ['#064E3B', '#143734', '#D97706'] },
+            { id: 'crimson-velvet', label: 'Velvet Studio', css: 'linear-gradient(135deg, #18181B 0%, #4C0519 70%, #9F1239 100%)', type: 'gradient', colors: ['#18181B', '#4C0519', '#9F1239'] }
+        ];
+
+        let mediaOriginalImg = null;
+        let mediaOriginalFileSize = 0;
+        let mediaCutoutCanvas = null;
+        let selectedImgBackdrop = BULK_BACKDROPS[0];
+        let customImgBackdropObj = null;
+
+        let selectedVidBackdrop = BULK_BACKDROPS[2];
+        let customVidBackdropObj = null;
+        let isVideoBgRemovalActive = false;
+        let videoPreviewAnimId = null;
+
+        function switchMediaLabTab(tab) {
+            const isImg = tab === 'image';
+            document.getElementById('mediaImageWorkspace').style.display = isImg ? 'grid' : 'none';
+            document.getElementById('mediaVideoWorkspace').style.display = isImg ? 'none' : 'grid';
+            document.getElementById('tabMediaImageBtn').className = isImg ? 'btn-primary' : 'btn-secondary';
+            document.getElementById('tabMediaVideoBtn').className = isImg ? 'btn-secondary' : 'btn-primary';
+        }
+
+        function buildBulkBackdropGalleries() {
+            ['image', 'video'].forEach(kind => {
+                const container = document.getElementById(kind === 'image' ? 'imgBulkBgGallery' : 'vidBulkBgGallery');
+                if (!container) return;
+                container.innerHTML = BULK_BACKDROPS.map((item, idx) => `
+                    <div class="bg-swatch-item ${idx === (kind === 'image' ? 0 : 2) ? 'selected' : ''}"
+                         style="background:${item.css};"
+                         onclick="selectBulkBackdrop('${kind}', ${idx}, this)">
+                        <span>${item.label}</span>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function selectBulkBackdrop(kind, idx, el) {
+            const parent = el.parentElement;
+            parent.querySelectorAll('.bg-swatch-item').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            if (kind === 'image') {
+                customImgBackdropObj = null;
+                selectedImgBackdrop = BULK_BACKDROPS[idx];
+                renderProcessedMediaImage();
+            } else {
+                customVidBackdropObj = null;
+                selectedVidBackdrop = BULK_BACKDROPS[idx];
+            }
+        }
+
+        function uploadCustomMediaBackdrop(e, kind) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    if (kind === 'image') {
+                        customImgBackdropObj = img;
+                        renderProcessedMediaImage();
+                    } else {
+                        customVidBackdropObj = img;
+                    }
+                    showToast('Custom backdrop applied');
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function drawBackdropOntoContext(ctx, w, h, preset, customImg) {
+            if (customImg) {
+                const scale = Math.max(w / customImg.width, h / customImg.height);
+                const dw = customImg.width * scale;
+                const dh = customImg.height * scale;
+                ctx.drawImage(customImg, (w - dw) / 2, (h - dh) / 2, dw, dh);
+                return;
+            }
+            if (!preset || preset.type === 'transparent') return;
+            if (preset.type === 'color') {
+                ctx.fillStyle = preset.value;
+                ctx.fillRect(0, 0, w, h);
+                return;
+            }
+            if (preset.type === 'gradient' && Array.isArray(preset.colors)) {
+                const grad = ctx.createLinearGradient(0, 0, w, h);
+                preset.colors.forEach((c, idx) => {
+                    grad.addColorStop(idx / Math.max(1, preset.colors.length - 1), c);
+                });
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+            }
+        }
+
+        function hexToRgb(hex) {
+            const clean = hex.replace('#', '');
+            return {
+                r: parseInt(clean.substring(0, 2), 16) || 255,
+                g: parseInt(clean.substring(2, 4), 16) || 255,
+                b: parseInt(clean.substring(4, 6), 16) || 255
+            };
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+        }
+
+        function loadMediaImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            mediaOriginalFileSize = file.size;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    mediaOriginalImg = img;
+                    mediaCutoutCanvas = document.createElement('canvas');
+                    mediaCutoutCanvas.width = img.width;
+                    mediaCutoutCanvas.height = img.height;
+                    mediaCutoutCanvas.getContext('2d').drawImage(img, 0, 0);
+                    autoDetectCornerBgColor(true);
+                    renderProcessedMediaImage();
+                    showToast('Image loaded into Media Lab');
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function autoDetectCornerBgColor(silent = false) {
+            if (!mediaOriginalImg) return;
+            const temp = document.createElement('canvas');
+            temp.width = mediaOriginalImg.width;
+            temp.height = mediaOriginalImg.height;
+            const ctx = temp.getContext('2d');
+            ctx.drawImage(mediaOriginalImg, 0, 0);
+            const px = ctx.getImageData(2, 2, 1, 1).data;
+            const hex = rgbToHex(px[0], px[1], px[2]);
+            document.getElementById('imgBgKeyColor').value = hex;
+            if (!silent) showToast(`Sampled background color ${hex.toUpperCase()}`);
+        }
+
+        function removeMediaImageBackground() {
+            if (!mediaOriginalImg) return showToast('Upload an image first');
+            const keyRgb = hexToRgb(document.getElementById('imgBgKeyColor').value);
+            const tolerance = parseInt(document.getElementById('imgBgTolerance').value, 10) || 42;
+            const feather = 18;
+
+            const c = document.createElement('canvas');
+            c.width = mediaOriginalImg.width;
+            c.height = mediaOriginalImg.height;
+            const ctx = c.getContext('2d');
+            ctx.drawImage(mediaOriginalImg, 0, 0);
+
+            const imgData = ctx.getImageData(0, 0, c.width, c.height);
+            const data = imgData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const dr = data[i] - keyRgb.r;
+                const dg = data[i + 1] - keyRgb.g;
+                const db = data[i + 2] - keyRgb.b;
+                const dist = Math.sqrt(dr * dr + dg * dg + db * db);
+
+                if (dist < tolerance) {
+                    data[i + 3] = 0;
+                } else if (dist < tolerance + feather) {
+                    const alphaFactor = (dist - tolerance) / feather;
+                    data[i + 3] = Math.round(data[i + 3] * alphaFactor);
+                }
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+            mediaCutoutCanvas = c;
+            renderProcessedMediaImage();
+            showToast('Background removed');
+        }
+
+        function resetMediaImage() {
+            if (!mediaOriginalImg) return;
+            mediaCutoutCanvas = document.createElement('canvas');
+            mediaCutoutCanvas.width = mediaOriginalImg.width;
+            mediaCutoutCanvas.height = mediaOriginalImg.height;
+            mediaCutoutCanvas.getContext('2d').drawImage(mediaOriginalImg, 0, 0);
+            document.getElementById('imgEnhanceSlider').value = 100;
+            document.getElementById('imgEnhanceVal').textContent = '100';
+            document.getElementById('imgScaleSelect').value = '1';
+            renderProcessedMediaImage();
+        }
+
+        function renderProcessedMediaImage() {
+            if (!mediaCutoutCanvas) return;
+            const outCanvas = document.getElementById('mediaImgCanvas');
+            const scale = parseFloat(document.getElementById('imgScaleSelect').value) || 1;
+            const enhance = parseInt(document.getElementById('imgEnhanceSlider').value, 10) || 100;
+
+            const targetW = Math.max(16, Math.round(mediaCutoutCanvas.width * scale));
+            const targetH = Math.max(16, Math.round(mediaCutoutCanvas.height * scale));
+            outCanvas.width = targetW;
+            outCanvas.height = targetH;
+
+            const ctx = outCanvas.getContext('2d');
+            ctx.clearRect(0, 0, targetW, targetH);
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            drawBackdropOntoContext(ctx, targetW, targetH, selectedImgBackdrop, customImgBackdropObj);
+
+            const contrastBoost = enhance > 100 ? 100 + (enhance - 100) * 0.45 : enhance;
+            const saturateBoost = enhance > 100 ? 100 + (enhance - 100) * 0.35 : 100;
+            ctx.filter = `contrast(${contrastBoost}%) saturate(${saturateBoost}%)`;
+            ctx.drawImage(mediaCutoutCanvas, 0, 0, targetW, targetH);
+            ctx.filter = 'none';
+
+            updateEstimatedImageSize();
+        }
+
+        function updateEstimatedImageSize() {
+            const outCanvas = document.getElementById('mediaImgCanvas');
+            const statsEl = document.getElementById('imgSizeStatsBox');
+            if (!mediaOriginalImg || !statsEl) return;
+            const mime = document.getElementById('imgExportFormat').value;
+            const q = (parseInt(document.getElementById('imgCompressSlider').value, 10) || 92) / 100;
+            const dataUrl = outCanvas.toDataURL(mime, q);
+            const approxBytes = Math.round((dataUrl.length - dataUrl.indexOf(',') - 1) * 0.75);
+
+            const fmtKB = (b) => b > 1024 * 1024 ? `${(b / (1024 * 1024)).toFixed(2)} MB` : `${Math.max(1, Math.round(b / 1024))} KB`;
+            statsEl.textContent = `Original: ${fmtKB(mediaOriginalFileSize)} (${mediaOriginalImg.width}×${mediaOriginalImg.height}) → Output: ${fmtKB(approxBytes)} (${outCanvas.width}×${outCanvas.height})`;
+        }
+
+        function downloadProcessedMediaImage() {
+            if (!mediaCutoutCanvas) return showToast('Upload an image first');
+            const outCanvas = document.getElementById('mediaImgCanvas');
+            const mime = document.getElementById('imgExportFormat').value;
+            const q = (parseInt(document.getElementById('imgCompressSlider').value, 10) || 92) / 100;
+            const ext = mime.split('/')[1] || 'png';
+            const a = document.createElement('a');
+            a.href = outCanvas.toDataURL(mime, q);
+            a.download = `hoknex-media-${Date.now()}.${ext}`;
+            a.click();
+        }
+
+        // Video Studio Controls
+        function loadMediaVideo(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const video = document.getElementById('mediaSourceVideo');
+            const canvas = document.getElementById('mediaVidCanvas');
+            const url = URL.createObjectURL(file);
+            video.src = url;
+            video.onloadedmetadata = () => {
+                const maxW = 720;
+                const ratio = video.videoHeight / Math.max(1, video.videoWidth);
+                canvas.width = Math.min(maxW, video.videoWidth || 640);
+                canvas.height = Math.round(canvas.width * ratio) || 360;
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                document.getElementById('vidSizeStatsBox').textContent = `Loaded Video: ${sizeMB} MB (${video.videoWidth}×${video.videoHeight})`;
+                video.play();
+                startVideoPreviewLoop();
+                showToast('Video loaded into Media Lab');
+            };
+        }
+
+        function autoDetectVideoCornerColor() {
+            const video = document.getElementById('mediaSourceVideo');
+            if (!video.videoWidth) return showToast('Upload a video first');
+            const temp = document.createElement('canvas');
+            temp.width = video.videoWidth;
+            temp.height = video.videoHeight;
+            const ctx = temp.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            const px = ctx.getImageData(4, 4, 1, 1).data;
+            const hex = rgbToHex(px[0], px[1], px[2]);
+            document.getElementById('vidBgKeyColor').value = hex;
+            showToast(`Sampled video background ${hex.toUpperCase()}`);
+        }
+
+        function toggleVideoBgRemoval() {
+            isVideoBgRemovalActive = !isVideoBgRemovalActive;
+            document.getElementById('vidBgRemoveLabel').textContent = `Remove Video BG: ${isVideoBgRemovalActive ? 'ON' : 'OFF'}`;
+        }
+
+        function togglePreviewVideoPlayback() {
+            const video = document.getElementById('mediaSourceVideo');
+            if (!video.src) return;
+            if (video.paused) {
+                video.play();
+                startVideoPreviewLoop();
+            } else {
+                video.pause();
+            }
+        }
+
+        function startVideoPreviewLoop() {
+            if (videoPreviewAnimId) cancelAnimationFrame(videoPreviewAnimId);
+            const video = document.getElementById('mediaSourceVideo');
+            const canvas = document.getElementById('mediaVidCanvas');
+            const ctx = canvas.getContext('2d');
+            const tempFrame = document.createElement('canvas');
+
+            const renderFrame = () => {
+                if (video.readyState >= 2) {
+                    const w = canvas.width;
+                    const h = canvas.height;
+                    const enhance = parseInt(document.getElementById('vidEnhanceSlider').value, 10) || 105;
+
+                    ctx.clearRect(0, 0, w, h);
+                    if (isVideoBgRemovalActive) {
+                        drawBackdropOntoContext(ctx, w, h, selectedVidBackdrop, customVidBackdropObj);
+                        tempFrame.width = w;
+                        tempFrame.height = h;
+                        const tCtx = tempFrame.getContext('2d');
+                        tCtx.drawImage(video, 0, 0, w, h);
+                        const frameData = tCtx.getImageData(0, 0, w, h);
+                        const d = frameData.data;
+                        const keyRgb = hexToRgb(document.getElementById('vidBgKeyColor').value);
+                        const tol = parseInt(document.getElementById('vidBgTolerance').value, 10) || 55;
+
+                        for (let i = 0; i < d.length; i += 4) {
+                            const dr = d[i] - keyRgb.r;
+                            const dg = d[i + 1] - keyRgb.g;
+                            const db = d[i + 2] - keyRgb.b;
+                            if (Math.sqrt(dr * dr + dg * dg + db * db) < tol) {
+                                d[i + 3] = 0;
+                            }
+                        }
+                        tCtx.putImageData(frameData, 0, 0);
+                        ctx.filter = `contrast(${enhance}%) saturate(${enhance}%)`;
+                        ctx.drawImage(tempFrame, 0, 0);
+                        ctx.filter = 'none';
+                    } else {
+                        ctx.filter = `contrast(${enhance}%) saturate(${enhance}%)`;
+                        ctx.drawImage(video, 0, 0, w, h);
+                        ctx.filter = 'none';
+                    }
+                }
+                videoPreviewAnimId = requestAnimationFrame(renderFrame);
+            };
+            renderFrame();
+        }
+
+        function exportProcessedMediaVideo() {
+            const video = document.getElementById('mediaSourceVideo');
+            const canvas = document.getElementById('mediaVidCanvas');
+            if (!video.src) return showToast('Upload a video first');
+            if (typeof MediaRecorder === 'undefined') {
+                return showToast('Video recording is not supported in this browser');
+            }
+
+            const bitrate = parseInt(document.getElementById('vidBitrateSelect').value, 10) || 2500000;
+            const stream = canvas.captureStream(30);
+            const recorder = new MediaRecorder(stream, { mimeType: 'video/webm', videoBitsPerSecond: bitrate });
+            const chunks = [];
+
+            recorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `hoknex-video-${Date.now()}.webm`;
+                a.click();
+                URL.revokeObjectURL(url);
+                document.getElementById('vidSizeStatsBox').textContent = `Exported Video Size: ${(blob.size / (1024 * 1024)).toFixed(2)} MB`;
+                showToast('Processed video downloaded');
+            };
+
+            video.currentTime = 0;
+            video.play();
+            startVideoPreviewLoop();
+            recorder.start();
+            const durationMs = Math.min(15000, Math.max(3000, (video.duration || 5) * 1000));
+            showToast(`Rendering video (${Math.round(durationMs / 1000)}s)...`);
+            setTimeout(() => {
+                if (recorder.state !== 'inactive') recorder.stop();
+            }, durationMs);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            syncAccountUI();
+            buildBulkBackdropGalleries();
+            renderVaultHistoryList();
+            saveDrawHistory();
+
+            const params = new URLSearchParams(window.location.search);
+            const scannedId = params.get('id') || params.get('certId');
+            const portable = extractTokenFromCurrentUrl();
+
+            if (scannedId || portable) {
+                const resolvedId = (scannedId || (portable && portable.certId) || '').toUpperCase();
+                document.getElementById('vaultCertId').value = resolvedId;
+                openStage('vaultStage');
+            }
+            renderPosterTemplate();
+        });
+    </script>
+</body>
+</html>
