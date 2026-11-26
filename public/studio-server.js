@@ -1,4 +1,4 @@
-// studio-server.js — Hoknex Studio Public Credential, Batch & Project Server
+// studio-server.js — Hoknex Studio Public Credential, Auth, Credits & Project Server
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
@@ -46,6 +46,10 @@ const hashPassword = (pw) => crypto.createHash('sha256').update(String(pw)).dige
 const makeToken = () => crypto.randomBytes(24).toString('hex');
 const makeCertId = () => `HKX-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 const makeCertPass = () => `P-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+const makeReferralCode = (name) => {
+  const prefix = String(name || 'HKX').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 5) || 'HKX';
+  return `HKX-${prefix}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
+};
 
 function isAdminRequest(req) {
   const providedKey = String(
@@ -54,22 +58,22 @@ function isAdminRequest(req) {
   return providedKey.length > 0 && providedKey === ADMIN_STUDIO_KEY;
 }
 
-// Health Check
 app.get('/api/studio/health', (req, res) => {
   const db = readDB();
   res.json({
     ok: true,
     brand: 'Hoknex Studio',
+    usersCount: db.users.length,
     certificatesCount: db.certificates.length,
     projectsCount: db.projects.length
   });
 });
 
 // ============================================================================
-// ACCOUNT AUTHENTICATION & SELF-SERVICE DELETION
+// ACCOUNT AUTHENTICATION, CREDITS, REFERRALS & SELF-SERVICE DELETION
 // ============================================================================
 app.post('/api/studio/auth/signup', (req, res) => {
-  const { name, email, password } = req.body || {};
+  const { name, email, password, referralUsed = '' } = req.body || {};
   if (!name || !email || !password || String(password).length < 4) {
     return res.status(400).json({ error: 'Name, email, and password (min 4 chars) are required.' });
   }
@@ -80,12 +84,26 @@ app.post('/api/studio/auth/signup', (req, res) => {
     return res.status(409).json({ error: 'An account with this email already exists.' });
   }
 
+  let bonusCredits = 0;
+  const cleanRef = String(referralUsed).trim().toUpperCase();
+  if (cleanRef) {
+    const referrer = db.users.find((u) => String(u.referralCode || '').toUpperCase() === cleanRef);
+    if (referrer) {
+      referrer.credits = (referrer.credits || 50) + 25;
+      bonusCredits = 25;
+    }
+  }
+
   const user = {
     id: crypto.randomUUID(),
     name: String(name).trim(),
     email: normEmail,
     passwordHash: hashPassword(password),
     token: makeToken(),
+    credits: 50 + bonusCredits,
+    exportsCount: 0,
+    plan: 'Creator',
+    referralCode: makeReferralCode(name),
     createdAt: new Date().toISOString()
   };
 
@@ -94,7 +112,16 @@ app.post('/api/studio/auth/signup', (req, res) => {
 
   res.json({
     success: true,
-    user: { id: user.id, name: user.name, email: user.email, token: user.token }
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      token: user.token,
+      credits: user.credits,
+      exportsCount: user.exportsCount,
+      plan: user.plan,
+      referralCode: user.referralCode
+    }
   });
 });
 
@@ -115,11 +142,22 @@ app.post('/api/studio/auth/signin', (req, res) => {
   }
 
   user.token = makeToken();
+  if (typeof user.credits !== 'number') user.credits = 50;
+  if (!user.referralCode) user.referralCode = makeReferralCode(user.name);
   writeDB(db);
 
   res.json({
     success: true,
-    user: { id: user.id, name: user.name, email: user.email, token: user.token }
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      token: user.token,
+      credits: user.credits,
+      exportsCount: user.exportsCount || 0,
+      plan: user.plan || 'Creator',
+      referralCode: user.referralCode
+    }
   });
 });
 
@@ -174,7 +212,6 @@ app.post('/api/studio/certificates/save', (req, res) => {
   const db = readDB();
   const existingIdx = db.certificates.findIndex((c) => c.certId.toUpperCase() === cleanId);
 
-  // Overwriting an existing certificate requires Admin authentication
   if (existingIdx >= 0 && !isAdminRequest(req)) {
     return res.status(403).json({
       success: false,
