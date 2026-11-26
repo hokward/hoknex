@@ -1629,25 +1629,40 @@ mainView.innerHTML = `
         container.innerHTML = `<p style="color: var(--accent-coral); text-align: center; font-weight: 700;">Failed to load projects.</p>`;
     }
 }
-            } else if (view === 'clubs') {
-                viewTitle.innerText = 'Hoknex Discord Hub 💬';
-                mainView.innerHTML = `
-                    <div id="discordHubWrapper" style="display:flex; gap:15px; height: calc(100vh - 130px); width: 100%; position:relative; transition: all 0.3s ease;">
-                        <div id="serverListSidebar" style="width: 220px; min-width: 220px; background: var(--paper); border: 1px solid var(--border); border-radius: 10px; padding: 12px; display:flex; flex-direction:column; gap:10px; overflow-y:auto; height: 100%;">
-                            <h4 style="font-size:0.85rem; font-weight:700; text-transform:uppercase; color:var(--ink-light);">Servers (Clubs)</h4>
-                            <div id="clubServersList" style="display:flex; flex-direction:column; gap:6px; flex:1;"></div>
-                            <hr style="border:0.5px solid var(--border); margin:5px 0;">
-                            <h5 style="font-size:0.8rem; font-weight:700;">Create Server</h5>
-                            <input type="text" id="newClubName" placeholder="Server name" style="padding:6px; border:1px solid var(--border); border-radius:4px; font-size:0.8rem; font-weight:600; outline:none; background:var(--canvas); color:var(--ink);">
-                            <input type="text" id="newClubDesc" placeholder="Description" style="padding:6px; border:1px solid var(--border); border-radius:4px; font-size:0.8rem; font-weight:600; outline:none; background:var(--canvas); color:var(--ink);">
-                            <button class="btn-create" style="padding:6px; font-size:0.8rem;" onclick="createDiscordClub()">+ Create Server</button>
-                        </div>
-                        <div id="discordWorkspace" style="flex:1; background: var(--paper); border: 1px solid var(--border); border-radius: 10px; display:flex; align-items:center; justify-content:center; height: 100%; overflow:hidden; position:relative;">
-                            <p style="font-weight:600; color:var(--ink-light);">Select a server from the left sidebar to start chatting!</p>
-                        </div>
-                    </div>
-                `;
-                loadDiscordClubs();
+           } else if (view === 'clubs') {
+    viewTitle.innerText = 'Hoknex Discord & Slack Hub ⚡';
+    mainView.innerHTML = `
+        <div id="discordHubWrapper" style="display:flex; gap:12px; height: calc(100vh - 130px); width: 100%; position:relative; transition: all 0.25s ease;">
+            <!-- Discord-Style Server Rail + Quick Create Trigger -->
+            <div id="serverListSidebar" style="width: 235px; min-width: 235px; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; padding: 12px; display:flex; flex-direction:column; gap:10px; overflow-y:auto; height: 100%; box-shadow: var(--shadow-subtle);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h4 style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.6px; color:var(--ink-light);">Workspaces & Servers</h4>
+                    <button class="btn-create" style="padding:4px 9px; font-size:0.75rem; border-radius:6px;" onclick="openCreateServerModal()">+ New</button>
+                </div>
+                <input type="text" id="serverSearchFilter" placeholder="Filter servers..." oninput="filterServerSidebarList(this.value)" style="padding:7px 10px; border:1px solid var(--border); border-radius:8px; font-size:0.8rem; font-weight:600; outline:none; background:var(--canvas); color:var(--ink);">
+                <div id="clubServersList" style="display:flex; flex-direction:column; gap:6px; flex:1; overflow-y:auto;"></div>
+                <div style="border-top:1px solid var(--border); padding-top:8px; display:flex; flex-direction:column; gap:6px;">
+                    <span style="font-size:0.7rem; font-weight:700; color:var(--ink-light);">Quick Status</span>
+                    <select id="userPresenceStatus" onchange="saveHubStatus(this.value)" style="padding:6px 8px; border:1px solid var(--border); border-radius:7px; font-size:0.78rem; font-weight:700; background:var(--canvas); color:var(--ink); outline:none;">
+                        <option value="🟢 Online — Building">🟢 Online — Building</option>
+                        <option value="💻 In Deep Focus (Slack Mode)">💻 In Deep Focus</option>
+                        <option value="🎮 Gaming / Jamming">🎮 Gaming / Jamming</option>
+                        <option value="🌙 Away">🌙 Away</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Main Discord + Slack Workspace -->
+            <div id="discordWorkspace" style="flex:1; background: var(--paper); border: 1px solid var(--border); border-radius: 12px; display:flex; align-items:center; justify-content:center; height: 100%; overflow:hidden; position:relative; box-shadow: var(--shadow-subtle);">
+                <p style="font-weight:600; color:var(--ink-light);">Select a server or workspace from the left sidebar to start collaborating!</p>
+            </div>
+        </div>
+    `;
+    const savedStatus = localStorage.getItem('hoknex_hub_status');
+    if (savedStatus && document.getElementById('userPresenceStatus')) {
+        document.getElementById('userPresenceStatus').value = savedStatus;
+    }
+    loadDiscordClubs();
         } else if (view === 'events') {
         viewTitle.innerText = 'Campus Events & Ticketing 📅';
         
@@ -2698,208 +2713,423 @@ window.toggleStickerPicker = function() {
 window.viewUserProfile = function(usernameOrId) {
     window.location.href = `/profile.html?user=${encodeURIComponent(usernameOrId || window.activeRecipientUsername)}`;
 };
-        // Clubs & Servers Logic
-        async function loadDiscordClubs() {
-            try {
-                const res = await fetch(`${API_URL}/api/clubs`);
-                const clubs = await res.json();
-                const list = document.getElementById('clubServersList');
-                if (!list) return;
-                list.innerHTML = clubs.length === 0 ? `<p style="font-size:0.8rem; font-weight:600;">No servers yet.</p>` : clubs.map(club => `
-                    <button onclick="openDiscordClub('${club._id}')" class="action-btn" style="text-align:left; font-weight:700; padding:8px 10px; background:${activeClubId === club._id ? 'rgba(59, 130, 246, 0.15)' : 'var(--paper)'}; color:${activeClubId === club._id ? 'var(--accent-blue)' : 'var(--ink)'}; border-color:${activeClubId === club._id ? 'var(--accent-blue)' : 'var(--border)'};">
-                        🔥 ${club.name}
-                    </button>
-                `).join('');
-                if (clubs.length > 0 && !activeClubId) openDiscordClub(clubs[0]._id);
-            } catch (e) { console.error(e); }
+       // ============================================================================
+// HOKNEX DISCORD + SLACK CLUB WORKSPACE ENGINE
+// ============================================================================
+let allLoadedClubs = [];
+let activeReplyTarget = null;
+let activeChannelSearchQuery = '';
+
+function saveHubStatus(val) {
+    localStorage.setItem('hoknex_hub_status', val);
+}
+
+function filterServerSidebarList(query) {
+    const q = (query || '').toLowerCase().trim();
+    renderClubServerButtons(q ? allLoadedClubs.filter(c => (c.name || '').toLowerCase().includes(q)) : allLoadedClubs);
+}
+
+function renderClubServerButtons(clubs) {
+    const list = document.getElementById('clubServersList');
+    if (!list) return;
+    if (!clubs || clubs.length === 0) {
+        list.innerHTML = `<p style="font-size:0.8rem; font-weight:600; color:var(--ink-light);">No servers found.</p>`;
+        return;
+    }
+    list.innerHTML = clubs.map(club => {
+        const isSelected = activeClubId && activeClubId.toString() === club._id.toString();
+        const memberCount = (club.members || []).length;
+        return `
+            <button onclick="openDiscordClub('${club._id}')" class="action-btn" style="display:flex; justify-content:space-between; align-items:center; text-align:left; font-weight:700; padding:9px 10px; border-radius:8px; background:${isSelected ? 'rgba(59, 130, 246, 0.16)' : 'var(--canvas)'}; color:${isSelected ? 'var(--accent-blue)' : 'var(--ink)'}; border-color:${isSelected ? 'var(--accent-blue)' : 'var(--border)'};">
+                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">🔥 ${club.name}</span>
+                <span style="font-size:0.7rem; opacity:0.75; margin-left:6px;">${memberCount}</span>
+            </button>
+        `;
+    }).join('');
+}
+
+async function loadDiscordClubs() {
+    try {
+        const res = await fetch(`${API_URL}/api/clubs`);
+        const clubs = await res.json();
+        allLoadedClubs = Array.isArray(clubs) ? clubs : [];
+        const searchVal = document.getElementById('serverSearchFilter')?.value || '';
+        filterServerSidebarList(searchVal);
+
+        if (allLoadedClubs.length > 0 && !activeClubId) {
+            openDiscordClub(allLoadedClubs[0]._id);
         }
+    } catch (e) {
+        console.error('Failed to load clubs:', e);
+    }
+}
 
-        async function createDiscordClub() {
-            const nameInput = document.getElementById('newClubName');
-            const descInput = document.getElementById('newClubDesc');
-            if(!nameInput || !descInput) return;
-            const name = nameInput.value.trim();
-            const description = descInput.value.trim();
-            const username = localStorage.getItem('hoknex_user');
-            if (!name) return alert('Enter a server name');
-            const res = await fetch(`${API_URL}/api/clubs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, description, username }) });
-            if (res.ok) { nameInput.value = ''; descInput.value = ''; loadDiscordClubs(); fetchStats(); }
-        }
-
-        function toggleServerSidebar() {
-            const sidebar = document.getElementById('serverListSidebar');
-            const toggleIcon = document.getElementById('serverToggleIcon');
-            if (sidebar.style.display === 'none') { sidebar.style.display = 'flex'; toggleIcon.innerText = '◀ Hide'; } 
-            else { sidebar.style.display = 'none'; toggleIcon.innerText = '▶ Servers'; }
-        }
-
-        function toggleHubFullScreen() {
-            isHubFullScreen = !isHubFullScreen;
-            const wrapper = document.getElementById('discordHubWrapper');
-            const sidebar = document.getElementById('serverListSidebar');
-            const btn = document.getElementById('fullScreenToggleBtn');
-            if (isHubFullScreen) {
-                if(sidebar) sidebar.style.display = 'none';
-                wrapper.style.position = 'fixed'; wrapper.style.top = '0'; wrapper.style.left = '0';
-                wrapper.style.width = '100vw'; wrapper.style.height = '100vh'; wrapper.style.zIndex = '999';
-                wrapper.style.padding = '15px'; wrapper.style.background = 'var(--canvas)'; btn.innerText = '🗗 Exit Full Screen';
-            } else {
-                if(sidebar) sidebar.style.display = 'flex';
-                wrapper.style.position = 'relative'; wrapper.style.width = '100%'; wrapper.style.height = 'calc(100vh - 130px)';
-                wrapper.style.zIndex = '1'; wrapper.style.padding = '0'; wrapper.style.background = 'transparent'; btn.innerText = '⛶ Full Screen';
-            }
-        }
-
-        async function openDiscordClub(clubId) {
-            activeClubId = clubId;
-            try {
-                const currentUsername = localStorage.getItem('hoknex_user');
-                if (!currentUsername) return;
-                const meRes = await fetch(`${API_URL}/api/users/${encodeURIComponent(currentUsername)}`);
-                if (!meRes.ok) return;
-                const meData = await meRes.json();
-                const currentUserId = meData._id.toString();
-                localStorage.setItem('hoknex_uid', currentUserId);
-
-                const res = await fetch(`${API_URL}/api/clubs`);
-                const clubs = await res.json();
-                const club = clubs.find(c => c._id.toString() === clubId.toString());
-                if (!club) return;
-                loadDiscordClubs();
-
-                activeClubMembers = club.members || [];
-                const validChannel = (club.channels || []).find(ch => ch._id.toString() === activeChannelId);
-                if (!validChannel && club.channels && club.channels.length > 0) activeChannelId = club.channels[0]._id.toString();
-
-                const ownerObj = club.owner;
-                const ownerId = ownerObj ? (ownerObj._id ? ownerObj._id.toString() : ownerObj.toString()) : '';
-                const ownerUsername = ownerObj ? (ownerObj.username || '') : '';
-                const isOwner = (ownerId === currentUserId) || (ownerUsername.toLowerCase() === currentUsername.toLowerCase());
-                const isMember = (club.members || []).some(m => (m._id ? m._id.toString() : m.toString()) === currentUserId || (m.username || '').toLowerCase() === currentUsername.toLowerCase());
-                const hasRequested = (club.joinRequests || []).some(req => (req._id ? req._id.toString() : req.toString()) === currentUserId || (req.username || '').toLowerCase() === currentUsername.toLowerCase());
-
-                const workspace = document.getElementById('discordWorkspace');
-                workspace.style.display = 'flex'; workspace.style.flexDirection = 'row'; workspace.style.height = '100%'; workspace.style.width = '100%';
-
-                if (!isMember && !isOwner) {
-                    workspace.innerHTML = `
-                        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:15px; padding:2rem; text-align:center;">
-                            <h2 style="font-size:1.6rem; font-weight:800;">🔥 ${club.name}</h2>
-                            <p style="font-weight:600; color:var(--ink-light); max-width:400px; font-size:0.95rem;">${club.description || 'Private campus server. Requires admin approval to join.'}</p>
-                            ${hasRequested ? '<button class="action-btn" style="background:var(--paper); color:var(--ink); cursor:default;" disabled>Join Request Pending Approval ⏳</button>' : '<button class="btn-create" onclick="requestJoinClub(\'' + club._id + '\')">🔒 Request to Join Server</button>'}
+function openCreateServerModal() {
+    document.getElementById('createServerModal')?.remove();
+    const modalHtml = `
+        <div id="createServerModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; z-index:1100; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); padding:1.75rem; border-radius:14px; width:100%; max-width:440px; box-shadow:var(--shadow-card); color:var(--ink);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h3 style="font-weight:800; font-size:1.15rem;">🚀 Create Discord / Slack Server</h3>
+                    <button onclick="document.getElementById('createServerModal').remove()" class="action-btn" style="padding:4px 9px;">✕</button>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase;">Server / Club Name *</label>
+                    <input type="text" id="modalNewClubName" placeholder="e.g. Hack Club Builders" style="padding:9px 12px; border:1px solid var(--border); border-radius:8px; font-size:0.88rem; font-weight:600; background:var(--canvas); color:var(--ink); outline:none;">
+                    <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase;">Description</label>
+                    <input type="text" id="modalNewClubDesc" placeholder="What is this workspace about?" style="padding:9px 12px; border:1px solid var(--border); border-radius:8px; font-size:0.88rem; font-weight:600; background:var(--canvas); color:var(--ink); outline:none;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <div>
+                            <label style="font-size:0.72rem; font-weight:800; text-transform:uppercase;">First Channel</label>
+                            <input type="text" id="modalDefaultChannel" value="general" style="padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-size:0.82rem; font-weight:600; background:var(--canvas); color:var(--ink); width:100%; outline:none;">
                         </div>
-                    `;
-                    return;
-                }
-
-                workspace.innerHTML = `
-                    <!-- Collapsible Server Sidebar -->
-                    <div id="serverListSidebar" style="width: 200px; min-width: 200px; border-right: 1px solid var(--border); background: var(--paper); padding: 12px; display:flex; flex-direction:column; gap:10px; height:100%; transition: all 0.3s ease;">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <h3 style="font-size:0.9rem; font-weight:800; word-break:break-word; color:var(--ink);">${club.name} ${isOwner ? '👑' : ''}</h3>
-                            <button onclick="toggleServerSidebar()" id="serverToggleIcon" class="action-btn" style="font-size:0.7rem; padding:3px 6px;" title="Toggle Sidebar">◀ Hide</button>
-                        </div>
-                        <p style="font-size:0.75rem; color:var(--ink-light); font-weight:600;">${club.description || ''}</p>
-                        ${isOwner && club.joinRequests && club.joinRequests.length > 0 ? `
-                            <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; color: var(--accent-yellow);">
-                                🔔 ${club.joinRequests.length} Pending Request(s)! 
-                                <button onclick="openRequestsModal('${club._id}')" class="action-btn" style="margin-top:6px; display:block; width:100%; font-size:0.75rem; padding:4px; background:var(--paper); color:var(--ink); text-align:center;">Review 🔍</button>
-                            </div>
-                        ` : ''}
-                        <hr style="border:0.5px solid var(--border);">
-                        <h4 style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--ink-light);">Text Channels 💬</h4>
-                        <div id="channelsList" style="display:flex; flex-direction:column; gap:4px; flex:1; overflow-y:auto;">
-                            ${(club.channels || []).map(ch => `<button onclick="openDiscordChannel('${ch._id}')" class="action-btn" style="text-align:left; font-size:0.82rem; background:${activeChannelId === ch._id.toString() ? 'rgba(59, 130, 246, 0.15)' : 'var(--paper)'}; color:${activeChannelId === ch._id.toString() ? 'var(--accent-blue)' : 'var(--ink)'};"># ${ch.name}</button>`).join('')}
-                        </div>
-                        ${isOwner ? `
-                            <div style="display:flex; gap:4px; margin-bottom:4px;">
-                                <input type="text" id="newChannelName" placeholder="New channel" style="padding:4px; font-size:0.75rem; border:1px solid var(--border); border-radius:4px; width:100%; font-weight:600; outline:none; background:var(--canvas); color:var(--ink);">
-                                <button class="btn-create" style="padding:4px 8px; font-size:0.75rem;" onclick="createDiscordChannel('${club._id}')">+</button>
-                            </div>
-                            <button class="action-btn" style="background: rgba(239, 68, 68, 0.1); color: var(--accent-coral); width:100%; font-size:0.75rem; padding:6px;" onclick="openDeleteServerModal('${club._id}', '${club.name}')">🗑️ Delete Server</button>
-                        ` : `<button class="action-btn" style="background:var(--paper); color:var(--ink); width:100%; font-size:0.75rem; padding:6px;" onclick="leaveServer('${club._id}')">🚪 Leave Server</button>`}
-                    </div>
-
-                    <!-- Chat Canvas -->
-                    <div style="flex:1; display:flex; flex-direction:column; height:100%; background:var(--paper); overflow:hidden; position:relative;" id="clubChatArea">
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-bottom:1px solid var(--border); background:var(--canvas);">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <button onclick="toggleServerSidebar()" class="action-btn" style="font-size:0.75rem;">📁 Servers</button>
-                                <span style="font-weight:800; font-size:0.9rem;" id="activeChannelHeader"># channel</span>
-                            </div>
-                            <div style="display:flex; gap:8px; align-items:center;">
-                                <button onclick="toggleHubFullScreen()" id="fullScreenToggleBtn" class="action-btn" style="font-size:0.75rem; font-weight:700;">⛶ Full Screen</button>
-                               <select id="clubWallpaperSelect" onchange="changeClubWallpaper(this.value)" style="padding:4px 8px; border-radius:6px; border:1px solid var(--border); font-size:0.75rem; font-weight:700; background:var(--paper); color:var(--ink); outline:none; cursor:pointer;">
-    <option value="">🖼️ Picture Wallpapers</option>
-    <option value="url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80')">Cyberpunk Neon 🌆</option>
-    <option value="url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=80')">Tropical Beach 🏝️</option>
-    <option value="url('https://images.unsplash.com/photo-1542224566-6e85f2e6772f?w=1200&auto=format&fit=crop&q=80')">Misty Pine Forest 🌲</option>
-    <option value="url('https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1200&auto=format&fit=crop&q=80')">Abstract Purple Vibe 🎨</option>
-    <option value="url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&auto=format&fit=crop&q=80')">Yosemite Sunset 🌇</option>
-    <option value="url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1200&auto=format&fit=crop&q=80')">Cosmic Galaxy 🌌</option>
-    <option value="url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80')">Dark Architecture 🏛️</option>
-    <option value="url('https://images.unsplash.com/photo-1507783592120-694c3c3a9f04?w=1200&auto=format&fit=crop&q=80')">Autumn Maple 🍁</option>
-    <option value="url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&auto=format&fit=crop&q=80')">Starry Night Sky ✨</option>
-    <option value="url('https://images.unsplash.com/photo-1428592953211-077101b2021b?w=1200&auto=format&fit=crop&q=80')">Raindrops Glass 🌧️</option>
-</select>
-                            </div>
-                        </div>
-
-                        <div id="discordChatContainer" style="flex:1; overflow-y:auto; padding:15px; display:flex; flex-direction:column; gap:8px;"></div>
-                        
-                        <!-- Mention Autocomplete Popup (Server Members Only) -->
-                        <div id="mentionPopup" style="display:none; position:absolute; bottom:65px; left:15px; background:var(--paper); border:1px solid var(--border); border-radius:8px; width:220px; box-shadow:var(--shadow-card); z-index:30; max-height:150px; overflow-y:auto;"></div>
-
-                        <!-- Emoji & Sticker Picker Panel -->
-                        <div id="clubEmojiPicker" style="display:none; position:absolute; bottom:65px; left:15px; width:300px; height:220px; background:var(--paper); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow-card); padding:10px; overflow-y:auto; z-index:40;">
-                            <div style="font-size:0.7rem; font-weight:800; color:var(--ink-light); margin-bottom:4px;">EMOJIS & STICKERS</div>
-                            <div style="display:grid; grid-template-columns: repeat(7, 1fr); gap:4px; font-size:1.1rem; cursor:pointer; text-align:center;">
-                                <span onclick="insertClubEmoji('😀')">😀</span><span onclick="insertClubEmoji('😂')">😂</span><span onclick="insertClubEmoji('😍')">😍</span><span onclick="insertClubEmoji('😎')">😎</span><span onclick="insertClubEmoji('🥳')">🥳</span><span onclick="insertClubEmoji('👍')">👍</span><span onclick="insertClubEmoji('🔥')">🔥</span>
-                                <span onclick="insertClubEmoji('⭐')">⭐</span><span onclick="insertClubEmoji('🎉')">🎉</span><span onclick="insertClubEmoji('❤️')">❤️</span><span onclick="insertClubEmoji('🚀')">🚀</span><span onclick="insertClubEmoji('💡')">💡</span><span onclick="insertClubEmoji('💻')">💻</span><span onclick="insertClubEmoji('🍕')">🍕</span>
-                            </div>
-                        </div>
-
-                        <div style="padding:10px; border-top:1px solid var(--border); display:flex; gap:8px; align-items:center; background:var(--canvas);">
-                            <button class="action-btn" onclick="toggleClubEmojiPicker()" style="font-size:0.9rem; padding:8px 10px;" title="Emoji">😊</button>
-                            <label for="discordMediaFile" style="cursor:pointer; background:var(--paper); color:var(--ink); padding:8px 12px; border-radius:6px; border:1px solid var(--border); font-weight:700; font-size:0.85rem;" title="Upload Image">📷</label>
-                            <input type="file" id="discordMediaFile" accept="image/*" style="display:none;" onchange="updateDiscordMediaName(this)">
-                            <span id="discordMediaName" style="font-size:0.7rem; font-weight:600; color:var(--ink-light);"></span>
-                            <input type="text" id="discordMessageInput" placeholder="Message #channel (Type @ to mention)..." style="flex:1; padding:9px 12px; border:1px solid var(--border); border-radius:6px; font-weight:600; outline:none; background:var(--paper); color:var(--ink); font-size:0.9rem;" oninput="handleMentionInput(event)" onkeypress="if(event.key === 'Enter') sendDiscordMessage()">
-                            <button class="btn-create" onclick="sendDiscordMessage()" style="padding:9px 16px; font-size:0.85rem;">Send</button>
+                        <div>
+                            <label style="font-size:0.72rem; font-weight:800; text-transform:uppercase;">Channel Topic</label>
+                            <input type="text" id="modalChannelTopic" placeholder="Announcements & chat" style="padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-size:0.82rem; font-weight:600; background:var(--canvas); color:var(--ink); width:100%; outline:none;">
                         </div>
                     </div>
+                    <button class="btn-create" style="margin-top:8px; padding:10px;" onclick="submitCreateServerModal()">Create Workspace ✨</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
 
-                    <!-- Members List Sidebar -->
-                    <div style="width: 180px; min-width: 180px; border-left: 1px solid var(--border); background: var(--canvas); padding: 12px; overflow-y:auto; height:100%;">
-                        <h4 style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--ink-light); margin-bottom:8px;">Members (${(club.members || []).length})</h4>
-                        <div style="display:flex; flex-direction:column; gap:6px;">
-                            ${(club.members || []).map(m => `
-                                <div onclick="viewUserProfile('${m.username}')" style="display:flex; align-items:center; gap:6px; font-size:0.82rem; font-weight:600; color:var(--ink); cursor:pointer; padding:4px; border-radius:4px;" onmouseover="this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.background='transparent'">
-                                    <div style="width:22px; height:22px; border-radius:50%; background:var(--accent-purple); display:flex; align-items:center; justify-content:center; font-size:0.65rem; color:#fff;">${m.name ? m.name.charAt(0) : 'U'}</div>
-                                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${m.name}</span>
-                                </div>
-                            `).join('')}
+async function submitCreateServerModal() {
+    const name = document.getElementById('modalNewClubName')?.value.trim();
+    const description = document.getElementById('modalNewClubDesc')?.value.trim();
+    const defaultChannel = document.getElementById('modalDefaultChannel')?.value.trim() || 'general';
+    const channelTopic = document.getElementById('modalChannelTopic')?.value.trim() || '';
+    const username = localStorage.getItem('hoknex_user');
+
+    if (!name) return alert('Please enter a server name.');
+
+    const res = await fetch(`${API_URL}/api/clubs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, description, username, defaultChannel, channelTopic })
+    });
+    if (res.ok) {
+        const created = await res.json();
+        activeClubId = created._id;
+        activeChannelId = created.channels?.[0]?._id || null;
+        document.getElementById('createServerModal')?.remove();
+        loadDiscordClubs();
+        if (typeof fetchStats === 'function') fetchStats();
+    } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || 'Could not create server.');
+    }
+}
+
+async function createDiscordClub() {
+    const nameInput = document.getElementById('newClubName');
+    const descInput = document.getElementById('newClubDesc');
+    const name = nameInput?.value.trim() || document.getElementById('modalNewClubName')?.value.trim();
+    const description = descInput?.value.trim() || document.getElementById('modalNewClubDesc')?.value.trim() || '';
+    const username = localStorage.getItem('hoknex_user');
+    if (!name) return alert('Enter a server name');
+
+    const res = await fetch(`${API_URL}/api/clubs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, description, username })
+    });
+    if (res.ok) {
+        if (nameInput) nameInput.value = '';
+        if (descInput) descInput.value = '';
+        loadDiscordClubs();
+        if (typeof fetchStats === 'function') fetchStats();
+    }
+}
+
+function toggleServerSidebar() {
+    const sidebar = document.getElementById('channelSidebarPane');
+    const toggleIcon = document.getElementById('serverToggleIcon');
+    if (!sidebar) return;
+    if (sidebar.style.display === 'none') {
+        sidebar.style.display = 'flex';
+        if (toggleIcon) toggleIcon.innerText = '◀';
+    } else {
+        sidebar.style.display = 'none';
+        if (toggleIcon) toggleIcon.innerText = '▶';
+    }
+}
+
+function toggleHubFullScreen() {
+    isHubFullScreen = !isHubFullScreen;
+    const wrapper = document.getElementById('discordHubWrapper');
+    const btn = document.getElementById('fullScreenToggleBtn');
+    if (!wrapper) return;
+    if (isHubFullScreen) {
+        wrapper.style.position = 'fixed';
+        wrapper.style.top = '0';
+        wrapper.style.left = '0';
+        wrapper.style.width = '100vw';
+        wrapper.style.height = '100vh';
+        wrapper.style.zIndex = '999';
+        wrapper.style.padding = '14px';
+        wrapper.style.background = 'var(--canvas)';
+        if (btn) btn.innerText = '🗗 Exit Full Screen';
+    } else {
+        wrapper.style.position = 'relative';
+        wrapper.style.width = '100%';
+        wrapper.style.height = 'calc(100vh - 130px)';
+        wrapper.style.zIndex = '1';
+        wrapper.style.padding = '0';
+        wrapper.style.background = 'transparent';
+        if (btn) btn.innerText = '⛶ Full Screen';
+    }
+}
+
+async function openDiscordClub(clubId) {
+    activeClubId = clubId;
+    activeReplyTarget = null;
+    try {
+        const currentUsername = localStorage.getItem('hoknex_user');
+        if (!currentUsername) return;
+        const meRes = await fetch(`${API_URL}/api/users/${encodeURIComponent(currentUsername)}`);
+        if (!meRes.ok) return;
+        const meData = await meRes.json();
+        const currentUserId = meData._id.toString();
+        localStorage.setItem('hoknex_uid', currentUserId);
+
+        const res = await fetch(`${API_URL}/api/clubs`);
+        const clubs = await res.json();
+        allLoadedClubs = Array.isArray(clubs) ? clubs : [];
+        const club = allLoadedClubs.find(c => c._id.toString() === clubId.toString());
+        if (!club) return;
+
+        filterServerSidebarList(document.getElementById('serverSearchFilter')?.value || '');
+
+        activeClubMembers = club.members || [];
+        const validChannel = (club.channels || []).find(ch => ch._id.toString() === activeChannelId);
+        if (!validChannel && club.channels && club.channels.length > 0) {
+            activeChannelId = club.channels[0]._id.toString();
+        }
+
+        const ownerObj = club.owner;
+        const ownerId = ownerObj ? (ownerObj._id ? ownerObj._id.toString() : ownerObj.toString()) : '';
+        const ownerUsername = ownerObj ? (ownerObj.username || '') : '';
+        const isOwner = (ownerId === currentUserId) || (ownerUsername.toLowerCase() === currentUsername.toLowerCase());
+        const isMember = (club.members || []).some(m => (m._id ? m._id.toString() : m.toString()) === currentUserId || (m.username || '').toLowerCase() === currentUsername.toLowerCase());
+        const hasRequested = (club.joinRequests || []).some(req => (req._id ? req._id.toString() : req.toString()) === currentUserId || (req.username || '').toLowerCase() === currentUsername.toLowerCase());
+
+        const workspace = document.getElementById('discordWorkspace');
+        if (!workspace) return;
+        workspace.style.display = 'flex';
+        workspace.style.flexDirection = 'row';
+        workspace.style.height = '100%';
+        workspace.style.width = '100%';
+
+        if (!isMember && !isOwner) {
+            workspace.innerHTML = `
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:15px; padding:2rem; text-align:center;">
+                    <h2 style="font-size:1.65rem; font-weight:800;">🔥 ${club.name}</h2>
+                    <p style="font-weight:600; color:var(--ink-light); max-width:420px; font-size:0.95rem;">${club.description || 'Private campus server. Requires admin approval to join.'}</p>
+                    <div style="font-size:0.82rem; font-weight:700; color:var(--ink-light);">👥 ${(club.members || []).length} Members • 💬 ${(club.channels || []).length} Channels</div>
+                    ${hasRequested
+                        ? '<button class="action-btn" style="background:var(--canvas); color:var(--ink); cursor:default;" disabled>Join Request Pending Approval ⏳</button>'
+                        : `<button class="btn-create" onclick="requestJoinClub('${club._id}')">🔒 Request to Join Server</button>`}
+                </div>
+            `;
+            return;
+        }
+
+        workspace.innerHTML = `
+            <!-- Slack + Discord Channel Sidebar -->
+            <div id="channelSidebarPane" style="width: 220px; min-width: 220px; border-right: 1px solid var(--border); background: var(--canvas); padding: 12px; display:flex; flex-direction:column; gap:10px; height:100%; transition: all 0.25s ease;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+                    <h3 style="font-size:0.92rem; font-weight:800; word-break:break-word; color:var(--ink);">${club.name} ${isOwner ? '👑' : ''}</h3>
+                    <button onclick="toggleServerSidebar()" id="serverToggleIcon" class="action-btn" style="font-size:0.72rem; padding:3px 7px;" title="Collapse Channels">◀</button>
+                </div>
+                <p style="font-size:0.74rem; color:var(--ink-light); font-weight:600; line-height:1.35;">${club.description || 'Team workspace & live channels'}</p>
+
+                ${isOwner && club.joinRequests && club.joinRequests.length > 0 ? `
+                    <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); padding: 8px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; color: var(--accent-yellow);">
+                        🔔 ${club.joinRequests.length} Pending Request(s)
+                        <button onclick="openRequestsModal('${club._id}')" class="action-btn" style="margin-top:6px; display:block; width:100%; font-size:0.75rem; padding:5px; background:var(--paper); color:var(--ink); text-align:center;">Review Requests 🔍</button>
+                    </div>
+                ` : ''}
+
+                <hr style="border:0.5px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h4 style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--ink-light);">Channels 💬</h4>
+                    ${isOwner ? `<button onclick="openCreateChannelModal('${club._id}')" class="action-btn" style="font-size:0.7rem; padding:2px 7px;" title="Create Channel with Topic">+ Add</button>` : ''}
+                </div>
+
+                <div id="channelsList" style="display:flex; flex-direction:column; gap:4px; flex:1; overflow-y:auto;">
+                    ${(club.channels || []).map(ch => {
+                        const isActiveCh = activeChannelId === ch._id.toString();
+                        return `<button onclick="openDiscordChannel('${ch._id}')" class="action-btn" style="text-align:left; font-size:0.82rem; padding:7px 9px; border-radius:7px; background:${isActiveCh ? 'rgba(59, 130, 246, 0.16)' : 'var(--paper)'}; color:${isActiveCh ? 'var(--accent-blue)' : 'var(--ink)'}; border-color:${isActiveCh ? 'var(--accent-blue)' : 'var(--border)'};"># ${ch.name}</button>`;
+                    }).join('')}
+                </div>
+
+                ${isOwner ? `
+                    <div style="display:flex; gap:4px;">
+                        <input type="text" id="newChannelName" placeholder="quick-channel" style="padding:6px 8px; font-size:0.75rem; border:1px solid var(--border); border-radius:6px; width:100%; font-weight:600; outline:none; background:var(--paper); color:var(--ink);">
+                        <button class="btn-create" style="padding:6px 10px; font-size:0.75rem; border-radius:6px;" onclick="createDiscordChannel('${club._id}')">+</button>
+                    </div>
+                    <button class="action-btn" style="background: rgba(239, 68, 68, 0.12); color: var(--accent-coral); width:100%; font-size:0.75rem; padding:7px; border-radius:7px;" onclick="openDeleteServerModal('${club._id}', '${club.name.replace(/'/g, "\\'")}')">🗑️ Delete Server</button>
+                ` : `<button class="action-btn" style="background:var(--paper); color:var(--ink); width:100%; font-size:0.75rem; padding:7px; border-radius:7px;" onclick="leaveServer('${club._id}')">🚪 Leave Server</button>`}
+            </div>
+
+            <!-- Main Chat Canvas -->
+            <div style="flex:1; display:flex; flex-direction:column; height:100%; background:var(--paper); overflow:hidden; position:relative;" id="clubChatArea">
+                <!-- Slack-Style Top Header with Topic & Search -->
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 15px; border-bottom:1px solid var(--border); background:var(--canvas); flex-wrap:wrap;">
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0; flex:1;">
+                        <button onclick="toggleServerSidebar()" class="action-btn" style="font-size:0.75rem; padding:5px 8px;">☰ Channels</button>
+                        <div style="min-width:0;">
+                            <div style="font-weight:800; font-size:0.92rem;" id="activeChannelHeader"># channel</div>
+                            <div style="font-size:0.72rem; color:var(--ink-light); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" id="activeChannelTopic">Workspace discussion</div>
                         </div>
                     </div>
-                `;
-                const savedClubWallpaper = localStorage.getItem(`hoknex_club_wallpaper_${clubId}`) || 'var(--paper)';
-                document.getElementById('clubChatArea').style.background = savedClubWallpaper;
-                if (activeChannelId) loadDiscordMessages(club, activeChannelId);
-            } catch (e) { console.error(e); }
-        }
 
-        function toggleClubEmojiPicker() {
-            const picker = document.getElementById('clubEmojiPicker');
-            if (picker) picker.style.display = picker.style.display === 'block' ? 'none' : 'block';
-        }
+                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                        <input type="text" id="channelMsgSearch" placeholder="Search messages..." oninput="filterActiveChannelMessages(this.value)" style="padding:5px 9px; border-radius:6px; border:1px solid var(--border); font-size:0.75rem; font-weight:600; background:var(--paper); color:var(--ink); width:145px; outline:none;">
+                        <button onclick="toggleHubFullScreen()" id="fullScreenToggleBtn" class="action-btn" style="font-size:0.74rem; font-weight:700; padding:5px 9px;">⛶ Full Screen</button>
+                        <select id="clubWallpaperSelect" onchange="changeClubWallpaper(this.value)" style="padding:5px 8px; border-radius:6px; border:1px solid var(--border); font-size:0.74rem; font-weight:700; background:var(--paper); color:var(--ink); outline:none; cursor:pointer;">
+                            <option value="">🖼️ Wallpapers</option>
+                            <option value="url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80')">Cyberpunk Neon 🌆</option>
+                            <option value="url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=80')">Tropical Beach 🏝️</option>
+                            <option value="url('https://images.unsplash.com/photo-1542224566-6e85f2e6772f?w=1200&auto=format&fit=crop&q=80')">Misty Pine Forest 🌲</option>
+                            <option value="url('https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1200&auto=format&fit=crop&q=80')">Abstract Purple Vibe 🎨</option>
+                            <option value="url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&auto=format&fit=crop&q=80')">Yosemite Sunset 🌇</option>
+                            <option value="url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1200&auto=format&fit=crop&q=80')">Cosmic Galaxy 🌌</option>
+                            <option value="url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&auto=format&fit=crop&q=80')">Dark Architecture 🏛️</option>
+                            <option value="url('https://images.unsplash.com/photo-1507783592120-694c3c3a9f04?w=1200&auto=format&fit=crop&q=80')">Autumn Maple 🍁</option>
+                            <option value="url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&auto=format&fit=crop&q=80')">Starry Night Sky ✨</option>
+                            <option value="url('https://images.unsplash.com/photo-1428592953211-077101b2021b?w=1200&auto=format&fit=crop&q=80')">Raindrops Glass 🌧️</option>
+                        </select>
+                    </div>
+                </div>
 
-        function insertClubEmoji(symbol) {
-            const input = document.getElementById('discordMessageInput');
-            if (input) { input.value += symbol; input.focus(); }
-            toggleClubEmojiPicker();
-        }
+                <!-- Messages Feed -->
+                <div id="discordChatContainer" style="flex:1; overflow-y:auto; padding:15px; display:flex; flex-direction:column; gap:10px;"></div>
 
-        function changeClubWallpaper(val) {
+                <!-- Reply / Thread Banner -->
+                <div id="replyContextBar" style="display:none; justify-content:space-between; align-items:center; padding:6px 14px; background:rgba(59,130,246,0.1); border-top:1px solid var(--border); font-size:0.78rem; font-weight:700; color:var(--accent-blue);">
+                    <span id="replyContextText">Replying to...</span>
+                    <button onclick="clearReplyTarget()" style="background:none; border:none; color:var(--accent-coral); font-weight:800; cursor:pointer;">✕ Cancel</button>
+                </div>
+
+                <!-- Mention Autocomplete Popup -->
+                <div id="mentionPopup" style="display:none; position:absolute; bottom:66px; left:15px; background:var(--paper); border:1px solid var(--border); border-radius:8px; width:230px; box-shadow:var(--shadow-card); z-index:30; max-height:150px; overflow-y:auto;"></div>
+
+                <!-- Emoji & Sticker Picker Panel -->
+                <div id="clubEmojiPicker" style="display:none; position:absolute; bottom:66px; left:15px; width:300px; height:210px; background:var(--paper); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow-card); padding:10px; overflow-y:auto; z-index:40;">
+                    <div style="font-size:0.7rem; font-weight:800; color:var(--ink-light); margin-bottom:6px;">EMOJIS & STICKERS (Tip: try /shrug or /fire)</div>
+                    <div style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px; font-size:1.15rem; cursor:pointer; text-align:center;">
+                        <span onclick="insertClubEmoji('😀')">😀</span><span onclick="insertClubEmoji('😂')">😂</span><span onclick="insertClubEmoji('😍')">😍</span><span onclick="insertClubEmoji('😎')">😎</span><span onclick="insertClubEmoji('🥳')">🥳</span><span onclick="insertClubEmoji('👍')">👍</span><span onclick="insertClubEmoji('🔥')">🔥</span>
+                        <span onclick="insertClubEmoji('⭐')">⭐</span><span onclick="insertClubEmoji('🎉')">🎉</span><span onclick="insertClubEmoji('❤️')">❤️</span><span onclick="insertClubEmoji('🚀')">🚀</span><span onclick="insertClubEmoji('💡')">💡</span><span onclick="insertClubEmoji('💻')">💻</span><span onclick="insertClubEmoji('🍕')">🍕</span>
+                        <span onclick="insertClubEmoji('✅')">✅</span><span onclick="insertClubEmoji('👀')">👀</span><span onclick="insertClubEmoji('🙌')">🙌</span><span onclick="insertClubEmoji('⚡')">⚡</span><span onclick="insertClubEmoji('🎯')">🎯</span><span onclick="insertClubEmoji('🤝')">🤝</span><span onclick="insertClubEmoji('🏆')">🏆</span>
+                    </div>
+                </div>
+
+                <!-- Composer Bar -->
+                <div style="padding:10px; border-top:1px solid var(--border); display:flex; gap:8px; align-items:center; background:var(--canvas);">
+                    <button class="action-btn" onclick="toggleClubEmojiPicker()" style="font-size:0.9rem; padding:8px 10px;" title="Emoji">😊</button>
+                    <label for="discordMediaFile" style="cursor:pointer; background:var(--paper); color:var(--ink); padding:8px 11px; border-radius:7px; border:1px solid var(--border); font-weight:700; font-size:0.85rem;" title="Upload Image">📷</label>
+                    <input type="file" id="discordMediaFile" accept="image/*" style="display:none;" onchange="updateDiscordMediaName(this)">
+                    <span id="discordMediaName" style="font-size:0.7rem; font-weight:600; color:var(--ink-light); max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
+                    <input type="text" id="discordMessageInput" placeholder="Message #channel (@mention or /shrug, /fire)..." style="flex:1; padding:9px 12px; border:1px solid var(--border); border-radius:7px; font-weight:600; outline:none; background:var(--paper); color:var(--ink); font-size:0.88rem;" oninput="handleMentionInput(event)" onkeypress="if(event.key === 'Enter') sendDiscordMessage()">
+                    <button class="btn-create" onclick="sendDiscordMessage()" style="padding:9px 16px; font-size:0.85rem; border-radius:7px;">Send</button>
+                </div>
+            </div>
+
+            <!-- Members List Sidebar -->
+            <div style="width: 190px; min-width: 190px; border-left: 1px solid var(--border); background: var(--canvas); padding: 12px; overflow-y:auto; height:100%;">
+                <h4 style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--ink-light); margin-bottom:8px;">Members (${(club.members || []).length})</h4>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    ${(club.members || []).map(m => `
+                        <div onclick="viewUserProfile('${m.username}')" style="display:flex; align-items:center; gap:7px; font-size:0.82rem; font-weight:600; color:var(--ink); cursor:pointer; padding:5px; border-radius:6px;" onmouseover="this.style.background='rgba(59,130,246,0.1)'" onmouseout="this.style.background='transparent'">
+                            <div style="width:24px; height:24px; border-radius:50%; background:var(--accent-purple); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:800; color:#fff; flex-shrink:0;">${m.name ? m.name.charAt(0).toUpperCase() : 'U'}</div>
+                            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${m.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        const savedClubWallpaper = localStorage.getItem(`hoknex_club_wallpaper_${clubId}`);
+        const chatArea = document.getElementById('clubChatArea');
+        if (chatArea && savedClubWallpaper) {
+            chatArea.style.background = `${savedClubWallpaper} no-repeat center center`;
+            chatArea.style.backgroundSize = 'cover';
+        }
+        if (activeChannelId) loadDiscordMessages(club, activeChannelId);
+    } catch (e) {
+        console.error('Error opening club:', e);
+    }
+}
+
+function openCreateChannelModal(clubId) {
+    document.getElementById('createChannelModal')?.remove();
+    const modalHtml = `
+        <div id="createChannelModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1100; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); padding:1.5rem; border-radius:12px; width:100%; max-width:380px; box-shadow:var(--shadow-card); color:var(--ink);">
+                <h3 style="font-weight:800; font-size:1.05rem; margin-bottom:10px;"># Create Channel</h3>
+                <input type="text" id="modalChannelNameInput" placeholder="Channel name (e.g. standup, bugs)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:8px; outline:none;">
+                <input type="text" id="modalChannelTopicInput" placeholder="Topic (optional)" style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:7px; font-weight:600; background:var(--canvas); color:var(--ink); margin-bottom:12px; outline:none;">
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-create" style="flex:1; padding:8px;" onclick="submitCreateChannelModal('${clubId}')">Create</button>
+                    <button class="action-btn" style="flex:1; padding:8px;" onclick="document.getElementById('createChannelModal').remove()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+async function submitCreateChannelModal(clubId) {
+    const channelName = document.getElementById('modalChannelNameInput')?.value.trim();
+    const topic = document.getElementById('modalChannelTopicInput')?.value.trim();
+    if (!channelName) return alert('Enter a channel name');
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/channels`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channelName, topic })
+    });
+    if (res.ok) {
+        const updated = await res.json();
+        const newest = updated.channels?.[updated.channels.length - 1];
+        if (newest?._id) activeChannelId = newest._id.toString();
+        document.getElementById('createChannelModal')?.remove();
+        openDiscordClub(clubId);
+    }
+}
+
+function setReplyTarget(senderName, snippet) {
+    activeReplyTarget = { senderName, snippet: (snippet || '').slice(0, 60) };
+    const bar = document.getElementById('replyContextBar');
+    const txt = document.getElementById('replyContextText');
+    if (bar && txt) {
+        bar.style.display = 'flex';
+        txt.innerText = `↩ Replying to @${senderName}: "${activeReplyTarget.snippet}"`;
+    }
+    document.getElementById('discordMessageInput')?.focus();
+}
+
+function clearReplyTarget() {
+    activeReplyTarget = null;
+    const bar = document.getElementById('replyContextBar');
+    if (bar) bar.style.display = 'none';
+}
+
+function toggleClubEmojiPicker() {
+    const picker = document.getElementById('clubEmojiPicker');
+    if (picker) picker.style.display = picker.style.display === 'block' ? 'none' : 'block';
+}
+
+function insertClubEmoji(symbol) {
+    const input = document.getElementById('discordMessageInput');
+    if (input) { input.value += symbol; input.focus(); }
+    toggleClubEmojiPicker();
+}
+
+function changeClubWallpaper(val) {
     if (!activeClubId) return;
     const chatArea = document.getElementById('clubChatArea');
     if (!chatArea) return;
@@ -2917,195 +3147,329 @@ window.viewUserProfile = function(usernameOrId) {
     chatArea.style.backgroundSize = 'cover';
 }
 
-        async function handleMentionInput(e) {
-            const val = e.target.value;
-            const popup = document.getElementById('mentionPopup');
-            if (!popup) return;
+async function handleMentionInput(e) {
+    const val = e.target.value;
+    const popup = document.getElementById('mentionPopup');
+    if (!popup) return;
 
-            const lastAtIndex = val.lastIndexOf('@');
-            if (lastAtIndex !== -1 && (lastAtIndex === 0 || val[lastAtIndex - 1] === ' ')) {
-                const query = val.slice(lastAtIndex + 1).toLowerCase();
-                const matches = activeClubMembers.filter(u => (u.username && u.username.toLowerCase().includes(query)) || (u.name && u.name.toLowerCase().includes(query)));
+    const lastAtIndex = val.lastIndexOf('@');
+    if (lastAtIndex !== -1 && (lastAtIndex === 0 || val[lastAtIndex - 1] === ' ')) {
+        const query = val.slice(lastAtIndex + 1).toLowerCase();
+        const matches = activeClubMembers.filter(u => (u.username && u.username.toLowerCase().includes(query)) || (u.name && u.name.toLowerCase().includes(query)));
 
-                if (matches.length > 0) {
-                    popup.style.display = 'block';
-                    popup.innerHTML = matches.map(u => `
-                        <div onclick="selectMention('${u.username}')" style="padding:8px 10px; cursor:pointer; font-size:0.8rem; font-weight:700; border-bottom:1px solid var(--border);" onmouseover="this.style.background='var(--canvas)'" onmouseout="this.style.background='var(--paper)'">
-                            ${u.name} <span style="color:var(--ink-light); font-size:0.72rem;">@${u.username}</span>
-                        </div>
-                    `).join('');
-                } else {
-                    popup.style.display = 'none';
-                }
-            } else {
-                popup.style.display = 'none';
-            }
-        }
-
-        function selectMention(username) {
-            const input = document.getElementById('discordMessageInput');
-            const popup = document.getElementById('mentionPopup');
-            if (!input || !popup) return;
-            const lastAtIndex = input.value.lastIndexOf('@');
-            input.value = input.value.slice(0, lastAtIndex) + `@${username} `;
+        if (matches.length > 0) {
+            popup.style.display = 'block';
+            popup.innerHTML = matches.map(u => `
+                <div onclick="selectMention('${u.username}')" style="padding:8px 10px; cursor:pointer; font-size:0.8rem; font-weight:700; border-bottom:1px solid var(--border);" onmouseover="this.style.background='var(--canvas)'" onmouseout="this.style.background='var(--paper)'">
+                    ${u.name} <span style="color:var(--ink-light); font-size:0.72rem;">@${u.username}</span>
+                </div>
+            `).join('');
+        } else {
             popup.style.display = 'none';
-            input.focus();
         }
+    } else {
+        popup.style.display = 'none';
+    }
+}
 
-        async function requestJoinClub(clubId) {
-            const username = localStorage.getItem('hoknex_user');
-            if (!username) return alert('You must be logged in.');
-            const res = await fetch(`/api/clubs/${clubId}/request-join`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) });
-            const data = await res.json();
-            if (res.ok) { alert(data.message || 'Join request sent!'); openDiscordClub(clubId); } else { alert(data.error || 'Failed to send request.'); }
-        }
+function selectMention(username) {
+    const input = document.getElementById('discordMessageInput');
+    const popup = document.getElementById('mentionPopup');
+    if (!input || !popup) return;
+    const lastAtIndex = input.value.lastIndexOf('@');
+    input.value = input.value.slice(0, lastAtIndex) + `@${username} `;
+    popup.style.display = 'none';
+    input.focus();
+}
 
-        function updateDiscordMediaName(input) {
-            const span = document.getElementById('discordMediaName');
-            if (span && input.files && input.files[0]) span.innerText = input.files[0].name;
-        }
+async function requestJoinClub(clubId) {
+    const username = localStorage.getItem('hoknex_user');
+    if (!username) return alert('You must be logged in.');
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/request-join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+    });
+    const data = await res.json();
+    if (res.ok) { alert(data.message || 'Join request sent!'); openDiscordClub(clubId); }
+    else { alert(data.error || 'Failed to send request.'); }
+}
 
-        async function openRequestsModal(clubId) {
-            const res = await fetch(`${API_URL}/api/clubs`);
-            const clubs = await res.json();
-            const club = clubs.find(c => c._id.toString() === clubId.toString());
-            if (!club || !club.joinRequests || club.joinRequests.length === 0) return alert('No pending requests.');
-            let modalHtml = `
-                <div id="reqModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter: blur(4px); display:flex; align-items:center; justify-content:center; z-index:1000;">
-                    <div style="background:var(--paper); border:1px solid var(--border); padding:2rem; border-radius:var(--radius); width:420px; box-shadow:var(--shadow-card); color:var(--ink);">
-                        <h3 style="margin-bottom:1rem; font-weight:800; font-size:1.1rem;">Pending Server Requests 🛡️</h3>
-                        <div style="display:flex; flex-direction:column; gap:10px; max-height:300px; overflow-y:auto;">
-                            ${club.joinRequests.map(u => `
-                                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--canvas); padding:10px; border:1px solid var(--border); border-radius:8px;">
-                                    <div><strong>${u.name || 'User'}</strong><div style="font-size:0.75rem; color:var(--ink-light);">@${u.username || 'user'}</div></div>
-                                    <div style="display:flex; gap:6px;">
-                                        <button class="btn-create" style="padding:4px 10px; font-size:0.78rem; background:#10b981;" onclick="handleJoinRequest('${club._id}', '${u._id || u}', 'accept')">Approve ✅</button>
-                                        <button class="action-btn" style="color:var(--accent-coral);" onclick="handleJoinRequest('${club._id}', '${u._id || u}', 'reject')">Deny ❌</button>
-                                    </div>
-                                </div>
-                            `).join('')}
+function updateDiscordMediaName(input) {
+    const span = document.getElementById('discordMediaName');
+    if (span && input.files && input.files[0]) span.innerText = input.files[0].name;
+}
+
+async function openRequestsModal(clubId) {
+    const res = await fetch(`${API_URL}/api/clubs`);
+    const clubs = await res.json();
+    const club = clubs.find(c => c._id.toString() === clubId.toString());
+    if (!club || !club.joinRequests || club.joinRequests.length === 0) return alert('No pending requests.');
+    document.getElementById('reqModal')?.remove();
+    const modalHtml = `
+        <div id="reqModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter: blur(4px); display:flex; align-items:center; justify-content:center; z-index:1100; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); padding:1.75rem; border-radius:12px; width:100%; max-width:420px; box-shadow:var(--shadow-card); color:var(--ink);">
+                <h3 style="margin-bottom:1rem; font-weight:800; font-size:1.1rem;">Pending Server Requests 🛡️</h3>
+                <div style="display:flex; flex-direction:column; gap:10px; max-height:300px; overflow-y:auto;">
+                    ${club.joinRequests.map(u => `
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--canvas); padding:10px; border:1px solid var(--border); border-radius:8px;">
+                            <div><strong>${u.name || 'User'}</strong><div style="font-size:0.75rem; color:var(--ink-light);">@${u.username || 'user'}</div></div>
+                            <div style="display:flex; gap:6px;">
+                                <button class="btn-create" style="padding:4px 10px; font-size:0.78rem; background:#10b981;" onclick="handleJoinRequest('${club._id}', '${u._id || u}', 'accept')">Approve ✅</button>
+                                <button class="action-btn" style="color:var(--accent-coral);" onclick="handleJoinRequest('${club._id}', '${u._id || u}', 'reject')">Deny ❌</button>
+                            </div>
                         </div>
-                        <button class="action-btn" style="margin-top:1.5rem; width:100%; background:var(--paper); color:var(--ink);" onclick="document.getElementById('reqModal').remove()">Close</button>
-                    </div>
+                    `).join('')}
                 </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-        }
+                <button class="action-btn" style="margin-top:1.25rem; width:100%; background:var(--paper); color:var(--ink);" onclick="document.getElementById('reqModal').remove()">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
 
-        async function handleJoinRequest(clubId, userId, action) {
-            const adminUsername = localStorage.getItem('hoknex_user');
-            const res = await fetch(`/api/clubs/${clubId}/handle-request`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminUsername, userId, action }) });
-            if (res.ok) { alert(`Request ${action}ed successfully!`); document.getElementById('reqModal')?.remove(); openDiscordClub(clubId); fetchNotifications(); }
-        }
+async function handleJoinRequest(clubId, userId, action) {
+    const adminUsername = localStorage.getItem('hoknex_user');
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/handle-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminUsername, userId, action })
+    });
+    if (res.ok) {
+        alert(`Request ${action}ed successfully!`);
+        document.getElementById('reqModal')?.remove();
+        openDiscordClub(clubId);
+        if (typeof fetchNotifications === 'function') fetchNotifications();
+    }
+}
 
-        async function openDiscordChannel(channelId) {
-            activeChannelId = channelId.toString();
-            const res = await fetch(`${API_URL}/api/clubs`);
-            const clubs = await res.json();
-            const club = clubs.find(c => c._id.toString() === activeClubId.toString());
-            if (club) openDiscordClub(club._id);
-        }
+async function openDiscordChannel(channelId) {
+    activeChannelId = channelId.toString();
+    activeChannelSearchQuery = '';
+    const res = await fetch(`${API_URL}/api/clubs`);
+    const clubs = await res.json();
+    const club = clubs.find(c => c._id.toString() === activeClubId.toString());
+    if (club) openDiscordClub(club._id);
+}
 
-        async function createDiscordChannel(clubId) {
-            const channelNameInput = document.getElementById('newChannelName');
-            if(!channelNameInput) return;
-            const channelName = channelNameInput.value.trim();
-            if (!channelName) return alert('Enter channel name');
-            const res = await fetch(`/api/clubs/${clubId}/channels`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ channelName }) });
-            if (res.ok) openDiscordClub(clubId);
-        }
+async function createDiscordChannel(clubId) {
+    const channelNameInput = document.getElementById('newChannelName');
+    if (!channelNameInput) return;
+    const channelName = channelNameInput.value.trim();
+    if (!channelName) return alert('Enter channel name');
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/channels`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channelName })
+    });
+    if (res.ok) openDiscordClub(clubId);
+}
 
-        async function sendDiscordMessage() {
-            const input = document.getElementById('discordMessageInput');
-            const mediaInput = document.getElementById('discordMediaFile');
-            if (!input) return;
-            const text = input.value.trim();
-            const mediaFile = mediaInput && mediaInput.files ? mediaInput.files[0] : null;
-            const username = localStorage.getItem('hoknex_user');
-            if (!text && !mediaFile) return;
-            if (!activeClubId || !activeChannelId) return alert('Please select a channel first!');
-            const formData = new FormData();
-            formData.append('text', text || 'Shared an image 📸');
-            formData.append('username', username || '');
-            if (mediaFile) formData.append('media', mediaFile);
-            const res = await fetch(`/api/clubs/${activeClubId}/channels/${activeChannelId}/messages`, { method: 'POST', body: formData });
-            if (res.ok) {
-                input.value = '';
-                if (mediaInput) mediaInput.value = '';
-                document.getElementById('discordMediaName').innerText = '';
-                const clubsRes = await fetch(`${API_URL}/api/clubs`);
-                const clubs = await clubsRes.json();
-                loadDiscordMessages(clubs.find(c => c._id.toString() === activeClubId.toString()), activeChannelId);
+function expandSlashCommands(rawText) {
+    const trimmed = rawText.trim();
+    if (trimmed === '/shrug') return '¯\\_(ツ)_/¯';
+    if (trimmed === '/fire') return '🔥🔥🔥 Ship it!';
+    if (trimmed.startsWith('/status ')) return `📌 Status Update: ${trimmed.slice(8).trim()}`;
+    return rawText;
+}
+
+async function sendDiscordMessage() {
+    const input = document.getElementById('discordMessageInput');
+    const mediaInput = document.getElementById('discordMediaFile');
+    if (!input) return;
+    let text = expandSlashCommands(input.value.trim());
+    const mediaFile = mediaInput && mediaInput.files ? mediaInput.files[0] : null;
+    const username = localStorage.getItem('hoknex_user');
+    if (!text && !mediaFile) return;
+    if (!activeClubId || !activeChannelId) return alert('Please select a channel first!');
+
+    const formData = new FormData();
+    formData.append('text', text || 'Shared an image 📸');
+    formData.append('username', username || '');
+    if (activeReplyTarget) {
+        formData.append('replyTo', `${activeReplyTarget.senderName}: ${activeReplyTarget.snippet}`);
+    }
+    if (mediaFile) formData.append('media', mediaFile);
+
+    const res = await fetch(`${API_URL}/api/clubs/${activeClubId}/channels/${activeChannelId}/messages`, {
+        method: 'POST',
+        body: formData
+    });
+    if (res.ok) {
+        input.value = '';
+        clearReplyTarget();
+        if (mediaInput) mediaInput.value = '';
+        const nameSpan = document.getElementById('discordMediaName');
+        if (nameSpan) nameSpan.innerText = '';
+
+        const clubsRes = await fetch(`${API_URL}/api/clubs`);
+        const clubs = await clubsRes.json();
+        allLoadedClubs = Array.isArray(clubs) ? clubs : [];
+        const updatedClub = allLoadedClubs.find(c => c._id.toString() === activeClubId.toString());
+        if (updatedClub) loadDiscordMessages(updatedClub, activeChannelId);
+    }
+}
+
+async function toggleMessageReaction(messageId, emoji) {
+    const username = localStorage.getItem('hoknex_user') || 'Guest';
+    if (!activeClubId || !activeChannelId || !messageId) return;
+    const res = await fetch(`${API_URL}/api/clubs/${activeClubId}/channels/${activeChannelId}/messages/${messageId}/react`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emoji, username })
+    });
+    if (res.ok) {
+        const clubsRes = await fetch(`${API_URL}/api/clubs`);
+        const clubs = await clubsRes.json();
+        allLoadedClubs = Array.isArray(clubs) ? clubs : [];
+        const updatedClub = allLoadedClubs.find(c => c._id.toString() === activeClubId.toString());
+        if (updatedClub) loadDiscordMessages(updatedClub, activeChannelId);
+    }
+}
+
+function filterActiveChannelMessages(query) {
+    activeChannelSearchQuery = (query || '').toLowerCase().trim();
+    const club = allLoadedClubs.find(c => c._id.toString() === activeClubId?.toString());
+    if (club && activeChannelId) loadDiscordMessages(club, activeChannelId);
+}
+
+async function loadDiscordMessages(club, channelId) {
+    const channel = (club.channels || []).find(ch => ch._id.toString() === channelId.toString());
+    const chatContainer = document.getElementById('discordChatContainer');
+    if (!channel || !chatContainer) return;
+
+    const headerEl = document.getElementById('activeChannelHeader');
+    const topicEl = document.getElementById('activeChannelTopic');
+    if (headerEl) headerEl.innerText = `# ${channel.name}`;
+    if (topicEl) topicEl.innerText = channel.topic || 'Workspace channel • Live thread & mentions enabled';
+
+    let messages = channel.messages || [];
+    if (activeChannelSearchQuery) {
+        messages = messages.filter(m =>
+            (m.text || '').toLowerCase().includes(activeChannelSearchQuery) ||
+            (m.senderName || '').toLowerCase().includes(activeChannelSearchQuery)
+        );
+    }
+
+    if (messages.length === 0) {
+        chatContainer.innerHTML = `<p style="text-align:center; font-size:0.85rem; font-weight:600; color:var(--ink-light); margin-top:2rem;">No messages yet in #${channel.name}. Start the conversation!</p>`;
+        return;
+    }
+
+    chatContainer.innerHTML = messages.map(m => {
+        let raw = m.text || '';
+        let replyQuoteHtml = '';
+        if (raw.startsWith('> Replying to ')) {
+            const newlineIdx = raw.indexOf('\n');
+            if (newlineIdx > -1) {
+                const quoteLine = raw.slice(2, newlineIdx);
+                raw = raw.slice(newlineIdx + 1);
+                replyQuoteHtml = `<div style="font-size:0.74rem; color:var(--ink-light); background:var(--canvas); border-left:3px solid var(--accent-blue); padding:4px 8px; border-radius:4px; margin-bottom:5px;">${quoteLine}</div>`;
             }
         }
 
-        async function loadDiscordMessages(club, channelId) {
-            const channel = (club.channels || []).find(ch => ch._id.toString() === channelId.toString());
-            const chatContainer = document.getElementById('discordChatContainer');
-            if (!channel || !chatContainer) return;
+        let formattedText = '';
+        if (raw.includes('[Media]:')) {
+            const parts = raw.split('[Media]:');
+            const imgUrl = parts[1].trim();
+            const caption = parts[0].trim();
+            formattedText = `
+                ${caption ? `<p style="margin-bottom:6px;">${caption}</p>` : ''}
+                <a href="${imgUrl}" target="_blank">
+                    <img src="${imgUrl}" style="max-width:220px; max-height:220px; border-radius:8px; border:1px solid var(--border); display:block; object-fit:cover;">
+                </a>
+            `;
+        } else {
+            formattedText = raw
+                .replace(/@([a-zA-Z0-9_]+)/g, '<span style="background:rgba(59, 130, 246, 0.15); color:var(--accent-blue); padding:1px 6px; border-radius:4px; font-weight:700;">@$1</span>')
+                .replace(/#([a-zA-Z0-9_]+)/g, '<span style="color:var(--accent-purple); font-weight:700;">#$1</span>');
+        }
 
-            document.getElementById('activeChannelHeader').innerText = `# ${channel.name}`;
+        const reactionsHtml = (m.reactions || []).map(r => `
+            <button onclick="toggleMessageReaction('${m._id || ''}', '${r.emoji}')" style="background:var(--canvas); border:1px solid var(--border); border-radius:12px; padding:2px 7px; font-size:0.72rem; font-weight:700; cursor:pointer; color:var(--ink);">
+                ${r.emoji} ${(r.users || []).length}
+            </button>
+        `).join('');
 
-            chatContainer.innerHTML = (channel.messages || []).map(m => {
-                let formattedText = m.text || '';
-                if (formattedText.includes('[Media]:')) {
-                    const parts = formattedText.split('[Media]:');
-                    const imgUrl = parts[1].trim();
-                    const caption = parts[0].trim();
-                    formattedText = `
-                        ${caption ? `<p style="margin-bottom:6px;">${caption}</p>` : ''}
-                        <a href="${imgUrl}" target="_blank">
-                            <img src="${imgUrl}" style="max-width:200px; max-height:200px; border-radius:6px; border:1px solid var(--border); display:block; object-fit:cover;">
-                        </a>
-                    `;
-                } else {
-                    formattedText = formattedText.replace(/@([a-zA-Z0-9_]+)/g, '<span style="background:rgba(59, 130, 246, 0.15); color:var(--accent-blue); padding:2px 6px; border-radius:4px; font-weight:700;">@$1</span>');
-                    formattedText = formattedText.replace(/#([a-zA-Z0-9_]+)/g, '<span style="color:var(--accent-purple); font-weight:700;">#$1</span>');
-                }
+        const safeSnippet = raw.replace(/\[Media\]:.*/, '[Image]').replace(/'/g, "\\'");
+        const timeStr = m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
 
-                return `
-                    <div style="background:var(--paper); border:1px solid var(--border); color:var(--ink); padding:10px 14px; border-radius:8px; max-width:85%; box-shadow:var(--shadow-subtle);">
-                        <strong style="color:var(--accent-blue); font-size:0.82rem; font-weight:700; cursor:pointer;" onclick="viewUserProfile('${m.senderUsername || ''}')">${m.senderName}:</strong>
-                        <div style="font-weight:600; font-size:0.9rem; margin-top:4px; word-break:break-word;">${formattedText}</div>
+        return `
+            <div style="background:var(--paper); border:1px solid var(--border); color:var(--ink); padding:10px 14px; border-radius:10px; max-width:85%; box-shadow:var(--shadow-subtle);">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                    <div>
+                        <strong style="color:var(--accent-blue); font-size:0.83rem; font-weight:800; cursor:pointer;" onclick="viewUserProfile('${m.senderUsername || ''}')">${m.senderName}</strong>
+                        ${timeStr ? `<span style="font-size:0.68rem; color:var(--ink-light); margin-left:6px;">${timeStr}</span>` : ''}
                     </div>
-                `;
-            }).join('');
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        async function leaveServer(clubId) {
-            if (!confirm('Are you sure you want to leave this server?')) return;
-            const username = localStorage.getItem('hoknex_user');
-            const res = await fetch(`/api/clubs/${clubId}/leave`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) });
-            if (res.ok) { alert('You left the server.'); activeClubId = null; loadDiscordClubs(); document.getElementById('discordWorkspace').innerHTML = `<p style="font-weight:600; color:var(--ink-light);">Select a server from the left sidebar!</p>`; }
-        }
-
-        function openDeleteServerModal(clubId, clubName) {
-            let modalHtml = `
-                <div id="delModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter: blur(4px); display:flex; align-items:center; justify-content:center; z-index:1000;">
-                    <div style="background:var(--paper); border:1px solid var(--border); padding:2rem; border-radius:var(--radius); width:400px; box-shadow:var(--shadow-card); color:var(--ink);">
-                        <h3 style="margin-bottom:1rem; font-weight:800; color:var(--accent-coral); font-size:1.1rem;">Delete Server Request ⚠️</h3>
-                        <select id="delReason" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; font-weight:600; margin-bottom:15px; outline:none; background:var(--canvas); color:var(--ink);">
-                            <option value="Community inactive">Community inactive</option>
-                            <option value="Duplicate server">Duplicate server</option>
-                            <option value="Created by mistake">Created by mistake</option>
-                        </select>
-                        <div style="display:flex; gap:10px;">
-                            <button class="btn-create" style="flex:1; background:var(--accent-coral);" onclick="submitServerDeletion('${clubId}')">Submit Request</button>
-                            <button class="action-btn" style="flex:1; background:var(--paper); color:var(--ink);" onclick="document.getElementById('delModal').remove()">Cancel</button>
-                        </div>
+                    <div style="display:flex; gap:4px; align-items:center;">
+                        <button onclick="setReplyTarget('${(m.senderName || 'Member').replace(/'/g, "\\'")}', '${safeSnippet}')" title="Reply in thread" style="background:none; border:none; font-size:0.72rem; cursor:pointer; color:var(--ink-light); font-weight:700;">↩ Reply</button>
+                        ${m._id ? `
+                            <button onclick="toggleMessageReaction('${m._id}', '👍')" title="Thumbs up" style="background:none; border:none; font-size:0.78rem; cursor:pointer;">👍</button>
+                            <button onclick="toggleMessageReaction('${m._id}', '🔥')" title="Fire" style="background:none; border:none; font-size:0.78rem; cursor:pointer;">🔥</button>
+                        ` : ''}
                     </div>
                 </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-        }
+                ${replyQuoteHtml}
+                <div style="font-weight:600; font-size:0.9rem; margin-top:4px; word-break:break-word;">${formattedText}</div>
+                ${reactionsHtml ? `<div style="display:flex; gap:5px; flex-wrap:wrap; margin-top:7px;">${reactionsHtml}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
 
-        async function submitServerDeletion(clubId) {
-            const reason = document.getElementById('delReason').value;
-            const username = localStorage.getItem('hoknex_user');
-            const res = await fetch(`/api/clubs/${clubId}/request-deletion`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, reason }) });
-            if (res.ok) { alert('Submitted to support!'); document.getElementById('delModal').remove(); }
-        }
+async function leaveServer(clubId) {
+    if (!confirm('Are you sure you want to leave this server?')) return;
+    const username = localStorage.getItem('hoknex_user');
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/leave`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+    });
+    if (res.ok) {
+        alert('You left the server.');
+        activeClubId = null;
+        loadDiscordClubs();
+        const ws = document.getElementById('discordWorkspace');
+        if (ws) ws.innerHTML = `<p style="font-weight:600; color:var(--ink-light);">Select a server from the left sidebar!</p>`;
+    }
+}
+
+function openDeleteServerModal(clubId, clubName) {
+    document.getElementById('delModal')?.remove();
+    const modalHtml = `
+        <div id="delModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter: blur(4px); display:flex; align-items:center; justify-content:center; z-index:1100; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); padding:2rem; border-radius:var(--radius); width:100%; max-width:400px; box-shadow:var(--shadow-card); color:var(--ink);">
+                <h3 style="margin-bottom:0.5rem; font-weight:800; color:var(--accent-coral); font-size:1.1rem;">Delete Server Request ⚠️</h3>
+                <p style="font-size:0.8rem; color:var(--ink-light); margin-bottom:12px;">Server: <strong>${clubName}</strong></p>
+                <select id="delReason" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; font-weight:600; margin-bottom:15px; outline:none; background:var(--canvas); color:var(--ink);">
+                    <option value="Community inactive">Community inactive</option>
+                    <option value="Duplicate server">Duplicate server</option>
+                    <option value="Created by mistake">Created by mistake</option>
+                </select>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-create" style="flex:1; background:var(--accent-coral);" onclick="submitServerDeletion('${clubId}')">Submit Request</button>
+                    <button class="action-btn" style="flex:1; background:var(--paper); color:var(--ink);" onclick="document.getElementById('delModal').remove()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+async function submitServerDeletion(clubId) {
+    const reason = document.getElementById('delReason').value;
+    const username = localStorage.getItem('hoknex_user');
+    const res = await fetch(`${API_URL}/api/clubs/${clubId}/request-deletion`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, reason })
+    });
+    if (res.ok) {
+        alert('Submitted to support!');
+        document.getElementById('delModal')?.remove();
+    }
+}
 
     // ==========================================
 // UNIFIED PROJECT RENDERER (Matches Style 2)
