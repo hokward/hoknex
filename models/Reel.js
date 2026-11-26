@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const commentSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    text: { type: String, required: true, maxlength: 300 },
+    text: { type: String, default: '', maxlength: 300 },
     stickerUrl: { type: String, default: '' },
     isPinned: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
@@ -35,8 +35,9 @@ const reelSchema = new mongoose.Schema({
     engagementScore: { type: Number, default: 100, index: true }
 }, { timestamps: true });
 
-// High-performance compound index for cursor-based pagination
+// High-performance compound indexes for cursor-based pagination (trending & fresh)
 reelSchema.index({ engagementScore: -1, _id: -1 });
+reelSchema.index({ createdAt: -1, _id: -1 });
 
 const Reel = mongoose.models.Reel || mongoose.model('Reel', reelSchema);
 module.exports = Reel;
