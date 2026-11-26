@@ -71,9 +71,9 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-        folder: 'hoknex_uploads', 
+        folder: 'hoknex_uploads',
         resource_type: 'auto',
-        allowedFormats: ['jpeg', 'png', 'jpg', 'webp', 'webm', 'mp3', 'wav', 'mov', 'mp4', 'pdf'] 
+        allowedFormats: ['jpeg', 'png', 'jpg', 'webp', 'webm', 'mp3', 'wav', 'mov', 'mp4', 'pdf']
     }
 });
 
@@ -86,7 +86,7 @@ const connectDB = async () => {
     if (isConnected) return;
     try {
         let uri = process.env.MONGO_URI || '';
-        
+
         if (!uri) {
             uri = 'mongodb+srv://hoknexadmin:hoknexadmin@cluster0.qzerkk4.mongodb.net/test?retryWrites=true&w=majority';
         } else if (uri.includes('.net/')) {
@@ -109,6 +109,11 @@ const connectDB = async () => {
 app.use(async (req, res, next) => {
     await connectDB();
     next();
+});
+
+// Lightweight keep-alive ping route
+app.get('/ping', (req, res) => {
+    res.status(200).send('OK');
 });
 
 // Helper to send store emails via Brevo HTTP API with safe fallback
@@ -206,7 +211,7 @@ reelsRouter.post('/cloudinary-webhook', async (req, res) => {
         if (event.notification_type === 'eager' && event.success) {
             const publicId = event.public_id;
             const eagerResults = event.eager || [];
-            
+
             let hlsUrl = '';
             let thumbnailUrl = '';
             let fallbackMp4Url = event.secure_url || '';
@@ -243,7 +248,7 @@ reelsRouter.post('/cloudinary-webhook', async (req, res) => {
 reelsRouter.post('/create', async (req, res) => {
     try {
         const { creatorId, publicId, secureUrl, thumbnailOverride, duration, title, caption, taggedPeople, tags, audioTrack } = req.body;
-        
+
         const hlsUrl = secureUrl.replace(/\.[^/.]+$/, '.m3u8');
         const thumbnailUrl = thumbnailOverride || secureUrl.replace(/\.[^/.]+$/, '.jpg');
 
@@ -477,7 +482,7 @@ app.post('/api/messages/send', async (req, res) => {
 
 const StoreHeroBannerSchema = new mongoose.Schema({
     imageUrl: { type: String, required: true },
-    mediaType: { type: String, default: 'image' }, // 'image' or 'video'
+    mediaType: { type: String, default: 'image' },
     updatedAt: { type: Date, default: Date.now }
 });
 const StoreHeroBanner = mongoose.models.StoreHeroBanner || mongoose.model('StoreHeroBanner', StoreHeroBannerSchema);
@@ -977,7 +982,7 @@ const DigitalBookSchema = new mongoose.Schema({
     title: { type: String, required: true },
     author: { type: String, required: true },
     coverUrl: { type: String, required: true },
-    pdfUrl: { type: String, default: '' }, // ✅ Added pdfUrl so PDF downloads function properly
+    pdfUrl: { type: String, default: '' },
     pages: [String],
     createdAt: { type: Date, default: Date.now }
 });
@@ -1066,17 +1071,17 @@ app.post('/api/magazine/trending', async (req, res) => {
 
 // --- Store Products Endpoints ---
 app.get('/api/store/products', async (req, res) => {
-    try { const products = await Product.find(); res.json(products); } 
+    try { const products = await Product.find(); res.json(products); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/store/products', async (req, res) => {
-    try { const p = new Product(req.body); await p.save(); res.json({ success: true, p }); } 
+    try { const p = new Product(req.body); await p.save(); res.json({ success: true, p }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.delete('/api/store/products/:id', async (req, res) => {
-    try { await Product.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    try { await Product.findByIdAndDelete(req.params.id); res.json({ success: true }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -1111,12 +1116,12 @@ app.put('/api/store/products/:id/rate', async (req, res) => {
 
 // --- Store Orders Endpoints ---
 app.get('/api/store/orders', async (req, res) => {
-    try { const orders = await StoreOrder.find(); res.json(orders); } 
+    try { const orders = await StoreOrder.find(); res.json(orders); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/store/orders', async (req, res) => {
-    try { const o = new StoreOrder(req.body); await o.save(); res.json({ success: true, o }); } 
+    try { const o = new StoreOrder(req.body); await o.save(); res.json({ success: true, o }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -1135,71 +1140,71 @@ app.put('/api/store/orders/:id', async (req, res) => {
 });
 
 app.delete('/api/store/orders/:id', async (req, res) => {
-    try { await StoreOrder.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    try { await StoreOrder.findByIdAndDelete(req.params.id); res.json({ success: true }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // --- Store Subscribers Endpoints ---
 app.get('/api/store/subscribers', async (req, res) => {
-    try { const subs = await StoreSubscriber.find(); res.json(subs); } 
+    try { const subs = await StoreSubscriber.find(); res.json(subs); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/store/subscribers', async (req, res) => {
-    try { const s = new StoreSubscriber(req.body); await s.save(); res.json({ success: true }); } 
+    try { const s = new StoreSubscriber(req.body); await s.save(); res.json({ success: true }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.delete('/api/store/subscribers/:id', async (req, res) => {
-    try { await StoreSubscriber.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    try { await StoreSubscriber.findByIdAndDelete(req.params.id); res.json({ success: true }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // --- Store QR Codes Endpoints ---
 app.get('/api/store/qrs', async (req, res) => {
-    try { const qrs = await StoreQR.find(); res.json(qrs); } 
+    try { const qrs = await StoreQR.find(); res.json(qrs); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/store/qrs', async (req, res) => {
-    try { const q = new StoreQR(req.body); await q.save(); res.json({ success: true }); } 
+    try { const q = new StoreQR(req.body); await q.save(); res.json({ success: true }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.delete('/api/store/qrs/:id', async (req, res) => {
-    try { await StoreQR.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    try { await StoreQR.findByIdAndDelete(req.params.id); res.json({ success: true }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // --- Coming Soon Drops Endpoints ---
 app.get('/api/store/drops', async (req, res) => {
-    try { const drops = await ComingSoonDrop.find(); res.json(drops); } 
+    try { const drops = await ComingSoonDrop.find(); res.json(drops); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/store/drops', async (req, res) => {
-    try { const d = new ComingSoonDrop(req.body); await d.save(); res.json({ success: true }); } 
+    try { const d = new ComingSoonDrop(req.body); await d.save(); res.json({ success: true }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.delete('/api/store/drops/:id', async (req, res) => {
-    try { await ComingSoonDrop.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    try { await ComingSoonDrop.findByIdAndDelete(req.params.id); res.json({ success: true }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // --- Visual Campaign Showcase Endpoints ---
 app.get('/api/store/campaigns', async (req, res) => {
-    try { const camps = await Campaign.find(); res.json(camps); } 
+    try { const camps = await Campaign.find(); res.json(camps); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/store/campaigns', async (req, res) => {
-    try { const c = new Campaign(req.body); await c.save(); res.json({ success: true, c }); } 
+    try { const c = new Campaign(req.body); await c.save(); res.json({ success: true, c }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.delete('/api/store/campaigns/:id', async (req, res) => {
-    try { await Campaign.findByIdAndDelete(req.params.id); res.json({ success: true }); } 
+    try { await Campaign.findByIdAndDelete(req.params.id); res.json({ success: true }); }
     catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -1245,12 +1250,12 @@ app.post('/api/login', async (req, res) => {
         if (!user) {
             return res.status(400).json({ error: 'User not found or incorrect password' });
         }
-        
+
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ error: 'User not found or incorrect password' });
         }
-        
+
         res.json({ success: true, message: 'Login successful', username: user.username });
     } catch (error) {
         console.error("Login Error:", error);
@@ -1278,7 +1283,7 @@ app.put('/api/users/:username', upload.fields([{ name: 'dp', maxCount: 1 }, { na
     }
     const { name, bio, department, skills } = req.body;
     const updateData = { name, bio, department };
-    
+
     if (skills) {
       updateData.skills = skills.split(',').map(s => s.trim()).filter(Boolean);
     }
@@ -1300,13 +1305,13 @@ app.get('/api/stats', async (req, res) => {
     const peopleCount = await User.countDocuments();
     const postsCount = await Post.countDocuments();
     const clubsCount = await Club.countDocuments();
-    res.json({ 
-      globalStudents: peopleCount || 1, 
-      campusPosts: postsCount, 
+    res.json({
+      globalStudents: peopleCount || 1,
+      campusPosts: postsCount,
       activeClubs: clubsCount,
-      people: peopleCount || 1, 
-      posts: postsCount, 
-      clubs: clubsCount 
+      people: peopleCount || 1,
+      posts: postsCount,
+      clubs: clubsCount
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -1329,7 +1334,7 @@ app.get('/api/users', async (req, res) => {
 app.post('/api/users/follow', async (req, res) => {
     try {
         const { currentUserId, targetUserId, note } = req.body;
-        
+
         let requester = await User.findOne({ $or: [{ username: currentUserId }, { _id: mongoose.Types.ObjectId.isValid(currentUserId) ? currentUserId : null }] });
         let targetUser = await User.findOne({ $or: [{ username: targetUserId }, { _id: mongoose.Types.ObjectId.isValid(targetUserId) ? targetUserId : null }] });
 
@@ -1352,7 +1357,7 @@ app.post('/api/users/follow', async (req, res) => {
 app.post('/api/send-request-note', async (req, res) => {
     try {
         const { senderUsername, recipientUsername, note } = req.body;
-        
+
         let sender = await User.findOne({ username: senderUsername });
         let recipient = await User.findOne({ username: recipientUsername });
 
@@ -1678,7 +1683,7 @@ app.post('/api/posts/:id/vote', async (req, res) => {
     try {
         const { optionIndex } = req.body;
         let post = await Post.findById(req.params.id);
-        
+
         if (!post) {
             return res.status(404).json({ error: 'Post not found' });
         }
@@ -1722,7 +1727,7 @@ app.post('/api/posts', upload.single('image'), async (req, res) => {
         const newPost = new Post({
             content: req.body.content || '',
             username: req.body.username || 'Student',
-           imageUrl: req.file ? req.file.path : '',
+            imageUrl: req.file ? req.file.path : '',
             poll: pollData,
             author: user ? user._id : null
         });
@@ -1760,13 +1765,13 @@ app.post('/api/posts/:id/like', async (req, res) => {
 
     if (!post.likedBy) post.likedBy = [];
     const idx = post.likedBy.map(id => id.toString()).indexOf(userId.toString());
-    
+
     if (idx > -1) {
       post.likedBy.splice(idx, 1);
     } else {
       post.likedBy.push(new mongoose.Types.ObjectId(userId));
     }
-    
+
     post.likes = post.likedBy.length;
     await post.save();
     const updated = await Post.findById(req.params.id).populate('author', 'name username dpUrl');
@@ -1792,13 +1797,13 @@ app.post('/api/posts/:id/repost', async (req, res) => {
 
     if (!post.repostedBy) post.repostedBy = [];
     const idx = post.repostedBy.map(id => id.toString()).indexOf(userId.toString());
-    
+
     if (idx > -1) {
       post.repostedBy.splice(idx, 1);
     } else {
       post.repostedBy.push(new mongoose.Types.ObjectId(userId));
     }
-    
+
     post.reposts = post.repostedBy.length;
     await post.save();
     const updated = await Post.findById(req.params.id).populate('author', 'name username dpUrl');
@@ -1815,13 +1820,13 @@ app.post('/api/posts/:id/reply', async (req, res) => {
     const post = await Post.findById(req.params.id);
     let user = username ? await User.findOne({ username }) : null;
     if (!post.replies) post.replies = [];
-    
-    post.replies.push({ 
-        text, 
+
+    post.replies.push({
+        text,
         username: username || 'User',
-        authorName: user ? user.name : (username || 'User') 
+        authorName: user ? user.name : (username || 'User')
     });
-    
+
     await post.save();
     const updated = await Post.findById(req.params.id).populate('author', 'name username dpUrl');
     res.json(updated);
@@ -1881,7 +1886,7 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
         const techStack = req.body.techStack || '';
         const projectUrl = req.body.projectUrl || '';
         const author = req.body.author || 'Student';
-        
+
         if (!title) {
             return res.status(400).json({ error: 'Project title is required.' });
         }
@@ -1918,10 +1923,10 @@ app.delete('/api/projects/:id', async (req, res) => {
 
 app.post('/api/projects/:id/react', async (req, res) => {
     try {
-        const { type } = req.body; 
+        const { type } = req.body;
         const proj = await Project.findById(req.params.id);
         if (!proj) return res.status(404).json({ error: 'Project not found' });
-        
+
         if (proj.reactions && proj.reactions[type] !== undefined) {
             proj.reactions[type] += 1;
             await proj.save();
@@ -1934,19 +1939,23 @@ app.post('/api/projects/:id/react', async (req, res) => {
 
 app.post('/api/projects/:id/rate', async (req, res) => {
     try {
-        const { rating } = req.body; 
+        const { rating } = req.body;
         const proj = await Project.findById(req.params.id);
         if (!proj) return res.status(404).json({ error: 'Project not found' });
-        
+
         proj.rating = ((proj.rating * proj.ratingsCount) + Number(rating)) / (proj.ratingsCount + 1);
         proj.ratingsCount += 1;
         await proj.save();
-        
+
         res.json(proj);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
+// ==========================================
+// --- UPDATED DISCORD + SLACK CLUB ROUTES ---
+// ==========================================
 
 app.get('/api/clubs', async (req, res) => {
   try {
@@ -1967,14 +1976,27 @@ app.get('/api/clubs', async (req, res) => {
 
 app.post('/api/clubs', async (req, res) => {
   try {
-    const { name, description, username } = req.body;
-    let user = await User.findOne({ username });
-    const newClub = new Club({ 
-      name, 
-      description: description || '', 
+    const { name, description, username, defaultChannel, channelTopic } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Server name is required' });
+    }
+    const user = username ? await User.findOne({ username }) : null;
+    const initialChannelName = (defaultChannel || 'general')
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9-]+/g, '-')
+      .replace(/^-|-$/g, '') || 'general';
+
+    const newClub = new Club({
+      name: name.trim(),
+      description: (description || '').trim(),
       owner: user ? user._id : null,
       members: user ? [user._id] : [],
-      channels: [{ name: 'general', messages: [] }]
+      channels: [{
+        name: initialChannelName,
+        topic: (channelTopic || 'Team discussions & announcements').trim(),
+        messages: []
+      }]
     });
     await newClub.save();
     res.status(201).json(newClub);
@@ -1989,7 +2011,10 @@ app.post('/api/clubs/:id/join', async (req, res) => {
     const user = await User.findOne({ username });
     if (!user) return res.status(404).json({ error: 'User not found' });
     const club = await Club.findById(req.params.id);
-    if (!club.members.includes(user._id)) {
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    club.members = club.members || [];
+    if (!club.members.map(m => m.toString()).includes(user._id.toString())) {
       club.members.push(user._id);
       await club.save();
     }
@@ -2014,7 +2039,7 @@ app.post('/api/clubs/:id/request-join', async (req, res) => {
     if (club.members.map(m => m.toString()).includes(user._id.toString())) {
       return res.status(400).json({ error: 'Already a member' });
     }
-    
+
     const existingRequests = club.joinRequests.map(id => (id._id ? id._id.toString() : id.toString()));
     if (existingRequests.includes(user._id.toString())) {
       return res.status(400).json({ error: 'Join request already pending approval' });
@@ -2031,17 +2056,18 @@ app.post('/api/clubs/:id/request-join', async (req, res) => {
 
 app.post('/api/clubs/:id/handle-request', async (req, res) => {
   try {
-    const { adminUsername, userId, action } = req.body;
+    const { userId, action } = req.body;
     const club = await Club.findById(req.params.id);
     if (!club) return res.status(404).json({ error: 'Club not found' });
 
-    club.joinRequests = club.joinRequests.filter(reqId => {
+    club.joinRequests = (club.joinRequests || []).filter(reqId => {
       const idStr = reqId._id ? reqId._id.toString() : reqId.toString();
       return idStr !== userId.toString();
     });
 
     if (action === 'accept') {
-      const memberStrList = (club.members || []).map(m => m.toString());
+      club.members = club.members || [];
+      const memberStrList = club.members.map(m => m.toString());
       if (!memberStrList.includes(userId.toString())) {
         club.members.push(userId);
       }
@@ -2057,9 +2083,24 @@ app.post('/api/clubs/:id/handle-request', async (req, res) => {
 
 app.post('/api/clubs/:id/channels', async (req, res) => {
   try {
-    const { channelName } = req.body;
+    const { channelName, topic } = req.body;
+    if (!channelName || !channelName.trim()) {
+      return res.status(400).json({ error: 'Channel name is required' });
+    }
     const club = await Club.findById(req.params.id);
-    club.channels.push({ name: channelName.toLowerCase().replace(/\s+/g, '-'), messages: [] });
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    const cleanName = channelName
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9-]+/g, '-')
+      .replace(/^-|-$/g, '') || 'channel';
+
+    club.channels.push({
+      name: cleanName,
+      topic: (topic || 'Workspace channel • Live thread & mentions enabled').trim(),
+      messages: []
+    });
     await club.save();
     res.json(club);
   } catch (err) {
@@ -2069,13 +2110,65 @@ app.post('/api/clubs/:id/channels', async (req, res) => {
 
 app.post('/api/clubs/:clubId/channels/:channelId/messages', upload.single('media'), async (req, res) => {
   try {
-    const { text, username } = req.body;
-    const user = await User.findOne({ username });
+    const { text, username, replyTo } = req.body;
+    const user = username ? await User.findOne({ username }) : null;
     let messageText = text || '';
-    if (req.file) messageText += ` [Media]: /uploads/${req.file.filename}`;
+    if (req.file && req.file.path) {
+      messageText += ` [Media]: ${req.file.path}`;
+    }
+    if (replyTo && replyTo.trim()) {
+      messageText = `> Replying to ${replyTo.trim()}\n${messageText}`.trim();
+    }
+
     const club = await Club.findById(req.params.clubId);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
     const channel = club.channels.id(req.params.channelId);
-    channel.messages.push({ senderName: user ? user.name : username || 'Member', senderUsername: user ? user.username : username || '', text: messageText, createdAt: new Date() });
+    if (!channel) return res.status(404).json({ error: 'Channel not found' });
+
+    channel.messages.push({
+      senderName: user ? user.name : username || 'Member',
+      senderUsername: user ? user.username : username || '',
+      text: messageText,
+      reactions: [],
+      createdAt: new Date()
+    });
+    await club.save();
+    res.json(channel);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/clubs/:clubId/channels/:channelId/messages/:messageId/react', async (req, res) => {
+  try {
+    const { emoji, username } = req.body;
+    const club = await Club.findById(req.params.clubId);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    const channel = club.channels.id(req.params.channelId);
+    if (!channel) return res.status(404).json({ error: 'Channel not found' });
+
+    const msg = channel.messages.id(req.params.messageId);
+    if (!msg) return res.status(404).json({ error: 'Message not found' });
+
+    msg.reactions = msg.reactions || [];
+    const existing = msg.reactions.find(r => r.emoji === emoji);
+    if (existing) {
+      existing.users = existing.users || [];
+      const idx = existing.users.indexOf(username);
+      if (idx > -1) {
+        existing.users.splice(idx, 1);
+        if (existing.users.length === 0) {
+          msg.reactions = msg.reactions.filter(r => r.emoji !== emoji);
+        }
+      } else {
+        existing.users.push(username);
+      }
+    } else {
+      msg.reactions.push({ emoji, users: [username] });
+    }
+
     await club.save();
     res.json(channel);
   } catch (err) {
@@ -2087,8 +2180,12 @@ app.post('/api/clubs/:id/leave', async (req, res) => {
   try {
     const { username } = req.body;
     const user = await User.findOne({ username });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
     const club = await Club.findById(req.params.id);
-    club.members = club.members.filter(m => m.toString() !== user._id.toString());
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    club.members = (club.members || []).filter(m => m.toString() !== user._id.toString());
     await club.save();
     res.json({ message: 'Left server successfully' });
   } catch (err) {
@@ -2100,6 +2197,8 @@ app.post('/api/clubs/:id/request-deletion', async (req, res) => {
   try {
     const { username, reason } = req.body;
     const club = await Club.findById(req.params.id);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
     const ticketDesc = `[SERVER DELETION REQUEST]: Admin @${username} requested deletion/freeze for server "${club.name}". Reason: ${reason}`;
     const newTicket = new Support({ description: ticketDesc, username, status: 'Pending' });
     await newTicket.save();
@@ -2116,7 +2215,7 @@ app.delete('/api/support/delete-server-by-ticket/:ticketId', async (req, res) =>
 
     const desc = ticket.description;
     const match = desc.match(/for server "([^"]+)"/);
-    
+
     if (match && match[1]) {
       const serverName = match[1];
       await Club.findOneAndDelete({ name: serverName });
@@ -2153,7 +2252,7 @@ app.post('/api/support', async (req, res) => {
 
         await newTicket.save();
         res.json({ success: true, message: 'Ticket submitted successfully!' });
-        
+
     } catch (error) {
         console.error("Support Ticket DB Error:", error);
         res.status(500).json({ error: 'Failed to save ticket to database.' });
@@ -2182,7 +2281,7 @@ app.get('/api/events', async (req, res) => {
 app.post('/api/events', async (req, res) => {
     try {
         const { title, location, visibility, ticketType, price, campusUsername, campusPassword, author, date, description, image } = req.body;
-        
+
         if (!title || !location) {
             return res.status(400).json({ error: 'Title and location are required.' });
         }
@@ -2217,7 +2316,7 @@ app.post('/api/events/:id/rsvp', async (req, res) => {
         } else {
             ticketId = 'TKT-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             if (!event.attendees) event.attendees = [];
-            
+
             attendee = {
                 ticketId: ticketId,
                 username: username,
@@ -2286,8 +2385,8 @@ app.get('/api/applications', async (req, res) => {
 app.put('/api/applications/:id/approve', async (req, res) => {
     try {
         const application = await OrganizerApp.findByIdAndUpdate(
-            req.params.id, 
-            { status: 'approved' }, 
+            req.params.id,
+            { status: 'approved' },
             { new: true }
         );
         res.json(application);
@@ -2334,8 +2433,7 @@ app.post('/api/pins', async (req, res) => {
     try {
         const { title, desc, img, author } = req.body;
         if (!title || !img) return res.status(400).json({ error: 'Title and image required' });
-        
-        // Ensure image url has auto quality parameters if uploaded via Cloudinary
+
         let optimizedImg = img;
         if (optimizedImg.includes('cloudinary.com') && !optimizedImg.includes('q_auto')) {
             optimizedImg = optimizedImg.replace('/upload/', '/upload/q_auto,f_auto/');
@@ -2395,12 +2493,11 @@ app.delete('/api/pins/:id', async (req, res) => {
 app.post('/api/events/verify-ticket', async (req, res) => {
     try {
         let { ticketId, organizerUsername } = req.body;
-        
+
         if (!ticketId) {
             return res.status(400).json({ error: 'Ticket ID is required.' });
         }
 
-        // If the scanner passes the full JSON string from the QR code, extract the ticketId safely
         if (typeof ticketId === 'string' && ticketId.startsWith('{')) {
             try {
                 const parsed = JSON.parse(ticketId);
@@ -2440,6 +2537,7 @@ app.post('/api/events/verify-ticket', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
 app.get('/api/projects', async (req, res) => {
     try {
         const projects = await Project.find().sort({ createdAt: -1 });
@@ -2453,7 +2551,7 @@ const lostFoundSchema = new mongoose.Schema({
     id: String,
     title: String,
     desc: String,
-    type: String, 
+    type: String,
     dropBox: String,
     author: String,
     createdAt: { type: Date, default: Date.now }
@@ -2594,7 +2692,7 @@ app.post('/api/study', async (req, res) => {
 });
 
 // --- BREVO HTTP API OTP ROUTE (Bypasses Render SMTP Blocking) ---
-const otpStore = {}; 
+const otpStore = {};
 
 app.post('/api/send-otp', async (req, res) => {
     const name = req.body.name || req.body.fullName || req.body.fullname || 'Hoknex User';
@@ -2612,9 +2710,9 @@ app.post('/api/send-otp', async (req, res) => {
     const apiKey = process.env.BREVO_API_KEY;
     if (!apiKey) {
         console.log(`🔑 [DEV FALLBACK] BREVO_API_KEY missing. OTP for ${email}: ${otp}`);
-        return res.json({ 
-            success: true, 
-            message: 'OTP generated! (Check Render logs)' 
+        return res.json({
+            success: true,
+            message: 'OTP generated! (Check Render logs)'
         });
     }
 
@@ -2641,17 +2739,17 @@ app.post('/api/send-otp', async (req, res) => {
         } else {
             console.error("Brevo API Error:", data);
             console.log(`🔑 [BREVO FALLBACK] OTP for ${email}: ${otp}`);
-            res.json({ 
-                success: true, 
-                message: 'OTP generated! (Check Render logs)' 
+            res.json({
+                success: true,
+                message: 'OTP generated! (Check Render logs)'
             });
         }
     } catch (error) {
         console.error("Fetch Error:", error.message);
         console.log(`🔑 [NETWORK FALLBACK] OTP for ${email}: ${otp}`);
-        res.json({ 
-            success: true, 
-            message: 'OTP generated! (Check Render logs)' 
+        res.json({
+            success: true,
+            message: 'OTP generated! (Check Render logs)'
         });
     }
 });
@@ -2670,13 +2768,13 @@ app.post('/api/verify-otp', async (req, res) => {
 
         const newUser = new User({
             name: record.name,
-            username: cleanUsername, 
-            email: email, 
-            password: hashedPassword 
+            username: cleanUsername,
+            email: email,
+            password: hashedPassword
         });
         await newUser.save();
-        
-        delete otpStore[email]; 
+
+        delete otpStore[email];
         res.json({ success: true, message: 'Account saved!', username: cleanUsername });
     } catch (error) {
         if (error.code === 11000) {
