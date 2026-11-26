@@ -2000,6 +2000,9 @@ app.post('/api/clubs', async (req, res) => {
       channels: [{
         name: cleanChannel,
         topic: (channelTopic || 'Team discussions & announcements').trim(),
+        isBroadcast: false,
+        pinnedNotice: '',
+        polls: [],
         messages: []
       }],
       modApplications: []
@@ -2219,6 +2222,9 @@ app.post('/api/clubs/:id/channels', async (req, res) => {
     club.channels.push({
       name: cleanName,
       topic: (topic || 'Workspace channel • Live thread & mentions enabled').trim(),
+      isBroadcast: false,
+      pinnedNotice: '',
+      polls: [],
       messages: []
     });
     await club.save();
@@ -2238,6 +2244,104 @@ app.delete('/api/clubs/:clubId/channels/:channelId', async (req, res) => {
     club.channels = club.channels.filter(ch => ch._id.toString() !== req.params.channelId);
     await club.save();
     res.json({ success: true, club });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Toggle Broadcast Mode & Pinned Notice on a Channel
+app.put('/api/clubs/:clubId/channels/:channelId/settings', async (req, res) => {
+  try {
+    const { isBroadcast, pinnedNotice } = req.body;
+    const club = await Club.findById(req.params.clubId);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    const channel = club.channels.id(req.params.channelId);
+    if (!channel) return res.status(404).json({ error: 'Channel not found' });
+
+    if (typeof isBroadcast === 'boolean') {
+      channel.set('isBroadcast', isBroadcast);
+    }
+    if (pinnedNotice !== undefined) {
+      channel.set('pinnedNotice', String(pinnedNotice));
+    }
+
+    club.markModified('channels');
+    await club.save();
+    res.json({ success: true, channel, club });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Create an Interactive Channel Poll
+app.post('/api/clubs/:clubId/channels/:channelId/polls', async (req, res) => {
+  try {
+    const { question, options, createdBy } = req.body;
+    const cleanQuestion = String(question || '').trim();
+    const cleanOptions = Array.isArray(options)
+      ? options.map(o => String(o || '').trim()).filter(Boolean)
+      : [];
+
+    if (!cleanQuestion || cleanOptions.length < 2) {
+      return res.status(400).json({ error: 'Poll question and at least 2 options are required.' });
+    }
+
+    const club = await Club.findById(req.params.clubId);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    const channel = club.channels.id(req.params.channelId);
+    if (!channel) return res.status(404).json({ error: 'Channel not found' });
+
+    const existingPolls = channel.get('polls') || [];
+    const newPoll = {
+      _id: new mongoose.Types.ObjectId(),
+      question: cleanQuestion,
+      createdBy: createdBy || 'Member',
+      options: cleanOptions.map(label => ({ label, votes: [] })),
+      createdAt: new Date()
+    };
+    existingPolls.push(newPoll);
+    channel.set('polls', existingPolls);
+
+    club.markModified('channels');
+    await club.save();
+    res.status(201).json({ success: true, poll: newPoll, channel, club });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Vote on a Channel Poll Option (Toggle vote per user)
+app.post('/api/clubs/:clubId/channels/:channelId/polls/:pollId/vote', async (req, res) => {
+  try {
+    const { optionIndex, username } = req.body;
+    const voter = String(username || 'Member').trim();
+    const idx = Number(optionIndex);
+
+    const club = await Club.findById(req.params.clubId);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    const channel = club.channels.id(req.params.channelId);
+    if (!channel) return res.status(404).json({ error: 'Channel not found' });
+
+    const polls = channel.get('polls') || [];
+    const poll = polls.find(p => p._id && p._id.toString() === req.params.pollId);
+    if (!poll) return res.status(404).json({ error: 'Poll not found' });
+
+    if (!Array.isArray(poll.options) || !poll.options[idx]) {
+      return res.status(400).json({ error: 'Invalid poll option' });
+    }
+
+    poll.options.forEach(opt => {
+      opt.votes = (opt.votes || []).filter(u => u !== voter);
+    });
+    poll.options[idx].votes.push(voter);
+
+    channel.set('polls', polls);
+    club.markModified('channels');
+    await club.save();
+    res.json({ success: true, poll, channel, club });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
