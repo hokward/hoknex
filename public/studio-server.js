@@ -1,9 +1,16 @@
-// studio-server.js — Hoknex Studio Server (Brevo Mailer, Perks, Pro Pass, Library & Admin API)
+// studio-server.js — Hoknex Studio Server (Brevo API + SMTP Fallback, Perks, Pro Pass, Library & Admin API)
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+
+let nodemailer = null;
+try {
+  nodemailer = require('nodemailer');
+} catch (_) {
+  nodemailer = null;
+}
 
 const app = express();
 const PORT = process.env.PORT || process.env.STUDIO_PORT || 5050;
@@ -11,7 +18,12 @@ const DB_FILE = path.join(__dirname, 'hoknex_studio_db.json');
 const ADMIN_STUDIO_KEY = process.env.HOKNEX_ADMIN_KEY || 'HOKNEX-ADMIN-2026';
 const STUDIO_FROM_EMAIL = process.env.STUDIO_EMAIL || 'hoknex.in@gmail.com';
 const STUDIO_FROM_NAME = process.env.STUDIO_SENDER_NAME || 'Hoknex Studio';
+
 const BREVO_API_KEY = process.env.BREVO_API_KEY || '';
+const BREVO_SMTP_HOST = process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com';
+const BREVO_SMTP_PORT = Number(process.env.BREVO_SMTP_PORT || 587);
+const BREVO_SMTP_USER = process.env.BREVO_SMTP_USER || STUDIO_FROM_EMAIL;
+const BREVO_SMTP_PASS = process.env.BREVO_SMTP_PASS || '';
 
 const NEW_USER_PERKS = 250;
 const DAILY_CLAIM_PERKS = 25;
@@ -81,56 +93,112 @@ function isAdminRequest(req) {
 }
 
 // ============================================================================
-// BREVO TRANSACTIONAL EMAIL DISPATCHER (hoknex.in@gmail.com)
+// BREVO API + BREVO SMTP (smtp-relay.brevo.com:587) FALLBACK DISPATCHER
 // ============================================================================
+function buildEmailHtml(subject, text) {
+  const safeSubject = String(subject || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const safeText = String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#18181B;max-width:560px;margin:auto;padding:20px;border:1px solid #E4E4E7;border-radius:12px;">
+    <h2 style="margin:0 0 12px;color:#2563EB;">${safeSubject}</h2>
+    <p style="white-space:pre-line;margin:0 0 16px;">${safeText}</p>
+    <hr style="border:none;border-top:1px solid #E4E4E7;margin:16px 0;" />
+    <small style="color:#71717A;">Hoknex Studio &bull; Official Support: ${STUDIO_FROM_EMAIL}</small>
+  </div>`;
+}
+
+function getBrevoSmtpTransport() {
+  if (!nodemailer || !BREVO_SMTP_USER || !BREVO_SMTP_PASS) return null;
+  return nodemailer.createTransport({
+    host: BREVO_SMTP_HOST,
+    port: BREVO_SMTP_PORT,
+    secure: BREVO_SMTP_PORT === 465,
+    requireTLS: BREVO_SMTP_PORT === 587,
+    auth: {
+      user: BREVO_SMTP_USER,
+      pass: BREVO_SMTP_PASS
+    }
+  });
+}
+
+async function sendViaBrevoApi({ to, recipientName, subject, text }) {
+  if (!BREVO_API_KEY) return { ok: false, reason: 'brevo_api_key_not_set' };
+  try {
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'api-key': BREVO_API_KEY,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: { name: STUDIO_FROM_NAME, email: STUDIO_FROM_EMAIL },
+        to: [{ email: to, name: recipientName || to.split('@')[0] }],
+        subject,
+        textContent: text,
+        htmlContent: buildEmailHtml(subject, text)
+      })
+    });
+
+    if (response.ok) {
+      const resData = await response.json().catch(() => ({}));
+      return { ok: true, status: `brevo_api_sent${resData.messageId ? ` (${resData.messageId})` : ''}` };
+    }
+
+    const errText = await response.text().catch(() => '');
+    return { ok: false, reason: `brevo_api_${response.status}:${errText.slice(0, 100)}` };
+  } catch (err) {
+    return { ok: false, reason: `brevo_api_network:${err.message}` };
+  }
+}
+
+async function sendViaBrevoSmtp({ to, subject, text }) {
+  const transporter = getBrevoSmtpTransport();
+  if (!transporter) {
+    return { ok: false, reason: !nodemailer ? 'nodemailer_missing' : 'brevo_smtp_creds_missing' };
+  }
+  try {
+    const info = await transporter.sendMail({
+      from: `"${STUDIO_FROM_NAME}" <${STUDIO_FROM_EMAIL}>`,
+      to,
+      subject,
+      text,
+      html: buildEmailHtml(subject, text)
+    });
+    return { ok: true, status: `brevo_smtp_sent${info.messageId ? ` (${info.messageId})` : ''}` };
+  } catch (err) {
+    return { ok: false, reason: `brevo_smtp_error:${err.message}` };
+  }
+}
+
 async function sendStudioEmail(db, { to, subject, text, recipientName = '' }) {
   if (!to) return;
   const cleanTo = String(to).trim().toLowerCase();
+  const payload = { to: cleanTo, recipientName, subject, text };
+
+  let deliveryStatus = 'logged_only';
+  const apiResult = await sendViaBrevoApi(payload);
+
+  if (apiResult.ok) {
+    deliveryStatus = apiResult.status;
+  } else {
+    const smtpResult = await sendViaBrevoSmtp(payload);
+    if (smtpResult.ok) {
+      deliveryStatus = `${smtpResult.status} [fallback from ${apiResult.reason}]`;
+    } else {
+      deliveryStatus = `logged_only (${apiResult.reason} | ${smtpResult.reason})`;
+    }
+  }
+
   const entry = {
     id: crypto.randomUUID(),
-    provider: 'Brevo',
+    provider: 'Brevo (API + SMTP Fallback)',
     from: STUDIO_FROM_EMAIL,
     to: cleanTo,
     subject,
     text,
     sentAt: new Date().toISOString(),
-    delivery: BREVO_API_KEY ? 'brevo_pending' : 'brevo_key_missing_logged'
+    delivery: deliveryStatus
   };
-
-  if (BREVO_API_KEY) {
-    try {
-      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-        method: 'POST',
-        headers: {
-          accept: 'application/json',
-          'api-key': BREVO_API_KEY,
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-          sender: { name: STUDIO_FROM_NAME, email: STUDIO_FROM_EMAIL },
-          to: [{ email: cleanTo, name: recipientName || cleanTo.split('@')[0] }],
-          subject,
-          textContent: text,
-          htmlContent: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#18181B;max-width:560px;margin:auto;padding:20px;border:1px solid #E4E4E7;border-radius:12px;">
-            <h2 style="margin:0 0 12px;color:#2563EB;">${subject}</h2>
-            <p style="white-space:pre-line;margin:0 0 16px;">${text}</p>
-            <hr style="border:none;border-top:1px solid #E4E4E7;margin:16px 0;" />
-            <small style="color:#71717A;">Hoknex Studio &bull; Official Support: ${STUDIO_FROM_EMAIL}</small>
-          </div>`
-        })
-      });
-
-      if (response.ok) {
-        const resData = await response.json().catch(() => ({}));
-        entry.delivery = `brevo_sent${resData.messageId ? ` (${resData.messageId})` : ''}`;
-      } else {
-        const errText = await response.text().catch(() => '');
-        entry.delivery = `brevo_error_${response.status}: ${errText.slice(0, 120)}`;
-      }
-    } catch (err) {
-      entry.delivery = `brevo_network_error: ${err.message}`;
-    }
-  }
 
   db.emailLogs.unshift(entry);
   if (db.emailLogs.length > 250) db.emailLogs = db.emailLogs.slice(0, 250);
@@ -192,7 +260,9 @@ app.get('/api/studio/health', (req, res) => {
     ok: true,
     brand: 'Hoknex Studio',
     emailProvider: 'Brevo',
-    brevoConfigured: Boolean(BREVO_API_KEY),
+    brevoApiConfigured: Boolean(BREVO_API_KEY),
+    brevoSmtpConfigured: Boolean(nodemailer && BREVO_SMTP_USER && BREVO_SMTP_PASS),
+    brevoSmtpHost: `${BREVO_SMTP_HOST}:${BREVO_SMTP_PORT}`,
     supportEmail: STUDIO_FROM_EMAIL,
     usersCount: db.users.length,
     certificatesCount: db.certificates.length,
@@ -445,7 +515,7 @@ app.delete('/api/studio/auth/delete-account', (req, res) => {
 });
 
 // ============================================================================
-// PRO PASS PAYMENT REQUESTS & SEPARATE STUDIO ADMIN PORTAL API
+// PRO PASS PAYMENT REQUESTS & STUDIO ADMIN PORTAL API
 // ============================================================================
 app.post('/api/studio/pro-pass/submit-payment', async (req, res) => {
   const {
@@ -514,7 +584,9 @@ app.get('/api/studio/admin/overview', (req, res) => {
   res.json({
     ok: true,
     emailProvider: 'Brevo',
-    brevoConfigured: Boolean(BREVO_API_KEY),
+    brevoApiConfigured: Boolean(BREVO_API_KEY),
+    brevoSmtpConfigured: Boolean(nodemailer && BREVO_SMTP_USER && BREVO_SMTP_PASS),
+    brevoSmtpHost: `${BREVO_SMTP_HOST}:${BREVO_SMTP_PORT}`,
     supportEmail: STUDIO_FROM_EMAIL,
     settings: db.settings,
     users: db.users.map(sanitizeUser),
@@ -802,5 +874,5 @@ app.delete('/api/studio/projects/:id', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Hoknex Studio Server running on port ${PORT} (Brevo Sender: ${STUDIO_FROM_EMAIL})`);
+  console.log(`Hoknex Studio Server running on port ${PORT} (Brevo API + SMTP ${BREVO_SMTP_HOST}:${BREVO_SMTP_PORT} from ${STUDIO_FROM_EMAIL})`);
 });
