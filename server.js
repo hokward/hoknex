@@ -1957,6 +1957,26 @@ app.post('/api/projects/:id/rate', async (req, res) => {
 // --- HOKNEX CLUB / SPACE ROUTES ---
 // ==========================================
 
+// Delete a Channel Poll (Space Admin)
+app.delete('/api/clubs/:clubId/channels/:channelId/polls/:pollId', async (req, res) => {
+  try {
+    const club = await Club.findById(req.params.clubId);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    const channel = club.channels.id(req.params.channelId);
+    if (!channel) return res.status(404).json({ error: 'Channel not found' });
+
+    const polls = channel.get('polls') || [];
+    channel.set('polls', polls.filter(p => p._id && p._id.toString() !== req.params.pollId));
+
+    club.markModified('channels');
+    await club.save();
+    res.json({ success: true, channel, club });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/clubs', async (req, res) => {
   try {
     const clubs = await Club.find()
