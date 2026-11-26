@@ -1954,13 +1954,13 @@ app.post('/api/projects/:id/rate', async (req, res) => {
 });
 
 // ==========================================
-// --- UPDATED DISCORD + SLACK CLUB ROUTES ---
+// --- HOKNEX CLUB / SPACE ROUTES ---
 // ==========================================
 
 app.get('/api/clubs', async (req, res) => {
   try {
     const clubs = await Club.find()
-      .populate('owner', '_id name username')
+      .populate('owner', '_id name username dpUrl')
       .populate('members', '_id name username dpUrl')
       .populate({
         path: 'joinRequests',
@@ -1976,30 +1976,64 @@ app.get('/api/clubs', async (req, res) => {
 
 app.post('/api/clubs', async (req, res) => {
   try {
-    const { name, description, username, defaultChannel, channelTopic } = req.body;
+    const { name, description, username, dpUrl, defaultChannel, channelTopic } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Server name is required' });
     }
     const user = username ? await User.findOne({ username }) : null;
-    const initialChannelName = (defaultChannel || 'general')
+    const cleanChannel = (defaultChannel || 'general')
       .toLowerCase()
       .trim()
       .replace(/[^a-z0-9-]+/g, '-')
       .replace(/^-|-$/g, '') || 'general';
 
+    const inviteCode = 'HKX-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
     const newClub = new Club({
       name: name.trim(),
       description: (description || '').trim(),
+      dpUrl: dpUrl || '',
+      inviteCode,
       owner: user ? user._id : null,
       members: user ? [user._id] : [],
+      roles: user ? [{ username: user.username, role: 'Admin', powers: ['all'] }] : [],
       channels: [{
-        name: initialChannelName,
+        name: cleanChannel,
         topic: (channelTopic || 'Team discussions & announcements').trim(),
         messages: []
-      }]
+      }],
+      modApplications: []
     });
     await newClub.save();
     res.status(201).json(newClub);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/clubs/join-by-invite', async (req, res) => {
+  try {
+    const { inviteCode, username } = req.body;
+    if (!inviteCode || !username) return res.status(400).json({ error: 'Invite code and username required' });
+    const user = await User.findOne({ username });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const codeClean = inviteCode.trim().toUpperCase();
+    const club = await Club.findOne({
+      $or: [{ inviteCode: codeClean }, { _id: mongoose.Types.ObjectId.isValid(inviteCode.trim()) ? inviteCode.trim() : null }]
+    });
+    if (!club) return res.status(404).json({ error: 'Invalid invite link or code' });
+
+    club.members = club.members || [];
+    if (!club.members.map(m => m.toString()).includes(user._id.toString())) {
+      club.members.push(user._id);
+      club.roles = club.roles || [];
+      if (!club.roles.some(r => r.username === user.username)) {
+        club.roles.push({ username: user.username, role: 'Member', powers: ['chat', 'thread', 'sticker'] });
+      }
+      await club.save();
+    }
+    res.json({ success: true, club });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -2016,6 +2050,10 @@ app.post('/api/clubs/:id/join', async (req, res) => {
     club.members = club.members || [];
     if (!club.members.map(m => m.toString()).includes(user._id.toString())) {
       club.members.push(user._id);
+      club.roles = club.roles || [];
+      if (!club.roles.some(r => r.username === user.username)) {
+        club.roles.push({ username: user.username, role: 'Member', powers: ['chat', 'thread', 'sticker'] });
+      }
       await club.save();
     }
     res.json(club);
@@ -2071,12 +2109,94 @@ app.post('/api/clubs/:id/handle-request', async (req, res) => {
       if (!memberStrList.includes(userId.toString())) {
         club.members.push(userId);
       }
+      const joinedUser = await User.findById(userId).select('username');
+      club.roles = club.roles || [];
+      if (joinedUser && !club.roles.some(r => r.username === joinedUser.username)) {
+        club.roles.push({ username: joinedUser.username, role: 'Member', powers: ['chat', 'thread', 'sticker'] });
+      }
     }
 
     await club.save();
     res.json({ message: `Request ${action}ed successfully`, club });
   } catch (err) {
     console.error('Handle request error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/clubs/:id/roles', async (req, res) => {
+  try {
+    const { targetUsername, role, powers } = req.body;
+    const club = await Club.findById(req.params.id);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    club.roles = club.roles || [];
+    const finalPowers = role === 'Admin'
+      ? ['all', 'manage_channels', 'manage_roles', 'manage_mods', 'pin_messages', 'chat', 'thread', 'sticker']
+      : (Array.isArray(powers) ? powers : ['chat', 'thread', 'sticker']);
+
+    const idx = club.roles.findIndex(r => r.username === targetUsername);
+    if (idx > -1) {
+      club.roles[idx].role = role;
+      club.roles[idx].powers = finalPowers;
+    } else {
+      club.roles.push({ username: targetUsername, role, powers: finalPowers });
+    }
+
+    await club.save();
+    res.json({ success: true, roles: club.roles });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/clubs/:id/mod-apply', async (req, res) => {
+  try {
+    const { username, experience, whyMod, hoursPerWeek } = req.body;
+    const club = await Club.findById(req.params.id);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    club.modApplications = club.modApplications || [];
+    club.modApplications.push({
+      username,
+      experience: experience || '',
+      whyMod: whyMod || '',
+      hoursPerWeek: hoursPerWeek || '5-10 hrs/wk',
+      status: 'Pending',
+      appliedAt: new Date()
+    });
+    await club.save();
+    res.json({ success: true, message: 'Moderator application submitted!' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/clubs/:id/mod-decision', async (req, res) => {
+  try {
+    const { appId, decision } = req.body;
+    const club = await Club.findById(req.params.id);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+
+    club.modApplications = club.modApplications || [];
+    const targetApp = club.modApplications.find(a => (a._id && a._id.toString() === appId) || a.username === appId);
+    if (targetApp) {
+      targetApp.status = decision === 'approve' ? 'Approved' : 'Rejected';
+      if (decision === 'approve') {
+        club.roles = club.roles || [];
+        const modPowers = ['chat', 'thread', 'sticker', 'pin_messages', 'manage_channels'];
+        const rIdx = club.roles.findIndex(r => r.username === targetApp.username);
+        if (rIdx > -1) {
+          club.roles[rIdx].role = 'Moderator';
+          club.roles[rIdx].powers = modPowers;
+        } else {
+          club.roles.push({ username: targetApp.username, role: 'Moderator', powers: modPowers });
+        }
+      }
+    }
+    await club.save();
+    res.json({ success: true, club });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
@@ -2108,13 +2228,35 @@ app.post('/api/clubs/:id/channels', async (req, res) => {
   }
 });
 
+app.delete('/api/clubs/:clubId/channels/:channelId', async (req, res) => {
+  try {
+    const club = await Club.findById(req.params.clubId);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+    if (club.channels.length <= 1) {
+      return res.status(400).json({ error: 'At least one channel must remain' });
+    }
+    club.channels = club.channels.filter(ch => ch._id.toString() !== req.params.channelId);
+    await club.save();
+    res.json({ success: true, club });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post('/api/clubs/:clubId/channels/:channelId/messages', upload.single('media'), async (req, res) => {
   try {
-    const { text, username, replyTo } = req.body;
-    const user = username ? await User.findOne({ username }) : null;
+    const { text, username, replyTo, stickerUrl, parentMessageId, activityStatus } = req.body;
+    const user = username ? await User.findOne({ username }).select('name username dpUrl') : null;
+    const senderName = user ? user.name : username || 'Member';
+    const senderUsername = user ? user.username : username || '';
+    const senderDp = user ? (user.dpUrl || '') : '';
+
     let messageText = text || '';
     if (req.file && req.file.path) {
       messageText += ` [Media]: ${req.file.path}`;
+    }
+    if (stickerUrl) {
+      messageText += ` [Sticker]: ${stickerUrl}`;
     }
     if (replyTo && replyTo.trim()) {
       messageText = `> Replying to ${replyTo.trim()}\n${messageText}`.trim();
@@ -2126,15 +2268,49 @@ app.post('/api/clubs/:clubId/channels/:channelId/messages', upload.single('media
     const channel = club.channels.id(req.params.channelId);
     if (!channel) return res.status(404).json({ error: 'Channel not found' });
 
+    if (parentMessageId) {
+      const parentMsg = channel.messages.id(parentMessageId);
+      if (parentMsg) {
+        parentMsg.threadReplies = parentMsg.threadReplies || [];
+        parentMsg.threadReplies.push({
+          senderName,
+          senderUsername,
+          senderDp,
+          text: messageText,
+          createdAt: new Date()
+        });
+        await club.save();
+        return res.json(channel);
+      }
+    }
+
     channel.messages.push({
-      senderName: user ? user.name : username || 'Member',
-      senderUsername: user ? user.username : username || '',
+      senderName,
+      senderUsername,
+      senderDp,
+      activityStatus: activityStatus || '🟢 Active',
       text: messageText,
       reactions: [],
+      threadReplies: [],
       createdAt: new Date()
     });
     await club.save();
     res.json(channel);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/clubs/:clubId/channels/:channelId/messages/:messageId', async (req, res) => {
+  try {
+    const club = await Club.findById(req.params.clubId);
+    if (!club) return res.status(404).json({ error: 'Club not found' });
+    const channel = club.channels.id(req.params.channelId);
+    if (!channel) return res.status(404).json({ error: 'Channel not found' });
+
+    channel.messages = (channel.messages || []).filter(m => m._id.toString() !== req.params.messageId);
+    await club.save();
+    res.json({ success: true, channel });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
