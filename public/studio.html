@@ -232,6 +232,48 @@
         .module-card p { font-size: 0.88rem; color: var(--ink-secondary); line-height: 1.6; }
         .module-cta { font-size: 0.78rem; font-weight: 700; color: var(--accent); display: inline-flex; align-items: center; gap: 0.45rem; }
 
+        /* House Ads Banner */
+        .house-ad-banner {
+            margin-top: 2.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-hairline);
+            border-left: 4px solid var(--accent);
+            border-radius: 16px;
+            padding: 1.25rem 1.75rem;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .house-ad-tag {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 0.25rem;
+        }
+
+        .house-ad-banner h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.22rem;
+            font-weight: 700;
+            color: var(--ink-primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .house-ad-banner p {
+            font-size: 0.84rem;
+            color: var(--ink-secondary);
+        }
+
         .stage-wrapper { display: none; max-width: 1400px; margin: 0 auto; padding: 2rem 2.5rem 5rem; }
         .stage-wrapper.active { display: block; }
 
@@ -409,6 +451,9 @@
                 <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
         </div>
+
+        <!-- Hoknex House Ad Slot (Rotates Store, Magazine & Bulk Studio Promos) -->
+        <div id="hoknexHouseAdSlot" aria-label="Hoknex Featured Promotion"></div>
     </main>
 
     <!-- ======================================================================
@@ -998,6 +1043,91 @@
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
+        }
+
+        // ====================================================================
+        // HOKNEX HOUSE ADS ROTATOR + CLICK TRACKER
+        // ====================================================================
+        function initHoknexHouseAds() {
+            const slot = document.getElementById('hoknexHouseAdSlot');
+            if (!slot) return;
+
+            const houseAds = [
+                {
+                    id: 'bulk-events',
+                    tag: 'Hoknex Studio',
+                    title: 'Hosting a Hackathon, Workshop, or School Event?',
+                    desc: 'Issue bulk QR-verified certificates with custom logos, signatures, and individual access passwords.',
+                    cta: 'Open Bulk Engine',
+                    href: '#bulkStage',
+                    action: () => openStage('bulkStage')
+                },
+                {
+                    id: 'hoknex-store',
+                    tag: 'Hoknex Store',
+                    title: 'Official Campus Merch & Event Kits',
+                    desc: 'Browse custom apparel, lanyards, and builder essentials across the Hoknex ecosystem.',
+                    cta: 'Visit Store',
+                    href: 'store.html'
+                },
+                {
+                    id: 'hoknex-magazine',
+                    tag: 'Hoknex Magazine',
+                    title: 'Student Engineering & Game Jam Highlights',
+                    desc: 'Explore campus prototypes, hackathon recaps, and technical stories from student builders.',
+                    cta: 'Read Magazine',
+                    href: 'magazine.html'
+                }
+            ];
+
+            let currentIdx = Math.floor(Math.random() * houseAds.length);
+
+            function renderAd(idx) {
+                const ad = houseAds[idx];
+                slot.innerHTML = `
+                    <div class="house-ad-banner">
+                        <div>
+                            <span class="house-ad-tag">${escapeHtmlText(ad.tag)} &bull; Featured</span>
+                            <h4>${escapeHtmlText(ad.title)}</h4>
+                            <p>${escapeHtmlText(ad.desc)}</p>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <button type="button" class="btn-secondary" id="rotateHouseAdBtn" title="Next promotion" style="padding:0.6rem 0.75rem;">
+                                <i class="fa-solid fa-rotate"></i>
+                            </button>
+                            <a href="${escapeHtmlText(ad.href)}" id="houseAdCtaLink" class="btn-primary">
+                                ${escapeHtmlText(ad.cta)} <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                const rotateBtn = document.getElementById('rotateHouseAdBtn');
+                if (rotateBtn) {
+                    rotateBtn.addEventListener('click', () => {
+                        currentIdx = (currentIdx + 1) % houseAds.length;
+                        renderAd(currentIdx);
+                    });
+                }
+
+                const ctaLink = document.getElementById('houseAdCtaLink');
+                if (ctaLink) {
+                    ctaLink.addEventListener('click', (e) => {
+                        try {
+                            const stats = JSON.parse(localStorage.getItem('hoknex_house_ad_clicks') || '{}');
+                            stats[ad.id] = (stats[ad.id] || 0) + 1;
+                            localStorage.setItem('hoknex_house_ad_clicks', JSON.stringify(stats));
+                        } catch (_) {}
+
+                        if (typeof ad.action === 'function') {
+                            e.preventDefault();
+                            ad.action();
+                        }
+                    });
+                }
+            }
+
+            renderAd(currentIdx);
         }
 
         // ====================================================================
@@ -2520,6 +2650,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             syncAccountUI();
+            initHoknexHouseAds();
             renderVaultHistoryList();
             saveDrawHistory();
 
