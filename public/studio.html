@@ -4,7 +4,7 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hoknex Studio — Credentials, Visual Design & Document Suite</title>
+    <title>Hoknex Studio — Credentials, Visual Design & Media Suite</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
@@ -201,6 +201,26 @@
         .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
         .btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 
+        /* Perks & Account Banner Pill Button in Navbar */
+        .perks-pill-btn {
+            background: var(--accent-tint);
+            color: var(--accent);
+            border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+            padding: 0.56rem 1rem;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            transition: all 0.2s ease;
+        }
+        .perks-pill-btn:hover {
+            background: var(--accent);
+            color: var(--accent-contrast);
+        }
+
         .btn-danger-subtle {
             background: transparent;
             color: #DC2626;
@@ -231,48 +251,6 @@
         .module-card h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--ink-primary); margin-bottom: 0.5rem; }
         .module-card p { font-size: 0.88rem; color: var(--ink-secondary); line-height: 1.6; }
         .module-cta { font-size: 0.78rem; font-weight: 700; color: var(--accent); display: inline-flex; align-items: center; gap: 0.45rem; }
-
-        /* House Ads Banner */
-        .house-ad-banner {
-            margin-top: 2.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 1.25rem;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-hairline);
-            border-left: 4px solid var(--accent);
-            border-radius: 16px;
-            padding: 1.25rem 1.75rem;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .house-ad-tag {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            color: var(--accent);
-            text-transform: uppercase;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 0.25rem;
-        }
-
-        .house-ad-banner h4 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.22rem;
-            font-weight: 700;
-            color: var(--ink-primary);
-            margin-bottom: 0.2rem;
-        }
-
-        .house-ad-banner p {
-            font-size: 0.84rem;
-            color: var(--ink-secondary);
-        }
 
         .stage-wrapper { display: none; max-width: 1400px; margin: 0 auto; padding: 2rem 2.5rem 5rem; }
         .stage-wrapper.active { display: block; }
@@ -308,7 +286,44 @@
 
         .preset-pills { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 1rem; }
         .preset-pill { background: var(--bg-subtle); border: 1px solid var(--border-hairline); color: var(--ink-secondary); padding: 0.38rem 0.75rem; border-radius: 999px; font-size: 0.74rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
-        .preset-pill:hover { border-color: var(--accent); color: var(--accent); }
+        .preset-pill:hover, .preset-pill.active { border-color: var(--accent); color: var(--accent); background: var(--accent-tint); }
+
+        /* Bulk Background Swatch Gallery */
+        .bg-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.55rem;
+            margin-bottom: 1rem;
+        }
+        .bg-swatch-item {
+            height: 48px;
+            border-radius: 9px;
+            border: 2px solid var(--border-hairline);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 3px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: #FFF;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.75);
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+        .bg-swatch-item:hover { transform: translateY(-2px); }
+        .bg-swatch-item.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-tint); }
+
+        .checkerboard-bg {
+            background-image:
+                linear-gradient(45deg, #e5e7eb 25%, transparent 25%),
+                linear-gradient(-45deg, #e5e7eb 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #e5e7eb 75%),
+                linear-gradient(-45deg, transparent 75%, #e5e7eb 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+        }
 
         .tool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
         .tool-cell { background: var(--bg-main); border: 1px solid var(--border-hairline); border-radius: 10px; padding: 0.65rem 0.35rem; text-align: center; cursor: pointer; font-size: 0.72rem; font-weight: 600; color: var(--ink-secondary); transition: all 0.15s ease; }
@@ -330,11 +345,55 @@
         .bg-preview-thumb { width: 100%; max-height: 84px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border-hairline); margin-bottom: 1rem; display: none; }
 
         .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.52); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 50000; padding: 1rem; }
-        .modal-box { background: var(--bg-surface); color: var(--ink-primary); border: 1px solid var(--border-hairline); border-radius: 18px; padding: 1.75rem; width: 100%; max-width: 540px; box-shadow: var(--shadow-elevated); position: relative; }
+        .modal-box { background: var(--bg-surface); color: var(--ink-primary); border: 1px solid var(--border-hairline); border-radius: 18px; padding: 1.75rem; width: 100%; max-width: 540px; box-shadow: var(--shadow-elevated); position: relative; max-height: 92vh; overflow-y: auto; }
 
         .auth-tabs { display: flex; gap: 6px; background: var(--bg-main); padding: 4px; border-radius: 10px; margin-bottom: 1rem; border: 1px solid var(--border-hairline); }
-        .auth-tab { flex: 1; border: none; background: transparent; color: var(--ink-muted); padding: 7px; border-radius: 7px; font-size: 0.76rem; font-weight: 700; cursor: pointer; }
+        .auth-tab { flex: 1; border: none; background: transparent; color: var(--ink-muted); padding: 7px; border-radius: 7px; font-size: 0.74rem; font-weight: 700; cursor: pointer; }
         .auth-tab.active { background: var(--accent); color: var(--accent-contrast); }
+
+        /* Account Perks Banner Inside Account Modal */
+        .account-perks-strip {
+            background: var(--accent-tint);
+            border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+        }
+        .perks-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 10px;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: var(--ink-primary);
+            font-weight: 600;
+        }
+        .perks-grid span i { color: var(--accent); margin-right: 5px; }
+
+        .stat-mini-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .stat-mini-card {
+            background: var(--bg-main);
+            border: 1px solid var(--border-hairline);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        .stat-mini-card strong {
+            display: block;
+            font-size: 1.05rem;
+            color: var(--accent);
+        }
+        .stat-mini-card span {
+            font-size: 0.68rem;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
 
         #toastStack { position: fixed; bottom: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; }
         .toast-item { background: var(--ink-primary); color: var(--bg-surface); padding: 0.75rem 1.15rem; border-radius: 10px; font-size: 0.82rem; font-weight: 600; box-shadow: var(--shadow-elevated); }
@@ -375,6 +434,12 @@
                     <span class="dot" style="background:#FBF7F2; border:1px solid #B45309;"></span> Tactile
                 </button>
             </div>
+
+            <!-- Integrated Creator Perks & Pro Banner Button -->
+            <button type="button" class="perks-pill-btn" id="headerPerksBannerBtn" onclick="openAuthModal('perks')">
+                <i class="fa-solid fa-crown"></i> <span id="headerCreditsLabel">50 Free Credits & Perks</span>
+            </button>
+
             <span id="accountBadge" style="display:none; font-size:0.78rem; font-weight:700; color:var(--accent);"></span>
             <button class="btn-secondary" id="authNavBtn" onclick="openAuthModal('signin')">
                 <i class="fa-solid fa-user"></i> <span id="authNavLabel">Sign In / Sign Up</span>
@@ -393,7 +458,7 @@
         <div class="hub-header">
             <span class="hub-kicker">Hoknex Design & Credential Infrastructure</span>
             <h1>Design, issue, and verify visual credentials in one studio.</h1>
-            <p>Edit certificates, posters, banners, thumbnails, and multi-page PDFs freely. Sign in or create a Hoknex Studio account when downloading files, and manage or delete your account at any time.</p>
+            <p>Edit certificates, posters, banners, thumbnails, multi-page PDFs, and AI image/video media freely. Sign in or create a Hoknex Studio account when downloading files, and manage or delete your account at any time.</p>
         </div>
 
         <div class="modules-grid">
@@ -450,10 +515,18 @@
                 </div>
                 <span class="module-cta">Launch Workspace <i class="fa-solid fa-arrow-right"></i></span>
             </div>
-        </div>
 
-        <!-- Hoknex House Ad Slot (Rotates Store, Magazine & Bulk Studio Promos) -->
-        <div id="hoknexHouseAdSlot" aria-label="Hoknex Featured Promotion"></div>
+            <div class="module-card" onclick="openStage('mediaStage')" style="grid-column: span 3;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+                    <div style="max-width:760px;">
+                        <div class="module-index"><span>07 / AI MEDIA LAB — IMAGE & VIDEO</span><i class="fa-solid fa-wand-sparkles"></i></div>
+                        <h3>Background Remover, Backdrop Studio & Quality / Size Optimizer (Image & Video)</h3>
+                        <p>Remove backgrounds from any image or video, replace with custom uploads or a curated bulk backdrop gallery, enhance sharpness & clarity, or compress file size with instant download.</p>
+                    </div>
+                    <span class="module-cta" style="align-self:center;">Launch Media Lab <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- ======================================================================
@@ -909,6 +982,151 @@
     </section>
 
     <!-- ======================================================================
+         07. AI MEDIA LAB — IMAGE & VIDEO BACKGROUND REMOVER, ENHANCER & COMPRESSOR
+         ====================================================================== -->
+    <section id="mediaStage" class="stage-wrapper">
+        <div class="stage-header">
+            <div>
+                <h2>AI Media Lab — Image & Video Studio</h2>
+                <p>Remove backgrounds, apply custom or bulk studio backdrops, enhance sharpness & quality, and reduce file size.</p>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn-primary" id="tabMediaImageBtn" onclick="switchMediaLabTab('image')"><i class="fa-solid fa-image"></i> Image Studio</button>
+                <button type="button" class="btn-secondary" id="tabMediaVideoBtn" onclick="switchMediaLabTab('video')"><i class="fa-solid fa-video"></i> Video Studio</button>
+                <button type="button" class="btn-secondary" onclick="openHub()"><i class="fa-solid fa-arrow-left"></i> Back to Studio</button>
+            </div>
+        </div>
+
+        <!-- IMAGE STUDIO PANEL -->
+        <div id="mediaImageWorkspace" class="two-col-studio">
+            <div class="panel-surface">
+                <label class="field-label">1. Upload Image</label>
+                <input type="file" id="mediaImgInput" accept="image/*" onchange="loadMediaImage(event)">
+
+                <div style="display:flex; gap:8px; margin-bottom:12px;">
+                    <button type="button" class="btn-primary" style="flex:1; justify-content:center;" onclick="removeMediaImageBackground()">
+                        <i class="fa-solid fa-eraser"></i> Remove Background
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="resetMediaImage()">Reset</button>
+                </div>
+
+                <label class="field-label">Key Color & Edge Tolerance (<span id="imgTolVal">42</span>)</label>
+                <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+                    <input type="color" id="imgBgKeyColor" value="#FFFFFF" style="width:52px; height:36px; padding:2px; margin-bottom:0;" title="Backdrop color to remove">
+                    <button type="button" class="btn-secondary" style="padding:0.45rem 0.7rem; font-size:0.72rem;" onclick="autoDetectCornerBgColor()">Auto-Detect Corner</button>
+                    <input type="range" id="imgBgTolerance" min="10" max="140" value="42" style="margin-bottom:0; flex:1;" oninput="document.getElementById('imgTolVal').textContent=this.value">
+                </div>
+
+                <label class="field-label">2. Replace Background (Bulk Gallery or Custom Upload)</label>
+                <div class="bg-gallery-grid" id="imgBulkBgGallery"></div>
+                <input type="file" accept="image/*" onchange="uploadCustomMediaBackdrop(event, 'image')" title="Upload your own background">
+
+                <label class="field-label">3. Quality Upscale & Size Reduction</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div>
+                        <label class="field-label">Quality / Sharpness (<span id="imgEnhanceVal">100</span>%)</label>
+                        <input type="range" id="imgEnhanceSlider" min="80" max="160" value="100" oninput="document.getElementById('imgEnhanceVal').textContent=this.value; renderProcessedMediaImage();">
+                    </div>
+                    <div>
+                        <label class="field-label">Export Compression (<span id="imgQualityVal">92</span>%)</label>
+                        <input type="range" id="imgCompressSlider" min="15" max="100" value="92" oninput="document.getElementById('imgQualityVal').textContent=this.value; updateEstimatedImageSize();">
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div>
+                        <label class="field-label">Resolution Scale</label>
+                        <select id="imgScaleSelect" onchange="renderProcessedMediaImage()">
+                            <option value="2">2× HD Upscale (High Quality)</option>
+                            <option value="1" selected>1× Original Resolution</option>
+                            <option value="0.7">0.7× Compact Web Size</option>
+                            <option value="0.45">0.45× Ultra-Light Size</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="field-label">File Format</label>
+                        <select id="imgExportFormat" onchange="updateEstimatedImageSize()">
+                            <option value="image/png">PNG (Transparent Support)</option>
+                            <option value="image/webp">WebP (Smallest Size)</option>
+                            <option value="image/jpeg">JPEG (Compressed)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="imgSizeStatsBox" style="background:var(--bg-main); border:1px solid var(--border-hairline); border-radius:10px; padding:10px 12px; font-size:0.78rem; font-weight:600; color:var(--ink-secondary); margin-bottom:12px;">
+                    Upload an image to inspect original vs. optimized size.
+                </div>
+
+                <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="guardedDownload(() => downloadProcessedMediaImage())">
+                    <i class="fa-solid fa-download"></i> Download Processed Image
+                </button>
+            </div>
+
+            <div class="canvas-stage-box checkerboard-bg" style="min-height:460px; justify-content:center;">
+                <canvas id="mediaImgCanvas" style="max-width:100%; border-radius:10px; box-shadow:var(--shadow-soft);"></canvas>
+            </div>
+        </div>
+
+        <!-- VIDEO STUDIO PANEL -->
+        <div id="mediaVideoWorkspace" class="two-col-studio" style="display:none;">
+            <div class="panel-surface">
+                <label class="field-label">1. Upload Video (MP4 / WebM)</label>
+                <input type="file" id="mediaVidInput" accept="video/*" onchange="loadMediaVideo(event)">
+
+                <div style="display:flex; gap:8px; margin-bottom:12px;">
+                    <button type="button" class="btn-primary" id="toggleVidBgRemoveBtn" style="flex:1; justify-content:center;" onclick="toggleVideoBgRemoval()">
+                        <i class="fa-solid fa-eraser"></i> <span id="vidBgRemoveLabel">Remove Video BG: OFF</span>
+                    </button>
+                </div>
+
+                <label class="field-label">Video Key Color & Tolerance (<span id="vidTolVal">55</span>)</label>
+                <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+                    <input type="color" id="vidBgKeyColor" value="#00FF00" style="width:52px; height:36px; padding:2px; margin-bottom:0;" title="Video background color">
+                    <button type="button" class="btn-secondary" style="padding:0.45rem 0.7rem; font-size:0.72rem;" onclick="autoDetectVideoCornerColor()">Sample Frame Corner</button>
+                    <input type="range" id="vidBgTolerance" min="15" max="150" value="55" style="margin-bottom:0; flex:1;" oninput="document.getElementById('vidTolVal').textContent=this.value">
+                </div>
+
+                <label class="field-label">2. Video Backdrop (Bulk Gallery or Custom Image)</label>
+                <div class="bg-gallery-grid" id="vidBulkBgGallery"></div>
+                <input type="file" accept="image/*" onchange="uploadCustomMediaBackdrop(event, 'video')" title="Upload custom video background">
+
+                <label class="field-label">3. Video Quality Enhancer & Size Compressor</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div>
+                        <label class="field-label">Clarity & Contrast (<span id="vidEnhanceVal">105</span>%)</label>
+                        <input type="range" id="vidEnhanceSlider" min="85" max="150" value="105" oninput="document.getElementById('vidEnhanceVal').textContent=this.value">
+                    </div>
+                    <div>
+                        <label class="field-label">Compression Bitrate</label>
+                        <select id="vidBitrateSelect">
+                            <option value="5000000">High Quality (5 Mbps)</option>
+                            <option value="2500000" selected>Balanced (2.5 Mbps)</option>
+                            <option value="1000000">Compact Size (1 Mbps)</option>
+                            <option value="500000">Ultra-Light (500 Kbps)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="vidSizeStatsBox" style="background:var(--bg-main); border:1px solid var(--border-hairline); border-radius:10px; padding:10px 12px; font-size:0.78rem; font-weight:600; color:var(--ink-secondary); margin-bottom:12px;">
+                    Upload a video to preview and render your processed export.
+                </div>
+
+                <button type="button" class="btn-primary" id="exportVidBtn" style="width:100%; justify-content:center;" onclick="guardedDownload(() => exportProcessedMediaVideo())">
+                    <i class="fa-solid fa-film"></i> Render & Download Video
+                </button>
+            </div>
+
+            <div class="canvas-stage-box checkerboard-bg" style="min-height:460px; justify-content:center; gap:10px;">
+                <video id="mediaSourceVideo" playsinline muted loop style="display:none;"></video>
+                <canvas id="mediaVidCanvas" width="640" height="360" style="max-width:100%; border-radius:10px; box-shadow:var(--shadow-soft);"></canvas>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn-secondary" onclick="togglePreviewVideoPlayback()"><i class="fa-solid fa-play"></i> Play / Pause Preview</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================================================
          SAVED PROJECTS MODAL
          ====================================================================== -->
     <div class="modal-backdrop" id="cloudProjectsModal" onclick="if(event.target === this) closeCloudProjectsModal()">
@@ -924,18 +1142,70 @@
     </div>
 
     <!-- ======================================================================
-         ACCOUNT MODAL (SIGN IN / SIGN UP FOR DOWNLOADS + DELETE ACCOUNT)
+         ACCOUNT MODAL (PERKS, CREDITS, REFERRALS, SIGN UP/IN & DELETE ACCOUNT)
          ====================================================================== -->
     <div class="modal-backdrop" id="authModal" onclick="if(event.target === this) closeAuthModal()">
-        <div class="modal-box" style="max-width:430px;">
+        <div class="modal-box" style="max-width:460px;">
             <button onclick="closeAuthModal()" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink-muted);">&times;</button>
             <h3 style="font-family:'Playfair Display',serif; font-size:1.45rem; margin-bottom:4px;">Hoknex Studio Account</h3>
-            <p style="font-size:0.82rem; color:var(--ink-muted); margin-bottom:14px;">Sign in or create an account to download files. You can delete your account anytime.</p>
+            <p style="font-size:0.82rem; color:var(--ink-muted); margin-bottom:12px;">Unlock creator credits, referral rewards, cloud project sync, and HD exports.</p>
+
+            <!-- Creator Benefits Strip -->
+            <div class="account-perks-strip">
+                <div style="font-size:0.74rem; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.06em;">
+                    Member Benefits & Rewards
+                </div>
+                <div class="perks-grid">
+                    <span><i class="fa-solid fa-bolt"></i> 50 Free Studio Credits</span>
+                    <span><i class="fa-solid fa-gift"></i> +25 Credits per Referral</span>
+                    <span><i class="fa-solid fa-cloud"></i> Cloud Canvas & QR Sync</span>
+                    <span><i class="fa-solid fa-file-export"></i> Unlimited HD Downloads</span>
+                </div>
+            </div>
 
             <div class="auth-tabs">
+                <button type="button" class="auth-tab" id="tabBtnPerks" onclick="switchAuthMode('perks')">My Perks</button>
                 <button type="button" class="auth-tab active" id="tabBtnSignup" onclick="switchAuthMode('signup')">Sign Up</button>
                 <button type="button" class="auth-tab" id="tabBtnSignin" onclick="switchAuthMode('signin')">Sign In</button>
-                <button type="button" class="auth-tab" id="tabBtnDelete" onclick="switchAuthMode('delete')">Delete Account</button>
+                <button type="button" class="auth-tab" id="tabBtnDelete" onclick="switchAuthMode('delete')">Delete</button>
+            </div>
+
+            <!-- My Perks & Referral Dashboard -->
+            <div id="formPerks" style="display:none;">
+                <div class="stat-mini-grid">
+                    <div class="stat-mini-card">
+                        <strong id="perkCreditsCount">50</strong>
+                        <span>Credits</span>
+                    </div>
+                    <div class="stat-mini-card">
+                        <strong id="perkDownloadsCount">0</strong>
+                        <span>Exports</span>
+                    </div>
+                    <div class="stat-mini-card">
+                        <strong id="perkPlanLabel">Creator</strong>
+                        <span>Tier</span>
+                    </div>
+                </div>
+
+                <label class="field-label">Your Referral Code (Share to Earn +25 Credits)</label>
+                <div style="display:flex; gap:8px; margin-bottom:12px;">
+                    <input type="text" id="userReferralCodeInput" readonly value="HKX-GUEST" style="margin-bottom:0; font-weight:700;">
+                    <button type="button" class="btn-secondary" onclick="copyUserReferralCode()"><i class="fa-solid fa-copy"></i> Copy</button>
+                </div>
+
+                <div id="perksCtaGuest" style="display:block;">
+                    <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="switchAuthMode('signup')">
+                        Claim 50 Free Credits — Create Account
+                    </button>
+                </div>
+                <div id="perksCtaMember" style="display:none; gap:8px; flex-direction:column;">
+                    <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="claimDailyBonusCredits()">
+                        <i class="fa-solid fa-sparkles"></i> Claim +10 Daily Creator Credits
+                    </button>
+                    <a href="store.html" class="btn-secondary" style="width:100%; justify-content:center;">
+                        <i class="fa-solid fa-crown"></i> Upgrade to Hoknex Pro Pass
+                    </a>
+                </div>
             </div>
 
             <form id="formSignup" onsubmit="handleSignup(event)">
@@ -945,7 +1215,9 @@
                 <input type="email" id="suEmail" required placeholder="name@hoknex.edu">
                 <label class="field-label">Password</label>
                 <input type="password" id="suPass" required minlength="4" placeholder="Minimum 4 characters">
-                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Create Account & Download</button>
+                <label class="field-label">Referral Code (Optional — +25 Bonus Credits)</label>
+                <input type="text" id="suReferral" placeholder="e.g. HKX-ADITYA">
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Create Account & Claim 50 Credits</button>
             </form>
 
             <form id="formSignin" style="display:none;" onsubmit="handleSignin(event)">
@@ -953,12 +1225,12 @@
                 <input type="email" id="siEmail" required placeholder="name@hoknex.edu">
                 <label class="field-label">Password</label>
                 <input type="password" id="siPass" required placeholder="Enter password">
-                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Sign In & Download</button>
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Sign In & Continue</button>
             </form>
 
             <form id="formDelete" style="display:none;" onsubmit="handleDeleteAccount(event)">
                 <p style="font-size:0.8rem; color:#DC2626; font-weight:600; margin-bottom:12px;">
-                    Deleting your account removes your studio profile and saved projects permanently.
+                    Deleting your account removes your studio profile, credits, and saved projects permanently.
                 </p>
                 <label class="field-label">Account Email</label>
                 <input type="email" id="delEmail" required placeholder="name@hoknex.edu">
@@ -1046,92 +1318,7 @@
         }
 
         // ====================================================================
-        // HOKNEX HOUSE ADS ROTATOR + CLICK TRACKER
-        // ====================================================================
-        function initHoknexHouseAds() {
-            const slot = document.getElementById('hoknexHouseAdSlot');
-            if (!slot) return;
-
-            const houseAds = [
-                {
-                    id: 'bulk-events',
-                    tag: 'Hoknex Studio',
-                    title: 'Hosting a Hackathon, Workshop, or School Event?',
-                    desc: 'Issue bulk QR-verified certificates with custom logos, signatures, and individual access passwords.',
-                    cta: 'Open Bulk Engine',
-                    href: '#bulkStage',
-                    action: () => openStage('bulkStage')
-                },
-                {
-                    id: 'hoknex-store',
-                    tag: 'Hoknex Store',
-                    title: 'Official Campus Merch & Event Kits',
-                    desc: 'Browse custom apparel, lanyards, and builder essentials across the Hoknex ecosystem.',
-                    cta: 'Visit Store',
-                    href: 'store.html'
-                },
-                {
-                    id: 'hoknex-magazine',
-                    tag: 'Hoknex Magazine',
-                    title: 'Student Engineering & Game Jam Highlights',
-                    desc: 'Explore campus prototypes, hackathon recaps, and technical stories from student builders.',
-                    cta: 'Read Magazine',
-                    href: 'magazine.html'
-                }
-            ];
-
-            let currentIdx = Math.floor(Math.random() * houseAds.length);
-
-            function renderAd(idx) {
-                const ad = houseAds[idx];
-                slot.innerHTML = `
-                    <div class="house-ad-banner">
-                        <div>
-                            <span class="house-ad-tag">${escapeHtmlText(ad.tag)} &bull; Featured</span>
-                            <h4>${escapeHtmlText(ad.title)}</h4>
-                            <p>${escapeHtmlText(ad.desc)}</p>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <button type="button" class="btn-secondary" id="rotateHouseAdBtn" title="Next promotion" style="padding:0.6rem 0.75rem;">
-                                <i class="fa-solid fa-rotate"></i>
-                            </button>
-                            <a href="${escapeHtmlText(ad.href)}" id="houseAdCtaLink" class="btn-primary">
-                                ${escapeHtmlText(ad.cta)} <i class="fa-solid fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                `;
-
-                const rotateBtn = document.getElementById('rotateHouseAdBtn');
-                if (rotateBtn) {
-                    rotateBtn.addEventListener('click', () => {
-                        currentIdx = (currentIdx + 1) % houseAds.length;
-                        renderAd(currentIdx);
-                    });
-                }
-
-                const ctaLink = document.getElementById('houseAdCtaLink');
-                if (ctaLink) {
-                    ctaLink.addEventListener('click', (e) => {
-                        try {
-                            const stats = JSON.parse(localStorage.getItem('hoknex_house_ad_clicks') || '{}');
-                            stats[ad.id] = (stats[ad.id] || 0) + 1;
-                            localStorage.setItem('hoknex_house_ad_clicks', JSON.stringify(stats));
-                        } catch (_) {}
-
-                        if (typeof ad.action === 'function') {
-                            e.preventDefault();
-                            ad.action();
-                        }
-                    });
-                }
-            }
-
-            renderAd(currentIdx);
-        }
-
-        // ====================================================================
-        // ACCOUNT AUTHENTICATION & SELF-SERVICE DELETION (DOWNLOAD GATE)
+        // ACCOUNT AUTHENTICATION, CREDITS, REFERRALS & SELF-SERVICE DELETION
         // ====================================================================
         function getCurrentUser() {
             try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
@@ -1146,25 +1333,80 @@
             syncAccountUI();
         }
 
+        function makeReferralCode(name) {
+            const clean = String(name || 'HKX').replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 5) || 'HKX';
+            const rand = Math.random().toString(36).substring(2, 5).toUpperCase();
+            return `HKX-${clean}-${rand}`;
+        }
+
         function syncAccountUI() {
             const user = getCurrentUser() || window.__hoknexSessionUser || null;
             const badge = document.getElementById('accountBadge');
             const label = document.getElementById('authNavLabel');
             const delBtn = document.getElementById('deleteAccNavBtn');
+            const creditsLabel = document.getElementById('headerCreditsLabel');
+
+            const perkCredits = document.getElementById('perkCreditsCount');
+            const perkDownloads = document.getElementById('perkDownloadsCount');
+            const perkPlan = document.getElementById('perkPlanLabel');
+            const refInput = document.getElementById('userReferralCodeInput');
+            const ctaGuest = document.getElementById('perksCtaGuest');
+            const ctaMember = document.getElementById('perksCtaMember');
 
             if (user) {
+                const credits = typeof user.credits === 'number' ? user.credits : 50;
+                const exportsCount = typeof user.exportsCount === 'number' ? user.exportsCount : 0;
+                const refCode = user.referralCode || makeReferralCode(user.name);
+
                 badge.style.display = 'inline';
                 badge.textContent = user.name;
                 label.textContent = 'Account';
                 delBtn.style.display = 'inline-flex';
+                if (creditsLabel) creditsLabel.textContent = `${credits} Studio Credits`;
+
+                if (perkCredits) perkCredits.textContent = credits;
+                if (perkDownloads) perkDownloads.textContent = exportsCount;
+                if (perkPlan) perkPlan.textContent = user.plan || 'Creator';
+                if (refInput) refInput.value = refCode;
+                if (ctaGuest) ctaGuest.style.display = 'none';
+                if (ctaMember) ctaMember.style.display = 'flex';
             } else {
                 badge.style.display = 'none';
                 label.textContent = 'Sign In / Sign Up';
                 delBtn.style.display = 'none';
+                if (creditsLabel) creditsLabel.textContent = '50 Free Credits & Perks';
+
+                if (perkCredits) perkCredits.textContent = '50';
+                if (perkDownloads) perkDownloads.textContent = '0';
+                if (perkPlan) perkPlan.textContent = 'Free';
+                if (refInput) refInput.value = 'SIGN-UP-TO-UNLOCK';
+                if (ctaGuest) ctaGuest.style.display = 'block';
+                if (ctaMember) ctaMember.style.display = 'none';
             }
         }
 
+        function copyUserReferralCode() {
+            const input = document.getElementById('userReferralCodeInput');
+            if (!input) return;
+            navigator.clipboard.writeText(`Join Hoknex Studio with my referral code ${input.value} for +25 bonus credits: ${window.location.origin}${window.location.pathname}`);
+            showToast('Copied referral invite link & code');
+        }
+
+        function claimDailyBonusCredits() {
+            const user = getCurrentUser() || window.__hoknexSessionUser;
+            if (!user) return openAuthModal('signup');
+            const today = new Date().toISOString().slice(0, 10);
+            if (user.lastBonusDate === today) {
+                return showToast('Daily creator credits already claimed today');
+            }
+            user.credits = (typeof user.credits === 'number' ? user.credits : 50) + 10;
+            user.lastBonusDate = today;
+            setCurrentUser(user);
+            showToast('+10 Daily Creator Credits added!');
+        }
+
         function openAuthModal(mode = 'signup') {
+            syncAccountUI();
             switchAuthMode(mode);
             document.getElementById('authModal').style.display = 'flex';
         }
@@ -1175,9 +1417,11 @@
         }
 
         function switchAuthMode(mode) {
-            ['signup', 'signin', 'delete'].forEach(m => {
-                document.getElementById(`tabBtn${m[0].toUpperCase() + m.slice(1)}`).classList.toggle('active', m === mode);
+            ['perks', 'signup', 'signin', 'delete'].forEach(m => {
+                const btn = document.getElementById(`tabBtn${m[0].toUpperCase() + m.slice(1)}`);
+                if (btn) btn.classList.toggle('active', m === mode);
             });
+            document.getElementById('formPerks').style.display = mode === 'perks' ? 'block' : 'none';
             document.getElementById('formSignup').style.display = mode === 'signup' ? 'block' : 'none';
             document.getElementById('formSignin').style.display = mode === 'signin' ? 'block' : 'none';
             document.getElementById('formDelete').style.display = mode === 'delete' ? 'block' : 'none';
@@ -1186,6 +1430,8 @@
         function guardedDownload(actionFn) {
             const user = getCurrentUser() || window.__hoknexSessionUser;
             if (user && user.email) {
+                user.exportsCount = (user.exportsCount || 0) + 1;
+                setCurrentUser(user);
                 actionFn();
                 return;
             }
@@ -1197,7 +1443,11 @@
             setCurrentUser(userObj);
             const cb = pendingDownloadCallback;
             closeAuthModal();
-            if (typeof cb === 'function') cb();
+            if (typeof cb === 'function') {
+                userObj.exportsCount = (userObj.exportsCount || 0) + 1;
+                setCurrentUser(userObj);
+                cb();
+            }
         }
 
         async function handleSignup(e) {
@@ -1205,24 +1455,35 @@
             const name = document.getElementById('suName').value.trim();
             const email = document.getElementById('suEmail').value.trim();
             const password = document.getElementById('suPass').value;
+            const referralUsed = document.getElementById('suReferral').value.trim();
 
             try {
                 const res = await fetch(`${STUDIO_API}/auth/signup`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password })
+                    body: JSON.stringify({ name, email, password, referralUsed })
                 });
                 if (res.ok) {
                     const data = await res.json();
                     if (data.user) {
-                        showToast(`Signed in as ${data.user.name}`);
+                        showToast(`Welcome ${data.user.name}! ${data.user.credits || 50} credits unlocked.`);
                         finishAuthAndRunPending(data.user);
                         return;
                     }
                 }
             } catch (_) {}
 
-            const userObj = { id: Date.now().toString(), name, email: email.toLowerCase(), password };
+            const startingCredits = referralUsed ? 75 : 50;
+            const userObj = {
+                id: Date.now().toString(),
+                name,
+                email: email.toLowerCase(),
+                password,
+                credits: startingCredits,
+                exportsCount: 0,
+                plan: 'Creator',
+                referralCode: makeReferralCode(name)
+            };
             try {
                 const localUsers = JSON.parse(localStorage.getItem('hoknex_local_users') || '{}');
                 localUsers[userObj.email] = userObj;
@@ -1231,7 +1492,7 @@
             window.__hoknexLocalUsers = window.__hoknexLocalUsers || {};
             window.__hoknexLocalUsers[userObj.email] = userObj;
 
-            showToast(`Signed in as ${name}`);
+            showToast(`Account created! ${startingCredits} Studio Credits unlocked.`);
             finishAuthAndRunPending(userObj);
         }
 
@@ -1265,7 +1526,16 @@
                 return showToast('Invalid email or password.');
             }
 
-            const userObj = existing || { id: Date.now().toString(), name: email.split('@')[0], email, password };
+            const userObj = existing || {
+                id: Date.now().toString(),
+                name: email.split('@')[0],
+                email,
+                password,
+                credits: 50,
+                exportsCount: 0,
+                plan: 'Creator',
+                referralCode: makeReferralCode(email.split('@')[0])
+            };
             showToast(`Signed in as ${userObj.name}`);
             finishAuthAndRunPending(userObj);
         }
@@ -2648,9 +2918,397 @@
             pdf.save(`${activeUnlockedCert.certId}.pdf`);
         }
 
+        // ====================================================================
+        // 07. AI MEDIA LAB — IMAGE & VIDEO BG REMOVER, ENHANCER & COMPRESSOR
+        // ====================================================================
+        const BULK_BACKDROPS = [
+            { id: 'transparent', label: 'Transparent', css: 'repeating-conic-gradient(#cbd5e1 0% 25%, #fff 0% 50%) 50% / 12px 12px', type: 'transparent' },
+            { id: 'pure-white', label: 'Studio White', css: '#FFFFFF', type: 'color', value: '#FFFFFF' },
+            { id: 'obsidian-gold', label: 'Obsidian Gold', css: 'linear-gradient(135deg, #0C0A09 0%, #292524 65%, #B45309 100%)', type: 'gradient', colors: ['#0C0A09', '#292524', '#B45309'] },
+            { id: 'royal-blue', label: 'Hoknex Blue', css: 'linear-gradient(135deg, #1E3A8A 0%, #2563EB 60%, #0D9488 100%)', type: 'gradient', colors: ['#1E3A8A', '#2563EB', '#0D9488'] },
+            { id: 'cyber-grid', label: 'Cyber Midnight', css: 'linear-gradient(135deg, #050811 0%, #0F172A 60%, #0284C7 100%)', type: 'gradient', colors: ['#050811', '#0F172A', '#0284C7'] },
+            { id: 'warm-ivory', label: 'Warm Tactile', css: 'linear-gradient(135deg, #FBF7F2 0%, #E6CCB2 100%)', type: 'gradient', colors: ['#FBF7F2', '#E6CCB2'] },
+            { id: 'emerald-stage', label: 'Deep Teal', css: 'linear-gradient(135deg, #064E3B 0%, #143734 55%, #D97706 100%)', type: 'gradient', colors: ['#064E3B', '#143734', '#D97706'] },
+            { id: 'crimson-velvet', label: 'Velvet Studio', css: 'linear-gradient(135deg, #18181B 0%, #4C0519 70%, #9F1239 100%)', type: 'gradient', colors: ['#18181B', '#4C0519', '#9F1239'] }
+        ];
+
+        let mediaOriginalImg = null;
+        let mediaOriginalFileSize = 0;
+        let mediaCutoutCanvas = null;
+        let selectedImgBackdrop = BULK_BACKDROPS[0];
+        let customImgBackdropObj = null;
+
+        let selectedVidBackdrop = BULK_BACKDROPS[2];
+        let customVidBackdropObj = null;
+        let isVideoBgRemovalActive = false;
+        let videoPreviewAnimId = null;
+
+        function switchMediaLabTab(tab) {
+            const isImg = tab === 'image';
+            document.getElementById('mediaImageWorkspace').style.display = isImg ? 'grid' : 'none';
+            document.getElementById('mediaVideoWorkspace').style.display = isImg ? 'none' : 'grid';
+            document.getElementById('tabMediaImageBtn').className = isImg ? 'btn-primary' : 'btn-secondary';
+            document.getElementById('tabMediaVideoBtn').className = isImg ? 'btn-secondary' : 'btn-primary';
+        }
+
+        function buildBulkBackdropGalleries() {
+            ['image', 'video'].forEach(kind => {
+                const container = document.getElementById(kind === 'image' ? 'imgBulkBgGallery' : 'vidBulkBgGallery');
+                if (!container) return;
+                container.innerHTML = BULK_BACKDROPS.map((item, idx) => `
+                    <div class="bg-swatch-item ${idx === (kind === 'image' ? 0 : 2) ? 'selected' : ''}"
+                         style="background:${item.css};"
+                         onclick="selectBulkBackdrop('${kind}', ${idx}, this)">
+                        <span>${item.label}</span>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function selectBulkBackdrop(kind, idx, el) {
+            const parent = el.parentElement;
+            parent.querySelectorAll('.bg-swatch-item').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            if (kind === 'image') {
+                customImgBackdropObj = null;
+                selectedImgBackdrop = BULK_BACKDROPS[idx];
+                renderProcessedMediaImage();
+            } else {
+                customVidBackdropObj = null;
+                selectedVidBackdrop = BULK_BACKDROPS[idx];
+            }
+        }
+
+        function uploadCustomMediaBackdrop(e, kind) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    if (kind === 'image') {
+                        customImgBackdropObj = img;
+                        renderProcessedMediaImage();
+                    } else {
+                        customVidBackdropObj = img;
+                    }
+                    showToast('Custom backdrop applied');
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function drawBackdropOntoContext(ctx, w, h, preset, customImg) {
+            if (customImg) {
+                const scale = Math.max(w / customImg.width, h / customImg.height);
+                const dw = customImg.width * scale;
+                const dh = customImg.height * scale;
+                ctx.drawImage(customImg, (w - dw) / 2, (h - dh) / 2, dw, dh);
+                return;
+            }
+            if (!preset || preset.type === 'transparent') return;
+            if (preset.type === 'color') {
+                ctx.fillStyle = preset.value;
+                ctx.fillRect(0, 0, w, h);
+                return;
+            }
+            if (preset.type === 'gradient' && Array.isArray(preset.colors)) {
+                const grad = ctx.createLinearGradient(0, 0, w, h);
+                preset.colors.forEach((c, idx) => {
+                    grad.addColorStop(idx / Math.max(1, preset.colors.length - 1), c);
+                });
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+            }
+        }
+
+        function hexToRgb(hex) {
+            const clean = hex.replace('#', '');
+            return {
+                r: parseInt(clean.substring(0, 2), 16) || 255,
+                g: parseInt(clean.substring(2, 4), 16) || 255,
+                b: parseInt(clean.substring(4, 6), 16) || 255
+            };
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+        }
+
+        function loadMediaImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            mediaOriginalFileSize = file.size;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    mediaOriginalImg = img;
+                    mediaCutoutCanvas = document.createElement('canvas');
+                    mediaCutoutCanvas.width = img.width;
+                    mediaCutoutCanvas.height = img.height;
+                    mediaCutoutCanvas.getContext('2d').drawImage(img, 0, 0);
+                    autoDetectCornerBgColor(true);
+                    renderProcessedMediaImage();
+                    showToast('Image loaded into Media Lab');
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function autoDetectCornerBgColor(silent = false) {
+            if (!mediaOriginalImg) return;
+            const temp = document.createElement('canvas');
+            temp.width = mediaOriginalImg.width;
+            temp.height = mediaOriginalImg.height;
+            const ctx = temp.getContext('2d');
+            ctx.drawImage(mediaOriginalImg, 0, 0);
+            const px = ctx.getImageData(2, 2, 1, 1).data;
+            const hex = rgbToHex(px[0], px[1], px[2]);
+            document.getElementById('imgBgKeyColor').value = hex;
+            if (!silent) showToast(`Sampled background color ${hex.toUpperCase()}`);
+        }
+
+        function removeMediaImageBackground() {
+            if (!mediaOriginalImg) return showToast('Upload an image first');
+            const keyRgb = hexToRgb(document.getElementById('imgBgKeyColor').value);
+            const tolerance = parseInt(document.getElementById('imgBgTolerance').value, 10) || 42;
+            const feather = 18;
+
+            const c = document.createElement('canvas');
+            c.width = mediaOriginalImg.width;
+            c.height = mediaOriginalImg.height;
+            const ctx = c.getContext('2d');
+            ctx.drawImage(mediaOriginalImg, 0, 0);
+
+            const imgData = ctx.getImageData(0, 0, c.width, c.height);
+            const data = imgData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const dr = data[i] - keyRgb.r;
+                const dg = data[i + 1] - keyRgb.g;
+                const db = data[i + 2] - keyRgb.b;
+                const dist = Math.sqrt(dr * dr + dg * dg + db * db);
+
+                if (dist < tolerance) {
+                    data[i + 3] = 0;
+                } else if (dist < tolerance + feather) {
+                    const alphaFactor = (dist - tolerance) / feather;
+                    data[i + 3] = Math.round(data[i + 3] * alphaFactor);
+                }
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+            mediaCutoutCanvas = c;
+            renderProcessedMediaImage();
+            showToast('Background removed');
+        }
+
+        function resetMediaImage() {
+            if (!mediaOriginalImg) return;
+            mediaCutoutCanvas = document.createElement('canvas');
+            mediaCutoutCanvas.width = mediaOriginalImg.width;
+            mediaCutoutCanvas.height = mediaOriginalImg.height;
+            mediaCutoutCanvas.getContext('2d').drawImage(mediaOriginalImg, 0, 0);
+            document.getElementById('imgEnhanceSlider').value = 100;
+            document.getElementById('imgEnhanceVal').textContent = '100';
+            document.getElementById('imgScaleSelect').value = '1';
+            renderProcessedMediaImage();
+        }
+
+        function renderProcessedMediaImage() {
+            if (!mediaCutoutCanvas) return;
+            const outCanvas = document.getElementById('mediaImgCanvas');
+            const scale = parseFloat(document.getElementById('imgScaleSelect').value) || 1;
+            const enhance = parseInt(document.getElementById('imgEnhanceSlider').value, 10) || 100;
+
+            const targetW = Math.max(16, Math.round(mediaCutoutCanvas.width * scale));
+            const targetH = Math.max(16, Math.round(mediaCutoutCanvas.height * scale));
+            outCanvas.width = targetW;
+            outCanvas.height = targetH;
+
+            const ctx = outCanvas.getContext('2d');
+            ctx.clearRect(0, 0, targetW, targetH);
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            drawBackdropOntoContext(ctx, targetW, targetH, selectedImgBackdrop, customImgBackdropObj);
+
+            const contrastBoost = enhance > 100 ? 100 + (enhance - 100) * 0.45 : enhance;
+            const saturateBoost = enhance > 100 ? 100 + (enhance - 100) * 0.35 : 100;
+            ctx.filter = `contrast(${contrastBoost}%) saturate(${saturateBoost}%)`;
+            ctx.drawImage(mediaCutoutCanvas, 0, 0, targetW, targetH);
+            ctx.filter = 'none';
+
+            updateEstimatedImageSize();
+        }
+
+        function updateEstimatedImageSize() {
+            const outCanvas = document.getElementById('mediaImgCanvas');
+            const statsEl = document.getElementById('imgSizeStatsBox');
+            if (!mediaOriginalImg || !statsEl) return;
+            const mime = document.getElementById('imgExportFormat').value;
+            const q = (parseInt(document.getElementById('imgCompressSlider').value, 10) || 92) / 100;
+            const dataUrl = outCanvas.toDataURL(mime, q);
+            const approxBytes = Math.round((dataUrl.length - dataUrl.indexOf(',') - 1) * 0.75);
+
+            const fmtKB = (b) => b > 1024 * 1024 ? `${(b / (1024 * 1024)).toFixed(2)} MB` : `${Math.max(1, Math.round(b / 1024))} KB`;
+            statsEl.textContent = `Original: ${fmtKB(mediaOriginalFileSize)} (${mediaOriginalImg.width}×${mediaOriginalImg.height}) → Output: ${fmtKB(approxBytes)} (${outCanvas.width}×${outCanvas.height})`;
+        }
+
+        function downloadProcessedMediaImage() {
+            if (!mediaCutoutCanvas) return showToast('Upload an image first');
+            const outCanvas = document.getElementById('mediaImgCanvas');
+            const mime = document.getElementById('imgExportFormat').value;
+            const q = (parseInt(document.getElementById('imgCompressSlider').value, 10) || 92) / 100;
+            const ext = mime.split('/')[1] || 'png';
+            const a = document.createElement('a');
+            a.href = outCanvas.toDataURL(mime, q);
+            a.download = `hoknex-media-${Date.now()}.${ext}`;
+            a.click();
+        }
+
+        // Video Studio Controls
+        function loadMediaVideo(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const video = document.getElementById('mediaSourceVideo');
+            const canvas = document.getElementById('mediaVidCanvas');
+            const url = URL.createObjectURL(file);
+            video.src = url;
+            video.onloadedmetadata = () => {
+                const maxW = 720;
+                const ratio = video.videoHeight / Math.max(1, video.videoWidth);
+                canvas.width = Math.min(maxW, video.videoWidth || 640);
+                canvas.height = Math.round(canvas.width * ratio) || 360;
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                document.getElementById('vidSizeStatsBox').textContent = `Loaded Video: ${sizeMB} MB (${video.videoWidth}×${video.videoHeight})`;
+                video.play();
+                startVideoPreviewLoop();
+                showToast('Video loaded into Media Lab');
+            };
+        }
+
+        function autoDetectVideoCornerColor() {
+            const video = document.getElementById('mediaSourceVideo');
+            if (!video.videoWidth) return showToast('Upload a video first');
+            const temp = document.createElement('canvas');
+            temp.width = video.videoWidth;
+            temp.height = video.videoHeight;
+            const ctx = temp.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            const px = ctx.getImageData(4, 4, 1, 1).data;
+            const hex = rgbToHex(px[0], px[1], px[2]);
+            document.getElementById('vidBgKeyColor').value = hex;
+            showToast(`Sampled video background ${hex.toUpperCase()}`);
+        }
+
+        function toggleVideoBgRemoval() {
+            isVideoBgRemovalActive = !isVideoBgRemovalActive;
+            document.getElementById('vidBgRemoveLabel').textContent = `Remove Video BG: ${isVideoBgRemovalActive ? 'ON' : 'OFF'}`;
+        }
+
+        function togglePreviewVideoPlayback() {
+            const video = document.getElementById('mediaSourceVideo');
+            if (!video.src) return;
+            if (video.paused) {
+                video.play();
+                startVideoPreviewLoop();
+            } else {
+                video.pause();
+            }
+        }
+
+        function startVideoPreviewLoop() {
+            if (videoPreviewAnimId) cancelAnimationFrame(videoPreviewAnimId);
+            const video = document.getElementById('mediaSourceVideo');
+            const canvas = document.getElementById('mediaVidCanvas');
+            const ctx = canvas.getContext('2d');
+            const tempFrame = document.createElement('canvas');
+
+            const renderFrame = () => {
+                if (video.readyState >= 2) {
+                    const w = canvas.width;
+                    const h = canvas.height;
+                    const enhance = parseInt(document.getElementById('vidEnhanceSlider').value, 10) || 105;
+
+                    ctx.clearRect(0, 0, w, h);
+                    if (isVideoBgRemovalActive) {
+                        drawBackdropOntoContext(ctx, w, h, selectedVidBackdrop, customVidBackdropObj);
+                        tempFrame.width = w;
+                        tempFrame.height = h;
+                        const tCtx = tempFrame.getContext('2d');
+                        tCtx.drawImage(video, 0, 0, w, h);
+                        const frameData = tCtx.getImageData(0, 0, w, h);
+                        const d = frameData.data;
+                        const keyRgb = hexToRgb(document.getElementById('vidBgKeyColor').value);
+                        const tol = parseInt(document.getElementById('vidBgTolerance').value, 10) || 55;
+
+                        for (let i = 0; i < d.length; i += 4) {
+                            const dr = d[i] - keyRgb.r;
+                            const dg = d[i + 1] - keyRgb.g;
+                            const db = d[i + 2] - keyRgb.b;
+                            if (Math.sqrt(dr * dr + dg * dg + db * db) < tol) {
+                                d[i + 3] = 0;
+                            }
+                        }
+                        tCtx.putImageData(frameData, 0, 0);
+                        ctx.filter = `contrast(${enhance}%) saturate(${enhance}%)`;
+                        ctx.drawImage(tempFrame, 0, 0);
+                        ctx.filter = 'none';
+                    } else {
+                        ctx.filter = `contrast(${enhance}%) saturate(${enhance}%)`;
+                        ctx.drawImage(video, 0, 0, w, h);
+                        ctx.filter = 'none';
+                    }
+                }
+                videoPreviewAnimId = requestAnimationFrame(renderFrame);
+            };
+            renderFrame();
+        }
+
+        function exportProcessedMediaVideo() {
+            const video = document.getElementById('mediaSourceVideo');
+            const canvas = document.getElementById('mediaVidCanvas');
+            if (!video.src) return showToast('Upload a video first');
+            if (typeof MediaRecorder === 'undefined') {
+                return showToast('Video recording is not supported in this browser');
+            }
+
+            const bitrate = parseInt(document.getElementById('vidBitrateSelect').value, 10) || 2500000;
+            const stream = canvas.captureStream(30);
+            const recorder = new MediaRecorder(stream, { mimeType: 'video/webm', videoBitsPerSecond: bitrate });
+            const chunks = [];
+
+            recorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `hoknex-video-${Date.now()}.webm`;
+                a.click();
+                URL.revokeObjectURL(url);
+                document.getElementById('vidSizeStatsBox').textContent = `Exported Video Size: ${(blob.size / (1024 * 1024)).toFixed(2)} MB`;
+                showToast('Processed video downloaded');
+            };
+
+            video.currentTime = 0;
+            video.play();
+            startVideoPreviewLoop();
+            recorder.start();
+            const durationMs = Math.min(15000, Math.max(3000, (video.duration || 5) * 1000));
+            showToast(`Rendering video (${Math.round(durationMs / 1000)}s)...`);
+            setTimeout(() => {
+                if (recorder.state !== 'inactive') recorder.stop();
+            }, durationMs);
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             syncAccountUI();
-            initHoknexHouseAds();
+            buildBulkBackdropGalleries();
             renderVaultHistoryList();
             saveDrawHistory();
 
