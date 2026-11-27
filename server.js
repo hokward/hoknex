@@ -1877,30 +1877,80 @@ app.get('/api/user-reposts/:username', async (req, res) => {
   }
 });
 
-app.post('/api/projects', upload.single('image'), async (req, res) => {
+// GET /api/projects - Supports optional ?q=, ?classification=, and ?tech= filters
+app.get('/api/projects', async (req, res) => {
     try {
-        const title = req.body.title;
-        const description = req.body.desc || req.body.description || '';
-        const classification = req.body.classification || 'Showcase';
-        const audience = req.body.audience || 'Open to All';
-        const techStack = req.body.techStack || '';
-        const projectUrl = req.body.projectUrl || '';
-        const author = req.body.author || 'Student';
+        const { q, classification, tech } = req.query;
+        const filter = {};
 
-        if (!title) {
-            return res.status(400).json({ error: 'Project title is required.' });
+        if (classification && classification !== 'All') {
+            filter.classification = classification;
+        }
+        if (tech && tech.trim()) {
+            filter.techStack = { $regex: tech.trim().replace(/^#/, ''), $options: 'i' };
+        }
+        if (q && q.trim()) {
+            const regex = new RegExp(q.trim(), 'i');
+            filter.$or = [
+                { title: regex },
+                { desc: regex },
+                { techStack: regex },
+                { author: regex }
+            ];
         }
 
-        const imageUrl = req.file ? req.file.path : '';
+        const projects = await Project.find(filter).sort({ createdAt: -1 });
+        res.json(projects);
+    } catch (err) {
+        console.error('Error fetching projects:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/projects - Accepts multipart/form-data OR JSON
+app.post('/api/projects', upload.single('image'), async (req, res) => {
+    try {
+        const title = (req.body.title || '').trim();
+        const desc = (req.body.desc || req.body.description || req.body.pitch || '').trim();
+        const classification = req.body.classification || 'Showcase';
+        const stage = req.body.stage || 'Prototype';
+        const audience = req.body.audience || 'Open to All';
+        const techStack = (req.body.techStack || '').trim();
+        const projectUrl = (req.body.projectUrl || '').trim();
+        const demoUrl = (req.body.demoUrl || '').trim();
+        const author = req.body.author || 'Student';
+
+        let openRoles = [];
+        if (Array.isArray(req.body.openRoles)) {
+            openRoles = req.body.openRoles.map(r => String(r).trim()).filter(Boolean);
+        } else if (typeof req.body.openRoles === 'string' && req.body.openRoles.trim()) {
+            openRoles = req.body.openRoles.split(',').map(r => r.trim()).filter(Boolean);
+        }
+
+        if (!title || !desc) {
+            return res.status(400).json({ error: 'Project title and description are required.' });
+        }
+
+        // Support Multer uploaded file path/URL, or direct imageUrl/img from body
+        let resolvedImage = '';
+        if (req.file) {
+            resolvedImage = req.file.path || req.file.secure_url || req.file.url || '';
+        } else if (req.body.imageUrl || req.body.img) {
+            resolvedImage = req.body.imageUrl || req.body.img;
+        }
 
         const newProj = new Project({
             title,
-            desc: description,
+            desc,
             classification,
+            stage,
+            openRoles,
             audience,
             techStack,
             projectUrl,
-            imageUrl,
+            demoUrl,
+            img: resolvedImage,
+            imageUrl: resolvedImage,
             author
         });
 
@@ -1912,39 +1962,60 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
     }
 });
 
-app.delete('/api/projects/:id', async (req, res) => {
+// POST /api/projects/:id/boost - High-velocity project boost counter
+app.post('/api/projects/:id/boost', async (req, res) => {
     try {
-        await Project.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Project deleted successfully' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/projects/:id/react', async (req, res) => {
-    try {
-        const { type } = req.body;
-        const proj = await Project.findById(req.params.id);
+        const proj = await Project.findByIdAndUpdate(
+            req.params.id,
+            { $inc: { boosts: 1, 'reactions.rocket': 1 } },
+            { new: true }
+        );
         if (!proj) return res.status(404).json({ error: 'Project not found' });
-
-        if (proj.reactions && proj.reactions[type] !== undefined) {
-            proj.reactions[type] += 1;
-            await proj.save();
-        }
         res.json(proj);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
+// POST /api/projects/:id/react
+app.post('/api/projects/:id/react', async (req, res) => {
+    try {
+        const { type } = req.body;
+        const allowed = ['like', 'love', 'rocket'];
+        if (!allowed.includes(type)) {
+            return res.status(400).json({ error: 'Invalid reaction type' });
+        }
+
+        const proj = await Project.findByIdAndUpdate(
+            req.params.id,
+            { $inc: { [`reactions.${type}`]: 1 } },
+            { new: true }
+        );
+        if (!proj) return res.status(404).json({ error: 'Project not found' });
+        res.json(proj);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/projects/:id/rate
 app.post('/api/projects/:id/rate', async (req, res) => {
     try {
-        const { rating } = req.body;
+        const numericRating = Number(req.body.rating);
+        if (!numericRating || numericRating < 1 || numericRating > 5) {
+            return res.status(400).json({ error: 'Rating must be between 1 and 5' });
+        }
+
         const proj = await Project.findById(req.params.id);
         if (!proj) return res.status(404).json({ error: 'Project not found' });
 
-        proj.rating = ((proj.rating * proj.ratingsCount) + Number(rating)) / (proj.ratingsCount + 1);
-        proj.ratingsCount += 1;
+        const currentCount = proj.ratingsCount || 0;
+        const currentAvg = proj.rating || 0;
+        const nextCount = currentCount + 1;
+        const nextAvg = ((currentAvg * currentCount) + numericRating) / nextCount;
+
+        proj.rating = Number(nextAvg.toFixed(2));
+        proj.ratingsCount = nextCount;
         await proj.save();
 
         res.json(proj);
@@ -1952,6 +2023,18 @@ app.post('/api/projects/:id/rate', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// DELETE /api/projects/:id
+app.delete('/api/projects/:id', async (req, res) => {
+    try {
+        const deleted = await Project.findByIdAndDelete(req.params.id);
+        if (!deleted) return res.status(404).json({ error: 'Project not found' });
+        res.json({ message: 'Project deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 // ==========================================
 // --- HOKNEX CLUB / SPACE ROUTES ---
@@ -2838,14 +2921,6 @@ app.post('/api/events/verify-ticket', async (req, res) => {
     }
 });
 
-app.get('/api/projects', async (req, res) => {
-    try {
-        const projects = await Project.find().sort({ createdAt: -1 });
-        res.json(projects);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
 
 const lostFoundSchema = new mongoose.Schema({
     id: String,
