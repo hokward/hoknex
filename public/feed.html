@@ -3162,24 +3162,32 @@ async function toggleProjectMilestone(projectId, milestoneId) {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' }
         });
-        if (!res.ok) return;
+        if (!res.ok) return alert('Could not update milestone (check CORS PATCH & server).');
         syncCachedProject(await res.json());
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error('Toggle milestone error:', e);
+        alert('Network error toggling milestone.');
+    }
 }
 
 async function addProjectMilestone(projectId) {
     const input = document.getElementById(`new-milestone-input-${projectId}`);
     const title = (input?.value || '').trim();
-    if (!title) return;
+    if (!title) return alert('Enter a milestone title!');
     try {
         const res = await fetch(`${__HOKNEX_PROJ_API}/api/projects/${projectId}/milestones`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title })
         });
-        if (!res.ok) return alert('Failed to add milestone.');
-        syncCachedProject(await res.json());
-    } catch (e) { console.error(e); }
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) return alert(data.error || 'Failed to add milestone.');
+        if (input) input.value = '';
+        syncCachedProject(data);
+    } catch (e) {
+        console.error('Add milestone error:', e);
+        alert('Failed to add milestone.');
+    }
 }
 
 async function addProjectTeamMember(projectId) {
@@ -3194,10 +3202,28 @@ async function addProjectTeamMember(projectId) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, role })
         });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         if (!res.ok) return alert(data.error || 'Failed to add member.');
+        if (userEl) userEl.value = '';
+        if (roleEl) roleEl.value = '';
         syncCachedProject(data);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error('Add team member error:', e);
+        alert('Network error adding team member.');
+    }
+}
+
+async function removeProjectTeamMember(projectId, memberId) {
+    try {
+        const res = await fetch(`${__HOKNEX_PROJ_API}/api/projects/${projectId}/team/${memberId}`, {
+            method: 'DELETE'
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) return alert(data.error || 'Failed to remove member.');
+        syncCachedProject(data);
+    } catch (e) {
+        console.error('Remove team member error:', e);
+    }
 }
 
 function openProjectInspector(projectId) {
@@ -3259,7 +3285,12 @@ function openProjectInspector(projectId) {
         <div style="background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);border-radius:12px;padding:14px;margin-bottom:14px;">
             <div style="font-size:0.84rem;font-weight:800;margin-bottom:8px;">🛡️ Team Roster (${roster.length})</div>
             <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                ${roster.map(m => `<span style="background:var(--paper,#111827);border:1px solid var(--border,#334155);padding:4px 10px;border-radius:999px;font-size:0.78rem;font-weight:700;">@${escapeHtml(m.username)} · ${escapeHtml(m.role || 'Builder')}</span>`).join('')}
+                ${roster.map(m => `
+                    <span style="display:inline-flex;align-items:center;gap:5px;background:var(--paper,#111827);border:1px solid var(--border,#334155);padding:4px 10px;border-radius:999px;font-size:0.78rem;font-weight:700;">
+                        @${escapeHtml(m.username)} · ${escapeHtml(m.role || 'Builder')}
+                        ${(isOwner && m._id && m.username !== authorName) ? `<button type="button" onclick="removeProjectTeamMember('${escapeHtml(p._id)}','${escapeHtml(m._id)}')" style="background:none;border:none;color:#ef4444;font-weight:800;cursor:pointer;padding:0;">✕</button>` : ''}
+                    </span>
+                `).join('')}
             </div>
             ${isOwner ? `
                 <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
@@ -3404,13 +3435,14 @@ function renderFilteredProjects() {
     }).join('');
 }
 
-// Inside your renderView(view) function:
-if (view === 'projects') {
-    if (typeof viewTitle !== 'undefined' && viewTitle) {
-        viewTitle.innerText = 'Projects Hub — Build & Ship 🚀';
+function renderProjectsHubView() {
+    const titleEl = document.getElementById('viewTitle');
+    const viewEl = document.getElementById('mainView');
+    if (titleEl) {
+        titleEl.innerText = 'Projects Hub — Build & Ship 🚀';
     }
-    if (typeof mainView !== 'undefined' && mainView) {
-        mainView.innerHTML = `
+    if (viewEl) {
+        viewEl.innerHTML = `
             <div style="background:linear-gradient(135deg,rgba(124,58,237,0.14),rgba(14,165,233,0.12));border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;color:var(--ink);">
                 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
                     <div>
@@ -3447,6 +3479,16 @@ if (view === 'projects') {
     }
 }
 
+if (typeof window.renderView === 'function') {
+    const __origHoknexRenderView = window.renderView;
+    window.renderView = function(currentView, ...rest) {
+        const out = __origHoknexRenderView.apply(this, [currentView, ...rest]);
+        if (currentView === 'projects') {
+            renderProjectsHubView();
+        }
+        return out;
+    };
+}
     
     let activeClubId = localStorage.getItem('hoknex_active_club_id') || null;
 let activeChannelId = localStorage.getItem('hoknex_active_channel_id') || null;
