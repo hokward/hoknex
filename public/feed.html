@@ -2829,6 +2829,90 @@ function getMilestoneProgress(milestones = [], p = {}) {
     return { total: 0, done: 0, percent, levelTitle };
 }
 
+function __hoknexFindFilterElements() {
+    const scope =
+        document.getElementById('mainView') ||
+        document.getElementById('projectsContainer')?.parentElement ||
+        document;
+
+    const inputs = Array.from(scope.querySelectorAll('input'));
+    const selects = Array.from(scope.querySelectorAll('select'));
+
+    const searchEl =
+        document.getElementById('projSearchInput') ||
+        inputs.find(el => /search projects|search.*build/i.test(el.placeholder || '')) ||
+        null;
+
+    const techEl =
+        document.getElementById('projFilterTech') ||
+        inputs.find(el => /tech tag|stack|react|esp/i.test(el.placeholder || '')) ||
+        null;
+
+    const classEl =
+        document.getElementById('projFilterClass') ||
+        selects.find(sel => Array.from(sel.options).some(o =>
+            /all classifications|all types|collaboration|showcase|open source|challenge/i.test(o.text || o.value)
+        )) ||
+        null;
+
+    const sortEl =
+        document.getElementById('projSortSelect') ||
+        selects.find(sel => Array.from(sel.options).some(o =>
+            /newest|boosted|rated|progress|completed/i.test(o.text || o.value)
+        )) ||
+        null;
+
+    return { searchEl, techEl, classEl, sortEl };
+}
+
+function __hoknexNormalizeClassification(raw = '') {
+    const val = String(raw || '').trim().toLowerCase();
+    if (!val || val === 'all' || val.includes('all classifications') || val.includes('all types')) {
+        return 'All';
+    }
+    if (val.includes('collab')) return 'Collaboration';
+    if (val.includes('showcase')) return 'Showcase';
+    if (val.includes('open source')) return 'Open Source';
+    if (val.includes('challenge') || val.includes('corporate')) return 'Corporate Challenge';
+    return String(raw).trim();
+}
+
+function __hoknexNormalizeSort(raw = '') {
+    const val = String(raw || '').trim().toLowerCase();
+    if (val.includes('boost')) return 'boosted';
+    if (val.includes('rate') || val.includes('star')) return 'rated';
+    if (val.includes('progress') || val.includes('complet')) return 'progress';
+    return 'newest';
+}
+
+function bindProjectHubFilterListeners() {
+    const { searchEl, techEl, classEl, sortEl } = __hoknexFindFilterElements();
+
+    const applyAndRender = () => {
+        __hoknexActiveProjectFilter.query = (searchEl?.value || '').trim().toLowerCase();
+        __hoknexActiveProjectFilter.classification = __hoknexNormalizeClassification(classEl?.value || 'All');
+        __hoknexActiveProjectFilter.tech = (techEl?.value || '').trim().toLowerCase().replace(/^#/, '');
+        __hoknexActiveProjectFilter.sort = __hoknexNormalizeSort(sortEl?.value || 'newest');
+        renderFilteredProjects();
+    };
+
+    [searchEl, techEl].forEach(el => {
+        if (el && el.dataset.projHubBound !== '1') {
+            el.dataset.projHubBound = '1';
+            el.addEventListener('input', applyAndRender);
+            el.addEventListener('change', applyAndRender);
+        }
+    });
+
+    [classEl, sortEl].forEach(el => {
+        if (el && el.dataset.projHubBound !== '1') {
+            el.dataset.projHubBound = '1';
+            el.addEventListener('change', applyAndRender);
+            el.addEventListener('input', applyAndRender);
+        }
+    });
+}
+
 function ensureProjectModalsMounted() {
     if (!document.getElementById('projectCreationModal')) {
         const el = document.createElement('div');
@@ -3066,23 +3150,36 @@ async function submitNewProject() {
 }
 
 function handleProjectFilterChange() {
-    __hoknexActiveProjectFilter.query = (document.getElementById('projSearchInput')?.value || '').trim().toLowerCase();
-    __hoknexActiveProjectFilter.classification = document.getElementById('projFilterClass')?.value || 'All';
-    __hoknexActiveProjectFilter.tech = (document.getElementById('projFilterTech')?.value || '').trim().toLowerCase().replace(/^#/, '');
-    __hoknexActiveProjectFilter.sort = document.getElementById('projSortSelect')?.value || 'newest';
+    const { searchEl, techEl, classEl, sortEl } = __hoknexFindFilterElements();
+    __hoknexActiveProjectFilter.query = (searchEl?.value || '').trim().toLowerCase();
+    __hoknexActiveProjectFilter.classification = __hoknexNormalizeClassification(classEl?.value || 'All');
+    __hoknexActiveProjectFilter.tech = (techEl?.value || '').trim().toLowerCase().replace(/^#/, '');
+    __hoknexActiveProjectFilter.sort = __hoknexNormalizeSort(sortEl?.value || 'newest');
+    renderFilteredProjects();
+}
+
+function resetProjectFilters() {
+    const { searchEl, techEl, classEl, sortEl } = __hoknexFindFilterElements();
+    if (searchEl) searchEl.value = '';
+    if (techEl) techEl.value = '';
+    if (classEl) classEl.selectedIndex = 0;
+    if (sortEl) sortEl.selectedIndex = 0;
+    __hoknexActiveProjectFilter = { query: '', classification: 'All', tech: '', sort: 'newest' };
     renderFilteredProjects();
 }
 
 function filterByTechChip(tag) {
     const clean = String(tag || '').replace(/^#/, '').trim();
-    const techInput = document.getElementById('projFilterTech');
-    if (techInput) techInput.value = clean;
+    const { techEl } = __hoknexFindFilterElements();
+    if (techEl) techEl.value = clean;
     __hoknexActiveProjectFilter.tech = clean.toLowerCase();
     renderFilteredProjects();
 }
 
 async function loadAndRenderProjects() {
     ensureProjectModalsMounted();
+    bindProjectHubFilterListeners();
+
     const container =
         document.getElementById('projectsContainer') ||
         document.getElementById('projectContainer') ||
@@ -3162,11 +3259,10 @@ async function toggleProjectMilestone(projectId, milestoneId) {
 
     const tryRequest = async (url, method) => {
         try {
-            const r = await fetch(url, {
+            return await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' }
             });
-            return r;
         } catch (_) {
             return null;
         }
@@ -3353,32 +3449,52 @@ function renderFilteredProjects() {
         document.getElementById('projects-container');
     if (!container) return;
 
-    const currentUser = localStorage.getItem('hoknex_user') || 'Student';
-    const { query, classification, tech, sort } = __hoknexActiveProjectFilter;
+    const { searchEl, techEl, classEl, sortEl } = __hoknexFindFilterElements();
+    const query = (searchEl ? searchEl.value : __hoknexActiveProjectFilter.query || '').trim().toLowerCase();
+    const classification = __hoknexNormalizeClassification(classEl ? classEl.value : (__hoknexActiveProjectFilter.classification || 'All'));
+    const tech = (techEl ? techEl.value : __hoknexActiveProjectFilter.tech || '').trim().toLowerCase().replace(/^#/, '');
+    const sort = __hoknexNormalizeSort(sortEl ? sortEl.value : (__hoknexActiveProjectFilter.sort || 'newest'));
 
-    let list = __hoknexProjectsCache.filter(p => {
+    __hoknexActiveProjectFilter = { query, classification, tech, sort };
+
+    const currentUser = localStorage.getItem('hoknex_user') || 'Student';
+
+    let list = (Array.isArray(__hoknexProjectsCache) ? __hoknexProjectsCache : []).filter(p => {
         if (!p) return false;
         const authorName = getProjectAuthor(p);
         const title = String(p.title || '').toLowerCase();
         const desc = String(p.desc || p.description || p.pitch || '').toLowerCase();
-        const stack = String(p.techStack || '').toLowerCase();
+        const stack = String(p.techStack || p.tech || p.tags || '').toLowerCase();
+        const stage = String(p.stage || '').toLowerCase();
+        const roles = Array.isArray(p.openRoles) ? p.openRoles.join(' ').toLowerCase() : String(p.openRoles || '').toLowerCase();
+        const projClass = __hoknexNormalizeClassification(p.classification || 'Showcase');
 
-        if (classification !== 'All' && (p.classification || 'Showcase') !== classification) return false;
-        if (tech && !stack.includes(tech)) return false;
-        if (query && !(title.includes(query) || desc.includes(query) || stack.includes(query) || authorName.toLowerCase().includes(query))) return false;
+        if (classification !== 'All' && projClass !== classification) return false;
+        if (tech && !stack.includes(tech) && !title.includes(tech) && !desc.includes(tech)) return false;
+        if (query) {
+            const searchable = `${title} ${desc} ${stack} ${stage} ${roles} ${authorName.toLowerCase()}`;
+            if (!searchable.includes(query)) return false;
+        }
         return true;
     });
 
     if (sort === 'boosted') {
-        list = [...list].sort((a, b) => (b.boosts || b.reactions?.rocket || 0) - (a.boosts || a.reactions?.rocket || 0));
+        list = [...list].sort((a, b) => (Number(b.boosts || b.reactions?.rocket || 0)) - (Number(a.boosts || a.reactions?.rocket || 0)));
     } else if (sort === 'rated') {
-        list = [...list].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        list = [...list].sort((a, b) => (Number(b.rating || 0)) - (Number(a.rating || 0)));
     } else if (sort === 'progress') {
         list = [...list].sort((a, b) => getMilestoneProgress(b.milestones, b).percent - getMilestoneProgress(a.milestones, a).percent);
+    } else {
+        list = [...list].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     }
 
     if (!list.length) {
-        container.innerHTML = `<div class="post-card" style="padding:30px;text-align:center;background:var(--paper);border:1px solid var(--border);border-radius:14px;"><p style="font-weight:800;">No matching projects found</p></div>`;
+        container.innerHTML = `
+            <div class="post-card" style="padding:30px;text-align:center;background:var(--paper);border:1px solid var(--border);border-radius:14px;">
+                <p style="font-weight:800;margin-bottom:10px;">No matching projects found</p>
+                <button type="button" onclick="resetProjectFilters()" style="background:#7c3aed;color:#fff;border:none;padding:7px 14px;border-radius:8px;font-weight:700;cursor:pointer;">Reset Filters</button>
+            </div>`;
+        bindProjectHubFilterListeners();
         return;
     }
 
@@ -3413,6 +3529,7 @@ function renderFilteredProjects() {
 
             <h3 onclick="openProjectInspector('${escapeHtml(id)}')" style="font-size:1.25rem;font-weight:800;color:var(--ink);margin-bottom:6px;cursor:pointer;">${escapeHtml(p.title || 'Untitled Project')}</h3>
             <p style="color:var(--ink);font-size:0.94rem;margin-bottom:12px;line-height:1.55;">${escapeHtml(description)}</p>
+            ${p.techStack ? `<div style="font-size:0.78rem;font-weight:700;color:#38bdf8;margin-bottom:10px;">🛠️ ${escapeHtml(p.techStack)}</div>` : ''}
 
             <div style="background:var(--canvas);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px;">
                 <div style="display:flex;justify-content:space-between;font-size:0.76rem;font-weight:800;margin-bottom:6px;">
@@ -3464,6 +3581,8 @@ function renderFilteredProjects() {
             </div>
         </div>`;
     }).join('');
+
+    bindProjectHubFilterListeners();
 }
 
 function renderProjectsHubView() {
@@ -3487,15 +3606,15 @@ function renderProjectsHubView() {
                 </div>
 
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:16px;">
-                    <input type="text" id="projSearchInput" placeholder="🔍 Search projects, builders..." oninput="handleProjectFilterChange()" style="background:var(--paper);border:1px solid var(--border);color:var(--ink);border-radius:10px;padding:9px 12px;font-size:0.85rem;font-weight:600;outline:none;" />
+                    <input type="text" id="projSearchInput" placeholder="Search projects or build..." oninput="handleProjectFilterChange()" style="background:var(--paper);border:1px solid var(--border);color:var(--ink);border-radius:10px;padding:9px 12px;font-size:0.85rem;font-weight:600;outline:none;" />
                     <select id="projFilterClass" onchange="handleProjectFilterChange()" style="background:var(--paper);border:1px solid var(--border);color:var(--ink);border-radius:10px;padding:9px 10px;font-size:0.85rem;font-weight:700;outline:none;">
-                        <option value="All">All Types</option>
+                        <option value="All">All Classifications</option>
                         <option value="Collaboration">🤝 Collaboration</option>
                         <option value="Showcase">🏆 Showcase</option>
                         <option value="Open Source">🌐 Open Source</option>
                         <option value="Corporate Challenge">🏢 Challenge</option>
                     </select>
-                    <input type="text" id="projFilterTech" placeholder="🛠️ Filter stack (e.g. React)" oninput="handleProjectFilterChange()" style="background:var(--paper);border:1px solid var(--border);color:var(--ink);border-radius:10px;padding:9px 12px;font-size:0.85rem;font-weight:600;outline:none;" />
+                    <input type="text" id="projFilterTech" placeholder="Tech tag (e.g. React, ESP..." oninput="handleProjectFilterChange()" style="background:var(--paper);border:1px solid var(--border);color:var(--ink);border-radius:10px;padding:9px 12px;font-size:0.85rem;font-weight:600;outline:none;" />
                     <select id="projSortSelect" onchange="handleProjectFilterChange()" style="background:var(--paper);border:1px solid var(--border);color:var(--ink);border-radius:10px;padding:9px 10px;font-size:0.85rem;font-weight:700;outline:none;">
                         <option value="newest">⚡ Newest First</option>
                         <option value="boosted">🚀 Most Boosted</option>
