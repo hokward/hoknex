@@ -8214,6 +8214,1193 @@ window.openEditProfile = function() {
     }
     
 </script>
+
+<script>
+// ============================================================================
+// HOKNEX STORIES STUDIO & VIEWER (INSTAGRAM + WHATSAPP FULL SUITE)
+// ============================================================================
+(function () {
+    const STORY_API = (typeof API_URL !== 'undefined' && API_URL)
+        ? API_URL
+        : (window.API_URL || 'https://hoknex-backend.onrender.com');
+    const CLD_CLOUD = 'wnnotcmw';
+    const CLD_PRESET = 'hoknex_uploads';
+
+    let __storiesRaw = [];
+    let __storyGroups = [];
+    let __activeGroupIdx = 0;
+    let __activeItemIdx = 0;
+    let __storyTimer = null;
+    let __storyProgress = 0;
+    let __storyPaused = false;
+    let __storyAudioEl = null;
+
+    // Creator state
+    let __creatorMode = 'text'; // 'text' | 'gallery' | 'camera'
+    let __creatorMediaUrl = '';
+    let __creatorMediaType = 'text';
+    let __creatorGradient = 'linear-gradient(135deg, #7c3aed, #ec4899)';
+    let __creatorFilter = 'none';
+    let __creatorFont = 'sans';
+    let __selectedMusic = null;
+    let __cameraStream = null;
+    let __cameraFacing = 'user';
+    let __mediaRecorder = null;
+    let __recordedChunks = [];
+    let __isRecording = false;
+    let __previewAudio = null;
+
+    const GRADIENTS = [
+        'linear-gradient(135deg, #7c3aed, #ec4899)',
+        'linear-gradient(135deg, #0ea5e9, #10b981)',
+        'linear-gradient(135deg, #f97316, #ef4444)',
+        'linear-gradient(135deg, #111827, #334155)',
+        'linear-gradient(135deg, #ec4899, #f59e0b)',
+        'linear-gradient(135deg, #14b8a6, #3b82f6)'
+    ];
+
+    const FILTERS = [
+        { name: 'Normal', css: 'none' },
+        { name: 'Vivid', css: 'saturate(1.45) contrast(1.1)' },
+        { name: 'Noir', css: 'grayscale(1) contrast(1.2)' },
+        { name: 'Warm', css: 'sepia(0.35) saturate(1.3)' },
+        { name: 'Cool', css: 'hue-rotate(25deg) saturate(1.2)' }
+    ];
+
+    function esc(s = '') {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function timeAgo(dateStr) {
+        const diff = Math.max(1, Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000));
+        if (diff < 60) return `${diff}s ago`;
+        if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+        return `${Math.floor(diff / 3600)}h ago`;
+    }
+
+    // 1. Mount Story Bar Container above Feed Composer
+    function ensureStoryBarMounted() {
+        const mainView = document.getElementById('mainView');
+        if (!mainView) return null;
+
+        let barWrap = document.getElementById('hoknexStoriesBarWrap');
+        if (!barWrap) {
+            barWrap = document.createElement('div');
+            barWrap.id = 'hoknexStoriesBarWrap';
+            barWrap.style.cssText = 'background:var(--paper,#fff);border:1px solid var(--border,#e2e8f0);border-radius:16px;padding:14px 16px;margin-bottom:16px;box-shadow:0 4px 16px rgba(0,0,0,0.04);';
+            barWrap.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <span style="font-size:0.78rem;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink-light,#64748b);">✨ Campus Stories • 24h</span>
+                    <button type="button" onclick="openHoknexStoryCreator()" style="background:linear-gradient(135deg,#ec4899,#7c3aed);color:#fff;border:none;border-radius:999px;padding:4px 12px;font-size:0.75rem;font-weight:800;cursor:pointer;">+ Add Story</button>
+                </div>
+                <div id="hoknexStoriesScroll" style="display:flex;gap:14px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin;"></div>
+            `;
+            mainView.insertBefore(barWrap, mainView.firstChild);
+        }
+        return barWrap;
+    }
+
+    // 2. Mount Creator & Full-Screen Viewer Modals
+    function ensureStoryModalsMounted() {
+        if (!document.getElementById('hoknexStoryCreatorModal')) {
+            const cm = document.createElement('div');
+            cm.id = 'hoknexStoryCreatorModal';
+            cm.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(6,10,18,0.85);backdrop-filter:blur(10px);z-index:3500;align-items:center;justify-content:center;padding:12px;';
+            cm.innerHTML = `
+                <div style="background:#0f172a;border:1px solid #334155;border-radius:20px;width:440px;max-width:96vw;max-height:94vh;overflow-y:auto;color:#f8fafc;padding:16px;box-shadow:0 25px 60px rgba(0,0,0,0.65);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                        <h3 style="margin:0;font-size:1.05rem;font-weight:800;">📸 Create Story</h3>
+                        <button type="button" onclick="closeHoknexStoryCreator()" style="background:#1e293b;border:1px solid #334155;color:#fff;border-radius:8px;width:30px;height:30px;cursor:pointer;">✕</button>
+                    </div>
+
+                    <!-- Mode Switcher: Text / Gallery / Camera -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:#1e293b;padding:4px;border-radius:12px;margin-bottom:12px;">
+                        <button type="button" id="storyModeBtnText" onclick="switchStoryCreatorMode('text')" style="padding:7px;border:none;border-radius:9px;font-weight:800;font-size:0.78rem;cursor:pointer;background:#7c3aed;color:#fff;">✍️ Text</button>
+                        <button type="button" id="storyModeBtnGallery" onclick="switchStoryCreatorMode('gallery')" style="padding:7px;border:none;border-radius:9px;font-weight:800;font-size:0.78rem;cursor:pointer;background:transparent;color:#cbd5e1;">🖼️ Gallery</button>
+                        <button type="button" id="storyModeBtnCamera" onclick="switchStoryCreatorMode('camera')" style="padding:7px;border:none;border-radius:9px;font-weight:800;font-size:0.78rem;cursor:pointer;background:transparent;color:#cbd5e1;">📷 Camera</button>
+                    </div>
+
+                    <!-- 9:16 Live Story Preview Stage -->
+                    <div id="storyPreviewStage" style="position:relative;width:100%;height:340px;border-radius:16px;overflow:hidden;background:${GRADIENTS[0]};display:flex;align-items:center;justify-content:center;margin-bottom:12px;border:1px solid #334155;">
+                        <img id="storyPreviewImg" style="display:none;width:100%;height:100%;object-fit:cover;" />
+                        <video id="storyPreviewVideo" autoplay playsinline muted style="display:none;width:100%;height:100%;object-fit:cover;"></video>
+
+                        <!-- Live Caption Overlay -->
+                        <div id="storyCaptionOverlay" style="position:absolute;inset:auto 16px 56px 16px;text-align:center;font-size:1.25rem;font-weight:800;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,0.65);pointer-events:none;word-break:break-word;"></div>
+
+                        <!-- Music Pill Preview -->
+                        <div id="storyMusicBadgePreview" style="display:none;position:absolute;top:12px;left:12px;right:12px;background:rgba(15,23,42,0.82);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.18);border-radius:999px;padding:6px 12px;align-items:center;justify-content:space-between;gap:8px;">
+                            <div style="display:flex;align-items:center;gap:8px;overflow:hidden;">
+                                <img id="storyMusicArtPreview" src="" style="width:24px;height:24px;border-radius:50%;object-fit:cover;" />
+                                <span id="storyMusicTitlePreview" style="font-size:0.75rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
+                            </div>
+                            <button type="button" onclick="clearSelectedStoryMusic()" style="background:none;border:none;color:#f87171;font-weight:800;cursor:pointer;font-size:0.78rem;">✕</button>
+                        </div>
+
+                        <!-- Camera Controls Overlay -->
+                        <div id="storyCameraControls" style="display:none;position:absolute;bottom:12px;left:0;right:0;justify-content:center;align-items:center;gap:14px;">
+                            <button type="button" onclick="flipStoryCamera()" style="background:rgba(15,23,42,0.8);color:#fff;border:1px solid #475569;border-radius:999px;padding:6px 12px;font-size:0.75rem;font-weight:700;cursor:pointer;">🔄 Flip</button>
+                            <button type="button" onclick="captureStoryPhoto()" style="width:48px;height:48px;border-radius:50%;background:#fff;border:4px solid #7c3aed;cursor:pointer;" title="Take Photo"></button>
+                            <button type="button" id="storyRecVideoBtn" onclick="toggleStoryVideoRecord()" style="background:#ef4444;color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:0.75rem;font-weight:800;cursor:pointer;">⏺ Rec</button>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Gallery File Input -->
+                    <input type="file" id="storyGalleryFileInput" accept="image/*,video/*" style="display:none;" onchange="handleStoryGallerySelected(this)" />
+
+                    <!-- Gradient & Filter Swatches -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+                        <div style="display:flex;gap:6px;align-items:center;">
+                            ${GRADIENTS.map(g => `<button type="button" onclick="setStoryGradient('${g}')" style="width:22px;height:22px;border-radius:50%;border:2px solid #fff;background:${g};cursor:pointer;"></button>`).join('')}
+                        </div>
+                        <select onchange="setStoryFilter(this.value)" style="background:#1e293b;color:#fff;border:1px solid #334155;border-radius:8px;padding:4px 8px;font-size:0.75rem;">
+                            ${FILTERS.map(f => `<option value="${f.css}">🎨 ${f.name}</option>`).join('')}
+                        </select>
+                    </div>
+
+                    <!-- Caption / Text Input -->
+                    <input type="text" id="storyTextOverlayInput" placeholder="Write story text or caption..." oninput="document.getElementById('storyCaptionOverlay').innerText = this.value" style="width:100%;background:#1e293b;border:1px solid #334155;color:#fff;border-radius:10px;padding:9px 12px;font-size:0.84rem;margin-bottom:10px;box-sizing:border-box;" />
+
+                    <!-- Music Library Search (iTunes Global Catalog) -->
+                    <div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:10px;margin-bottom:10px;">
+                        <div style="font-size:0.75rem;font-weight:800;color:#38bdf8;margin-bottom:6px;">🎵 Music Library (Search Any Song)</div>
+                        <div style="display:flex;gap:6px;">
+                            <input type="text" id="storyMusicSearchInput" placeholder="Search Arijit, Weeknd, Phonk, Lo-Fi..." onkeydown="if(event.key==='Enter')searchHoknexStoryMusic()" style="flex:1;background:#0f172a;border:1px solid #334155;color:#fff;border-radius:8px;padding:6px 10px;font-size:0.8rem;" />
+                            <button type="button" onclick="searchHoknexStoryMusic()" style="background:#0ea5e9;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:0.78rem;font-weight:800;cursor:pointer;">Search</button>
+                        </div>
+                        <div id="storyMusicResultsList" style="max-height:110px;overflow-y:auto;margin-top:6px;"></div>
+                    </div>
+
+                    <!-- Optional Interactive Poll Sticker -->
+                    <details style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:8px 10px;margin-bottom:10px;">
+                        <summary style="font-size:0.78rem;font-weight:800;cursor:pointer;color:#a78bfa;">📊 Add Interactive Poll Sticker (Optional)</summary>
+                        <input type="text" id="storyPollQ" placeholder="Ask a question..." style="width:100%;background:#0f172a;border:1px solid #334155;color:#fff;border-radius:8px;padding:6px 9px;font-size:0.78rem;margin-top:8px;box-sizing:border-box;" />
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;">
+                            <input type="text" id="storyPollA" placeholder="Option 1 (e.g. Yes 🔥)" style="background:#0f172a;border:1px solid #334155;color:#fff;border-radius:8px;padding:6px 9px;font-size:0.78rem;" />
+                            <input type="text" id="storyPollB" placeholder="Option 2 (e.g. No 💀)" style="background:#0f172a;border:1px solid #334155;color:#fff;border-radius:8px;padding:6px 9px;font-size:0.78rem;" />
+                        </div>
+                    </details>
+
+                    <!-- Privacy & Publish -->
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <select id="storyPrivacySelect" style="background:#1e293b;color:#fff;border:1px solid #334155;border-radius:10px;padding:10px;font-size:0.78rem;font-weight:700;">
+                            <option value="public">🌐 Everyone</option>
+                            <option value="followers">👥 Followers</option>
+                            <option value="close_friends">💚 Close Friends</option>
+                        </select>
+                        <button type="button" id="publishStoryBtn" onclick="publishHoknexStory()" style="flex:1;background:linear-gradient(135deg,#ec4899,#7c3aed);color:#fff;border:none;border-radius:10px;padding:10px;font-weight:800;font-size:0.86rem;cursor:pointer;">Share to Story 🚀</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(cm);
+        }
+
+        if (!document.getElementById('hoknexStoryViewerModal')) {
+            const vm = document.createElement('div');
+            vm.id = 'hoknexStoryViewerModal';
+            vm.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(3,7,18,0.94);z-index:3600;align-items:center;justify-content:center;padding:10px;';
+            vm.innerHTML = `
+                <div style="position:relative;width:410px;max-width:96vw;height:86vh;max-height:740px;border-radius:22px;overflow:hidden;background:#0f172a;border:1px solid #334155;display:flex;flex-direction:column;justify-content:space-between;color:#fff;box-shadow:0 24px 70px rgba(0,0,0,0.8);">
+                    <!-- Top Progress Bars & Author Info -->
+                    <div style="position:relative;z-index:10;padding:12px 14px;background:linear-gradient(180deg,rgba(0,0,0,0.75),transparent);">
+                        <div id="storyViewerProgressBars" style="display:flex;gap:4px;margin-bottom:10px;"></div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div style="display:flex;align-items:center;gap:9px;">
+                                <img id="storyViewerAuthorDp" src="" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid #ec4899;" />
+                                <div>
+                                    <div id="storyViewerAuthorName" style="font-size:0.84rem;font-weight:800;"></div>
+                                    <div id="storyViewerMeta" style="font-size:0.7rem;color:#cbd5e1;"></div>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:8px;align-items:center;">
+                                <button type="button" id="storyViewerDeleteBtn" onclick="deleteCurrentHoknexStory()" style="display:none;background:rgba(239,68,68,0.85);border:none;color:#fff;border-radius:8px;padding:4px 8px;font-size:0.72rem;font-weight:700;cursor:pointer;">🗑️</button>
+                                <button type="button" onclick="closeHoknexStoryViewer()" style="background:rgba(15,23,42,0.7);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:8px;width:30px;height:30px;cursor:pointer;">✕</button>
+                            </div>
+                        </div>
+                        <div id="storyViewerMusicBanner" style="display:none;margin-top:8px;background:rgba(15,23,42,0.75);border-radius:999px;padding:4px 10px;font-size:0.72rem;font-weight:700;align-items:center;gap:6px;width:fit-content;max-width:100%;"></div>
+                    </div>
+
+                    <!-- Media & Interactive Center Stage -->
+                    <div id="storyViewerMediaStage" onmousedown="pauseHoknexStory(true)" onmouseup="pauseHoknexStory(false)" ontouchstart="pauseHoknexStory(true)" ontouchend="pauseHoknexStory(false)" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                        <div onclick="prevHoknexStory()" style="position:absolute;left:0;top:70px;bottom:90px;width:32%;z-index:5;cursor:pointer;"></div>
+                        <div onclick="nextHoknexStory()" style="position:absolute;right:0;top:70px;bottom:90px;width:32%;z-index:5;cursor:pointer;"></div>
+                        <div id="storyViewerCanvas" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;"></div>
+                    </div>
+
+                    <!-- Bottom Reactions / Reply / Seen-By Footer -->
+                    <div id="storyViewerFooter" style="position:relative;z-index:10;padding:12px 14px;background:linear-gradient(0deg,rgba(0,0,0,0.85),transparent);"></div>
+                </div>
+            `;
+            document.body.appendChild(vm);
+        }
+    }
+
+    // 3. Load & Render Stories Bar
+    window.loadHoknexStories = async function () {
+        ensureStoryBarMounted();
+        ensureStoryModalsMounted();
+        const scrollEl = document.getElementById('hoknexStoriesScroll');
+        if (!scrollEl) return;
+
+        const me = (localStorage.getItem('hoknex_user') || 'Student').replace(/^@/, '');
+        try {
+            const res = await fetch(`${STORY_API}/api/stories?viewer=${encodeURIComponent(me)}`);
+            const list = res.ok ? await res.json() : [];
+            __storiesRaw = Array.isArray(list) ? list : [];
+        } catch (e) {
+            console.error('Stories fetch error:', e);
+            __storiesRaw = [];
+        }
+
+        // Group stories by author username
+        const map = new Map();
+        __storiesRaw.forEach(st => {
+            if (!map.has(st.username)) {
+                map.set(st.username, {
+                    username: st.username,
+                    authorName: st.authorName || st.username,
+                    authorDp: st.authorDp || '',
+                    items: []
+                });
+            }
+            map.get(st.username).items.push(st);
+        });
+
+        __storyGroups = Array.from(map.values());
+        // Put current user's story first if present
+        const myIdx = __storyGroups.findIndex(g => g.username === me);
+        if (myIdx > 0) {
+            const [mine] = __storyGroups.splice(myIdx, 1);
+            __storyGroups.unshift(mine);
+        }
+
+        const myGroup = __storyGroups.find(g => g.username === me);
+        const addCardHtml = `
+            <div onclick="${myGroup ? `openHoknexStoryViewer('${esc(me)}')` : 'openHoknexStoryCreator()'}" style="flex:0 0 auto;width:72px;text-align:center;cursor:pointer;">
+                <div style="position:relative;width:62px;height:62px;margin:0 auto 5px;border-radius:50%;padding:3px;background:${myGroup ? 'linear-gradient(135deg,#ec4899,#7c3aed,#0ea5e9)' : '#cbd5e1'};">
+                    <div style="width:100%;height:100%;border-radius:50%;background:#1e293b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;overflow:hidden;">
+                        ${myGroup?.authorDp ? `<img src="${esc(myGroup.authorDp)}" style="width:100%;height:100%;object-fit:cover;" />` : esc(me.slice(0, 2).toUpperCase())}
+                    </div>
+                    <span onclick="event.stopPropagation();openHoknexStoryCreator();" style="position:absolute;bottom:-2px;right:-2px;width:22px;height:22px;border-radius:50%;background:#7c3aed;color:#fff;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:900;">+</span>
+                </div>
+                <div style="font-size:0.72rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Your Story</div>
+            </div>
+        `;
+
+        const othersHtml = __storyGroups
+            .filter(g => g.username !== me)
+            .map(g => {
+                const allSeen = g.items.every(item => (item.viewers || []).some(v => v.username === me));
+                const hasCloseFriends = g.items.some(item => item.privacy === 'close_friends');
+                const ringBg = allSeen
+                    ? '#94a3b8'
+                    : (hasCloseFriends ? 'linear-gradient(135deg,#10b981,#059669)' : 'linear-gradient(135deg,#f59e0b,#ec4899,#7c3aed)');
+                return `
+                    <div onclick="openHoknexStoryViewer('${esc(g.username)}')" style="flex:0 0 auto;width:72px;text-align:center;cursor:pointer;">
+                        <div style="width:62px;height:62px;margin:0 auto 5px;border-radius:50%;padding:3px;background:${ringBg};">
+                            <div style="width:100%;height:100%;border-radius:50%;background:#1e293b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;overflow:hidden;">
+                                ${g.authorDp ? `<img src="${esc(g.authorDp)}" style="width:100%;height:100%;object-fit:cover;" />` : esc(g.username.slice(0, 2).toUpperCase())}
+                            </div>
+                        </div>
+                        <div style="font-size:0.72rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@${esc(g.username)}</div>
+                    </div>
+                `;
+            }).join('');
+
+        scrollEl.innerHTML = addCardHtml + othersHtml;
+    };
+
+    // 4. Story Creator Functions (Text, Gallery Upload, Live Camera, Music Search)
+    window.openHoknexStoryCreator = function () {
+        ensureStoryModalsMounted();
+        __creatorMediaUrl = '';
+        __creatorMediaType = 'text';
+        __selectedMusic = null;
+        document.getElementById('storyTextOverlayInput').value = '';
+        document.getElementById('storyCaptionOverlay').innerText = '';
+        document.getElementById('storyMusicBadgePreview').style.display = 'none';
+        document.getElementById('storyMusicResultsList').innerHTML = '';
+        document.getElementById('hoknexStoryCreatorModal').style.display = 'flex';
+        switchStoryCreatorMode('text');
+    };
+
+    window.closeHoknexStoryCreator = function () {
+        stopStoryCamera();
+        if (__previewAudio) { __previewAudio.pause(); __previewAudio = null; }
+        const m = document.getElementById('hoknexStoryCreatorModal');
+        if (m) m.style.display = 'none';
+    };
+
+    function stopStoryCamera() {
+        if (__cameraStream) {
+            __cameraStream.getTracks().forEach(t => t.stop());
+            __cameraStream = null;
+        }
+    }
+
+    window.switchStoryCreatorMode = async function (mode) {
+        __creatorMode = mode;
+        ['text', 'gallery', 'camera'].forEach(m => {
+            const btn = document.getElementById(`storyModeBtn${m.charAt(0).toUpperCase() + m.slice(1)}`);
+            if (btn) {
+                btn.style.background = m === mode ? '#7c3aed' : 'transparent';
+                btn.style.color = m === mode ? '#fff' : '#cbd5e1';
+            }
+        });
+
+        const imgEl = document.getElementById('storyPreviewImg');
+        const vidEl = document.getElementById('storyPreviewVideo');
+        const camCtrl = document.getElementById('storyCameraControls');
+
+        stopStoryCamera();
+        camCtrl.style.display = 'none';
+
+        if (mode === 'text') {
+            __creatorMediaType = 'text';
+            __creatorMediaUrl = '';
+            imgEl.style.display = 'none';
+            vidEl.style.display = 'none';
+        } else if (mode === 'gallery') {
+            document.getElementById('storyGalleryFileInput').click();
+        } else if (mode === 'camera') {
+            try {
+                __cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: __cameraFacing },
+                    audio: true
+                });
+                imgEl.style.display = 'none';
+                vidEl.srcObject = __cameraStream;
+                vidEl.muted = true;
+                vidEl.style.display = 'block';
+                camCtrl.style.display = 'flex';
+            } catch (err) {
+                alert('Camera permission denied or unavailable on this device.');
+                switchStoryCreatorMode('text');
+            }
+        }
+    };
+
+    window.flipStoryCamera = function () {
+        __cameraFacing = __cameraFacing === 'user' ? 'environment' : 'user';
+        switchStoryCreatorMode('camera');
+    };
+
+    async function uploadBlobToCloudinary(fileOrBlob, resourceType = 'auto') {
+        const fd = new FormData();
+        fd.append('file', fileOrBlob);
+        fd.append('upload_preset', CLD_PRESET);
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLD_CLOUD}/${resourceType}/upload`, {
+            method: 'POST',
+            body: fd
+        });
+        const data = await res.json();
+        if (!res.ok || !data.secure_url) throw new Error(data.error?.message || 'Upload failed');
+        return data.secure_url;
+    }
+
+    window.handleStoryGallerySelected = async function (input) {
+        const file = input.files && input.files[0];
+        if (!file) return;
+        const isVideo = file.type.startsWith('video/');
+        const imgEl = document.getElementById('storyPreviewImg');
+        const vidEl = document.getElementById('storyPreviewVideo');
+        const localUrl = URL.createObjectURL(file);
+
+        if (isVideo) {
+            imgEl.style.display = 'none';
+            vidEl.srcObject = null;
+            vidEl.src = localUrl;
+            vidEl.loop = true;
+            vidEl.style.display = 'block';
+        } else {
+            vidEl.style.display = 'none';
+            imgEl.src = localUrl;
+            imgEl.style.display = 'block';
+        }
+
+        const btn = document.getElementById('publishStoryBtn');
+        btn.disabled = true;
+        btn.innerText = 'Uploading media...';
+        try {
+            __creatorMediaUrl = await uploadBlobToCloudinary(file, isVideo ? 'video' : 'image');
+            __creatorMediaType = isVideo ? 'video' : 'image';
+        } catch (err) {
+            alert('Media upload failed: ' + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Share to Story 🚀';
+        }
+    };
+
+    window.captureStoryPhoto = async function () {
+        const vidEl = document.getElementById('storyPreviewVideo');
+        const imgEl = document.getElementById('storyPreviewImg');
+        if (!vidEl || !vidEl.videoWidth) return;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = vidEl.videoWidth;
+        canvas.height = vidEl.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.filter = __creatorFilter;
+        ctx.drawImage(vidEl, 0, 0);
+
+        canvas.toBlob(async (blob) => {
+            if (!blob) return;
+            stopStoryCamera();
+            document.getElementById('storyCameraControls').style.display = 'none';
+            vidEl.style.display = 'none';
+            imgEl.src = URL.createObjectURL(blob);
+            imgEl.style.display = 'block';
+
+            const btn = document.getElementById('publishStoryBtn');
+            btn.disabled = true;
+            btn.innerText = 'Uploading snap...';
+            try {
+                __creatorMediaUrl = await uploadBlobToCloudinary(blob, 'image');
+                __creatorMediaType = 'image';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Share to Story 🚀';
+            }
+        }, 'image/jpeg', 0.9);
+    };
+
+    window.toggleStoryVideoRecord = function () {
+        const recBtn = document.getElementById('storyRecVideoBtn');
+        if (!__cameraStream) return;
+
+        if (!__isRecording) {
+            __recordedChunks = [];
+            __mediaRecorder = new MediaRecorder(__cameraStream);
+            __mediaRecorder.ondataavailable = e => { if (e.data.size > 0) __recordedChunks.push(e.data); };
+            __mediaRecorder.onstop = async () => {
+                const blob = new Blob(__recordedChunks, { type: 'video/webm' });
+                stopStoryCamera();
+                document.getElementById('storyCameraControls').style.display = 'none';
+                const vidEl = document.getElementById('storyPreviewVideo');
+                vidEl.srcObject = null;
+                vidEl.src = URL.createObjectURL(blob);
+                vidEl.loop = true;
+
+                const btn = document.getElementById('publishStoryBtn');
+                btn.disabled = true;
+                btn.innerText = 'Uploading video...';
+                try {
+                    __creatorMediaUrl = await uploadBlobToCloudinary(blob, 'video');
+                    __creatorMediaType = 'video';
+                } finally {
+                    btn.disabled = false;
+                    btn.innerText = 'Share to Story 🚀';
+                }
+            };
+            __mediaRecorder.start();
+            __isRecording = true;
+            recBtn.innerText = '⏹ Stop';
+        } else {
+            __mediaRecorder.stop();
+            __isRecording = false;
+            recBtn.innerText = '⏺ Rec';
+        }
+    };
+
+    window.setStoryGradient = function (grad) {
+        __creatorGradient = grad;
+        document.getElementById('storyPreviewStage').style.background = grad;
+    };
+
+    window.setStoryFilter = function (css) {
+        __creatorFilter = css;
+        document.getElementById('storyPreviewImg').style.filter = css;
+        document.getElementById('storyPreviewVideo').style.filter = css;
+    };
+
+    // 5. Real Searchable Music Library (iTunes Global API)
+    window.searchHoknexStoryMusic = async function () {
+        const q = (document.getElementById('storyMusicSearchInput')?.value || '').trim();
+        const box = document.getElementById('storyMusicResultsList');
+        if (!q || !box) return;
+        box.innerHTML = '<div style="font-size:0.75rem;color:#94a3b8;padding:4px;">Searching songs...</div>';
+
+        try {
+            const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&limit=8`);
+            const data = await res.json();
+            const tracks = (data.results || []).filter(t => t.previewUrl);
+            if (!tracks.length) {
+                box.innerHTML = '<div style="font-size:0.75rem;color:#94a3b8;padding:4px;">No playable tracks found.</div>';
+                return;
+            }
+            box.innerHTML = tracks.map((t, idx) => `
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 4px;border-bottom:1px solid #334155;">
+                    <div style="display:flex;align-items:center;gap:7px;overflow:hidden;">
+                        <img src="${esc(t.artworkUrl60)}" style="width:28px;height:28px;border-radius:6px;" />
+                        <div style="overflow:hidden;">
+                            <div style="font-size:0.75rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(t.trackName)}</div>
+                            <div style="font-size:0.66rem;color:#94a3b8;">${esc(t.artistName)}</div>
+                        </div>
+                    </div>
+                    <button type="button" onclick='selectHoknexStoryTrack(${JSON.stringify({
+                        trackName: t.trackName,
+                        artistName: t.artistName,
+                        artworkUrl: t.artworkUrl100 || t.artworkUrl60,
+                        previewUrl: t.previewUrl
+                    }).replace(/'/g, "&#39;")})' style="background:#7c3aed;color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:0.7rem;font-weight:800;cursor:pointer;">Use</button>
+                </div>
+            `).join('');
+        } catch (err) {
+            box.innerHTML = '<div style="font-size:0.75rem;color:#f87171;">Music search failed.</div>';
+        }
+    };
+
+    window.selectHoknexStoryTrack = function (track) {
+        __selectedMusic = track;
+        const badge = document.getElementById('storyMusicBadgePreview');
+        document.getElementById('storyMusicArtPreview').src = track.artworkUrl;
+        document.getElementById('storyMusicTitlePreview').innerText = `🎵 ${track.trackName} — ${track.artistName}`;
+        badge.style.display = 'flex';
+
+        if (__previewAudio) __previewAudio.pause();
+        __previewAudio = new Audio(track.previewUrl);
+        __previewAudio.volume = 0.6;
+        __previewAudio.play().catch(() => {});
+    };
+
+    window.clearSelectedStoryMusic = function () {
+        __selectedMusic = null;
+        document.getElementById('storyMusicBadgePreview').style.display = 'none';
+        if (__previewAudio) { __previewAudio.pause(); __previewAudio = null; }
+    };
+
+    window.publishHoknexStory = async function () {
+        const username = (localStorage.getItem('hoknex_user') || 'Student').replace(/^@/, '');
+        const textOverlay = (document.getElementById('storyTextOverlayInput')?.value || '').trim();
+        const privacy = document.getElementById('storyPrivacySelect')?.value || 'public';
+        const pollQ = (document.getElementById('storyPollQ')?.value || '').trim();
+        const pollA = (document.getElementById('storyPollA')?.value || '').trim();
+        const pollB = (document.getElementById('storyPollB')?.value || '').trim();
+
+        if (!__creatorMediaUrl && !textOverlay && !pollQ) {
+            return alert('Add a photo, video, text, or poll before sharing!');
+        }
+
+        const btn = document.getElementById('publishStoryBtn');
+        btn.disabled = true;
+        btn.innerText = 'Sharing...';
+
+        try {
+            const payload = {
+                username,
+                type: __creatorMediaUrl ? __creatorMediaType : 'text',
+                mediaUrl: __creatorMediaUrl,
+                textOverlay,
+                bgGradient: __creatorGradient,
+                filterCss: __creatorFilter,
+                privacy,
+                music: __selectedMusic || {},
+                poll: pollQ ? { question: pollQ, optionA: pollA || 'Yes', optionB: pollB || 'No' } : {}
+            };
+
+            const res = await fetch(`${STORY_API}/api/stories`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error('Failed to post story');
+
+            closeHoknexStoryCreator();
+            await loadHoknexStories();
+        } catch (err) {
+            alert('Error posting story: ' + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Share to Story 🚀';
+        }
+    };
+
+    // 6. Full-Screen Story Viewer + Polls + Reactions + Replies + Seen-By
+    window.openHoknexStoryViewer = function (username) {
+        ensureStoryModalsMounted();
+        const idx = __storyGroups.findIndex(g => g.username === username);
+        if (idx === -1) return;
+        __activeGroupIdx = idx;
+        __activeItemIdx = 0;
+        document.getElementById('hoknexStoryViewerModal').style.display = 'flex';
+        renderActiveStorySlide();
+    };
+
+    window.closeHoknexStoryViewer = function () {
+        clearInterval(__storyTimer);
+        if (__storyAudioEl) { __storyAudioEl.pause(); __storyAudioEl = null; }
+        const m = document.getElementById('hoknexStoryViewerModal');
+        if (m) m.style.display = 'none';
+        loadHoknexStories();
+    };
+
+    window.pauseHoknexStory = function (paused) {
+        __storyPaused = paused;
+        if (__storyAudioEl) {
+            if (paused) __storyAudioEl.pause();
+            else __storyAudioEl.play().catch(() => {});
+        }
+    };
+
+    window.nextHoknexStory = function () {
+        const group = __storyGroups[__activeGroupIdx];
+        if (!group) return closeHoknexStoryViewer();
+        if (__activeItemIdx + 1 < group.items.length) {
+            __activeItemIdx++;
+            renderActiveStorySlide();
+        } else if (__activeGroupIdx + 1 < __storyGroups.length) {
+            __activeGroupIdx++;
+            __activeItemIdx = 0;
+            renderActiveStorySlide();
+        } else {
+            closeHoknexStoryViewer();
+        }
+    };
+
+    window.prevHoknexStory = function () {
+        if (__activeItemIdx > 0) {
+            __activeItemIdx--;
+            renderActiveStorySlide();
+        } else if (__activeGroupIdx > 0) {
+            __activeGroupIdx--;
+            __activeItemIdx = Math.max(0, __storyGroups[__activeGroupIdx].items.length - 1);
+            renderActiveStorySlide();
+        }
+    };
+
+    function renderActiveStorySlide() {
+        clearInterval(__storyTimer);
+        if (__storyAudioEl) { __storyAudioEl.pause(); __storyAudioEl = null; }
+
+        const group = __storyGroups[__activeGroupIdx];
+        const story = group && group.items[__activeItemIdx];
+        if (!story) return closeHoknexStoryViewer();
+
+        const me = (localStorage.getItem('hoknex_user') || 'Student').replace(/^@/, '');
+        const isOwner = story.username === me;
+
+        // Mark viewed on backend
+        if (!isOwner) {
+            fetch(`${STORY_API}/api/stories/${story._id}/view`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: me })
+            }).catch(() => {});
+        }
+
+        // Progress bars
+        const barsEl = document.getElementById('storyViewerProgressBars');
+        barsEl.innerHTML = group.items.map((_, i) => `
+            <div style="flex:1;height:3px;background:rgba(255,255,255,0.28);border-radius:999px;overflow:hidden;">
+                <div id="storyProgFill-${i}" style="height:100%;width:${i < __activeItemIdx ? '100%' : '0%'};background:#fff;transition:width 0.1s linear;"></div>
+            </div>
+        `).join('');
+
+        // Author header
+        const dpEl = document.getElementById('storyViewerAuthorDp');
+        dpEl.src = story.authorDp || `https://ui-avatars.com/api/?name=${encodeURIComponent(story.username)}&background=7c3aed&color=fff`;
+        document.getElementById('storyViewerAuthorName').innerText = `@${story.username}`;
+        const privacyTag = story.privacy === 'close_friends' ? ' • 💚 Close Friends' : '';
+        document.getElementById('storyViewerMeta').innerText = `${timeAgo(story.createdAt)}${privacyTag}`;
+        document.getElementById('storyViewerDeleteBtn').style.display = isOwner ? 'inline-block' : 'none';
+
+        // Music banner + audio playback
+        const musicBanner = document.getElementById('storyViewerMusicBanner');
+        if (story.music && story.music.trackName) {
+            musicBanner.style.display = 'flex';
+            musicBanner.innerHTML = `🎵 ${esc(story.music.trackName)} — ${esc(story.music.artistName)}`;
+            if (story.music.previewUrl) {
+                __storyAudioEl = new Audio(story.music.previewUrl);
+                __storyAudioEl.volume = 0.65;
+                __storyAudioEl.play().catch(() => {});
+            }
+        } else {
+            musicBanner.style.display = 'none';
+        }
+
+        // Canvas content
+        const canvas = document.getElementById('storyViewerCanvas');
+        canvas.style.background = story.bgGradient || 'linear-gradient(135deg,#7c3aed,#ec4899)';
+
+        let mediaHtml = '';
+        if (story.type === 'image' && story.mediaUrl) {
+            mediaHtml = `<img src="${esc(story.mediaUrl)}" style="width:100%;height:100%;object-fit:cover;filter:${esc(story.filterCss || 'none')};" />`;
+        } else if (story.type === 'video' && story.mediaUrl) {
+            mediaHtml = `<video src="${esc(story.mediaUrl)}" autoplay playsinline style="width:100%;height:100%;object-fit:cover;filter:${esc(story.filterCss || 'none')};"></video>`;
+        }
+
+        const textHtml = story.textOverlay
+            ? `<div style="position:absolute;left:18px;right:18px;${story.mediaUrl ? 'bottom:115px;' : ''}text-align:center;font-size:1.35rem;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.75);z-index:6;pointer-events:none;">${esc(story.textOverlay)}</div>`
+            : '';
+
+        let pollHtml = '';
+        if (story.poll && story.poll.question) {
+            const vA = (story.poll.votesA || []).length;
+            const vB = (story.poll.votesB || []).length;
+            const total = vA + vB;
+            const pctA = total ? Math.round((vA / total) * 100) : 0;
+            const pctB = total ? Math.round((vB / total) * 100) : 0;
+            pollHtml = `
+                <div style="position:absolute;left:22px;right:22px;bottom:175px;z-index:8;background:rgba(15,23,42,0.9);border:1px solid rgba(255,255,255,0.2);border-radius:16px;padding:12px;">
+                    <div style="font-size:0.84rem;font-weight:800;margin-bottom:8px;text-align:center;">${esc(story.poll.question)}</div>
+                    <button type="button" onclick="voteHoknexStoryPoll('${esc(story._id)}','A')" style="width:100%;margin-bottom:6px;padding:8px 10px;border-radius:10px;border:1px solid #7c3aed;background:rgba(124,58,237,0.22);color:#fff;font-weight:800;font-size:0.8rem;display:flex;justify-content:space-between;cursor:pointer;">
+                        <span>${esc(story.poll.optionA || 'Yes')}</span><span>${total ? pctA + '%' : ''}</span>
+                    </button>
+                    <button type="button" onclick="voteHoknexStoryPoll('${esc(story._id)}','B')" style="width:100%;padding:8px 10px;border-radius:10px;border:1px solid #0ea5e9;background:rgba(14,165,233,0.22);color:#fff;font-weight:800;font-size:0.8rem;display:flex;justify-content:space-between;cursor:pointer;">
+                        <span>${esc(story.poll.optionB || 'No')}</span><span>${total ? pctB + '%' : ''}</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        canvas.innerHTML = mediaHtml + textHtml + pollHtml;
+
+        // Footer: Owner sees "Seen by" list; Viewers see quick reactions + DM reply
+        const footer = document.getElementById('storyViewerFooter');
+        if (isOwner) {
+            const viewers = story.viewers || [];
+            footer.innerHTML = `
+                <div style="font-size:0.78rem;font-weight:800;margin-bottom:6px;">👁️ Seen by ${viewers.length}</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;max-height:54px;overflow-y:auto;">
+                    ${viewers.length
+                        ? viewers.map(v => `<span style="background:rgba(255,255,255,0.14);padding:3px 9px;border-radius:999px;font-size:0.72rem;font-weight:700;">@${esc(v.username)}</span>`).join('')
+                        : '<span style="font-size:0.72rem;color:#94a3b8;">No views yet</span>'}
+                </div>
+            `;
+        } else {
+            footer.innerHTML = `
+                <div style="display:flex;justify-content:space-around;margin-bottom:8px;">
+                    ${['❤️', '🔥', '😂', '😮', '👏'].map(em => `<button type="button" onclick="reactHoknexStory('${esc(story._id)}','${em}')" style="background:rgba(255,255,255,0.12);border:none;border-radius:50%;width:34px;height:34px;font-size:1.05rem;cursor:pointer;">${em}</button>`).join('')}
+                </div>
+                <div style="display:flex;gap:6px;">
+                    <input type="text" id="storyReplyInput" onfocus="pauseHoknexStory(true)" onblur="pauseHoknexStory(false)" placeholder="Reply to @${esc(story.username)}..." style="flex:1;background:rgba(15,23,42,0.75);border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:999px;padding:8px 14px;font-size:0.8rem;" />
+                    <button type="button" onclick="sendHoknexStoryReply('${esc(story._id)}')" style="background:#7c3aed;color:#fff;border:none;border-radius:999px;padding:8px 14px;font-weight:800;font-size:0.78rem;cursor:pointer;">Send</button>
+                </div>
+            `;
+        }
+
+        // Auto-advance timer (7 seconds per slide)
+        __storyProgress = 0;
+        __storyPaused = false;
+        __storyTimer = setInterval(() => {
+            if (__storyPaused) return;
+            __storyProgress += 1.5;
+            const fill = document.getElementById(`storyProgFill-${__activeItemIdx}`);
+            if (fill) fill.style.width = `${Math.min(100, __storyProgress)}%`;
+            if (__storyProgress >= 100) {
+                nextHoknexStory();
+            }
+        }, 100);
+    }
+
+    window.voteHoknexStoryPoll = async function (storyId, choice) {
+        const me = (localStorage.getItem('hoknex_user') || 'Student').replace(/^@/, '');
+        try {
+            const res = await fetch(`${STORY_API}/api/stories/${storyId}/vote`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: me, choice })
+            });
+            if (res.ok) {
+                const updated = await res.json();
+                __storyGroups[__activeGroupIdx].items[__activeItemIdx] = updated;
+                renderActiveStorySlide();
+            }
+        } catch (e) {}
+    };
+
+    window.reactHoknexStory = async function (storyId, emoji) {
+        const me = (localStorage.getItem('hoknex_user') || 'Student').replace(/^@/, '');
+        await fetch(`${STORY_API}/api/stories/${storyId}/react`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: me, emoji })
+        }).catch(() => {});
+        alert(`Sent ${emoji} reaction!`);
+    };
+
+    window.sendHoknexStoryReply = async function (storyId) {
+        const input = document.getElementById('storyReplyInput');
+        const replyText = (input?.value || '').trim();
+        if (!replyText) return;
+        const me = (localStorage.getItem('hoknex_user') || 'Student').replace(/^@/, '');
+        await fetch(`${STORY_API}/api/stories/${storyId}/react`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: me, replyText })
+        }).catch(() => {});
+        input.value = '';
+        alert('Story reply sent to DM! 💬');
+    };
+
+    window.deleteCurrentHoknexStory = async function () {
+        const group = __storyGroups[__activeGroupIdx];
+        const story = group && group.items[__activeItemIdx];
+        if (!story || !confirm('Delete this story?')) return;
+        await fetch(`${STORY_API}/api/stories/${story._id}`, { method: 'DELETE' }).catch(() => {});
+        closeHoknexStoryViewer();
+    };
+
+    // Hook into Live Feed load & view switches
+    if (typeof window.renderView === 'function') {
+        const origRenderView = window.renderView;
+        window.renderView = function (view, ...rest) {
+            const res = origRenderView.apply(this, [view, ...rest]);
+            if (!view || view === 'feed' || view === 'home') {
+                setTimeout(loadHoknexStories, 80);
+            }
+            return res;
+        };
+    }
+
+    document.addEventListener('DOMContentLoaded', () => setTimeout(loadHoknexStories, 150));
+    setTimeout(loadHoknexStories, 300);
+})();
+</script>
+    <script>
+// ============================================================================
+// HOKNEX STORY HIGHLIGHTS & CLOSE FRIENDS MANAGER
+// ============================================================================
+(function () {
+    const HLCF_API = (typeof API_URL !== 'undefined' && API_URL)
+        ? API_URL
+        : (window.API_URL || 'https://hoknex-backend.onrender.com');
+
+    let __closeFriendsCache = [];
+    let __highlightsCache = [];
+
+    function escH(s = '') {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function currentStoryUser() {
+        return (localStorage.getItem('hoknex_user') || 'Student').trim().replace(/^@/, '');
+    }
+
+    function ensureHighlightAndCloseFriendsUI() {
+        const barWrap = document.getElementById('hoknexStoriesBarWrap');
+        if (barWrap && !document.getElementById('hoknexHighlightsStrip')) {
+            const headerRow = barWrap.firstElementChild;
+            if (headerRow && !document.getElementById('closeFriendsMgrBtn')) {
+                const cfBtn = document.createElement('button');
+                cfBtn.id = 'closeFriendsMgrBtn';
+                cfBtn.type = 'button';
+                cfBtn.innerText = '💚 Close Friends';
+                cfBtn.onclick = openCloseFriendsModal;
+                cfBtn.style.cssText = 'background:rgba(16,185,129,0.14);color:#10b981;border:1px solid rgba(16,185,129,0.4);border-radius:999px;padding:4px 11px;font-size:0.74rem;font-weight:800;cursor:pointer;margin-right:6px;';
+                const rightGroup = document.createElement('div');
+                rightGroup.style.display = 'flex';
+                rightGroup.style.alignItems = 'center';
+                while (headerRow.children.length > 1) {
+                    rightGroup.appendChild(headerRow.children[1]);
+                }
+                rightGroup.insertBefore(cfBtn, rightGroup.firstChild);
+                headerRow.appendChild(rightGroup);
+            }
+
+            const strip = document.createElement('div');
+            strip.id = 'hoknexHighlightsStrip';
+            strip.style.cssText = 'margin-top:12px;padding-top:10px;border-top:1px dashed var(--border,#e2e8f0);display:flex;align-items:center;gap:12px;overflow-x:auto;';
+            barWrap.appendChild(strip);
+        }
+
+        if (!document.getElementById('closeFriendsModal')) {
+            const modal = document.createElement('div');
+            modal.id = 'closeFriendsModal';
+            modal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(3,7,18,0.82);backdrop-filter:blur(8px);z-index:3700;align-items:center;justify-content:center;padding:12px;';
+            modal.innerHTML = `
+                <div style="background:#0f172a;border:1px solid #334155;border-radius:20px;width:420px;max-width:96vw;max-height:86vh;overflow-y:auto;color:#f8fafc;padding:18px;box-shadow:0 25px 60px rgba(0,0,0,0.65);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <h3 style="margin:0;font-size:1rem;font-weight:800;color:#10b981;">💚 Close Friends List</h3>
+                        <button type="button" onclick="closeCloseFriendsModal()" style="background:#1e293b;border:1px solid #334155;color:#fff;border-radius:8px;width:28px;height:28px;cursor:pointer;">✕</button>
+                    </div>
+                    <p style="font-size:0.78rem;color:#94a3b8;margin:0 0 10px;">Only friends in this list see stories posted with <strong>💚 Close Friends</strong>.</p>
+                    <div style="display:flex;gap:6px;margin-bottom:12px;">
+                        <input type="text" id="closeFriendAddInput" placeholder="@username to add..." onkeydown="if(event.key==='Enter')addCloseFriendToList()" style="flex:1;background:#1e293b;border:1px solid #334155;color:#fff;border-radius:9px;padding:8px 10px;font-size:0.82rem;" />
+                        <button type="button" onclick="addCloseFriendToList()" style="background:#10b981;color:#fff;border:none;border-radius:9px;padding:8px 14px;font-weight:800;font-size:0.8rem;cursor:pointer;">Add</button>
+                    </div>
+                    <div id="closeFriendsChipsList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;min-height:36px;"></div>
+                    <button type="button" onclick="saveCloseFriendsList()" style="width:100%;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;padding:10px;font-weight:800;font-size:0.85rem;cursor:pointer;">Save Close Friends</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Inject "★ Highlight" button inside story viewer header next to delete button
+        const delBtn = document.getElementById('storyViewerDeleteBtn');
+        if (delBtn && !document.getElementById('storyViewerHighlightBtn')) {
+            const hlBtn = document.createElement('button');
+            hlBtn.id = 'storyViewerHighlightBtn';
+            hlBtn.type = 'button';
+            hlBtn.innerText = '★ Highlight';
+            hlBtn.onclick = saveActiveStoryToHighlight;
+            hlBtn.style.cssText = 'display:none;background:rgba(245,158,11,0.9);border:none;color:#0f172a;border-radius:8px;padding:4px 8px;font-size:0.72rem;font-weight:800;cursor:pointer;';
+            delBtn.parentElement.insertBefore(hlBtn, delBtn);
+        }
+    }
+
+    async function loadHighlightsAndCloseFriends() {
+        ensureHighlightAndCloseFriendsUI();
+        const me = currentStoryUser();
+        const strip = document.getElementById('hoknexHighlightsStrip');
+        if (!strip) return;
+
+        try {
+            const [cfRes, hlRes] = await Promise.all([
+                fetch(`${HLCF_API}/api/stories/close-friends/${encodeURIComponent(me)}`),
+                fetch(`${HLCF_API}/api/stories/highlights/${encodeURIComponent(me)}`)
+            ]);
+            if (cfRes.ok) {
+                const cfData = await cfRes.json();
+                __closeFriendsCache = Array.isArray(cfData.friends) ? cfData.friends : [];
+            }
+            if (hlRes.ok) {
+                const hlData = await hlRes.json();
+                __highlightsCache = Array.isArray(hlData) ? hlData : [];
+            }
+        } catch (e) {
+            console.error('Highlights/CloseFriends load error:', e);
+        }
+
+        const newHlBtn = `
+            <div onclick="createNewHighlightAlbumPrompt()" style="flex:0 0 auto;text-align:center;cursor:pointer;width:64px;">
+                <div style="width:46px;height:46px;margin:0 auto 4px;border-radius:50%;border:1.5px dashed #7c3aed;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:#7c3aed;">★+</div>
+                <div style="font-size:0.68rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">New Highlight</div>
+            </div>
+        `;
+
+        const cardsHtml = __highlightsCache.map((hl, i) => `
+            <div onclick="openHighlightAlbum(${i})" style="flex:0 0 auto;text-align:center;cursor:pointer;width:64px;">
+                <div style="width:46px;height:46px;margin:0 auto 4px;border-radius:50%;border:2px solid #f59e0b;overflow:hidden;background:#1e293b;display:flex;align-items:center;justify-content:center;color:#fbbf24;font-weight:800;font-size:0.8rem;">
+                    ${hl.coverUrl ? `<img src="${escH(hl.coverUrl)}" style="width:100%;height:100%;object-fit:cover;" />` : '★'}
+                </div>
+                <div style="font-size:0.68rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escH(hl.title)}</div>
+            </div>
+        `).join('');
+
+        strip.innerHTML = `<span style="font-size:0.7rem;font-weight:800;color:#f59e0b;flex:0 0 auto;">HIGHLIGHTS</span>` + newHlBtn + cardsHtml;
+    }
+
+    function renderCloseFriendsChips() {
+        const box = document.getElementById('closeFriendsChipsList');
+        if (!box) return;
+        if (!__closeFriendsCache.length) {
+            box.innerHTML = '<span style="font-size:0.75rem;color:#64748b;">No close friends added yet.</span>';
+            return;
+        }
+        box.innerHTML = __closeFriendsCache.map(u => `
+            <span style="display:inline-flex;align-items:center;gap:6px;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:4px 10px;border-radius:999px;font-size:0.76rem;font-weight:700;">
+                @${escH(u)}
+                <button type="button" onclick="removeCloseFriendFromList('${escH(u)}')" style="background:none;border:none;color:#f87171;font-weight:800;cursor:pointer;padding:0;">✕</button>
+            </span>
+        `).join('');
+    }
+
+    window.openCloseFriendsModal = function () {
+        ensureHighlightAndCloseFriendsUI();
+        renderCloseFriendsChips();
+        document.getElementById('closeFriendsModal').style.display = 'flex';
+    };
+
+    window.closeCloseFriendsModal = function () {
+        const m = document.getElementById('closeFriendsModal');
+        if (m) m.style.display = 'none';
+    };
+
+    window.addCloseFriendToList = function () {
+        const inp = document.getElementById('closeFriendAddInput');
+        const clean = (inp?.value || '').trim().replace(/^@/, '').toLowerCase();
+        if (!clean) return;
+        if (!__closeFriendsCache.includes(clean)) {
+            __closeFriendsCache.push(clean);
+            renderCloseFriendsChips();
+        }
+        if (inp) inp.value = '';
+    };
+
+    window.removeCloseFriendFromList = function (u) {
+        __closeFriendsCache = __closeFriendsCache.filter(x => x !== u);
+        renderCloseFriendsChips();
+    };
+
+    window.saveCloseFriendsList = async function () {
+        const me = currentStoryUser();
+        try {
+            const res = await fetch(`${HLCF_API}/api/stories/close-friends/${encodeURIComponent(me)}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ friends: __closeFriendsCache })
+            });
+            if (!res.ok) throw new Error('Failed to save');
+            alert('Close Friends list updated! 💚');
+            closeCloseFriendsModal();
+        } catch (err) {
+            alert('Error saving Close Friends: ' + err.message);
+        }
+    };
+
+    window.createNewHighlightAlbumPrompt = async function () {
+        const title = (prompt('Highlight album name (e.g., Hackathons, Campus Life, Travel):') || '').trim();
+        if (!title) return;
+        await fetch(`${HLCF_API}/api/stories/highlights`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: currentStoryUser(), title })
+        });
+        await loadHighlightsAndCloseFriends();
+    };
+
+    window.saveActiveStoryToHighlight = async function () {
+        const viewerModal = document.getElementById('hoknexStoryViewerModal');
+        if (!viewerModal || viewerModal.style.display !== 'flex') return;
+
+        const authorText = (document.getElementById('storyViewerAuthorName')?.innerText || '').replace(/^@/, '').trim();
+        const me = currentStoryUser();
+        if (authorText !== me) return alert('You can only highlight your own stories.');
+
+        // Find matching active story from DOM/state via current canvas image/video/text
+        const canvas = document.getElementById('storyViewerCanvas');
+        const img = canvas?.querySelector('img');
+        const vid = canvas?.querySelector('video');
+        const textDiv = Array.from(canvas?.querySelectorAll('div') || []).find(d => !d.querySelector('button'));
+        const musicBanner = document.getElementById('storyViewerMusicBanner');
+
+        const item = {
+            type: vid ? 'video' : (img ? 'image' : 'text'),
+            mediaUrl: (vid && vid.src) || (img && img.src) || '',
+            textOverlay: textDiv ? textDiv.innerText : '',
+            bgGradient: canvas ? canvas.style.background : 'linear-gradient(135deg,#7c3aed,#ec4899)',
+            filterCss: (vid && vid.style.filter) || (img && img.style.filter) || 'none',
+            music: musicBanner && musicBanner.style.display !== 'none'
+                ? { trackName: musicBanner.innerText.replace(/^🎵\s*/, '') }
+                : {}
+        };
+
+        let targetId = '';
+        if (__highlightsCache.length > 0) {
+            const names = __highlightsCache.map((h, i) => `${i + 1}. ${h.title}`).join('\n');
+            const pick = prompt(`Save to existing highlight number, or type a NEW highlight name:\n${names}`);
+            if (pick === null || !pick.trim()) return;
+            const num = Number(pick.trim());
+            if (num >= 1 && num <= __highlightsCache.length) {
+                targetId = __highlightsCache[num - 1]._id;
+            } else {
+                const res = await fetch(`${HLCF_API}/api/stories/highlights`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: me, title: pick.trim(), coverUrl: item.mediaUrl, item })
+                });
+                if (res.ok) {
+                    alert(`Saved to new highlight "${pick.trim()}"! ★`);
+                    await loadHighlightsAndCloseFriends();
+                }
+                return;
+            }
+        } else {
+            const title = (prompt('Name your first Highlight:') || 'Favorites').trim();
+            if (!title) return;
+            const res = await fetch(`${HLCF_API}/api/stories/highlights`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: me, title, coverUrl: item.mediaUrl, item })
+            });
+            if (res.ok) {
+                alert(`Saved to highlight "${title}"! ★`);
+                await loadHighlightsAndCloseFriends();
+            }
+            return;
+        }
+
+        const res = await fetch(`${HLCF_API}/api/stories/highlights`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: me, highlightId: targetId, item })
+        });
+        if (res.ok) {
+            alert('Added to Highlight! ★');
+            await loadHighlightsAndCloseFriends();
+        }
+    };
+
+    window.openHighlightAlbum = function (index) {
+        const hl = __highlightsCache[index];
+        if (!hl) return;
+        const items = Array.isArray(hl.items) && hl.items.length
+            ? hl.items
+            : [{ type: 'text', textOverlay: `★ ${hl.title} (Empty album — tap ★ Highlight on a story to add moments!)`, bgGradient: 'linear-gradient(135deg,#1e293b,#7c3aed)' }];
+
+        const vm = document.getElementById('hoknexStoryViewerModal');
+        const canvas = document.getElementById('storyViewerCanvas');
+        const footer = document.getElementById('storyViewerFooter');
+        if (!vm || !canvas) return;
+
+        let slideIdx = 0;
+        function drawSlide() {
+            const s = items[slideIdx];
+            document.getElementById('storyViewerAuthorName').innerText = `★ ${hl.title} (@${hl.username})`;
+            document.getElementById('storyViewerMeta').innerText = `Highlight • ${slideIdx + 1}/${items.length}`;
+            document.getElementById('storyViewerDeleteBtn').style.display = 'none';
+            document.getElementById('storyViewerHighlightBtn').style.display = 'none';
+            document.getElementById('storyViewerProgressBars').innerHTML = items.map((_, i) => `
+                <div style="flex:1;height:3px;background:${i <= slideIdx ? '#fbbf24' : 'rgba(255,255,255,0.25)'};border-radius:999px;"></div>
+            `).join('');
+
+            canvas.style.background = s.bgGradient || 'linear-gradient(135deg,#7c3aed,#ec4899)';
+            let media = '';
+            if (s.type === 'video' && s.mediaUrl) {
+                media = `<video src="${escH(s.mediaUrl)}" autoplay loop playsinline style="width:100%;height:100%;object-fit:cover;filter:${escH(s.filterCss || 'none')};"></video>`;
+            } else if (s.mediaUrl) {
+                media = `<img src="${escH(s.mediaUrl)}" style="width:100%;height:100%;object-fit:cover;filter:${escH(s.filterCss || 'none')};" />`;
+            }
+            const txt = s.textOverlay
+                ? `<div style="position:relative;z-index:6;padding:18px;text-align:center;font-size:1.25rem;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.75);">${escH(s.textOverlay)}</div>`
+                : '';
+            canvas.innerHTML = media + txt;
+
+            footer.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                    <button type="button" onclick="if(${slideIdx}>0){${slideIdx}--;}" style="display:none;"></button>
+                    <span style="font-size:0.74rem;color:#cbd5e1;">Pinned Highlight</span>
+                    <button type="button" onclick="deleteHighlightAlbum('${escH(hl._id)}')" style="background:rgba(239,68,68,0.8);color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:0.72rem;font-weight:700;cursor:pointer;">Delete Album</button>
+                </div>
+            `;
+        }
+
+        drawSlide();
+        vm.style.display = 'flex';
+    };
+
+    window.deleteHighlightAlbum = async function (id) {
+        if (!confirm('Delete this Highlight album?')) return;
+        await fetch(`${HLCF_API}/api/stories/highlights/${id}`, { method: 'DELETE' });
+        closeHoknexStoryViewer();
+        await loadHighlightsAndCloseFriends();
+    };
+
+    // Show ★ Highlight button whenever viewing your own active story
+    const origOpenViewer = window.openHoknexStoryViewer;
+    if (typeof origOpenViewer === 'function') {
+        window.openHoknexStoryViewer = function (username) {
+            origOpenViewer.apply(this, arguments);
+            setTimeout(() => {
+                const hlBtn = document.getElementById('storyViewerHighlightBtn');
+                if (hlBtn) {
+                    hlBtn.style.display = username === currentStoryUser() ? 'inline-block' : 'none';
+                }
+            }, 60);
+        };
+    }
+
+    setInterval(() => {
+        if (document.getElementById('hoknexStoriesBarWrap') && !document.getElementById('hoknexHighlightsStrip')) {
+            loadHighlightsAndCloseFriends();
+        }
+    }, 800);
+
+    setTimeout(loadHighlightsAndCloseFriends, 400);
+})();
+</script>
     
 </body>
 </html>
