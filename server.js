@@ -600,6 +600,203 @@ app.post('/api/messages/send', async (req, res) => {
     }
 });
 
+// ============================================================================
+// HOKNEX 24-HOUR STORIES ENGINE (INSTAGRAM + WHATSAPP FEATURES)
+// ============================================================================
+
+const StorySchema = new mongoose.Schema({
+    username: { type: String, required: true, index: true },
+    authorName: { type: String, default: 'Student' },
+    authorDp: { type: String, default: '' },
+    type: { type: String, enum: ['image', 'video', 'text'], default: 'image' },
+    mediaUrl: { type: String, default: '' },
+    textOverlay: { type: String, default: '' },
+    textColor: { type: String, default: '#ffffff' },
+    textBg: { type: String, default: 'transparent' },
+    fontStyle: { type: String, default: 'sans' },
+    bgGradient: { type: String, default: 'linear-gradient(135deg, #7c3aed, #ec4899)' },
+    filterCss: { type: String, default: 'none' },
+    privacy: { type: String, enum: ['public', 'followers', 'close_friends'], default: 'public' },
+    music: {
+        trackName: { type: String, default: '' },
+        artistName: { type: String, default: '' },
+        artworkUrl: { type: String, default: '' },
+        previewUrl: { type: String, default: '' }
+    },
+    poll: {
+        question: { type: String, default: '' },
+        optionA: { type: String, default: '' },
+        optionB: { type: String, default: '' },
+        votesA: [{ type: String }],
+        votesB: [{ type: String }]
+    },
+    viewers: [{
+        username: String,
+        viewedAt: { type: Date, default: Date.now }
+    }],
+    reactions: [{
+        username: String,
+        emoji: String,
+        createdAt: { type: Date, default: Date.now }
+    }],
+    createdAt: { type: Date, default: Date.now, expires: 86400 } // Auto-deletes after 24 hours
+});
+
+const Story = mongoose.models.Story || mongoose.model('Story', StorySchema);
+
+// 1. Fetch active 24h stories grouped by user
+app.get('/api/stories', async (req, res) => {
+    try {
+        const viewer = String(req.query.viewer || '').trim().replace(/^@/, '');
+        const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const stories = await Story.find({ createdAt: { $gte: cutoff } }).sort({ createdAt: 1 });
+
+        // Filter privacy if needed
+        let allowedStories = stories;
+        if (viewer) {
+            const authors = Array.from(new Set(stories.map(s => s.username)));
+            const authorDocs = await User.find({ username: { $in: authors } }).select('username followers');
+            const viewerDoc = await User.findOne({ username: viewer }).select('_id');
+            const followerMap = {};
+            authorDocs.forEach(u => {
+                followerMap[u.username] = viewerDoc && (u.followers || []).some(id => String(id) === String(viewerDoc._id));
+            });
+
+            allowedStories = stories.filter(s => {
+                if (s.username === viewer) return true;
+                if (s.privacy === 'public') return true;
+                return Boolean(followerMap[s.username]);
+            });
+        }
+
+        res.json(allowedStories);
+    } catch (err) {
+        console.error('Fetch stories error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 2. Publish a new story
+app.post('/api/stories', async (req, res) => {
+    try {
+        const body = req.body || {};
+        const username = String(body.username || '').trim().replace(/^@/, '');
+        if (!username) return res.status(400).json({ error: 'Username is required' });
+
+        const user = await User.findOne({ username }).select('name username dpUrl');
+        const newStory = new Story({
+            username,
+            authorName: user ? user.name : username,
+            authorDp: user ? (user.dpUrl || '') : '',
+            type: body.type || 'image',
+            mediaUrl: body.mediaUrl || '',
+            textOverlay: body.textOverlay || '',
+            textColor: body.textColor || '#ffffff',
+            textBg: body.textBg || 'transparent',
+            fontStyle: body.fontStyle || 'sans',
+            bgGradient: body.bgGradient || 'linear-gradient(135deg, #7c3aed, #ec4899)',
+            filterCss: body.filterCss || 'none',
+            privacy: body.privacy || 'public',
+            music: body.music || {},
+            poll: body.poll || {}
+        });
+
+        await newStory.save();
+        res.status(201).json(newStory);
+    } catch (err) {
+        console.error('Create story error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 3. Mark story as viewed ("Seen by")
+app.post('/api/stories/:id/view', async (req, res) => {
+    try {
+        const viewer = String((req.body || {}).username || '').trim().replace(/^@/, '');
+        if (!viewer) return res.status(400).json({ error: 'Viewer username required' });
+
+        const story = await Story.findById(req.params.id);
+        if (!story) return res.status(404).json({ error: 'Story not found' });
+
+        if (story.username !== viewer && !(story.viewers || []).some(v => v.username === viewer)) {
+            story.viewers.push({ username: viewer, viewedAt: new Date() });
+            await story.save();
+        }
+        res.json(story);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 4. Vote on interactive story poll
+app.post('/api/stories/:id/vote', async (req, res) => {
+    try {
+        const { username, choice } = req.body || {};
+        const voter = String(username || '').trim().replace(/^@/, '');
+        if (!voter || !['A', 'B'].includes(choice)) {
+            return res.status(400).json({ error: 'Valid voter and choice (A or B) required' });
+        }
+
+        const story = await Story.findById(req.params.id);
+        if (!story || !story.poll || !story.poll.question) {
+            return res.status(404).json({ error: 'Story poll not found' });
+        }
+
+        story.poll.votesA = (story.poll.votesA || []).filter(u => u !== voter);
+        story.poll.votesB = (story.poll.votesB || []).filter(u => u !== voter);
+        if (choice === 'A') story.poll.votesA.push(voter);
+        else story.poll.votesB.push(voter);
+
+        await story.save();
+        res.json(story);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 5. React or Reply to Story (Sends DM into Messages inbox too!)
+app.post('/api/stories/:id/react', async (req, res) => {
+    try {
+        const { username, emoji, replyText } = req.body || {};
+        const sender = String(username || '').trim().replace(/^@/, '');
+        const story = await Story.findById(req.params.id);
+        if (!story) return res.status(404).json({ error: 'Story not found' });
+
+        if (emoji) {
+            story.reactions.push({ username: sender, emoji });
+            await story.save();
+        }
+
+        if (sender && sender !== story.username && (emoji || replyText)) {
+            const msgBody = replyText
+                ? `📸 Replied to your story: "${replyText}"`
+                : `📸 Reacted ${emoji} to your story`;
+            const dm = new Message({
+                sender,
+                recipient: story.username,
+                text: msgBody,
+                mediaUrl: story.mediaUrl || '',
+                mediaType: story.type === 'video' ? 'video' : (story.mediaUrl ? 'image' : 'text')
+            });
+            await dm.save();
+        }
+
+        res.json({ success: true, story });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 6. Delete own story
+app.delete('/api/stories/:id', async (req, res) => {
+    try {
+        await Story.findByIdAndDelete(req.params.id);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ==========================================
 // --- STORE, ADMIN & CAMPAIGNS SCHEMAS & API ROUTES ---
 // ==========================================
