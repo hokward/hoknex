@@ -2082,7 +2082,7 @@ app.post('/api/projects/:id/team', async (req, res) => {
     try {
         const body = req.body || {};
         const username = String(body.username || '').replace(/^@/, '').trim();
-        const role = String(body.role || 'Contributor').trim();
+        const role = String(body.role || 'Contributor').trim() || 'Contributor';
         if (!username) return res.status(400).json({ error: 'Username is required' });
 
         const proj = await Project.findById(req.params.id);
@@ -2090,13 +2090,13 @@ app.post('/api/projects/:id/team', async (req, res) => {
 
         if (!Array.isArray(proj.teamMembers)) proj.teamMembers = [];
         const exists = proj.teamMembers.some(
-            m => String(m.username || '').toLowerCase() === username.toLowerCase()
+            m => String(m.username || '').trim().toLowerCase() === username.toLowerCase()
         );
         if (exists) {
             return res.status(400).json({ error: `@${username} is already on this team` });
         }
 
-        proj.teamMembers.push({ username, role: role || 'Contributor' });
+        proj.teamMembers.push({ username, role });
         await proj.save();
         res.json(proj);
     } catch (err) {
@@ -2130,7 +2130,6 @@ app.delete('/api/projects/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
 
 // ==========================================
 // --- HOKNEX CLUB / SPACE ROUTES ---
