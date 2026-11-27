@@ -1877,7 +1877,40 @@ app.get('/api/user-reposts/:username', async (req, res) => {
   }
 });
 
-// POST /api/projects - Now accepts milestones & initial team members
+// GET /api/projects - Fetch all projects (newest first) + optional query filters
+app.get('/api/projects', async (req, res) => {
+    try {
+        const { q, classification, tech } = req.query || {};
+        const filter = {};
+
+        if (classification && classification !== 'All') {
+            filter.classification = classification;
+        }
+        if (tech && String(tech).trim()) {
+            filter.techStack = {
+                $regex: String(tech).trim().replace(/^#/, ''),
+                $options: 'i'
+            };
+        }
+        if (q && String(q).trim()) {
+            const regex = new RegExp(String(q).trim(), 'i');
+            filter.$or = [
+                { title: regex },
+                { desc: regex },
+                { techStack: regex },
+                { author: regex }
+            ];
+        }
+
+        const projects = await Project.find(filter).sort({ createdAt: -1 });
+        res.json(projects);
+    } catch (err) {
+        console.error('Error fetching projects:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/projects - Accepts multipart/form-data OR JSON, with milestones & initial team lead
 app.post('/api/projects', upload.single('image'), async (req, res) => {
     try {
         const title = (req.body.title || '').trim();
@@ -1888,7 +1921,7 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
         const techStack = (req.body.techStack || '').trim();
         const projectUrl = (req.body.projectUrl || '').trim();
         const demoUrl = (req.body.demoUrl || '').trim();
-        const author = req.body.author || 'Student';
+        const author = (req.body.author || 'Student').trim();
 
         let openRoles = [];
         if (Array.isArray(req.body.openRoles)) {
@@ -1918,7 +1951,7 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
         if (req.file) {
             resolvedImage = req.file.path || req.file.secure_url || req.file.url || '';
         } else if (req.body.imageUrl || req.body.img) {
-            resolvedImage = req.body.imageUrl || req.body.img;
+            resolvedImage = String(req.body.imageUrl || req.body.img).trim();
         }
 
         const newProj = new Project({
@@ -1928,7 +1961,7 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
             stage,
             openRoles,
             milestones,
-            teamMembers: [{ username: String(author).trim(), role: 'Project Lead' }],
+            teamMembers: [{ username: author, role: 'Project Lead' }],
             audience,
             techStack,
             projectUrl,
@@ -1942,6 +1975,64 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
         res.status(201).json(newProj);
     } catch (err) {
         console.error('Project creation error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/projects/:id/boost - Boost project & increment rocket count
+app.post('/api/projects/:id/boost', async (req, res) => {
+    try {
+        const proj = await Project.findByIdAndUpdate(
+            req.params.id,
+            { $inc: { boosts: 1, 'reactions.rocket': 1 } },
+            { new: true }
+        );
+        if (!proj) return res.status(404).json({ error: 'Project not found' });
+        res.json(proj);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/projects/:id/react - Increment like / love / rocket reaction
+app.post('/api/projects/:id/react', async (req, res) => {
+    try {
+        const { type } = req.body || {};
+        if (!['like', 'love', 'rocket'].includes(type)) {
+            return res.status(400).json({ error: 'Invalid reaction type' });
+        }
+
+        const proj = await Project.findByIdAndUpdate(
+            req.params.id,
+            { $inc: { [`reactions.${type}`]: 1 } },
+            { new: true }
+        );
+        if (!proj) return res.status(404).json({ error: 'Project not found' });
+        res.json(proj);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/projects/:id/rate - Update average star rating
+app.post('/api/projects/:id/rate', async (req, res) => {
+    try {
+        const numericRating = Number(req.body.rating);
+        if (!numericRating || numericRating < 1 || numericRating > 5) {
+            return res.status(400).json({ error: 'Rating must be between 1 and 5' });
+        }
+
+        const proj = await Project.findById(req.params.id);
+        if (!proj) return res.status(404).json({ error: 'Project not found' });
+
+        const count = proj.ratingsCount || 0;
+        const avg = proj.rating || 0;
+        proj.rating = Number((((avg * count) + numericRating) / (count + 1)).toFixed(2));
+        proj.ratingsCount = count + 1;
+        await proj.save();
+
+        res.json(proj);
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
@@ -2015,6 +2106,17 @@ app.delete('/api/projects/:id/team/:memberId', async (req, res) => {
         proj.teamMembers.pull({ _id: req.params.memberId });
         await proj.save();
         res.json(proj);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// DELETE /api/projects/:id - Delete a project by ID
+app.delete('/api/projects/:id', async (req, res) => {
+    try {
+        const deleted = await Project.findByIdAndDelete(req.params.id);
+        if (!deleted) return res.status(404).json({ error: 'Project not found' });
+        res.json({ message: 'Project deleted successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
