@@ -3158,30 +3158,46 @@ async function deleteProject(id) {
 
 async function toggleProjectMilestone(projectId, milestoneId) {
     const patchUrl = `${__HOKNEX_PROJ_API}/api/projects/${projectId}/milestones/${milestoneId}`;
-    const fallbackPostUrl = `${__HOKNEX_PROJ_API}/api/projects/${projectId}/milestones/${milestoneId}/toggle`;
+    const togglePostUrl = `${__HOKNEX_PROJ_API}/api/projects/${projectId}/milestones/${milestoneId}/toggle`;
+
+    const tryRequest = async (url, method) => {
+        try {
+            const r = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            });
+            return r;
+        } catch (_) {
+            return null;
+        }
+    };
 
     try {
-        let res;
-        try {
-            res = await fetch(patchUrl, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' }
-            });
-        } catch (_) {
-            res = await fetch(fallbackPostUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
+        let res = await tryRequest(patchUrl, 'PATCH');
+        if (!res || !res.ok) {
+            res = await tryRequest(togglePostUrl, 'POST');
+        }
+        if (!res || !res.ok) {
+            res = await tryRequest(patchUrl, 'POST');
+        }
+
+        if (!res) {
+            return alert('Network error toggling milestone. Make sure PATCH is allowed in server CORS and Render finished redeploying.');
         }
 
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-            return alert(data.error || 'Could not update milestone.');
+            return alert(
+                res.status === 404
+                    ? 'Milestone toggle endpoint returned 404 on Render. Check that the latest server.js is deployed.'
+                    : (data.error || 'Could not update milestone.')
+            );
         }
+
         syncCachedProject(data);
     } catch (e) {
         console.error('Toggle milestone error:', e);
-        alert('Could not toggle milestone. Check server connection.');
+        alert('Could not toggle milestone.');
     }
 }
 
