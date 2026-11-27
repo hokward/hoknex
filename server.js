@@ -1905,33 +1905,6 @@ app.use(cors(hoknexCorsOptions));
 app.options(/.*/, cors(hoknexCorsOptions));
 
 // ============================================================================
-// CORS PREFLIGHT & PATCH SUPPORT (Place ABOVE your /api routes)
-// ============================================================================
-const cors = require('cors');
-
-const hoknexCorsOptions = {
-    origin: function (origin, callback) {
-        if (
-            !origin ||
-            origin === 'https://hoknex.pages.dev' ||
-            origin.endsWith('.hoknex.pages.dev') ||
-            origin.startsWith('http://localhost:') ||
-            origin.startsWith('http://127.0.0.1:')
-        ) {
-            return callback(null, true);
-        }
-        return callback(null, true);
-    },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-hoknex-admin-key'],
-    credentials: true,
-    optionsSuccessStatus: 204
-};
-
-app.use(cors(hoknexCorsOptions));
-app.options(/.*/, cors(hoknexCorsOptions));
-
-// ============================================================================
 // SAFE CORS MIDDLEWARE (Place ABOVE your /api routes)
 // ============================================================================
 app.use((req, res, next) => {
