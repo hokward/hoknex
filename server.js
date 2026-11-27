@@ -1932,6 +1932,27 @@ app.use(cors(hoknexCorsOptions));
 app.options(/.*/, cors(hoknexCorsOptions));
 
 // ============================================================================
+// SAFE CORS MIDDLEWARE (Place ABOVE your /api routes)
+// ============================================================================
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
+    } else {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-hoknex-admin-key');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(204);
+    }
+    next();
+});
+
+// ============================================================================
 // HOKNEX PROJECTS ROUTES
 // ============================================================================
 
@@ -2137,7 +2158,6 @@ async function handleToggleMilestone(req, res) {
 // PATCH & POST toggle endpoints for milestone done state
 app.patch('/api/projects/:id/milestones/:milestoneId', handleToggleMilestone);
 app.post('/api/projects/:id/milestones/:milestoneId/toggle', handleToggleMilestone);
-app.post('/api/projects/:id/milestones/:milestoneId', handleToggleMilestone);
 
 // POST /api/projects/:id/team - Add a co-builder to the project roster
 app.post('/api/projects/:id/team', async (req, res) => {
