@@ -157,6 +157,126 @@ async function sendStoreEmailViaBrevo({ toEmails, subject, htmlContent, textCont
     return { sent: true, data };
 }
 
+
+// ============================================================================
+// STORY HIGHLIGHTS & CLOSE FRIENDS LIST ROUTES
+// ============================================================================
+
+const StoryHighlightSchema = new mongoose.Schema({
+    username: { type: String, required: true, index: true },
+    title: { type: String, required: true },
+    coverUrl: { type: String, default: '' },
+    items: [{
+        type: { type: String, default: 'image' },
+        mediaUrl: { type: String, default: '' },
+        textOverlay: { type: String, default: '' },
+        bgGradient: { type: String, default: 'linear-gradient(135deg, #7c3aed, #ec4899)' },
+        filterCss: { type: String, default: 'none' },
+        music: {
+            trackName: { type: String, default: '' },
+            artistName: { type: String, default: '' },
+            previewUrl: { type: String, default: '' }
+        },
+        createdAt: { type: Date, default: Date.now }
+    }],
+    createdAt: { type: Date, default: Date.now }
+});
+
+const StoryHighlight = mongoose.models.StoryHighlight || mongoose.model('StoryHighlight', StoryHighlightSchema);
+
+const CloseFriendsSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true, index: true },
+    friends: [{ type: String }],
+    updatedAt: { type: Date, default: Date.now }
+});
+
+const CloseFriends = mongoose.models.CloseFriends || mongoose.model('CloseFriends', CloseFriendsSchema);
+
+// Get Close Friends list for a user
+app.get('/api/stories/close-friends/:username', async (req, res) => {
+    try {
+        const cleanUser = String(req.params.username || '').trim().replace(/^@/, '');
+        const doc = await CloseFriends.findOne({ username: cleanUser });
+        res.json({ username: cleanUser, friends: doc ? doc.friends : [] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Save / Update Close Friends list
+app.put('/api/stories/close-friends/:username', async (req, res) => {
+    try {
+        const cleanUser = String(req.params.username || '').trim().replace(/^@/, '');
+        const rawList = Array.isArray((req.body || {}).friends) ? req.body.friends : [];
+        const cleanFriends = Array.from(new Set(
+            rawList.map(u => String(u || '').trim().replace(/^@/, '').toLowerCase()).filter(Boolean)
+        ));
+
+        const doc = await CloseFriends.findOneAndUpdate(
+            { username: cleanUser },
+            { username: cleanUser, friends: cleanFriends, updatedAt: new Date() },
+            { upsert: true, new: true }
+        );
+        res.json({ success: true, friends: doc.friends });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get Story Highlights for a user
+app.get('/api/stories/highlights/:username', async (req, res) => {
+    try {
+        const cleanUser = String(req.params.username || '').trim().replace(/^@/, '');
+        const highlights = await StoryHighlight.find({ username: cleanUser }).sort({ createdAt: -1 });
+        res.json(highlights);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Create a new Story Highlight or append a story item into an existing Highlight
+app.post('/api/stories/highlights', async (req, res) => {
+    try {
+        const body = req.body || {};
+        const username = String(body.username || '').trim().replace(/^@/, '');
+        const title = String(body.title || 'Highlight').trim() || 'Highlight';
+        const highlightId = body.highlightId || '';
+        const item = body.item || {};
+
+        if (!username) return res.status(400).json({ error: 'Username required' });
+
+        if (highlightId) {
+            const existing = await StoryHighlight.findById(highlightId);
+            if (!existing) return res.status(404).json({ error: 'Highlight not found' });
+            existing.items.push(item);
+            if (!existing.coverUrl && item.mediaUrl) existing.coverUrl = item.mediaUrl;
+            await existing.save();
+            return res.json({ success: true, highlight: existing });
+        }
+
+        const created = new StoryHighlight({
+            username,
+            title,
+            coverUrl: body.coverUrl || item.mediaUrl || '',
+            items: item.mediaUrl || item.textOverlay ? [item] : []
+        });
+        await created.save();
+        res.status(201).json({ success: true, highlight: created });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Delete a Story Highlight
+app.delete('/api/stories/highlights/:id', async (req, res) => {
+    try {
+        await StoryHighlight.findByIdAndDelete(req.params.id);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ==========================================
 // --- DIAGNOSTIC DEBUG ROUTE ---
 // ==========================================
