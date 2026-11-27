@@ -5262,7 +5262,6 @@ async function saveProfileChanges() {
         const dpFile = dpInput && dpInput.files ? dpInput.files[0] : null;
         const bannerFile = bannerInput && bannerInput.files ? bannerInput.files[0] : null;
 
-        // 1. Upload images directly to Cloudinary (Bypasses Render Bandwidth 100%)
         if (dpFile) {
             dpUrl = await uploadToCloudinary(dpFile);
         }
@@ -5270,7 +5269,6 @@ async function saveProfileChanges() {
             bannerUrl = await uploadToCloudinary(bannerFile);
         }
 
-        // 2. Prepare lightweight JSON payload with text values and image URLs
         const payload = {
             name: document.getElementById('editName')?.value || '',
             bio: document.getElementById('editBio')?.value || '',
@@ -5278,42 +5276,70 @@ async function saveProfileChanges() {
             skills: document.getElementById('editSkills')?.value || ''
         };
 
-        if (dpUrl) payload.dp = dpUrl;
-        if (bannerUrl) payload.banner = bannerUrl;
+        if (dpUrl) {
+            payload.dp = dpUrl;
+            payload.dpUrl = dpUrl;
+        }
+        if (bannerUrl) {
+            payload.banner = bannerUrl;
+            payload.bannerUrl = bannerUrl;
+        }
 
-    // 3. Send lightweight JSON to Render backend
         const loggedInUser = localStorage.getItem('hoknex_user');
         const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(loggedInUser)}`, {
-            method: 'PUT', 
-            headers: { 
+            method: 'PUT',
+            headers: {
                 'Content-Type': 'application/json',
-                'x-username': loggedInUser 
-            }, 
-            body: JSON.stringify(payload) 
+                'x-username': loggedInUser
+            },
+            body: JSON.stringify(payload)
         });
 
-   if (res.ok) {
-            console.log("Cloudinary Upload Success! DP URL:", dpUrl);
-            
-            alert('Profile updated successfully!');
-            document.getElementById('editProfileBox').style.display = 'none';
+        if (res.ok) {
+            const updatedUser = await res.json().catch(() => ({}));
+            const finalDp = updatedUser.dpUrl || updatedUser.dp || dpUrl;
+            const finalBanner = updatedUser.bannerUrl || updatedUser.banner || bannerUrl;
 
-            // Safely update ONLY the main profile display picture element
-            if (dpUrl) {
-                // Target the specific profile header/avatar image by its ID or wrapper class
-                const mainAvatar = document.querySelector('.profile-card img, #userAvatarImg, .profile-avatar');
-                if (mainAvatar) {
-                    mainAvatar.src = dpUrl;
-                }
+            console.log("Cloudinary Upload Success! DP URL:", finalDp);
+            alert('Profile updated successfully!');
+
+            const editBox = document.getElementById('editProfileBox');
+            if (editBox) editBox.style.display = 'none';
+
+            if (finalDp) {
+                const bustDp = `${finalDp}${finalDp.includes('?') ? '&' : '?'}t=${Date.now()}`;
+                const avatarSelectors = [
+                    '#userAvatarImg',
+                    '#profileAvatarImg',
+                    '.profile-avatar',
+                    '.profile-card .avatar img',
+                    '.profile-card img[alt*="avatar" i]',
+                    '.profile-card img[alt*="profile" i]',
+                    '.profile-card img:nth-of-type(2)'
+                ];
+                avatarSelectors.forEach(sel => {
+                    document.querySelectorAll(sel).forEach(img => {
+                        if (!/banner|cover/i.test(img.className || '') && !/banner|cover/i.test(img.alt || '')) {
+                            img.src = bustDp;
+                            img.style.display = '';
+                        }
+                    });
+                });
             }
 
-            // Reload user profile data cleanly from server
+            if (finalBanner) {
+                const bustBanner = `${finalBanner}${finalBanner.includes('?') ? '&' : '?'}t=${Date.now()}`;
+                document.querySelectorAll('#profileBannerImg, .profile-banner, .profile-card img:first-of-type').forEach(img => {
+                    img.src = bustBanner;
+                    img.style.display = '';
+                });
+            }
+
             setTimeout(() => {
-                loadUserProfile(loggedInUser);
-                loadLoggedInUserBanner(loggedInUser);
-            }, 300);
-        }
-        else {
+                if (typeof loadUserProfile === 'function') loadUserProfile(loggedInUser);
+                if (typeof loadLoggedInUserBanner === 'function') loadLoggedInUserBanner(loggedInUser);
+            }, 400);
+        } else {
             const errData = await res.json().catch(() => ({}));
             alert(errData.error || 'Failed to update profile.');
         }
