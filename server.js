@@ -1877,6 +1877,37 @@ app.get('/api/user-reposts/:username', async (req, res) => {
   }
 });
 
+// ============================================================================
+// CORS PREFLIGHT & PATCH SUPPORT (Place ABOVE your /api routes)
+// ============================================================================
+const cors = require('cors');
+
+const hoknexCorsOptions = {
+    origin: function (origin, callback) {
+        if (
+            !origin ||
+            origin === 'https://hoknex.pages.dev' ||
+            origin.endsWith('.hoknex.pages.dev') ||
+            origin.startsWith('http://localhost:') ||
+            origin.startsWith('http://127.0.0.1:')
+        ) {
+            return callback(null, true);
+        }
+        return callback(null, true);
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-hoknex-admin-key'],
+    credentials: true,
+    optionsSuccessStatus: 204
+};
+
+app.use(cors(hoknexCorsOptions));
+app.options(/.*/, cors(hoknexCorsOptions));
+
+// ============================================================================
+// HOKNEX PROJECTS ROUTES
+// ============================================================================
+
 // GET /api/projects - Fetch all projects (newest first) + optional query filters
 app.get('/api/projects', async (req, res) => {
     try {
@@ -2057,8 +2088,7 @@ app.post('/api/projects/:id/milestones', async (req, res) => {
     }
 });
 
-// PATCH /api/projects/:id/milestones/:milestoneId - Toggle milestone done state
-app.patch('/api/projects/:id/milestones/:milestoneId', async (req, res) => {
+async function handleToggleMilestone(req, res) {
     try {
         const proj = await Project.findById(req.params.id);
         if (!proj) return res.status(404).json({ error: 'Project not found' });
@@ -2075,7 +2105,11 @@ app.patch('/api/projects/:id/milestones/:milestoneId', async (req, res) => {
         console.error('Toggle milestone error:', err);
         res.status(500).json({ error: err.message });
     }
-});
+}
+
+// PATCH & POST toggle endpoints for milestone done state
+app.patch('/api/projects/:id/milestones/:milestoneId', handleToggleMilestone);
+app.post('/api/projects/:id/milestones/:milestoneId/toggle', handleToggleMilestone);
 
 // POST /api/projects/:id/team - Add a co-builder to the project roster
 app.post('/api/projects/:id/team', async (req, res) => {
