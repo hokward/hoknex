@@ -1,5 +1,17 @@
 const mongoose = require('mongoose');
 
+const milestoneSchema = new mongoose.Schema({
+    title: { type: String, required: true, trim: true },
+    done: { type: Boolean, default: false },
+    completedAt: { type: Date, default: null }
+}, { _id: true });
+
+const teamMemberSchema = new mongoose.Schema({
+    username: { type: String, required: true, trim: true },
+    role: { type: String, default: 'Contributor', trim: true },
+    joinedAt: { type: Date, default: Date.now }
+}, { _id: true });
+
 const projectSchema = new mongoose.Schema({
     title: { type: String, required: true, trim: true },
     desc: { type: String, required: true, trim: true },
@@ -15,6 +27,8 @@ const projectSchema = new mongoose.Schema({
         default: 'Prototype'
     },
     openRoles: { type: [String], default: [] },
+    milestones: { type: [milestoneSchema], default: [] },
+    teamMembers: { type: [teamMemberSchema], default: [] },
     audience: { type: String, default: 'Open to All' },
     techStack: { type: String, default: '' },
     projectUrl: { type: String, default: '' },
@@ -33,7 +47,7 @@ const projectSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now, index: -1 }
 });
 
-// Sync `img` and `imageUrl`, normalize tags, and optimize Cloudinary URLs
+// Sync `img` and `imageUrl`, ensure author is in teamMembers, and optimize Cloudinary URLs
 projectSchema.pre('save', function (next) {
     let url = (this.imageUrl || this.img || '').trim();
     if (url.includes('cloudinary.com') && url.includes('/upload/') && !url.includes('q_auto')) {
@@ -43,6 +57,15 @@ projectSchema.pre('save', function (next) {
         this.img = url;
         this.imageUrl = url;
     }
+
+    const leadName = typeof this.author === 'object' && this.author !== null
+        ? (this.author.username || 'Student')
+        : String(this.author || 'Student').trim();
+
+    if (leadName && (!Array.isArray(this.teamMembers) || this.teamMembers.length === 0)) {
+        this.teamMembers = [{ username: leadName, role: 'Project Lead' }];
+    }
+
     next();
 });
 
