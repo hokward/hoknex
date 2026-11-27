@@ -6,6 +6,11 @@ const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
 const OrganizerApp = require('./models/OrganizerApp');
 const User = require('./models/User');
 const Post = require('./models/Post');
@@ -19,17 +24,19 @@ const Reel = require('./models/Reel');
 const app = express();
 app.set('trust proxy', 1);
 
-// ✅ Explicit Global CORS configuration to fix connection & blocks
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-username', 'x-user-id']
-}));
+// ✅ Single Global CORS configuration (includes PATCH & OPTIONS preflight)
+const hoknexCorsOptions = {
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-username', 'x-user-id', 'x-hoknex-admin-key'],
+    credentials: true,
+    optionsSuccessStatus: 204
+};
+
+app.use(cors(hoknexCorsOptions));
+app.options(/.*/, cors(hoknexCorsOptions));
 
 app.use(express.static(__dirname + '/public'));
-
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 
 // 1. Secure HTTP headers safely without blocking local assets
 app.use(helmet({
@@ -56,9 +63,6 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 app.use('/uploads', express.static(uploadDir));
-
-const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 // 1. Configure Cloudinary
 cloudinary.config({
@@ -1878,54 +1882,6 @@ app.get('/api/user-reposts/:username', async (req, res) => {
 });
 
 // ============================================================================
-// CORS PREFLIGHT & PATCH SUPPORT (Place ABOVE your /api routes)
-// ============================================================================
-const cors = require('cors');
-
-const hoknexCorsOptions = {
-    origin: function (origin, callback) {
-        if (
-            !origin ||
-            origin === 'https://hoknex.pages.dev' ||
-            origin.endsWith('.hoknex.pages.dev') ||
-            origin.startsWith('http://localhost:') ||
-            origin.startsWith('http://127.0.0.1:')
-        ) {
-            return callback(null, true);
-        }
-        return callback(null, true);
-    },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-hoknex-admin-key'],
-    credentials: true,
-    optionsSuccessStatus: 204
-};
-
-app.use(cors(hoknexCorsOptions));
-app.options(/.*/, cors(hoknexCorsOptions));
-
-// ============================================================================
-// SAFE CORS MIDDLEWARE (Place ABOVE your /api routes)
-// ============================================================================
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (origin) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Vary', 'Origin');
-    } else {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-    }
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-hoknex-admin-key');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(204);
-    }
-    next();
-});
-
-// ============================================================================
 // HOKNEX PROJECTS ROUTES
 // ============================================================================
 
@@ -3070,7 +3026,6 @@ app.post('/api/events/verify-ticket', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
 
 const lostFoundSchema = new mongoose.Schema({
     id: String,
