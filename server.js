@@ -621,7 +621,8 @@ const StorySchema = new mongoose.Schema({
         trackName: { type: String, default: '' },
         artistName: { type: String, default: '' },
         artworkUrl: { type: String, default: '' },
-        previewUrl: { type: String, default: '' }
+        previewUrl: { type: String, default: '' },
+        startSec: { type: Number, default: 0 }
     },
     poll: {
         question: { type: String, default: '' },
@@ -644,30 +645,51 @@ const StorySchema = new mongoose.Schema({
 
 const Story = mongoose.models.Story || mongoose.model('Story', StorySchema);
 
-// 1. Fetch active 24h stories grouped by user
+const CloseFriendsModel = mongoose.models.CloseFriends || mongoose.model(
+    'CloseFriends',
+    new mongoose.Schema({
+        username: { type: String, required: true, unique: true, index: true },
+        friends: [{ type: String }],
+        updatedAt: { type: Date, default: Date.now }
+    })
+);
+
+// 1. Fetch active 24h stories with public, followers & close_friends privacy
 app.get('/api/stories', async (req, res) => {
     try {
-        const viewer = String(req.query.viewer || '').trim().replace(/^@/, '');
+        const viewer = String(req.query.viewer || '').trim().replace(/^@/, '').toLowerCase();
         const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
         const stories = await Story.find({ createdAt: { $gte: cutoff } }).sort({ createdAt: 1 });
 
-        // Filter privacy if needed
-        let allowedStories = stories;
-        if (viewer) {
-            const authors = Array.from(new Set(stories.map(s => s.username)));
-            const authorDocs = await User.find({ username: { $in: authors } }).select('username followers');
-            const viewerDoc = await User.findOne({ username: viewer }).select('_id');
-            const followerMap = {};
-            authorDocs.forEach(u => {
-                followerMap[u.username] = viewerDoc && (u.followers || []).some(id => String(id) === String(viewerDoc._id));
-            });
+        const authors = Array.from(new Set(stories.map(s => String(s.username || '').toLowerCase()).filter(Boolean)));
+        const [authorDocs, viewerDoc, closeFriendDocs] = await Promise.all([
+            User.find({ username: { $in: authors } }).select('username followers'),
+            viewer ? User.findOne({ username: viewer }).select('_id') : null,
+            CloseFriendsModel.find({ username: { $in: authors } })
+        ]);
 
-            allowedStories = stories.filter(s => {
-                if (s.username === viewer) return true;
-                if (s.privacy === 'public') return true;
-                return Boolean(followerMap[s.username]);
-            });
-        }
+        const followerMap = {};
+        authorDocs.forEach(u => {
+            const key = String(u.username || '').toLowerCase();
+            followerMap[key] = Boolean(
+                viewer && viewerDoc && (u.followers || []).some(id => String(id) === String(viewerDoc._id))
+            );
+        });
+
+        const closeFriendMap = {};
+        closeFriendDocs.forEach(doc => {
+            const key = String(doc.username || '').toLowerCase();
+            const list = (doc.friends || []).map(f => String(f || '').toLowerCase());
+            closeFriendMap[key] = Boolean(viewer && list.includes(viewer));
+        });
+
+        const allowedStories = stories.filter(s => {
+            const owner = String(s.username || '').toLowerCase();
+            if (viewer && owner === viewer) return true;
+            if (s.privacy === 'public') return true;
+            if (s.privacy === 'close_friends') return Boolean(closeFriendMap[owner]);
+            return Boolean(followerMap[owner]);
+        });
 
         res.json(allowedStories);
     } catch (err) {
@@ -684,6 +706,8 @@ app.post('/api/stories', async (req, res) => {
         if (!username) return res.status(400).json({ error: 'Username is required' });
 
         const user = await User.findOne({ username }).select('name username dpUrl');
+        const musicObj = body.music || {};
+
         const newStory = new Story({
             username,
             authorName: user ? user.name : username,
@@ -697,7 +721,13 @@ app.post('/api/stories', async (req, res) => {
             bgGradient: body.bgGradient || 'linear-gradient(135deg, #7c3aed, #ec4899)',
             filterCss: body.filterCss || 'none',
             privacy: body.privacy || 'public',
-            music: body.music || {},
+            music: {
+                trackName: musicObj.trackName || '',
+                artistName: musicObj.artistName || '',
+                artworkUrl: musicObj.artworkUrl || '',
+                previewUrl: musicObj.previewUrl || '',
+                startSec: Math.max(0, Number(musicObj.startSec || 0))
+            },
             poll: body.poll || {}
         });
 
@@ -754,7 +784,7 @@ app.post('/api/stories/:id/vote', async (req, res) => {
     }
 });
 
-// 5. React or Reply to Story (Sends DM into Messages inbox too!)
+// 5. React or Reply to Story (Sends DM into Messages inbox)
 app.post('/api/stories/:id/react', async (req, res) => {
     try {
         const { username, emoji, replyText } = req.body || {};
@@ -767,7 +797,7 @@ app.post('/api/stories/:id/react', async (req, res) => {
             await story.save();
         }
 
-        if (sender && sender !== story.username && (emoji || replyText)) {
+        if (sender && (emoji || replyText)) {
             const msgBody = replyText
                 ? `📸 Replied to your story: "${replyText}"`
                 : `📸 Reacted ${emoji} to your story`;
@@ -776,7 +806,8 @@ app.post('/api/stories/:id/react', async (req, res) => {
                 recipient: story.username,
                 text: msgBody,
                 mediaUrl: story.mediaUrl || '',
-                mediaType: story.type === 'video' ? 'video' : (story.mediaUrl ? 'image' : 'text')
+                mediaType: story.type === 'video' ? 'video' : (story.mediaUrl ? 'image' : 'text'),
+                isRead: false
             });
             await dm.save();
         }
@@ -787,7 +818,20 @@ app.post('/api/stories/:id/react', async (req, res) => {
     }
 });
 
-// 6. Delete own story
+// 6. Inbox fetch helper for story replies & DMs
+app.get('/api/messages/inbox/:username', async (req, res) => {
+    try {
+        const cleanUser = String(req.params.username || '').trim().replace(/^@/, '');
+        const msgs = await Message.find({
+            $or: [{ recipient: cleanUser }, { sender: cleanUser }]
+        }).sort({ createdAt: -1 }).limit(100);
+        res.json(Array.isArray(msgs) ? msgs : []);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 7. Delete own story
 app.delete('/api/stories/:id', async (req, res) => {
     try {
         await Story.findByIdAndDelete(req.params.id);
@@ -796,7 +840,6 @@ app.delete('/api/stories/:id', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
 // ==========================================
 // --- STORE, ADMIN & CAMPAIGNS SCHEMAS & API ROUTES ---
 // ==========================================
