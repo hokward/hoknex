@@ -48,7 +48,7 @@ const projectSchema = new mongoose.Schema({
 });
 
 // Sync `img` and `imageUrl`, ensure author is in teamMembers, and optimize Cloudinary URLs
-projectSchema.pre('save', function (next) {
+projectSchema.pre('save', function () {
     let url = (this.imageUrl || this.img || '').trim();
     if (url.includes('cloudinary.com') && url.includes('/upload/') && !url.includes('q_auto')) {
         url = url.replace('/upload/', '/upload/q_auto,f_auto/');
@@ -65,8 +65,6 @@ projectSchema.pre('save', function (next) {
     if (leadName && (!Array.isArray(this.teamMembers) || this.teamMembers.length === 0)) {
         this.teamMembers = [{ username: leadName, role: 'Project Lead' }];
     }
-
-    next();
 });
 
 module.exports = mongoose.models.Project || mongoose.model('Project', projectSchema);
