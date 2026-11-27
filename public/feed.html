@@ -3157,16 +3157,31 @@ async function deleteProject(id) {
 }
 
 async function toggleProjectMilestone(projectId, milestoneId) {
+    const patchUrl = `${__HOKNEX_PROJ_API}/api/projects/${projectId}/milestones/${milestoneId}`;
+    const fallbackPostUrl = `${__HOKNEX_PROJ_API}/api/projects/${projectId}/milestones/${milestoneId}/toggle`;
+
     try {
-        const res = await fetch(`${__HOKNEX_PROJ_API}/api/projects/${projectId}/milestones/${milestoneId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (!res.ok) return alert('Could not update milestone (check CORS PATCH & server).');
-        syncCachedProject(await res.json());
+        let res;
+        try {
+            res = await fetch(patchUrl, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        } catch (_) {
+            res = await fetch(fallbackPostUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            return alert(data.error || 'Could not update milestone.');
+        }
+        syncCachedProject(data);
     } catch (e) {
         console.error('Toggle milestone error:', e);
-        alert('Network error toggling milestone.');
+        alert('Could not toggle milestone. Check server connection.');
     }
 }
 
