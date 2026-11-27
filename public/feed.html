@@ -2756,7 +2756,7 @@ window.viewUserProfile = function(usernameOrId) {
 };
 
 // ============================================================================
-// HOKNEX PROJECTS HUB — UNIFIED ENGINE (WITH MILESTONES & TEAM ROSTER)
+// HOKNEX PROJECTS HUB — COMPLETE ERROR-FREE ENGINE
 // ============================================================================
 
 let __hoknexProjectsCache = [];
@@ -2766,6 +2766,10 @@ let __hoknexActiveProjectFilter = {
     tech: '',
     sort: 'newest'
 };
+
+const __HOKNEX_PROJ_API = (typeof API_URL !== 'undefined' && API_URL)
+    ? API_URL
+    : (window.API_URL || 'https://hoknex-backend.onrender.com');
 
 function escapeHtml(str = '') {
     return String(str)
@@ -2777,81 +2781,288 @@ function escapeHtml(str = '') {
 }
 
 function normalizeUrl(url = '') {
-    const clean = String(url).trim();
+    const clean = String(url || '').trim();
     if (!clean) return '';
-    if (clean.startsWith('http://') || clean.startsWith('https://') || clean.startsWith('data:')) {
-        return clean;
-    }
+    if (/^(https?:\/\/|data:image\/)/i.test(clean)) return clean;
+    if (clean.startsWith('/')) return clean;
     return 'https://' + clean;
 }
 
 function resolveProjectImage(p = {}) {
-    let raw = p.imageUrl || p.img || p.image || '';
-    if (!raw) return '';
-    if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('data:')) {
-        return raw;
-    }
-    return raw.startsWith('/') ? raw : '/' + raw;
+    return normalizeUrl(p.imageUrl || p.img || p.image || '');
 }
 
-function getMilestoneProgress(milestones = []) {
-    if (!Array.isArray(milestones) || milestones.length === 0) {
-        return { total: 0, done: 0, percent: 0 };
+function getProjectAuthor(p = {}) {
+    if (typeof p.author === 'object' && p.author !== null) {
+        return p.author.username || 'Student';
     }
-    const done = milestones.filter(m => m && m.done).length;
-    const percent = Math.round((done / milestones.length) * 100);
-    return { total: milestones.length, done, percent };
+    return p.author || 'Student';
 }
 
-function renderProjectsHubShell(targetMainView, targetTitleEl) {
-    if (targetTitleEl) {
-        targetTitleEl.innerText = 'Projects Hub — Build & Ship 🚀';
+function getMilestoneProgress(milestones = [], p = {}) {
+    const boosts = Number(p.boosts || p.reactions?.rocket || 0);
+    if (Array.isArray(milestones) && milestones.length > 0) {
+        const done = milestones.filter(m => Boolean(m && m.done)).length;
+        const percent = Math.round((done / milestones.length) * 100);
+        const score = percent + Math.min(boosts * 3, 30);
+        let levelTitle = 'Lv.1 Spark';
+        if (score >= 95) levelTitle = 'Lv.4 Shipped Pro';
+        else if (score >= 65) levelTitle = 'Lv.3 Builder';
+        else if (score >= 35) levelTitle = 'Lv.2 Prototype';
+        return { total: milestones.length, done, percent, levelTitle };
     }
-    targetMainView.innerHTML = `
-        <div style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.14), rgba(14, 165, 233, 0.12)); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; color: var(--ink);">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                <div>
-                    <div style="font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-purple, #8b5cf6);">Global Builder Showcase & Co-Creation</div>
-                    <h3 style="font-size: 1.25rem; font-weight: 800; margin-top: 4px;">Ship bold ideas. Assemble sharp teams.</h3>
-                    <p style="font-size: 0.86rem; color: var(--ink-light); margin-top: 4px;">Track live build milestones, manage co-builders, and showcase shipped work.</p>
+
+    const stagePercentMap = {
+        'Idea / Concept': 15,
+        'Prototype': 35,
+        'MVP': 60,
+        'Live': 85,
+        'Scaling': 100
+    };
+    const percent = stagePercentMap[p.stage] ?? 25;
+    const score = percent + Math.min(boosts * 3, 30);
+    let levelTitle = 'Lv.1 Spark';
+    if (score >= 95) levelTitle = 'Lv.4 Shipped Pro';
+    else if (score >= 65) levelTitle = 'Lv.3 Builder';
+    else if (score >= 35) levelTitle = 'Lv.2 Prototype';
+
+    return { total: 0, done: 0, percent, levelTitle };
+}
+
+function ensureProjectModalsMounted() {
+    if (!document.getElementById('projectCreationModal')) {
+        const el = document.createElement('div');
+        el.id = 'projectCreationModal';
+        el.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(6,12,20,0.75);backdrop-filter:blur(8px);z-index:2500;align-items:center;justify-content:center;padding:1rem;';
+        el.innerHTML = `
+            <div style="background:var(--paper,#111827);border:1px solid var(--border,#334155);padding:1.75rem;border-radius:18px;width:600px;max-width:96vw;max-height:90vh;overflow-y:auto;color:var(--ink,#f8fafc);box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                    <h3 style="font-weight:800;font-size:1.25rem;margin:0;">🚀 Launch a Project</h3>
+                    <button type="button" onclick="closeProjectModal()" style="background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:8px;width:32px;height:32px;cursor:pointer;">✕</button>
                 </div>
-                <button onclick="openProjectModal()" style="background: linear-gradient(135deg, #7c3aed, #0ea5e9); color: #fff; border: none; padding: 11px 18px; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 20px rgba(124, 58, 237, 0.28);">
-                    + Launch Project
-                </button>
-            </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 16px;">
-                <input
-                    type="text"
-                    id="projSearchInput"
-                    placeholder="🔍 Search projects, builders..."
-                    oninput="handleProjectFilterChange()"
-                    style="background: var(--paper); border: 1px solid var(--border); color: var(--ink); border-radius: 10px; padding: 9px 12px; font-size: 0.85rem; font-weight: 600; outline: none;"
-                />
-                <select id="projFilterClass" onchange="handleProjectFilterChange()" style="background: var(--paper); border: 1px solid var(--border); color: var(--ink); border-radius: 10px; padding: 9px 10px; font-size: 0.85rem; font-weight: 700; outline: none;">
-                    <option value="All">All Types</option>
-                    <option value="Collaboration">🤝 Collaboration</option>
-                    <option value="Showcase">🏆 Showcase</option>
-                    <option value="Open Source">🌐 Open Source</option>
-                    <option value="Corporate Challenge">🏢 Challenge</option>
-                </select>
-                <input
-                    type="text"
-                    id="projFilterTech"
-                    placeholder="🛠️ Filter stack (e.g. React)"
-                    oninput="handleProjectFilterChange()"
-                    style="background: var(--paper); border: 1px solid var(--border); color: var(--ink); border-radius: 10px; padding: 9px 12px; font-size: 0.85rem; font-weight: 600; outline: none;"
-                />
-                <select id="projSortSelect" onchange="handleProjectFilterChange()" style="background: var(--paper); border: 1px solid var(--border); color: var(--ink); border-radius: 10px; padding: 9px 10px; font-size: 0.85rem; font-weight: 700; outline: none;">
-                    <option value="newest">⚡ Newest First</option>
-                    <option value="boosted">🚀 Most Boosted</option>
-                    <option value="rated">⭐ Highest Rated</option>
-                    <option value="progress">📊 Most Completed</option>
-                </select>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:12px;">
+                    <div>
+                        <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:4px;">Classification</label>
+                        <select id="projClassification" style="width:100%;background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:10px;padding:9px;">
+                            <option value="Collaboration">🤝 Collaboration</option>
+                            <option value="Showcase">🏆 Showcase</option>
+                            <option value="Open Source">🌐 Open Source</option>
+                            <option value="Corporate Challenge">🏢 Corporate Challenge</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:4px;">Build Stage</label>
+                        <select id="projStage" style="width:100%;background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:10px;padding:9px;">
+                            <option value="Idea / Concept">💡 Idea / Concept</option>
+                            <option value="Prototype" selected>⚡ Prototype</option>
+                            <option value="MVP">🛠️ MVP</option>
+                            <option value="Live">🟢 Live</option>
+                            <option value="Scaling">📈 Scaling</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:4px;">Project Name *</label>
+                <input type="text" id="projNameInput" placeholder="e.g., Hoknex Sync, OmniRider..." style="width:100%;background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:10px;padding:9px 12px;margin-bottom:12px;box-sizing:border-box;">
+
+                <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:4px;">Description & Goals *</label>
+                <textarea id="projDescInput" placeholder="What are you building and what impact does it have?" style="width:100%;background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:10px;padding:9px 12px;height:85px;margin-bottom:12px;box-sizing:border-box;"></textarea>
+
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:12px;">
+                    <div>
+                        <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:4px;">Target Audience</label>
+                        <select id="projAudience" style="width:100%;background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:10px;padding:9px;">
+                            <option value="Open to All">🌐 Open to All</option>
+                            <option value="School Students Only">🎒 School Students</option>
+                            <option value="College Builders">🎓 College Builders</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:4px;">Seeking Roles</label>
+                        <input type="text" id="projRolesInput" placeholder="Frontend, IoT, UI" style="width:100%;background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:10px;padding:9px 12px;box-sizing:border-box;">
+                    </div>
+                </div>
+
+                <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:4px;">Milestones (comma separated)</label>
+                <input type="text" id="projMilestonesInput" placeholder="Setup Repo, Core API, Prototype Demo, Launch" style="width:100%;background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:10px;padding:9px 12px;margin-bottom:12px;box-sizing:border-box;">
+
+                <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:4px;">Tech Stack</label>
+                <input type="text" id="projTechInput" placeholder="Node.js, MongoDB, React, ESP32" style="width:100%;background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:10px;padding:9px 12px;margin-bottom:12px;box-sizing:border-box;">
+
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:12px;">
+                    <div>
+                        <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:4px;">Repo / GitHub URL</label>
+                        <input type="url" id="projUrlInput" placeholder="https://github.com/..." style="width:100%;background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:10px;padding:9px 12px;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:4px;">Live Demo URL</label>
+                        <input type="url" id="projDemoInput" placeholder="https://..." style="width:100%;background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:10px;padding:9px 12px;box-sizing:border-box;">
+                    </div>
+                </div>
+
+                <label style="font-size:0.78rem;font-weight:700;display:block;margin-bottom:4px;">Cover Image</label>
+                <input type="file" id="projFileInput" accept="image/*" style="width:100%;margin-bottom:16px;">
+
+                <div style="display:flex;gap:10px;">
+                    <button id="publishProjectBtn" type="button" onclick="submitNewProject()" style="flex:1.5;background:linear-gradient(135deg,#7c3aed,#0ea5e9);color:#fff;border:none;padding:11px;border-radius:10px;font-weight:800;cursor:pointer;">Publish Project ✨</button>
+                    <button type="button" onclick="closeProjectModal()" style="flex:1;background:var(--canvas,#1e293b);color:var(--ink,#f8fafc);border:1px solid var(--border,#334155);padding:11px;border-radius:10px;font-weight:700;cursor:pointer;">Cancel</button>
+                </div>
             </div>
-        </div>
-        <div id="projectsContainer"></div>
-    `;
+        `;
+        document.body.appendChild(el);
+    }
+
+    if (!document.getElementById('projectInspectorModal')) {
+        const insp = document.createElement('div');
+        insp.id = 'projectInspectorModal';
+        insp.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(6,12,20,0.78);backdrop-filter:blur(8px);z-index:2600;align-items:center;justify-content:center;padding:1rem;';
+        insp.onclick = (e) => { if (e.target === insp) closeProjectInspector(); };
+        insp.innerHTML = `<div id="projectInspectorContent" style="background:var(--paper,#111827);border:1px solid var(--border,#334155);padding:1.75rem;border-radius:18px;width:660px;max-width:96vw;max-height:88vh;overflow-y:auto;color:var(--ink,#f8fafc);box-shadow:0 24px 60px rgba(0,0,0,0.55);"></div>`;
+        document.body.appendChild(insp);
+    }
+
+    if (!document.getElementById('messageRequestModal')) {
+        const reqM = document.createElement('div');
+        reqM.id = 'messageRequestModal';
+        reqM.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(6,12,20,0.78);backdrop-filter:blur(8px);z-index:2700;align-items:center;justify-content:center;padding:1rem;';
+        reqM.onclick = (e) => { if (e.target === reqM) closeMessageRequestModal(); };
+        reqM.innerHTML = `
+            <div style="background:var(--paper,#111827);border:1px solid var(--border,#334155);padding:1.6rem;border-radius:18px;width:480px;max-width:95vw;color:var(--ink,#f8fafc);box-shadow:0 24px 60px rgba(0,0,0,0.55);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <h3 id="modalReqTitle" style="font-weight:800;font-size:1.15rem;margin:0;">🤝 Send Collaboration Pitch</h3>
+                    <button type="button" onclick="closeMessageRequestModal()" style="background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:8px;width:30px;height:30px;cursor:pointer;">✕</button>
+                </div>
+                <input type="hidden" id="targetRequestUsername">
+                <textarea id="requestNoteInput" placeholder="Write a quick note about how you'd like to collaborate..." style="width:100%;background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:10px;padding:10px 12px;height:100px;margin-bottom:14px;box-sizing:border-box;"></textarea>
+                <div style="display:flex;gap:10px;">
+                    <button type="button" onclick="submitMessageRequest()" style="flex:1;background:#7c3aed;color:#fff;border:none;padding:10px;border-radius:10px;font-weight:800;cursor:pointer;">Send Request 🚀</button>
+                    <button type="button" onclick="closeMessageRequestModal()" style="flex:1;background:var(--canvas,#1e293b);color:var(--ink,#f8fafc);border:1px solid var(--border,#334155);padding:10px;border-radius:10px;font-weight:700;cursor:pointer;">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(reqM);
+    }
+}
+
+function openProjectModal(prefillRole = '') {
+    ensureProjectModalsMounted();
+    const modal = document.getElementById('projectCreationModal');
+    if (prefillRole) {
+        const rolesEl = document.getElementById('projRolesInput');
+        if (rolesEl && !rolesEl.value) rolesEl.value = prefillRole;
+    }
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeProjectModal() {
+    const modal = document.getElementById('projectCreationModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function openMessageRequestModal(targetUser, actionType = 'Collaboration', presetNote = '') {
+    ensureProjectModalsMounted();
+    const modal = document.getElementById('messageRequestModal');
+    const targetEl = document.getElementById('targetRequestUsername');
+    const titleEl = document.getElementById('modalReqTitle');
+    const noteEl = document.getElementById('requestNoteInput');
+
+    if (targetEl) targetEl.value = targetUser;
+    if (titleEl) {
+        titleEl.innerText = actionType === 'Collaboration'
+            ? `🤝 Collaborate with @${targetUser}`
+            : `💬 Message @${targetUser}`;
+    }
+    if (noteEl && presetNote && !noteEl.value) {
+        noteEl.value = `Hi @${targetUser}, I'd love to contribute (${presetNote}). `;
+    }
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeMessageRequestModal() {
+    const modal = document.getElementById('messageRequestModal');
+    const noteEl = document.getElementById('requestNoteInput');
+    if (modal) modal.style.display = 'none';
+    if (noteEl) noteEl.value = '';
+}
+
+async function submitMessageRequest() {
+    const recipientUsername = document.getElementById('targetRequestUsername')?.value;
+    const note = (document.getElementById('requestNoteInput')?.value || '').trim();
+    const senderUsername = localStorage.getItem('hoknex_user') || 'Student';
+    if (!note) return alert('Please write a short note first!');
+
+    try {
+        const res = await fetch(`${__HOKNEX_PROJ_API}/api/send-request-note`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ senderUsername, recipientUsername, note })
+        });
+        if (!res.ok) throw new Error('Failed to send');
+        alert('Collaboration note sent! 💬');
+        closeMessageRequestModal();
+    } catch (err) {
+        console.error(err);
+        alert('Could not send request note.');
+    }
+}
+
+async function submitNewProject() {
+    const titleEl = document.getElementById('projNameInput');
+    const descEl = document.getElementById('projDescInput');
+    const classEl = document.getElementById('projClassification');
+    const stageEl = document.getElementById('projStage');
+    const audEl = document.getElementById('projAudience');
+    const rolesEl = document.getElementById('projRolesInput');
+    const mileEl = document.getElementById('projMilestonesInput');
+    const techEl = document.getElementById('projTechInput');
+    const urlEl = document.getElementById('projUrlInput');
+    const demoEl = document.getElementById('projDemoInput');
+    const fileEl = document.getElementById('projFileInput');
+    const btn = document.getElementById('publishProjectBtn');
+
+    const title = (titleEl?.value || '').trim();
+    const desc = (descEl?.value || '').trim();
+    if (!title || !desc) {
+        return alert('Please enter both a Project Name and Description!');
+    }
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('desc', desc);
+    formData.append('classification', classEl?.value || 'Showcase');
+    formData.append('stage', stageEl?.value || 'Prototype');
+    formData.append('audience', audEl?.value || 'Open to All');
+    formData.append('openRoles', (rolesEl?.value || '').trim());
+    formData.append('milestones', (mileEl?.value || '').trim());
+    formData.append('techStack', (techEl?.value || '').trim());
+    formData.append('projectUrl', (urlEl?.value || '').trim());
+    formData.append('demoUrl', (demoEl?.value || '').trim());
+    formData.append('author', localStorage.getItem('hoknex_user') || 'Student');
+    if (fileEl?.files?.[0]) {
+        formData.append('image', fileEl.files[0]);
+    }
+
+    try {
+        if (btn) { btn.disabled = true; btn.innerText = 'Publishing...'; }
+        const res = await fetch(`${__HOKNEX_PROJ_API}/api/projects`, {
+            method: 'POST',
+            body: formData
+        });
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || 'Failed to publish project');
+        }
+        closeProjectModal();
+        [titleEl, descEl, rolesEl, mileEl, techEl, urlEl, demoEl, fileEl].forEach(el => { if (el) el.value = ''; });
+        await loadAndRenderProjects();
+        alert('Project launched on Hoknex! 🚀');
+    } catch (err) {
+        console.error('Project submission error:', err);
+        alert('Error publishing project: ' + err.message);
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerText = 'Publish Project ✨'; }
+    }
 }
 
 function handleProjectFilterChange() {
@@ -2870,151 +3081,229 @@ function filterByTechChip(tag) {
     renderFilteredProjects();
 }
 
-function openProjectModal(prefillRole = '') {
-    const modal = document.getElementById('projectCreationModal');
-    if (!modal) return;
-    if (prefillRole) {
-        const rolesEl = document.getElementById('projRolesInput');
-        if (rolesEl && !rolesEl.value) rolesEl.value = prefillRole;
-    }
-    modal.style.display = 'flex';
-}
-
-function closeProjectModal() {
-    const modal = document.getElementById('projectCreationModal');
-    if (modal) modal.style.display = 'none';
-}
-
-async function submitNewProject() {
-    const titleEl = document.getElementById('projNameInput');
-    const descEl = document.getElementById('projDescInput');
-    const classEl = document.getElementById('projClassification');
-    const stageEl = document.getElementById('projStage');
-    const audienceEl = document.getElementById('projAudience');
-    const rolesEl = document.getElementById('projRolesInput');
-    const milestonesEl = document.getElementById('projMilestonesInput');
-    const techEl = document.getElementById('projTechInput');
-    const urlEl = document.getElementById('projUrlInput');
-    const demoEl = document.getElementById('projDemoInput');
-    const fileInput = document.getElementById('projFileInput');
-    const publishBtn = document.getElementById('publishProjectBtn');
-
-    const title = titleEl ? titleEl.value.trim() : '';
-    const desc = descEl ? descEl.value.trim() : '';
-    const classification = classEl ? classEl.value : 'Showcase';
-    const stage = stageEl ? stageEl.value : 'Prototype';
-    const audience = audienceEl ? audienceEl.value : 'Open to All';
-    const openRoles = rolesEl ? rolesEl.value.trim() : '';
-    const milestones = milestonesEl ? milestonesEl.value.trim() : '';
-    const techStack = techEl ? techEl.value.trim() : '';
-    const projectUrl = urlEl ? urlEl.value.trim() : '';
-    const demoUrl = demoEl ? demoEl.value.trim() : '';
-    const imageFile = fileInput && fileInput.files ? fileInput.files[0] : null;
-    const author = localStorage.getItem('hoknex_user') || 'Student';
-
-    if (!title || !desc) {
-        alert('Please enter both a Project Name and Description!');
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('desc', desc);
-    formData.append('classification', classification);
-    formData.append('stage', stage);
-    formData.append('audience', audience);
-    formData.append('openRoles', openRoles);
-    formData.append('milestones', milestones);
-    formData.append('techStack', techStack);
-    formData.append('projectUrl', projectUrl);
-    formData.append('demoUrl', demoUrl);
-    formData.append('author', author);
-    if (imageFile) {
-        formData.append('image', imageFile);
-    }
-
-    try {
-        if (publishBtn) {
-            publishBtn.disabled = true;
-            publishBtn.innerText = 'Publishing...';
-        }
-
-        const res = await fetch(`${API_URL}/api/projects`, {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!res.ok) {
-            const errData = await res.json().catch(() => ({}));
-            throw new Error(errData.error || 'Failed to publish project');
-        }
-
-        closeProjectModal();
-        if (titleEl) titleEl.value = '';
-        if (descEl) descEl.value = '';
-        if (rolesEl) rolesEl.value = '';
-        if (milestonesEl) milestonesEl.value = '';
-        if (techEl) techEl.value = '';
-        if (urlEl) urlEl.value = '';
-        if (demoEl) demoEl.value = '';
-        if (fileInput) fileInput.value = '';
-
-        await loadAndRenderProjects();
-        alert('Project launched on Hoknex! 🚀');
-    } catch (err) {
-        console.error('Project submission error:', err);
-        alert('Error publishing project: ' + err.message);
-    } finally {
-        if (publishBtn) {
-            publishBtn.disabled = false;
-            publishBtn.innerText = 'Publish to Hoknex ✨';
-        }
-    }
-}
-
 async function loadAndRenderProjects() {
-    const container = document.getElementById('projectsContainer') || document.getElementById('projectContainer');
+    ensureProjectModalsMounted();
+    const container =
+        document.getElementById('projectsContainer') ||
+        document.getElementById('projectContainer') ||
+        document.getElementById('projects-container');
     if (!container) return;
 
-    container.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--ink-light); font-weight: 700;">Loading projects...</div>`;
-
+    container.innerHTML = `<div style="text-align:center;padding:28px;color:var(--ink-light);font-weight:700;">Loading projects...</div>`;
     try {
-        const res = await fetch(`${API_URL}/api/projects`);
-        if (!res.ok) throw new Error('Failed to fetch projects');
+        const res = await fetch(`${__HOKNEX_PROJ_API}/api/projects`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         __hoknexProjectsCache = Array.isArray(data) ? data : [];
         renderFilteredProjects();
     } catch (err) {
         console.error('Error loading projects:', err);
-        container.innerHTML = `<div class="post-card" style="padding: 24px; text-align: center; color: var(--accent-coral, #ef4444); font-weight: 700;">Failed to load projects. Check server connection.</div>`;
+        container.innerHTML = `<div class="post-card" style="padding:24px;text-align:center;color:#ef4444;font-weight:700;">Failed to load projects. Check server connection.</div>`;
     }
 }
 
+function syncCachedProject(updated) {
+    if (!updated?._id) return;
+    const idx = __hoknexProjectsCache.findIndex(p => String(p._id) === String(updated._id));
+    if (idx !== -1) __hoknexProjectsCache[idx] = updated;
+    renderFilteredProjects();
+    if (document.getElementById('projectInspectorModal')?.style.display === 'flex') {
+        openProjectInspector(updated._id);
+    }
+}
+
+async function boostProject(id) {
+    try {
+        const res = await fetch(`${__HOKNEX_PROJ_API}/api/projects/${id}/boost`, { method: 'POST' });
+        if (!res.ok) return;
+        syncCachedProject(await res.json());
+    } catch (e) { console.error('Boost error:', e); }
+}
+
+async function reactProject(id, type) {
+    try {
+        const res = await fetch(`${__HOKNEX_PROJ_API}/api/projects/${id}/react`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type })
+        });
+        if (!res.ok) return;
+        syncCachedProject(await res.json());
+    } catch (e) { console.error('React error:', e); }
+}
+
+async function rateProject(id, rating) {
+    if (!rating) return;
+    try {
+        const res = await fetch(`${__HOKNEX_PROJ_API}/api/projects/${id}/rate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rating: Number(rating) })
+        });
+        if (!res.ok) return;
+        syncCachedProject(await res.json());
+        alert('Rating saved! ⭐');
+    } catch (e) { console.error('Rate error:', e); }
+}
+
+async function deleteProject(id) {
+    if (!confirm('Delete this project permanently?')) return;
+    try {
+        const res = await fetch(`${__HOKNEX_PROJ_API}/api/projects/${id}`, { method: 'DELETE' });
+        if (!res.ok) return alert('Failed to delete project.');
+        __hoknexProjectsCache = __hoknexProjectsCache.filter(p => String(p._id) !== String(id));
+        renderFilteredProjects();
+    } catch (e) { console.error('Delete error:', e); }
+}
+
+async function toggleProjectMilestone(projectId, milestoneId) {
+    try {
+        const res = await fetch(`${__HOKNEX_PROJ_API}/api/projects/${projectId}/milestones/${milestoneId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!res.ok) return;
+        syncCachedProject(await res.json());
+    } catch (e) { console.error(e); }
+}
+
+async function addProjectMilestone(projectId) {
+    const input = document.getElementById(`new-milestone-input-${projectId}`);
+    const title = (input?.value || '').trim();
+    if (!title) return;
+    try {
+        const res = await fetch(`${__HOKNEX_PROJ_API}/api/projects/${projectId}/milestones`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title })
+        });
+        if (!res.ok) return alert('Failed to add milestone.');
+        syncCachedProject(await res.json());
+    } catch (e) { console.error(e); }
+}
+
+async function addProjectTeamMember(projectId) {
+    const userEl = document.getElementById(`new-member-user-${projectId}`);
+    const roleEl = document.getElementById(`new-member-role-${projectId}`);
+    const username = (userEl?.value || '').replace(/^@/, '').trim();
+    const role = (roleEl?.value || 'Contributor').trim();
+    if (!username) return alert('Enter a collaborator username!');
+    try {
+        const res = await fetch(`${__HOKNEX_PROJ_API}/api/projects/${projectId}/team`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, role })
+        });
+        const data = await res.json();
+        if (!res.ok) return alert(data.error || 'Failed to add member.');
+        syncCachedProject(data);
+    } catch (e) { console.error(e); }
+}
+
+function openProjectInspector(projectId) {
+    ensureProjectModalsMounted();
+    const p = __hoknexProjectsCache.find(item => String(item._id) === String(projectId));
+    const modal = document.getElementById('projectInspectorModal');
+    const content = document.getElementById('projectInspectorContent');
+    if (!p || !modal || !content) return;
+
+    const currentUser = localStorage.getItem('hoknex_user') || 'Student';
+    const authorName = getProjectAuthor(p);
+    const isOwner = authorName === currentUser;
+    const imgUrl = resolveProjectImage(p);
+    const repoUrl = normalizeUrl(p.projectUrl);
+    const liveUrl = normalizeUrl(p.demoUrl);
+    const description = p.desc || p.description || p.pitch || 'No description provided.';
+    const milestones = Array.isArray(p.milestones) ? p.milestones : [];
+    const progress = getMilestoneProgress(milestones, p);
+    const roster = Array.isArray(p.teamMembers) && p.teamMembers.length
+        ? p.teamMembers
+        : [{ username: authorName, role: 'Project Lead' }];
+
+    content.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px;">
+            <div>
+                <span style="background:rgba(124,58,237,0.16);color:#a78bfa;padding:4px 10px;border-radius:999px;font-size:0.74rem;font-weight:800;">${escapeHtml(progress.levelTitle)} • ${escapeHtml(p.stage || 'Prototype')}</span>
+                <h2 style="font-size:1.4rem;font-weight:800;margin:8px 0 4px;">${escapeHtml(p.title || 'Untitled Project')}</h2>
+                <p style="font-size:0.84rem;color:var(--ink-light);font-weight:700;">Lead: @${escapeHtml(authorName)} • ${escapeHtml(p.classification || 'Showcase')}</p>
+            </div>
+            <button type="button" onclick="closeProjectInspector()" style="background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);border-radius:8px;width:34px;height:34px;cursor:pointer;color:var(--ink,#f8fafc);">✕</button>
+        </div>
+
+        ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" style="width:100%;max-height:290px;object-fit:cover;border-radius:12px;margin-bottom:14px;border:1px solid var(--border,#334155);" onerror="this.style.display='none'" />` : ''}
+        <p style="font-size:0.95rem;line-height:1.65;margin-bottom:14px;white-space:pre-line;">${escapeHtml(description)}</p>
+        ${p.techStack ? `<div style="font-size:0.85rem;font-weight:700;color:#38bdf8;margin-bottom:14px;">🛠️ Stack: ${escapeHtml(p.techStack)}</div>` : ''}
+
+        <div style="background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);border-radius:12px;padding:14px;margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;font-size:0.84rem;font-weight:800;margin-bottom:6px;">
+                <span>📊 Progress (${progress.done}/${progress.total} Milestones)</span>
+                <span style="color:#10b981;">${progress.percent}%</span>
+            </div>
+            <div style="width:100%;height:8px;background:rgba(148,163,184,0.22);border-radius:999px;overflow:hidden;margin-bottom:10px;">
+                <div style="width:${progress.percent}%;height:100%;background:linear-gradient(90deg,#7c3aed,#10b981);"></div>
+            </div>
+            ${milestones.map(m => `
+                <div style="display:flex;align-items:center;justify-content:space-between;background:var(--paper,#111827);border:1px solid var(--border,#334155);border-radius:8px;padding:7px 10px;margin-bottom:6px;">
+                    <span style="font-size:0.82rem;font-weight:700;text-decoration:${m.done ? 'line-through' : 'none'};">${m.done ? '✅' : '⬜'} ${escapeHtml(m.title)}</span>
+                    ${isOwner ? `<button type="button" onclick="toggleProjectMilestone('${escapeHtml(p._id)}','${escapeHtml(m._id)}')" style="background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);padding:3px 9px;border-radius:6px;font-size:0.74rem;cursor:pointer;">${m.done ? 'Reopen' : 'Done'}</button>` : ''}
+                </div>
+            `).join('')}
+            ${isOwner ? `
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <input type="text" id="new-milestone-input-${escapeHtml(p._id)}" placeholder="Add milestone..." style="flex:1;background:var(--paper,#111827);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:8px;padding:7px 10px;font-size:0.82rem;">
+                    <button type="button" onclick="addProjectMilestone('${escapeHtml(p._id)}')" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-weight:800;font-size:0.8rem;cursor:pointer;">+ Add</button>
+                </div>
+            ` : ''}
+        </div>
+
+        <div style="background:var(--canvas,#1e293b);border:1px solid var(--border,#334155);border-radius:12px;padding:14px;margin-bottom:14px;">
+            <div style="font-size:0.84rem;font-weight:800;margin-bottom:8px;">🛡️ Team Roster (${roster.length})</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                ${roster.map(m => `<span style="background:var(--paper,#111827);border:1px solid var(--border,#334155);padding:4px 10px;border-radius:999px;font-size:0.78rem;font-weight:700;">@${escapeHtml(m.username)} · ${escapeHtml(m.role || 'Builder')}</span>`).join('')}
+            </div>
+            ${isOwner ? `
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
+                    <input type="text" id="new-member-user-${escapeHtml(p._id)}" placeholder="@username" style="flex:1;min-width:120px;background:var(--paper,#111827);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:8px;padding:7px 10px;font-size:0.8rem;">
+                    <input type="text" id="new-member-role-${escapeHtml(p._id)}" placeholder="Role" style="flex:1;min-width:120px;background:var(--paper,#111827);border:1px solid var(--border,#334155);color:var(--ink,#f8fafc);border-radius:8px;padding:7px 10px;font-size:0.8rem;">
+                    <button type="button" onclick="addProjectTeamMember('${escapeHtml(p._id)}')" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-weight:800;font-size:0.8rem;cursor:pointer;">+ Add</button>
+                </div>
+            ` : ''}
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            ${liveUrl ? `<a href="${escapeHtml(liveUrl)}" target="_blank" rel="noopener noreferrer" style="background:#7c3aed;color:#fff;padding:8px 14px;border-radius:9px;font-size:0.84rem;font-weight:800;text-decoration:none;">🌐 Live Demo</a>` : ''}
+            ${repoUrl ? `<a href="${escapeHtml(repoUrl)}" target="_blank" rel="noopener noreferrer" style="background:var(--canvas,#1e293b);color:var(--ink,#f8fafc);border:1px solid var(--border,#334155);padding:8px 14px;border-radius:9px;font-size:0.84rem;font-weight:700;text-decoration:none;">💻 Repo</a>` : ''}
+            <button type="button" onclick="closeProjectInspector();openMessageRequestModal('${escapeHtml(authorName)}','Collaboration');" style="background:#10b981;color:#fff;border:none;padding:8px 14px;border-radius:9px;font-size:0.84rem;font-weight:800;cursor:pointer;">🤝 Connect</button>
+        </div>
+    `;
+    modal.style.display = 'flex';
+}
+
+function closeProjectInspector() {
+    const modal = document.getElementById('projectInspectorModal');
+    if (modal) modal.style.display = 'none';
+}
+
 function renderFilteredProjects() {
-    const container = document.getElementById('projectsContainer') || document.getElementById('projectContainer');
+    const container =
+        document.getElementById('projectsContainer') ||
+        document.getElementById('projectContainer') ||
+        document.getElementById('projects-container');
     if (!container) return;
 
     const currentUser = localStorage.getItem('hoknex_user') || 'Student';
     const { query, classification, tech, sort } = __hoknexActiveProjectFilter;
 
     let list = __hoknexProjectsCache.filter(p => {
-        const authorName = (typeof p.author === 'object' && p.author !== null)
-            ? (p.author.username || 'Student')
-            : (p.author || 'Student');
-        const title = (p.title || '').toLowerCase();
-        const desc = (p.desc || p.description || p.pitch || '').toLowerCase();
-        const stack = (p.techStack || '').toLowerCase();
+        if (!p) return false;
+        const authorName = getProjectAuthor(p);
+        const title = String(p.title || '').toLowerCase();
+        const desc = String(p.desc || p.description || p.pitch || '').toLowerCase();
+        const stack = String(p.techStack || '').toLowerCase();
 
-        if (classification !== 'All' && (p.classification || 'Showcase') !== classification) {
-            return false;
-        }
-        if (tech && !stack.includes(tech)) {
-            return false;
-        }
-        if (query) {
-            const match = title.includes(query) || desc.includes(query) || stack.includes(query) || authorName.toLowerCase().includes(query);
-            if (!match) return false;
-        }
+        if (classification !== 'All' && (p.classification || 'Showcase') !== classification) return false;
+        if (tech && !stack.includes(tech)) return false;
+        if (query && !(title.includes(query) || desc.includes(query) || stack.includes(query) || authorName.toLowerCase().includes(query))) return false;
         return true;
     });
 
@@ -3023,147 +3312,85 @@ function renderFilteredProjects() {
     } else if (sort === 'rated') {
         list = [...list].sort((a, b) => (b.rating || 0) - (a.rating || 0));
     } else if (sort === 'progress') {
-        list = [...list].sort((a, b) => getMilestoneProgress(b.milestones).percent - getMilestoneProgress(a.milestones).percent);
+        list = [...list].sort((a, b) => getMilestoneProgress(b.milestones, b).percent - getMilestoneProgress(a.milestones, a).percent);
     }
 
     if (!list.length) {
-        container.innerHTML = `
-            <div class="post-card" style="padding: 32px; text-align: center; background: var(--paper); border: 1px solid var(--border); border-radius: 14px;">
-                <p style="font-weight: 800; color: var(--ink); font-size: 1rem;">No matching projects found</p>
-                <p style="font-size: 0.85rem; color: var(--ink-light); margin-top: 4px;">Try clearing your filters or launch the first project in this category.</p>
-            </div>
-        `;
+        container.innerHTML = `<div class="post-card" style="padding:30px;text-align:center;background:var(--paper);border:1px solid var(--border);border-radius:14px;"><p style="font-weight:800;">No matching projects found</p></div>`;
         return;
     }
 
     container.innerHTML = list.map(p => {
-        const authorName = (typeof p.author === 'object' && p.author !== null)
-            ? (p.author.username || 'Student')
-            : (p.author || 'Student');
+        const id = String(p._id || '');
+        const authorName = getProjectAuthor(p);
         const isOwner = authorName === currentUser;
         const description = p.desc || p.description || p.pitch || 'No description provided.';
         const avgRating = p.ratingsCount ? Number(p.rating).toFixed(1) : 'New';
-        const boostCount = Math.max(p.boosts || 0, p.reactions?.rocket || 0);
+        const boostCount = Math.max(Number(p.boosts || 0), Number(p.reactions?.rocket || 0));
+        const cleverCount = Number(p.reactions?.like || 0);
+        const shipCount = Number(p.reactions?.love || 0);
         const imgUrl = resolveProjectImage(p);
         const repoUrl = normalizeUrl(p.projectUrl);
-        const liveUrl = normalizeUrl(p.demoUrl);
-
-        const tags = (p.techStack || '')
-            .split(/[,\n]/)
-            .map(t => t.replace(/^#/, '').trim())
-            .filter(Boolean);
-
-        const roles = Array.isArray(p.openRoles) ? p.openRoles.filter(Boolean) : [];
+        const demoUrl = normalizeUrl(p.demoUrl);
         const milestones = Array.isArray(p.milestones) ? p.milestones : [];
-        const progress = getMilestoneProgress(milestones);
+        const progress = getMilestoneProgress(milestones, p);
         const roster = Array.isArray(p.teamMembers) && p.teamMembers.length
             ? p.teamMembers
             : [{ username: authorName, role: 'Project Lead' }];
 
         return `
-        <div class="post-card" id="proj-card-${escapeHtml(p._id)}" style="margin-bottom: 1.25rem; background: var(--paper); border: 1px solid var(--border); border-radius: 14px; padding: 1.35rem; box-shadow: var(--shadow-subtle, 0 4px 16px rgba(0,0,0,0.06));">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
-                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                    <span style="background: rgba(124, 58, 237, 0.12); color: var(--accent-purple, #8b5cf6); padding: 4px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 800;">${escapeHtml(p.classification || 'Showcase')}</span>
-                    <span style="background: rgba(14, 165, 233, 0.12); color: var(--accent-blue, #0ea5e9); padding: 4px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 800;">${escapeHtml(p.stage || 'Prototype')}</span>
+        <div class="post-card" id="proj-card-${escapeHtml(id)}" style="margin-bottom:1.25rem;background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:1.35rem;box-shadow:var(--shadow-subtle,0 4px 16px rgba(0,0,0,0.06));">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                    <span style="background:rgba(124,58,237,0.12);color:var(--accent-purple,#8b5cf6);padding:4px 10px;border-radius:999px;font-size:0.74rem;font-weight:800;">${escapeHtml(p.classification || 'Showcase')}</span>
+                    <span style="background:rgba(14,165,233,0.12);color:var(--accent-blue,#0ea5e9);padding:4px 10px;border-radius:999px;font-size:0.74rem;font-weight:800;">${escapeHtml(p.stage || 'Prototype')}</span>
+                    <span style="background:rgba(16,185,129,0.14);color:#10b981;padding:4px 10px;border-radius:999px;font-size:0.74rem;font-weight:800;">${escapeHtml(progress.levelTitle)}</span>
                 </div>
-
-                <span onclick="viewUserProfile('${escapeHtml(authorName)}')" style="background: var(--canvas); border: 1px solid var(--border); padding: 4px 11px; border-radius: 999px; font-size: 0.8rem; color: var(--ink); font-weight: 700; cursor: pointer;">
-                    @${escapeHtml(authorName)}
-                </span>
+                <span onclick="if(typeof viewUserProfile==='function')viewUserProfile('${escapeHtml(authorName)}');" style="background:var(--canvas);border:1px solid var(--border);padding:4px 11px;border-radius:999px;font-size:0.8rem;color:var(--ink);font-weight:700;cursor:pointer;">@${escapeHtml(authorName)}</span>
             </div>
 
-            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--ink); margin-bottom: 6px; cursor: pointer;" onclick="openProjectInspector('${escapeHtml(p._id)}')">
-                ${escapeHtml(p.title || 'Untitled Project')}
-            </h3>
+            <h3 onclick="openProjectInspector('${escapeHtml(id)}')" style="font-size:1.25rem;font-weight:800;color:var(--ink);margin-bottom:6px;cursor:pointer;">${escapeHtml(p.title || 'Untitled Project')}</h3>
+            <p style="color:var(--ink);font-size:0.94rem;margin-bottom:12px;line-height:1.55;">${escapeHtml(description)}</p>
 
-            <p style="color: var(--ink); font-size: 0.94rem; margin-bottom: 12px; font-weight: 500; line-height: 1.55;">
-                ${escapeHtml(description)}
-            </p>
-
-            ${milestones.length ? `
-                <div style="background: var(--canvas); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; font-weight: 800; margin-bottom: 6px;">
-                        <span style="color: var(--ink);">📊 Build Progress (${progress.done}/${progress.total} Milestones)</span>
-                        <span style="color: #10b981;">${progress.percent}%</span>
-                    </div>
-                    <div style="width: 100%; height: 7px; background: rgba(148, 163, 184, 0.22); border-radius: 999px; overflow: hidden; margin-bottom: 8px;">
-                        <div style="width: ${progress.percent}%; height: 100%; background: linear-gradient(90deg, #7c3aed, #10b981); transition: width 0.25s ease;"></div>
-                    </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                        ${milestones.slice(0, 4).map(m => `
-                            <button
-                                type="button"
-                                ${isOwner ? `onclick="toggleProjectMilestone('${escapeHtml(p._id)}', '${escapeHtml(m._id)}')"` : `onclick="openProjectInspector('${escapeHtml(p._id)}')"`}
-                                style="background: ${m.done ? 'rgba(16, 185, 129, 0.14)' : 'var(--paper)'}; border: 1px solid ${m.done ? 'rgba(16, 185, 129, 0.4)' : 'var(--border)'}; color: ${m.done ? '#10b981' : 'var(--ink)'}; padding: 3px 9px; border-radius: 7px; font-size: 0.74rem; font-weight: 700; cursor: pointer; text-decoration: ${m.done ? 'line-through' : 'none'};"
-                            >
-                                ${m.done ? '✅' : '⬜'} ${escapeHtml(m.title)}
-                            </button>
-                        `).join('')}
-                        ${milestones.length > 4 ? `<span onclick="openProjectInspector('${escapeHtml(p._id)}')" style="font-size: 0.74rem; font-weight: 700; color: var(--ink-light); padding: 3px 6px; cursor: pointer;">+${milestones.length - 4} more</span>` : ''}
-                    </div>
+            <div style="background:var(--canvas);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;font-size:0.76rem;font-weight:800;margin-bottom:6px;">
+                    <span>📊 Build Progress (${progress.total ? `${progress.done}/${progress.total} Milestones` : (p.stage || 'Prototype')})</span>
+                    <span style="color:#10b981;">${progress.percent}%</span>
                 </div>
-            ` : ''}
-
-            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px;">
-                <span style="font-size: 0.76rem; font-weight: 800; color: var(--ink-light);">🛡️ Team (${roster.length}):</span>
-                ${roster.map(m => `
-                    <span onclick="viewUserProfile('${escapeHtml(m.username)}')" style="background: var(--canvas); border: 1px solid var(--border); padding: 3px 9px; border-radius: 999px; font-size: 0.74rem; font-weight: 700; color: var(--ink); cursor: pointer;">
-                        @${escapeHtml(m.username)} <span style="color: var(--ink-light);">· ${escapeHtml(m.role || 'Builder')}</span>
-                    </span>
-                `).join('')}
-                ${isOwner ? `<button type="button" onclick="openProjectInspector('${escapeHtml(p._id)}')" style="background: rgba(124, 58, 237, 0.12); border: 1px dashed rgba(124, 58, 237, 0.45); color: var(--accent-purple, #8b5cf6); padding: 3px 9px; border-radius: 999px; font-size: 0.74rem; font-weight: 800; cursor: pointer;">+ Manage Team / Milestones</button>` : ''}
-            </div>
-
-            ${tags.length ? `
-                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
-                    ${tags.map(t => `
-                        <button type="button" onclick="filterByTechChip('${escapeHtml(t)}')" style="background: var(--canvas); border: 1px solid var(--border); color: var(--ink); padding: 3px 9px; border-radius: 7px; font-size: 0.75rem; font-weight: 700; cursor: pointer;">
-                            #${escapeHtml(t)}
-                        </button>
-                    `).join('')}
-                </div>
-            ` : ''}
-
-            ${roles.length ? `
-                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px;">
-                    <span style="font-size: 0.76rem; font-weight: 800; color: var(--ink-light);">Seeking:</span>
-                    ${roles.map(r => `
-                        <button type="button" onclick="openMessageRequestModal('${escapeHtml(authorName)}', 'Collaboration', 'Role: ${escapeHtml(r)}')" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); color: #10b981; padding: 3px 9px; border-radius: 7px; font-size: 0.75rem; font-weight: 800; cursor: pointer;">
-                            + ${escapeHtml(r)}
-                        </button>
-                    `).join('')}
-                </div>
-            ` : ''}
-
-            ${imgUrl ? `
-                <img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(p.title || 'Project preview')}" style="width: 100%; max-height: 310px; object-fit: cover; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--border); cursor: pointer;" onclick="openProjectInspector('${escapeHtml(p._id)}')" onerror="this.style.display='none'" />
-            ` : ''}
-
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; flex-wrap: wrap; gap: 10px;">
-                <span style="font-size: 0.8rem; font-weight: 700; color: var(--ink-light);">👥 ${escapeHtml(p.audience || 'Open to All')}</span>
-
-                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                    <button type="button" onclick="openProjectInspector('${escapeHtml(p._id)}')" style="background: var(--canvas); color: var(--ink); border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">🔍 Inspect</button>
-                    ${liveUrl ? `<a href="${escapeHtml(liveUrl)}" target="_blank" rel="noopener noreferrer" style="background: var(--canvas); color: var(--ink); border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; text-decoration: none;">🌐 Live</a>` : ''}
-                    ${repoUrl ? `<a href="${escapeHtml(repoUrl)}" target="_blank" rel="noopener noreferrer" style="background: var(--canvas); color: var(--ink); border: 1px solid var(--border); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; text-decoration: none;">💻 Repo</a>` : ''}
-                    <button type="button" onclick="openMessageRequestModal('${escapeHtml(authorName)}', 'Collaboration')" style="background: var(--accent-purple, #7c3aed); color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; cursor: pointer;">🤝 Connect</button>
-                    ${isOwner ? `<button type="button" onclick="deleteProject('${escapeHtml(p._id)}')" style="background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">🗑️ Delete</button>` : ''}
+                <div style="width:100%;height:7px;background:rgba(148,163,184,0.22);border-radius:999px;overflow:hidden;">
+                    <div style="width:${progress.percent}%;height:100%;background:linear-gradient(90deg,#7c3aed,#10b981);transition:width 0.25s ease;"></div>
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 0.82rem; flex-wrap: wrap; gap: 8px;">
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <button type="button" id="boost-btn-${escapeHtml(p._id)}" onclick="boostProject('${escapeHtml(p._id)}')" style="background: rgba(124, 58, 237, 0.12); border: 1px solid rgba(124, 58, 237, 0.35); color: var(--ink); border-radius: 8px; padding: 4px 10px; font-weight: 800; cursor: pointer;">
-                        🚀 Boost <span id="boost-count-${escapeHtml(p._id)}">${boostCount}</span>
-                    </button>
-                    <button type="button" onclick="reactProject('${escapeHtml(p._id)}', 'like', this)" style="background: transparent; border: 1px solid var(--border); color: var(--ink); border-radius: 8px; padding: 4px 9px; cursor: pointer;">👍 ${p.reactions?.like || 0}</button>
-                    <button type="button" onclick="reactProject('${escapeHtml(p._id)}', 'love', this)" style="background: transparent; border: 1px solid var(--border); color: var(--ink); border-radius: 8px; padding: 4px 9px; cursor: pointer;">❤️ ${p.reactions?.love || 0}</button>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:12px;">
+                <span style="font-size:0.76rem;font-weight:800;color:var(--ink-light);">🛡️ Team (${roster.length}):</span>
+                ${roster.map(m => `<span style="background:var(--canvas);border:1px solid var(--border);padding:3px 9px;border-radius:999px;font-size:0.74rem;font-weight:700;color:var(--ink);">@${escapeHtml(m.username)} · ${escapeHtml(m.role || 'Builder')}</span>`).join('')}
+                ${isOwner ? `<button type="button" onclick="openProjectInspector('${escapeHtml(id)}')" style="background:rgba(124,58,237,0.12);border:1px dashed rgba(124,58,237,0.45);color:var(--accent-purple,#8b5cf6);padding:3px 9px;border-radius:999px;font-size:0.74rem;font-weight:800;cursor:pointer;">+ Manage Team / Milestones</button>` : ''}
+            </div>
+
+            ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(p.title || 'Project preview')}" onclick="openProjectInspector('${escapeHtml(id)}')" style="width:100%;max-height:310px;object-fit:cover;border-radius:10px;margin-bottom:12px;border:1px solid var(--border);cursor:pointer;" onerror="this.style.display='none'" />` : ''}
+
+            <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:12px;flex-wrap:wrap;gap:10px;">
+                <span style="font-size:0.8rem;font-weight:700;color:var(--ink-light);">👥 ${escapeHtml(p.audience || 'Open to All')}</span>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                    <button type="button" onclick="openProjectInspector('${escapeHtml(id)}')" style="background:var(--canvas);color:var(--ink);border:1px solid var(--border);padding:6px 12px;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;">🔍 Inspect</button>
+                    ${demoUrl ? `<a href="${escapeHtml(demoUrl)}" target="_blank" rel="noopener noreferrer" style="background:var(--canvas);color:var(--ink);border:1px solid var(--border);padding:6px 12px;border-radius:8px;font-size:0.8rem;font-weight:700;text-decoration:none;">🌐 Live</a>` : ''}
+                    ${repoUrl ? `<a href="${escapeHtml(repoUrl)}" target="_blank" rel="noopener noreferrer" style="background:var(--canvas);color:var(--ink);border:1px solid var(--border);padding:6px 12px;border-radius:8px;font-size:0.8rem;font-weight:700;text-decoration:none;">💻 Repo</a>` : ''}
+                    <button type="button" onclick="openMessageRequestModal('${escapeHtml(authorName)}','Collaboration')" style="background:var(--accent-purple,#7c3aed);color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:0.8rem;font-weight:800;cursor:pointer;">🤝 Connect</button>
+                    ${isOwner ? `<button type="button" onclick="deleteProject('${escapeHtml(id)}')" style="background:#ef4444;color:#fff;border:none;padding:6px 10px;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;">🗑️ Delete</button>` : ''}
+                </div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);font-size:0.82rem;flex-wrap:wrap;gap:8px;">
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                    <button type="button" title="Push project higher in Most Boosted" onclick="boostProject('${escapeHtml(id)}')" style="background:rgba(124,58,237,0.14);border:1px solid rgba(124,58,237,0.4);color:var(--ink);border-radius:8px;padding:4px 10px;font-weight:800;cursor:pointer;">🚀 Boost ${boostCount}</button>
+                    <button type="button" title="Smart idea / architecture" onclick="reactProject('${escapeHtml(id)}','like')" style="background:rgba(14,165,233,0.12);border:1px solid rgba(14,165,233,0.35);color:var(--ink);border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;">💡 Clever ${cleverCount}</button>
+                    <button type="button" title="Hype execution & shipping momentum" onclick="reactProject('${escapeHtml(id)}','love')" style="background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.35);color:var(--ink);border-radius:8px;padding:4px 10px;font-weight:700;cursor:pointer;">🔥 Ship It ${shipCount}</button>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <span class="project-rating-text" style="font-weight: 700; color: var(--ink);">⭐ ${avgRating} (${p.ratingsCount || 0})</span>
-                    <select onchange="rateProject('${escapeHtml(p._id)}', this.value)" style="background: var(--canvas); color: var(--ink); border: 1px solid var(--border); padding: 3px 7px; border-radius: 6px; font-size: 0.78rem;">
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <span class="project-rating-text" style="font-weight:700;color:var(--ink);">⭐ ${avgRating} (${p.ratingsCount || 0})</span>
+                    <select onchange="rateProject('${escapeHtml(id)}',this.value)" style="background:var(--canvas);color:var(--ink);border:1px solid var(--border);padding:3px 7px;border-radius:6px;font-size:0.78rem;">
                         <option value="">Rate</option>
                         <option value="5">5 ⭐</option>
                         <option value="4">4 ⭐</option>
@@ -3177,334 +3404,47 @@ function renderFilteredProjects() {
     }).join('');
 }
 
-function updateCachedProject(updatedProj) {
-    if (!updatedProj || !updatedProj._id) return;
-    const idx = __hoknexProjectsCache.findIndex(item => String(item._id) === String(updatedProj._id));
-    if (idx !== -1) {
-        __hoknexProjectsCache[idx] = updatedProj;
+// Inside your renderView(view) function:
+if (view === 'projects') {
+    if (typeof viewTitle !== 'undefined' && viewTitle) {
+        viewTitle.innerText = 'Projects Hub — Build & Ship 🚀';
     }
-    renderFilteredProjects();
-    const inspector = document.getElementById('projectInspectorModal');
-    if (inspector && inspector.style.display === 'flex') {
-        openProjectInspector(updatedProj._id);
-    }
-}
-
-async function toggleProjectMilestone(projectId, milestoneId) {
-    try {
-        const res = await fetch(`${API_URL}/api/projects/${projectId}/milestones/${milestoneId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (!res.ok) throw new Error('Failed to toggle milestone');
-        const updatedProj = await res.json();
-        updateCachedProject(updatedProj);
-    } catch (err) {
-        console.error('Milestone toggle error:', err);
-    }
-}
-
-async function addProjectMilestone(projectId) {
-    const input = document.getElementById(`new-milestone-input-${projectId}`);
-    const title = (input?.value || '').trim();
-    if (!title) return;
-
-    try {
-        const res = await fetch(`${API_URL}/api/projects/${projectId}/milestones`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title })
-        });
-        if (!res.ok) throw new Error('Failed to add milestone');
-        const updatedProj = await res.json();
-        updateCachedProject(updatedProj);
-    } catch (err) {
-        console.error('Add milestone error:', err);
-        alert('Could not add milestone.');
-    }
-}
-
-async function addProjectTeamMember(projectId) {
-    const userEl = document.getElementById(`new-member-user-${projectId}`);
-    const roleEl = document.getElementById(`new-member-role-${projectId}`);
-    const username = (userEl?.value || '').replace(/^@/, '').trim();
-    const role = (roleEl?.value || 'Contributor').trim();
-
-    if (!username) {
-        alert('Enter a collaborator username!');
-        return;
-    }
-
-    try {
-        const res = await fetch(`${API_URL}/api/projects/${projectId}/team`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, role })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to add member');
-        updateCachedProject(data);
-    } catch (err) {
-        console.error('Add team member error:', err);
-        alert(err.message);
-    }
-}
-
-async function removeProjectTeamMember(projectId, memberId) {
-    try {
-        const res = await fetch(`${API_URL}/api/projects/${projectId}/team/${memberId}`, {
-            method: 'DELETE'
-        });
-        if (!res.ok) throw new Error('Failed to remove member');
-        const updatedProj = await res.json();
-        updateCachedProject(updatedProj);
-    } catch (err) {
-        console.error('Remove member error:', err);
-    }
-}
-
-function openProjectInspector(projectId) {
-    const p = __hoknexProjectsCache.find(item => String(item._id) === String(projectId));
-    const modal = document.getElementById('projectInspectorModal');
-    const content = document.getElementById('projectInspectorContent');
-    if (!p || !modal || !content) return;
-
-    const currentUser = localStorage.getItem('hoknex_user') || 'Student';
-    const authorName = (typeof p.author === 'object' && p.author !== null)
-        ? (p.author.username || 'Student')
-        : (p.author || 'Student');
-    const isOwner = authorName === currentUser;
-    const imgUrl = resolveProjectImage(p);
-    const repoUrl = normalizeUrl(p.projectUrl);
-    const liveUrl = normalizeUrl(p.demoUrl);
-    const description = p.desc || p.description || p.pitch || 'No description provided.';
-    const milestones = Array.isArray(p.milestones) ? p.milestones : [];
-    const progress = getMilestoneProgress(milestones);
-    const roster = Array.isArray(p.teamMembers) && p.teamMembers.length
-        ? p.teamMembers
-        : [{ username: authorName, role: 'Project Lead' }];
-
-    content.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
-            <div>
-                <span style="background: rgba(124, 58, 237, 0.14); color: var(--accent-purple, #8b5cf6); padding: 4px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 800;">${escapeHtml(p.classification || 'Showcase')} • ${escapeHtml(p.stage || 'Prototype')}</span>
-                <h2 style="font-size: 1.45rem; font-weight: 800; margin-top: 8px;">${escapeHtml(p.title || 'Untitled Project')}</h2>
-                <p style="font-size: 0.84rem; color: var(--ink-light); font-weight: 700;">Lead: @${escapeHtml(authorName)} • Target: ${escapeHtml(p.audience || 'Open to All')}</p>
-            </div>
-            <button onclick="closeProjectInspector()" style="background: var(--canvas); border: 1px solid var(--border); border-radius: 8px; width: 34px; height: 34px; cursor: pointer; color: var(--ink);">✕</button>
-        </div>
-
-        ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--border);" onerror="this.style.display='none'" />` : ''}
-
-        <p style="font-size: 0.96rem; line-height: 1.65; color: var(--ink); margin-bottom: 14px; white-space: pre-line;">${escapeHtml(description)}</p>
-
-        ${p.techStack ? `<div style="font-size: 0.85rem; font-weight: 700; color: var(--accent-blue, #0ea5e9); margin-bottom: 16px;">🛠️ Stack: ${escapeHtml(p.techStack)}</div>` : ''}
-
-        <!-- BUILD MILESTONES SECTION -->
-        <div style="background: var(--canvas); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 800; margin-bottom: 8px;">
-                <span>📊 Build Roadmap & Milestones (${progress.done}/${progress.total})</span>
-                <span style="color: #10b981;">${progress.percent}% Complete</span>
-            </div>
-            <div style="width: 100%; height: 8px; background: rgba(148, 163, 184, 0.22); border-radius: 999px; overflow: hidden; margin-bottom: 10px;">
-                <div style="width: ${progress.percent}%; height: 100%; background: linear-gradient(90deg, #7c3aed, #10b981);"></div>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-                ${milestones.length ? milestones.map(m => `
-                    <div style="display: flex; align-items: center; justify-content: space-between; background: var(--paper); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px;">
-                        <span style="font-size: 0.84rem; font-weight: 700; text-decoration: ${m.done ? 'line-through' : 'none'}; color: ${m.done ? 'var(--ink-light)' : 'var(--ink)'};">
-                            ${m.done ? '✅' : '⬜'} ${escapeHtml(m.title)}
-                        </span>
-                        ${isOwner ? `<button type="button" onclick="toggleProjectMilestone('${escapeHtml(p._id)}', '${escapeHtml(m._id)}')" style="background: var(--canvas); border: 1px solid var(--border); color: var(--ink); padding: 4px 9px; border-radius: 6px; font-size: 0.74rem; font-weight: 800; cursor: pointer;">${m.done ? 'Reopen' : 'Mark Done'}</button>` : ''}
+    if (typeof mainView !== 'undefined' && mainView) {
+        mainView.innerHTML = `
+            <div style="background:linear-gradient(135deg,rgba(124,58,237,0.14),rgba(14,165,233,0.12));border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;color:var(--ink);">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+                    <div>
+                        <div style="font-size:0.72rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-purple,#8b5cf6);">Global Builder Showcase & Co-Creation</div>
+                        <h3 style="font-size:1.25rem;font-weight:800;margin-top:4px;">Ship bold ideas. Assemble sharp teams.</h3>
+                        <p style="font-size:0.86rem;color:var(--ink-light);margin-top:4px;">Track live build milestones, manage co-builders, and showcase shipped work.</p>
                     </div>
-                `).join('') : `<p style="font-size: 0.8rem; color: var(--ink-light);">No milestones added yet.</p>`}
-            </div>
-            ${isOwner ? `
-                <div style="display: flex; gap: 8px; margin-top: 10px;">
-                    <input type="text" id="new-milestone-input-${escapeHtml(p._id)}" placeholder="Add next milestone (e.g. Deploy v1)..." style="flex: 1; background: var(--paper); border: 1px solid var(--border); color: var(--ink); border-radius: 8px; padding: 8px 10px; font-size: 0.82rem; font-weight: 600; outline: none;">
-                    <button type="button" onclick="addProjectMilestone('${escapeHtml(p._id)}')" style="background: var(--accent-purple, #7c3aed); color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; cursor: pointer;">+ Add</button>
+                    <button type="button" onclick="openProjectModal()" style="background:linear-gradient(135deg,#7c3aed,#0ea5e9);color:#fff;border:none;padding:11px 18px;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(124,58,237,0.28);">
+                        + Launch Project
+                    </button>
                 </div>
-            ` : ''}
-        </div>
 
-        <!-- TEAM ROSTER SECTION -->
-        <div style="background: var(--canvas); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-            <div style="font-size: 0.85rem; font-weight: 800; margin-bottom: 8px;">🛡️ Team Roster (${roster.length})</div>
-            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                ${roster.map(m => `
-                    <div style="display: inline-flex; align-items: center; gap: 6px; background: var(--paper); border: 1px solid var(--border); padding: 5px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700;">
-                        <span onclick="closeProjectInspector(); viewUserProfile('${escapeHtml(m.username)}');" style="cursor: pointer;">@${escapeHtml(m.username)}</span>
-                        <span style="color: var(--ink-light); font-size: 0.74rem;">(${escapeHtml(m.role || 'Builder')})</span>
-                        ${(isOwner && m._id && m.username !== authorName) ? `<button type="button" onclick="removeProjectTeamMember('${escapeHtml(p._id)}', '${escapeHtml(m._id)}')" style="background: none; border: none; color: #ef4444; font-weight: 800; cursor: pointer; padding: 0 2px;">✕</button>` : ''}
-                    </div>
-                `).join('')}
-            </div>
-            ${isOwner ? `
-                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
-                    <input type="text" id="new-member-user-${escapeHtml(p._id)}" placeholder="@username" style="flex: 1; min-width: 130px; background: var(--paper); border: 1px solid var(--border); color: var(--ink); border-radius: 8px; padding: 8px 10px; font-size: 0.82rem; font-weight: 600; outline: none;">
-                    <input type="text" id="new-member-role-${escapeHtml(p._id)}" placeholder="Role (e.g. Frontend Dev)" style="flex: 1; min-width: 150px; background: var(--paper); border: 1px solid var(--border); color: var(--ink); border-radius: 8px; padding: 8px 10px; font-size: 0.82rem; font-weight: 600; outline: none;">
-                    <button type="button" onclick="addProjectTeamMember('${escapeHtml(p._id)}')" style="background: #10b981; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; cursor: pointer;">+ Add Member</button>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:16px;">
+                    <input type="text" id="projSearchInput" placeholder="🔍 Search projects, builders..." oninput="handleProjectFilterChange()" style="background:var(--paper);border:1px solid var(--border);color:var(--ink);border-radius:10px;padding:9px 12px;font-size:0.85rem;font-weight:600;outline:none;" />
+                    <select id="projFilterClass" onchange="handleProjectFilterChange()" style="background:var(--paper);border:1px solid var(--border);color:var(--ink);border-radius:10px;padding:9px 10px;font-size:0.85rem;font-weight:700;outline:none;">
+                        <option value="All">All Types</option>
+                        <option value="Collaboration">🤝 Collaboration</option>
+                        <option value="Showcase">🏆 Showcase</option>
+                        <option value="Open Source">🌐 Open Source</option>
+                        <option value="Corporate Challenge">🏢 Challenge</option>
+                    </select>
+                    <input type="text" id="projFilterTech" placeholder="🛠️ Filter stack (e.g. React)" oninput="handleProjectFilterChange()" style="background:var(--paper);border:1px solid var(--border);color:var(--ink);border-radius:10px;padding:9px 12px;font-size:0.85rem;font-weight:600;outline:none;" />
+                    <select id="projSortSelect" onchange="handleProjectFilterChange()" style="background:var(--paper);border:1px solid var(--border);color:var(--ink);border-radius:10px;padding:9px 10px;font-size:0.85rem;font-weight:700;outline:none;">
+                        <option value="newest">⚡ Newest First</option>
+                        <option value="boosted">🚀 Most Boosted</option>
+                        <option value="rated">⭐ Highest Rated</option>
+                        <option value="progress">📊 Most Completed</option>
+                    </select>
                 </div>
-            ` : ''}
-        </div>
-
-        <div style="display: flex; flex-wrap: wrap; gap: 10px; padding-top: 12px; border-top: 1px solid var(--border);">
-            ${liveUrl ? `<a href="${escapeHtml(liveUrl)}" target="_blank" rel="noopener noreferrer" style="background: var(--accent-purple, #7c3aed); color: #fff; padding: 9px 15px; border-radius: 9px; font-size: 0.85rem; font-weight: 800; text-decoration: none;">🌐 Open Live Demo</a>` : ''}
-            ${repoUrl ? `<a href="${escapeHtml(repoUrl)}" target="_blank" rel="noopener noreferrer" style="background: var(--canvas); color: var(--ink); border: 1px solid var(--border); padding: 9px 15px; border-radius: 9px; font-size: 0.85rem; font-weight: 700; text-decoration: none;">💻 View Repository</a>` : ''}
-            ${(liveUrl || repoUrl) ? `<button type="button" onclick="copyProjectLink('${escapeHtml(liveUrl || repoUrl)}')" style="background: var(--canvas); color: var(--ink); border: 1px solid var(--border); padding: 9px 15px; border-radius: 9px; font-size: 0.85rem; font-weight: 700; cursor: pointer;">📋 Copy Link</button>` : ''}
-            <button type="button" onclick="closeProjectInspector(); openMessageRequestModal('${escapeHtml(authorName)}', 'Collaboration');" style="background: #10b981; color: #fff; border: none; padding: 9px 15px; border-radius: 9px; font-size: 0.85rem; font-weight: 800; cursor: pointer;">🤝 Pitch Collaboration</button>
-        </div>
-    `;
-    modal.style.display = 'flex';
-}
-
-function closeProjectInspector() {
-    const modal = document.getElementById('projectInspectorModal');
-    if (modal) modal.style.display = 'none';
-}
-
-async function copyProjectLink(url) {
-    try {
-        await navigator.clipboard.writeText(url);
-        alert('Project link copied to clipboard! 📋');
-    } catch (_) {
-        alert('Link: ' + url);
+            </div>
+            <div id="projectsContainer"></div>
+        `;
+        loadAndRenderProjects();
     }
-}
-
-async function boostProject(id) {
-    try {
-        const res = await fetch(`${API_URL}/api/projects/${id}/boost`, { method: 'POST' });
-        if (!res.ok) return;
-        const updated = await res.json();
-        const countEl = document.getElementById(`boost-count-${id}`);
-        const nextCount = Math.max(updated.boosts || 0, updated.reactions?.rocket || 0);
-        if (countEl) countEl.innerText = nextCount;
-        const cached = __hoknexProjectsCache.find(p => String(p._id) === String(id));
-        if (cached) {
-            cached.boosts = updated.boosts;
-            cached.reactions = updated.reactions;
-        }
-    } catch (err) {
-        console.error('Boost error:', err);
-    }
-}
-
-async function reactProject(id, type, btnElement) {
-    try {
-        const res = await fetch(`${API_URL}/api/projects/${id}/react`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type })
-        });
-        if (!res.ok) return;
-        const updated = await res.json();
-        const emoji = type === 'like' ? '👍' : type === 'love' ? '❤️' : '🚀';
-        if (btnElement && updated.reactions?.[type] !== undefined) {
-            btnElement.innerHTML = `${emoji} ${updated.reactions[type]}`;
-        }
-    } catch (err) {
-        console.error('React error:', err);
-    }
-}
-
-async function rateProject(id, rating) {
-    if (!rating) return;
-    try {
-        const res = await fetch(`${API_URL}/api/projects/${id}/rate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ rating: Number(rating) })
-        });
-        if (!res.ok) return;
-        const updated = await res.json();
-        const card = document.getElementById(`proj-card-${id}`);
-        const ratingEl = card?.querySelector('.project-rating-text');
-        if (ratingEl) {
-            ratingEl.innerHTML = `⭐ ${Number(updated.rating).toFixed(1)} (${updated.ratingsCount})`;
-        }
-        alert('Rating recorded! ⭐');
-    } catch (err) {
-        console.error('Rate error:', err);
-    }
-}
-
-async function deleteProject(id) {
-    if (!confirm('Delete this project permanently?')) return;
-    try {
-        const res = await fetch(`${API_URL}/api/projects/${id}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('Delete failed');
-        __hoknexProjectsCache = __hoknexProjectsCache.filter(p => String(p._id) !== String(id));
-        document.getElementById(`proj-card-${id}`)?.remove();
-        alert('Project deleted.');
-    } catch (err) {
-        console.error('Delete project error:', err);
-        alert('Failed to delete project.');
-    }
-}
-
-function openMessageRequestModal(targetUser, actionType = 'Collaboration', presetNote = '') {
-    const targetInput = document.getElementById('targetRequestUsername');
-    const titleEl = document.getElementById('modalReqTitle');
-    const noteEl = document.getElementById('requestNoteInput');
-    const modal = document.getElementById('messageRequestModal');
-
-    if (targetInput) targetInput.value = targetUser;
-    if (titleEl) {
-        titleEl.innerText = actionType === 'Collaboration' ? `🤝 Collaborate with @${targetUser}` : `💬 Message @${targetUser}`;
-    }
-    if (noteEl && presetNote && !noteEl.value) {
-        noteEl.value = `Hi @${targetUser}, I'd love to help with (${presetNote}). `;
-    }
-    if (modal) modal.style.display = 'flex';
-}
-
-function closeMessageRequestModal() {
-    const modal = document.getElementById('messageRequestModal');
-    const noteEl = document.getElementById('requestNoteInput');
-    if (modal) modal.style.display = 'none';
-    if (noteEl) noteEl.value = '';
-}
-
-async function submitMessageRequest() {
-    const recipientUsername = document.getElementById('targetRequestUsername')?.value;
-    const note = (document.getElementById('requestNoteInput')?.value || '').trim();
-    const senderUsername = localStorage.getItem('hoknex_user') || 'Student';
-
-    if (!note) {
-        alert('Please write a short note before sending!');
-        return;
-    }
-
-    try {
-        const res = await fetch(`${API_URL}/api/send-request-note`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ senderUsername, recipientUsername, note })
-        });
-        if (!res.ok) throw new Error('Request failed');
-        alert('Collaboration note sent! 💬');
-        closeMessageRequestModal();
-    } catch (err) {
-        console.error('Request note error:', err);
-        alert('Could not send request. Check server connection.');
-    }
-}
-
-if (typeof window.renderView === 'function') {
-    const __origRenderView = window.renderView;
-    window.renderView = function(view, ...args) {
-        const result = __origRenderView.apply(this, [view, ...args]);
-        if (view === 'projects') {
-            const mainView = document.getElementById('mainView');
-            const viewTitle = document.getElementById('viewTitle');
-            if (mainView) {
-                renderProjectsHubShell(mainView, viewTitle);
-                loadAndRenderProjects();
-            }
-        }
-        return result;
-    };
 }
 
     
