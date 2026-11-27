@@ -1877,37 +1877,7 @@ app.get('/api/user-reposts/:username', async (req, res) => {
   }
 });
 
-// GET /api/projects - Supports optional ?q=, ?classification=, and ?tech= filters
-app.get('/api/projects', async (req, res) => {
-    try {
-        const { q, classification, tech } = req.query;
-        const filter = {};
-
-        if (classification && classification !== 'All') {
-            filter.classification = classification;
-        }
-        if (tech && tech.trim()) {
-            filter.techStack = { $regex: tech.trim().replace(/^#/, ''), $options: 'i' };
-        }
-        if (q && q.trim()) {
-            const regex = new RegExp(q.trim(), 'i');
-            filter.$or = [
-                { title: regex },
-                { desc: regex },
-                { techStack: regex },
-                { author: regex }
-            ];
-        }
-
-        const projects = await Project.find(filter).sort({ createdAt: -1 });
-        res.json(projects);
-    } catch (err) {
-        console.error('Error fetching projects:', err);
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// POST /api/projects - Accepts multipart/form-data OR JSON
+// POST /api/projects - Now accepts milestones & initial team members
 app.post('/api/projects', upload.single('image'), async (req, res) => {
     try {
         const title = (req.body.title || '').trim();
@@ -1927,11 +1897,23 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
             openRoles = req.body.openRoles.split(',').map(r => r.trim()).filter(Boolean);
         }
 
+        let milestones = [];
+        if (Array.isArray(req.body.milestones)) {
+            milestones = req.body.milestones
+                .map(m => typeof m === 'string' ? { title: m.trim(), done: false } : m)
+                .filter(m => m && m.title);
+        } else if (typeof req.body.milestones === 'string' && req.body.milestones.trim()) {
+            milestones = req.body.milestones
+                .split(',')
+                .map(m => m.trim())
+                .filter(Boolean)
+                .map(mTitle => ({ title: mTitle, done: false }));
+        }
+
         if (!title || !desc) {
             return res.status(400).json({ error: 'Project title and description are required.' });
         }
 
-        // Support Multer uploaded file path/URL, or direct imageUrl/img from body
         let resolvedImage = '';
         if (req.file) {
             resolvedImage = req.file.path || req.file.secure_url || req.file.url || '';
@@ -1945,6 +1927,8 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
             classification,
             stage,
             openRoles,
+            milestones,
+            teamMembers: [{ username: String(author).trim(), role: 'Project Lead' }],
             audience,
             techStack,
             projectUrl,
@@ -1962,74 +1946,75 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
     }
 });
 
-// POST /api/projects/:id/boost - High-velocity project boost counter
-app.post('/api/projects/:id/boost', async (req, res) => {
+// POST /api/projects/:id/milestones - Add a new milestone
+app.post('/api/projects/:id/milestones', async (req, res) => {
     try {
-        const proj = await Project.findByIdAndUpdate(
-            req.params.id,
-            { $inc: { boosts: 1, 'reactions.rocket': 1 } },
-            { new: true }
-        );
-        if (!proj) return res.status(404).json({ error: 'Project not found' });
-        res.json(proj);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// POST /api/projects/:id/react
-app.post('/api/projects/:id/react', async (req, res) => {
-    try {
-        const { type } = req.body;
-        const allowed = ['like', 'love', 'rocket'];
-        if (!allowed.includes(type)) {
-            return res.status(400).json({ error: 'Invalid reaction type' });
-        }
-
-        const proj = await Project.findByIdAndUpdate(
-            req.params.id,
-            { $inc: { [`reactions.${type}`]: 1 } },
-            { new: true }
-        );
-        if (!proj) return res.status(404).json({ error: 'Project not found' });
-        res.json(proj);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// POST /api/projects/:id/rate
-app.post('/api/projects/:id/rate', async (req, res) => {
-    try {
-        const numericRating = Number(req.body.rating);
-        if (!numericRating || numericRating < 1 || numericRating > 5) {
-            return res.status(400).json({ error: 'Rating must be between 1 and 5' });
-        }
+        const title = (req.body.title || '').trim();
+        if (!title) return res.status(400).json({ error: 'Milestone title is required' });
 
         const proj = await Project.findById(req.params.id);
         if (!proj) return res.status(404).json({ error: 'Project not found' });
 
-        const currentCount = proj.ratingsCount || 0;
-        const currentAvg = proj.rating || 0;
-        const nextCount = currentCount + 1;
-        const nextAvg = ((currentAvg * currentCount) + numericRating) / nextCount;
-
-        proj.rating = Number(nextAvg.toFixed(2));
-        proj.ratingsCount = nextCount;
+        proj.milestones.push({ title, done: false });
         await proj.save();
-
         res.json(proj);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// DELETE /api/projects/:id
-app.delete('/api/projects/:id', async (req, res) => {
+// PATCH /api/projects/:id/milestones/:milestoneId - Toggle milestone done state
+app.patch('/api/projects/:id/milestones/:milestoneId', async (req, res) => {
     try {
-        const deleted = await Project.findByIdAndDelete(req.params.id);
-        if (!deleted) return res.status(404).json({ error: 'Project not found' });
-        res.json({ message: 'Project deleted successfully' });
+        const proj = await Project.findById(req.params.id);
+        if (!proj) return res.status(404).json({ error: 'Project not found' });
+
+        const item = proj.milestones.id(req.params.milestoneId);
+        if (!item) return res.status(404).json({ error: 'Milestone not found' });
+
+        item.done = typeof req.body.done === 'boolean' ? req.body.done : !item.done;
+        item.completedAt = item.done ? new Date() : null;
+        await proj.save();
+        res.json(proj);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// POST /api/projects/:id/team - Add a co-builder to the project roster
+app.post('/api/projects/:id/team', async (req, res) => {
+    try {
+        const username = String(req.body.username || '').replace(/^@/, '').trim();
+        const role = String(req.body.role || 'Contributor').trim();
+        if (!username) return res.status(400).json({ error: 'Username is required' });
+
+        const proj = await Project.findById(req.params.id);
+        if (!proj) return res.status(404).json({ error: 'Project not found' });
+
+        const exists = proj.teamMembers.some(
+            m => m.username.toLowerCase() === username.toLowerCase()
+        );
+        if (exists) {
+            return res.status(400).json({ error: `@${username} is already on this team` });
+        }
+
+        proj.teamMembers.push({ username, role: role || 'Contributor' });
+        await proj.save();
+        res.json(proj);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// DELETE /api/projects/:id/team/:memberId - Remove a team member
+app.delete('/api/projects/:id/team/:memberId', async (req, res) => {
+    try {
+        const proj = await Project.findById(req.params.id);
+        if (!proj) return res.status(404).json({ error: 'Project not found' });
+
+        proj.teamMembers.pull({ _id: req.params.memberId });
+        await proj.save();
+        res.json(proj);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
