@@ -1913,30 +1913,31 @@ app.get('/api/projects', async (req, res) => {
 // POST /api/projects - Accepts multipart/form-data OR JSON, with milestones & initial team lead
 app.post('/api/projects', upload.single('image'), async (req, res) => {
     try {
-        const title = (req.body.title || '').trim();
-        const desc = (req.body.desc || req.body.description || req.body.pitch || '').trim();
-        const classification = req.body.classification || 'Showcase';
-        const stage = req.body.stage || 'Prototype';
-        const audience = req.body.audience || 'Open to All';
-        const techStack = (req.body.techStack || '').trim();
-        const projectUrl = (req.body.projectUrl || '').trim();
-        const demoUrl = (req.body.demoUrl || '').trim();
-        const author = (req.body.author || 'Student').trim();
+        const body = req.body || {};
+        const title = String(body.title || '').trim();
+        const desc = String(body.desc || body.description || body.pitch || '').trim();
+        const classification = body.classification || 'Showcase';
+        const stage = body.stage || 'Prototype';
+        const audience = body.audience || 'Open to All';
+        const techStack = String(body.techStack || '').trim();
+        const projectUrl = String(body.projectUrl || '').trim();
+        const demoUrl = String(body.demoUrl || '').trim();
+        const author = String(body.author || 'Student').trim() || 'Student';
 
         let openRoles = [];
-        if (Array.isArray(req.body.openRoles)) {
-            openRoles = req.body.openRoles.map(r => String(r).trim()).filter(Boolean);
-        } else if (typeof req.body.openRoles === 'string' && req.body.openRoles.trim()) {
-            openRoles = req.body.openRoles.split(',').map(r => r.trim()).filter(Boolean);
+        if (Array.isArray(body.openRoles)) {
+            openRoles = body.openRoles.map(r => String(r).trim()).filter(Boolean);
+        } else if (typeof body.openRoles === 'string' && body.openRoles.trim()) {
+            openRoles = body.openRoles.split(',').map(r => r.trim()).filter(Boolean);
         }
 
         let milestones = [];
-        if (Array.isArray(req.body.milestones)) {
-            milestones = req.body.milestones
+        if (Array.isArray(body.milestones)) {
+            milestones = body.milestones
                 .map(m => typeof m === 'string' ? { title: m.trim(), done: false } : m)
                 .filter(m => m && m.title);
-        } else if (typeof req.body.milestones === 'string' && req.body.milestones.trim()) {
-            milestones = req.body.milestones
+        } else if (typeof body.milestones === 'string' && body.milestones.trim()) {
+            milestones = body.milestones
                 .split(',')
                 .map(m => m.trim())
                 .filter(Boolean)
@@ -1950,8 +1951,8 @@ app.post('/api/projects', upload.single('image'), async (req, res) => {
         let resolvedImage = '';
         if (req.file) {
             resolvedImage = req.file.path || req.file.secure_url || req.file.url || '';
-        } else if (req.body.imageUrl || req.body.img) {
-            resolvedImage = String(req.body.imageUrl || req.body.img).trim();
+        } else if (body.imageUrl || body.img) {
+            resolvedImage = String(body.imageUrl || body.img).trim();
         }
 
         const newProj = new Project({
@@ -2017,7 +2018,7 @@ app.post('/api/projects/:id/react', async (req, res) => {
 // POST /api/projects/:id/rate - Update average star rating
 app.post('/api/projects/:id/rate', async (req, res) => {
     try {
-        const numericRating = Number(req.body.rating);
+        const numericRating = Number((req.body || {}).rating);
         if (!numericRating || numericRating < 1 || numericRating > 5) {
             return res.status(400).json({ error: 'Rating must be between 1 and 5' });
         }
@@ -2040,16 +2041,18 @@ app.post('/api/projects/:id/rate', async (req, res) => {
 // POST /api/projects/:id/milestones - Add a new milestone
 app.post('/api/projects/:id/milestones', async (req, res) => {
     try {
-        const title = (req.body.title || '').trim();
+        const title = String((req.body || {}).title || '').trim();
         if (!title) return res.status(400).json({ error: 'Milestone title is required' });
 
         const proj = await Project.findById(req.params.id);
         if (!proj) return res.status(404).json({ error: 'Project not found' });
 
+        if (!Array.isArray(proj.milestones)) proj.milestones = [];
         proj.milestones.push({ title, done: false });
         await proj.save();
         res.json(proj);
     } catch (err) {
+        console.error('Add milestone error:', err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -2063,11 +2066,13 @@ app.patch('/api/projects/:id/milestones/:milestoneId', async (req, res) => {
         const item = proj.milestones.id(req.params.milestoneId);
         if (!item) return res.status(404).json({ error: 'Milestone not found' });
 
-        item.done = typeof req.body.done === 'boolean' ? req.body.done : !item.done;
+        const body = req.body || {};
+        item.done = typeof body.done === 'boolean' ? body.done : !item.done;
         item.completedAt = item.done ? new Date() : null;
         await proj.save();
         res.json(proj);
     } catch (err) {
+        console.error('Toggle milestone error:', err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -2075,15 +2080,17 @@ app.patch('/api/projects/:id/milestones/:milestoneId', async (req, res) => {
 // POST /api/projects/:id/team - Add a co-builder to the project roster
 app.post('/api/projects/:id/team', async (req, res) => {
     try {
-        const username = String(req.body.username || '').replace(/^@/, '').trim();
-        const role = String(req.body.role || 'Contributor').trim();
+        const body = req.body || {};
+        const username = String(body.username || '').replace(/^@/, '').trim();
+        const role = String(body.role || 'Contributor').trim();
         if (!username) return res.status(400).json({ error: 'Username is required' });
 
         const proj = await Project.findById(req.params.id);
         if (!proj) return res.status(404).json({ error: 'Project not found' });
 
+        if (!Array.isArray(proj.teamMembers)) proj.teamMembers = [];
         const exists = proj.teamMembers.some(
-            m => m.username.toLowerCase() === username.toLowerCase()
+            m => String(m.username || '').toLowerCase() === username.toLowerCase()
         );
         if (exists) {
             return res.status(400).json({ error: `@${username} is already on this team` });
@@ -2093,6 +2100,7 @@ app.post('/api/projects/:id/team', async (req, res) => {
         await proj.save();
         res.json(proj);
     } catch (err) {
+        console.error('Add team member error:', err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -2107,6 +2115,7 @@ app.delete('/api/projects/:id/team/:memberId', async (req, res) => {
         await proj.save();
         res.json(proj);
     } catch (err) {
+        console.error('Remove team member error:', err);
         res.status(500).json({ error: err.message });
     }
 });
