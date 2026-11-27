@@ -1280,30 +1280,53 @@ app.get('/api/users/:username', async (req, res) => {
 
 app.put('/api/users/:username', upload.fields([{ name: 'dp', maxCount: 1 }, { name: 'banner', maxCount: 1 }]), async (req, res) => {
   try {
-    const tokenUsername = req.headers['x-username'];
-    const targetUsername = req.params.username;
+    const tokenUsername = (req.headers['x-username'] || '').trim().replace(/^@/, '');
+    const targetUsername = (req.params.username || '').trim().replace(/^@/, '');
     if (!tokenUsername || tokenUsername !== targetUsername) {
       return res.status(403).json({ error: "Unauthorized" });
     }
-    const { name, bio, department, skills } = req.body;
-    const updateData = { name, bio, department };
 
-    if (skills) {
-      updateData.skills = skills.split(',').map(s => s.trim()).filter(Boolean);
+    const body = req.body || {};
+    const updateData = {};
+
+    if (body.name !== undefined) updateData.name = body.name;
+    if (body.bio !== undefined) updateData.bio = body.bio;
+    if (body.department !== undefined) updateData.department = body.department;
+
+    if (body.skills !== undefined) {
+      updateData.skills = Array.isArray(body.skills)
+        ? body.skills.map(s => String(s).trim()).filter(Boolean)
+        : String(body.skills).split(',').map(s => s.trim()).filter(Boolean);
     }
 
-    if (req.files) {
-      if (req.files['dp'] && req.files['dp'][0]) updateData.dpUrl = req.files['dp'][0].path;
-      if (req.files['banner'] && req.files['banner'][0]) updateData.bannerUrl = req.files['banner'][0].path;
+    const uploadedDp = req.files && req.files['dp'] && req.files['dp'][0] && req.files['dp'][0].path;
+    const uploadedBanner = req.files && req.files['banner'] && req.files['banner'][0] && req.files['banner'][0].path;
+
+    const resolvedDp = uploadedDp || body.dpUrl || body.dp;
+    const resolvedBanner = uploadedBanner || body.bannerUrl || body.banner;
+
+    if (resolvedDp) {
+      updateData.dpUrl = String(resolvedDp).trim();
+    }
+    if (resolvedBanner) {
+      updateData.bannerUrl = String(resolvedBanner).trim();
     }
 
-    const updatedUser = await User.findOneAndUpdate({ username: targetUsername }, updateData, { new: true }).select('-password');
+    const updatedUser = await User.findOneAndUpdate(
+      { username: targetUsername },
+      updateData,
+      { new: true }
+    ).select('-password');
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
     res.json(updatedUser);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
 app.get('/api/stats', async (req, res) => {
   try {
     const peopleCount = await User.countDocuments();
