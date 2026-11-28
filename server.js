@@ -175,7 +175,8 @@ const StoryHighlightSchema = new mongoose.Schema({
         music: {
             trackName: { type: String, default: '' },
             artistName: { type: String, default: '' },
-            previewUrl: { type: String, default: '' }
+            previewUrl: { type: String, default: '' },
+            startSec: { type: Number, default: 0 }
         },
         createdAt: { type: Date, default: Date.now }
     }],
@@ -633,6 +634,8 @@ const StorySchema = new mongoose.Schema({
     },
     viewers: [{
         username: String,
+        name: String,
+        dpUrl: String,
         viewedAt: { type: Date, default: Date.now }
     }],
     reactions: [{
@@ -645,28 +648,34 @@ const StorySchema = new mongoose.Schema({
 
 const Story = mongoose.models.Story || mongoose.model('Story', StorySchema);
 
-const CloseFriendsModel = mongoose.models.CloseFriends || mongoose.model(
-    'CloseFriends',
-    new mongoose.Schema({
-        username: { type: String, required: true, unique: true, index: true },
-        friends: [{ type: String }],
-        updatedAt: { type: Date, default: Date.now }
-    })
-);
-
-// 1. Fetch active 24h stories with public, followers & close_friends privacy
+// 1. Fetch active 24h stories with public, followers & close_friends privacy + viewer DPs/names
 app.get('/api/stories', async (req, res) => {
     try {
         const viewer = String(req.query.viewer || '').trim().replace(/^@/, '').toLowerCase();
         const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
         const stories = await Story.find({ createdAt: { $gte: cutoff } }).sort({ createdAt: 1 });
 
-        const authors = Array.from(new Set(stories.map(s => String(s.username || '').toLowerCase()).filter(Boolean)));
-        const [authorDocs, viewerDoc, closeFriendDocs] = await Promise.all([
-            User.find({ username: { $in: authors } }).select('username followers'),
+        const allUsernames = new Set(stories.map(s => String(s.username || '').toLowerCase()).filter(Boolean));
+        stories.forEach(s => {
+            (s.viewers || []).forEach(v => {
+                if (v && v.username) allUsernames.add(String(v.username).toLowerCase());
+            });
+        });
+
+        const [authorDocs, viewerDoc, closeFriendDocs, allUserDocs] = await Promise.all([
+            User.find({ username: { $in: Array.from(allUsernames) } }).select('username followers'),
             viewer ? User.findOne({ username: viewer }).select('_id') : null,
-            CloseFriendsModel.find({ username: { $in: authors } })
+            CloseFriends.find({ username: { $in: Array.from(allUsernames) } }),
+            User.find({ username: { $in: Array.from(allUsernames) } }).select('username name dpUrl')
         ]);
+
+        const profileMap = {};
+        allUserDocs.forEach(u => {
+            profileMap[String(u.username || '').toLowerCase()] = {
+                name: u.name || u.username,
+                dpUrl: u.dpUrl || ''
+            };
+        });
 
         const followerMap = {};
         authorDocs.forEach(u => {
@@ -683,15 +692,29 @@ app.get('/api/stories', async (req, res) => {
             closeFriendMap[key] = Boolean(viewer && list.includes(viewer));
         });
 
-        const allowedStories = stories.filter(s => {
-            const owner = String(s.username || '').toLowerCase();
-            if (viewer && owner === viewer) return true;
-            if (s.privacy === 'public') return true;
-            if (s.privacy === 'close_friends') return Boolean(closeFriendMap[owner]);
-            return Boolean(followerMap[owner]);
-        });
+        const enriched = stories
+            .filter(s => {
+                const owner = String(s.username || '').toLowerCase();
+                if (viewer && owner === viewer) return true;
+                if (s.privacy === 'public') return true;
+                if (s.privacy === 'close_friends') return Boolean(closeFriendMap[owner]);
+                return Boolean(followerMap[owner]);
+            })
+            .map(s => {
+                const obj = s.toObject();
+                obj.viewers = (obj.viewers || []).map(v => {
+                    const p = profileMap[String(v.username || '').toLowerCase()] || {};
+                    return {
+                        username: v.username,
+                        name: v.name || p.name || v.username,
+                        dpUrl: v.dpUrl || p.dpUrl || '',
+                        viewedAt: v.viewedAt
+                    };
+                });
+                return obj;
+            });
 
-        res.json(allowedStories);
+        res.json(enriched);
     } catch (err) {
         console.error('Fetch stories error:', err);
         res.status(500).json({ error: err.message });
@@ -739,7 +762,7 @@ app.post('/api/stories', async (req, res) => {
     }
 });
 
-// 3. Mark story as viewed ("Seen by")
+// 3. Mark story as viewed ("Seen by") with viewer name & DP
 app.post('/api/stories/:id/view', async (req, res) => {
     try {
         const viewer = String((req.body || {}).username || '').trim().replace(/^@/, '');
@@ -749,7 +772,13 @@ app.post('/api/stories/:id/view', async (req, res) => {
         if (!story) return res.status(404).json({ error: 'Story not found' });
 
         if (story.username !== viewer && !(story.viewers || []).some(v => v.username === viewer)) {
-            story.viewers.push({ username: viewer, viewedAt: new Date() });
+            const uDoc = await User.findOne({ username: viewer }).select('username name dpUrl');
+            story.viewers.push({
+                username: viewer,
+                name: (uDoc && uDoc.name) || viewer,
+                dpUrl: (uDoc && uDoc.dpUrl) || '',
+                viewedAt: new Date()
+            });
             await story.save();
         }
         res.json(story);
