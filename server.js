@@ -1848,87 +1848,201 @@ app.post('/api/users/cancel-request', async (req, res) => {
   }
 });
 
+const DismissedNotifSchema = new mongoose.Schema({
+    username: { type: String, required: true, index: true },
+    dismissedIds: [{ type: String }],
+    readIds: [{ type: String }],
+    updatedAt: { type: Date, default: Date.now }
+});
+const DismissedNotif = mongoose.models.DismissedNotif || mongoose.model('DismissedNotif', DismissedNotifSchema);
+
 app.get('/api/notifications/:username', async (req, res) => {
-  try {
-    const username = req.params.username;
-    const user = await User.findOne({ username }).populate({
-      path: 'followRequests',
-      select: '_id name username dpUrl department'
-    });
-    if (!user) return res.json([]);
+    try {
+        const username = String(req.params.username || '').trim().replace(/^@/, '');
+        const user = await User.findOne({ username }).populate({
+            path: 'followRequests',
+            select: '_id name username dpUrl department'
+        });
+        if (!user) return res.json([]);
 
-    const notifications = [];
+        const prefDoc = await DismissedNotif.findOne({ username: username.toLowerCase() });
+        const dismissedSet = new Set((prefDoc?.dismissedIds || []).map(String));
+        const readSet = new Set((prefDoc?.readIds || []).map(String));
 
-   (user.followRequests || []).forEach(reqUser => {
-    notifications.push({
-        id: reqUser._id,
-        type: 'follow_request',
-        icon: '👤',
-        text: `<strong>${reqUser.name}</strong> (@${reqUser.username}) requested to follow you`,
-        note: reqUser.note || '',
-        time: 'Pending request',
-        actionData: { requesterId: reqUser._id }
-    });
+        const notifications = [];
+
+        // 1. Incoming Follow Requests (Accept / Decline)
+        (user.followRequests || []).forEach(reqUser => {
+            const id = String(reqUser._id);
+            if (dismissedSet.has(id)) return;
+            notifications.push({
+                id,
+                type: 'follow_request',
+                icon: '👤',
+                dpUrl: reqUser.dpUrl || '',
+                actorUsername: reqUser.username,
+                text: `<strong>${reqUser.name || reqUser.username}</strong> (@${reqUser.username}) requested to follow you`,
+                time: 'Pending request',
+                isRead: readSet.has(id),
+                actionData: {
+                    currentUserId: String(user._id),
+                    requesterId: String(reqUser._id),
+                    requesterUsername: reqUser.username
+                }
+            });
+        });
+
+        // 2. Club Join Requests on Owned Clubs (Accept / Decline)
+        const ownedClubs = await Club.find({ owner: user._id }).populate({
+            path: 'joinRequests',
+            select: '_id name username dpUrl',
+            options: { strictPopulate: false }
+        });
+        ownedClubs.forEach(club => {
+            (club.joinRequests || []).forEach(reqUser => {
+                const reqId = String(reqUser?._id || reqUser);
+                const id = `club_${club._id}_${reqId}`;
+                if (dismissedSet.has(id)) return;
+                notifications.push({
+                    id,
+                    type: 'club_request',
+                    icon: '🔥',
+                    dpUrl: reqUser?.dpUrl || '',
+                    actorUsername: reqUser?.username || '',
+                    text: `<strong>${reqUser?.name || reqUser?.username || 'Member'}</strong> requested to join <strong>${club.name}</strong>`,
+                    time: 'Club request',
+                    isRead: readSet.has(id),
+                    actionData: {
+                        clubId: String(club._id),
+                        userId: reqId
+                    }
+                });
+            });
+        });
+
+        // 3. Recent Direct Messages & Story Replies (Quick Reply inline)
+        const recentDms = await Message.find({ recipient: username }).sort({ createdAt: -1 }).limit(8);
+        recentDms.forEach(dm => {
+            const id = `dm_${dm._id}`;
+            if (dismissedSet.has(id)) return;
+            notifications.push({
+                id,
+                type: 'dm_reply',
+                icon: '💌',
+                actorUsername: dm.sender || '',
+                text: `<strong>@${dm.sender || 'User'}</strong>: "${String(dm.text || '').slice(0, 48)}"`,
+                time: dm.createdAt ? new Date(dm.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'DM',
+                isRead: Boolean(dm.isRead) || readSet.has(id),
+                actionData: {
+                    targetUsername: dm.sender || ''
+                }
+            });
+        });
+
+        // 4. Post Likes & Replies (Quick Reply to Post inline)
+        const myPosts = await Post.find({ author: user._id }).sort({ createdAt: -1 }).limit(10);
+        myPosts.forEach(post => {
+            const likeId = `${post._id}_like`;
+            if (post.likes > 0 && !dismissedSet.has(likeId)) {
+                notifications.push({
+                    id: likeId,
+                    type: 'like',
+                    icon: '❤️',
+                    text: `Your post <em>"${String(post.content || '').slice(0, 32)}..."</em> has ${post.likes} like(s)`,
+                    time: 'Activity',
+                    isRead: readSet.has(likeId),
+                    actionData: { postId: String(post._id) }
+                });
+            }
+            (post.replies || []).slice(-3).forEach((reply, idx) => {
+                const repId = `rep_${post._id}_${reply._id || idx}`;
+                if (dismissedSet.has(repId)) return;
+                notifications.push({
+                    id: repId,
+                    type: 'reply',
+                    icon: '💬',
+                    actorUsername: reply.username || '',
+                    text: `<strong>${reply.authorName || reply.username || 'User'}</strong> replied: "${String(reply.text || '').slice(0, 36)}..."`,
+                    time: 'Reply',
+                    isRead: readSet.has(repId),
+                    actionData: {
+                        postId: String(post._id),
+                        targetUsername: reply.username || ''
+                    }
+                });
+            });
+        });
+
+        // 5. Support Ticket Replies
+        const myTickets = await Support.find({ username }).sort({ createdAt: -1 }).limit(5);
+        myTickets.forEach(ticket => {
+            const id = `sup_${ticket._id}`;
+            if (ticket.reply && !dismissedSet.has(id)) {
+                notifications.push({
+                    id,
+                    type: 'support_reply',
+                    icon: '🎫',
+                    text: `Team replied to query #${ticket._id.toString().slice(-4)}: "${String(ticket.reply).slice(0, 38)}..."`,
+                    time: ticket.status || 'Resolved',
+                    isRead: readSet.has(id),
+                    actionData: {}
+                });
+            }
+        });
+
+        res.json(notifications);
+    } catch (err) {
+        console.error('Notification fetch error:', err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
-    const ownedClubs = await Club.find({ owner: user._id }).populate({
-      path: 'joinRequests',
-      select: '_id name username',
-      options: { strictPopulate: false }
-    });
-    ownedClubs.forEach(club => {
-      (club.joinRequests || []).forEach(reqUser => {
-        notifications.push({
-          id: reqUser._id,
-          type: 'club_request',
-          icon: '🔥',
-          text: `<strong>${reqUser.name}</strong> requested to join <strong>${club.name}</strong>`,
-          note: reqUser.note || '',
-          time: 'Club request'
-        });
-      });
-    });
+// Delete / Dismiss a single notification
+app.delete('/api/notifications/:username/:notifId', async (req, res) => {
+    try {
+        const cleanUser = String(req.params.username || '').trim().replace(/^@/, '').toLowerCase();
+        const notifId = String(req.params.notifId || '').trim();
+        await DismissedNotif.findOneAndUpdate(
+            { username: cleanUser },
+            { $addToSet: { dismissedIds: notifId }, $set: { updatedAt: new Date() } },
+            { upsert: true }
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
-    const myPosts = await Post.find({ author: user._id }).sort({ createdAt: -1 }).limit(10);
-    myPosts.forEach(post => {
-      if (post.likes > 0) {
-        notifications.push({
-          id: post._id + '_like',
-          type: 'like',
-          icon: '❤️',
-          text: `Your post <em>"${post.content.slice(0, 30)}..."</em> has ${post.likes} like(s)!`,
-          time: 'Activity'
-        });
-      }
-      (post.replies || []).slice(-3).forEach(reply => {
-        notifications.push({
-          id: reply._id || Math.random(),
-          type: 'reply',
-          icon: '💬',
-          text: `<strong>${reply.authorName}</strong> replied: "${reply.text.slice(0, 30)}..."`,
-          time: 'Reply'
-        });
-      });
-    });
+// Clear all current notifications for a user
+app.post('/api/notifications/:username/clear-all', async (req, res) => {
+    try {
+        const cleanUser = String(req.params.username || '').trim().replace(/^@/, '').toLowerCase();
+        const ids = Array.isArray((req.body || {}).ids) ? req.body.ids.map(String) : [];
+        await DismissedNotif.findOneAndUpdate(
+            { username: cleanUser },
+            { $addToSet: { dismissedIds: { $each: ids } }, $set: { updatedAt: new Date() } },
+            { upsert: true }
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
-    const myTickets = await Support.find({ username }).sort({ createdAt: -1 }).limit(5);
-    myTickets.forEach(ticket => {
-      if (ticket.reply) {
-        notifications.push({
-          id: ticket._id,
-          type: 'support_reply',
-          icon: '🎫',
-          text: `Team replied to query #${ticket._id.toString().slice(-4)}: "${ticket.reply.slice(0, 35)}..."`,
-          time: ticket.status || 'Resolved'
-        });
-      }
-    });
-
-    res.json(notifications);
-  } catch (err) {
-    console.error('Notification fetch error:', err);
-    res.status(500).json({ error: err.message });
-  }
+// Mark all notifications as read
+app.post('/api/notifications/:username/mark-read', async (req, res) => {
+    try {
+        const cleanUser = String(req.params.username || '').trim().replace(/^@/, '').toLowerCase();
+        const ids = Array.isArray((req.body || {}).ids) ? req.body.ids.map(String) : [];
+        await DismissedNotif.findOneAndUpdate(
+            { username: cleanUser },
+            { $addToSet: { readIds: { $each: ids } }, $set: { updatedAt: new Date() } },
+            { upsert: true }
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.post('/api/messages', async (req, res) => {
