@@ -390,20 +390,24 @@
             </div>
             <div class="topbar-right">
                 <input type="text" placeholder="Search..." class="search-bar" id="searchInput">
-                <div class="notif-btn-wrapper">
-                    <button class="notif-bell-btn" id="notifBellBtn" onclick="toggleNotificationDropdown()" title="Notifications">
-                        🔔<span class="notif-badge" id="topNotifBadge">0</span>
-                    </button>
-                    <div class="notif-dropdown" id="notifDropdown">
-                        <div class="notif-dropdown-header">
-                            <span>Notifications</span>
-                            <span style="font-size:0.75rem; color:var(--accent-coral); cursor:pointer;" onclick="fetchNotifications(true)">Refresh ↻</span>
-                        </div>
-                        <div class="notif-dropdown-list" id="notifListContainer">
-                            <div style="padding:15px; text-align:center; font-size:0.85rem; color:var(--ink-light);">Loading...</div>
-                        </div>
-                    </div>
-                </div>
+               <div class="notif-btn-wrapper">
+    <button class="notif-bell-btn" id="notifBellBtn" onclick="toggleNotificationDropdown()" title="Notifications">
+        🔔<span class="notif-badge" id="topNotifBadge">0</span>
+    </button>
+    <div class="notif-dropdown" id="notifDropdown" style="width:360px;max-width:94vw;max-height:480px;overflow-y:auto;">
+        <div class="notif-dropdown-header" style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <span>Notifications</span>
+            <div style="display:flex;gap:10px;font-size:0.75rem;font-weight:700;">
+                <span style="color:#6366f1;cursor:pointer;" onclick="markAllNotificationsRead()">Read ✓</span>
+                <span style="color:var(--accent-coral,#f43f5e);cursor:pointer;" onclick="fetchNotifications(true)">Refresh ↻</span>
+                <span style="color:#ef4444;cursor:pointer;" onclick="clearAllNotifications()">Clear</span>
+            </div>
+        </div>
+        <div class="notif-dropdown-list" id="notifListContainer">
+            <div style="padding:15px;text-align:center;font-size:0.85rem;color:var(--ink-light);">Loading...</div>
+        </div>
+    </div>
+</div>
                 <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Theme">☀️</button>
                 <button class="btn-create" id="openCreateModalBtn">+ Create</button>
             </div>
@@ -690,72 +694,365 @@
             }
         }
 
-        // FIXED NOTIFICATION FUNCTION (Matches id="notifListContainer" from your HTML)
-        window.fetchNotifications = async function(forceOpen = false) {
-            const username = localStorage.getItem('hoknex_user');
-            const listContainer = document.getElementById('notifListContainer') || document.getElementById('notifDropdownList');
-            
-            if (!username) {
-                if (listContainer) listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">Please log in</p>`;
-                return;
+        // ============================================================================
+// HOKNEX LIVE NOTIFICATION FEED ENGINE + 20s BACKGROUND POLLING
+// ============================================================================
+
+window.__hoknexLatestNotifs = [];
+let __hoknexNotifPollTimer = null;
+let __hoknexKnownNotifIds = new Set();
+let __hoknexNotifBaselineReady = false;
+
+const __HOKNEX_NOTIF_API = (typeof API_URL !== 'undefined' && API_URL)
+    ? API_URL
+    : (window.API_URL || 'https://hoknex-backend.onrender.com');
+
+function __notifEsc(s = '') {
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function __currentNotifUser() {
+    return (localStorage.getItem('hoknex_user') || '').trim().replace(/^@/, '');
+}
+
+function __showNotifToast(msg) {
+    if (typeof window.showHoknexToast === 'function') {
+        window.showHoknexToast(msg);
+        return;
+    }
+    let toast = document.getElementById('hoknexNotifLiveToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'hoknexNotifLiveToast';
+        toast.style.cssText = [
+            'position:fixed',
+            'bottom:22px',
+            'right:22px',
+            'z-index:4200',
+            'background:#0f172a',
+            'color:#f8fafc',
+            'border:1px solid rgba(129,140,248,0.5)',
+            'border-radius:14px',
+            'padding:11px 16px',
+            'font-size:0.82rem',
+            'font-weight:700',
+            'box-shadow:0 14px 36px rgba(0,0,0,0.45)',
+            'opacity:0',
+            'transform:translateY(10px)',
+            'transition:opacity 0.2s ease,transform 0.2s ease',
+            'cursor:pointer',
+            'max-width:320px'
+        ].join(';');
+        toast.onclick = () => {
+            toast.style.opacity = '0';
+            const dd = document.getElementById('notifDropdown');
+            if (dd && dd.style.display !== 'flex') {
+                window.toggleNotificationDropdown();
+            }
+        };
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+    }, 4200);
+}
+
+function __renderNotifBadge(notifications = []) {
+    const badge = document.getElementById('topNotifBadge');
+    if (!badge) return;
+    const unreadCount = notifications.filter(n => !n.isRead).length;
+    badge.innerText = unreadCount;
+    badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
+}
+
+window.fetchNotifications = async function (forceOpen = false) {
+    const username = __currentNotifUser();
+    const listContainer = document.getElementById('notifListContainer') || document.getElementById('notifDropdownList');
+
+    if (!username) {
+        if (listContainer) listContainer.innerHTML = `<p style="text-align:center;color:var(--ink-light);font-size:0.85rem;padding:15px;">Please log in</p>`;
+        return;
+    }
+
+    if (forceOpen && listContainer) {
+        listContainer.innerHTML = `<p style="text-align:center;color:var(--ink-light);font-size:0.85rem;padding:15px;">Loading...</p>`;
+    }
+
+    try {
+        const res = await fetch(`${__HOKNEX_NOTIF_API}/api/notifications/${encodeURIComponent(username)}`);
+        if (!res.ok) {
+            if (listContainer) listContainer.innerHTML = `<p style="text-align:center;color:var(--ink-light);font-size:0.85rem;padding:15px;">No new notifications</p>`;
+            return;
+        }
+
+        const data = await res.json();
+        const notifications = Array.isArray(data) ? data : (data.notifications || []);
+        window.__hoknexLatestNotifs = notifications;
+        __renderNotifBadge(notifications);
+
+        if (!listContainer) return;
+        if (notifications.length === 0) {
+            listContainer.innerHTML = `<p style="text-align:center;color:var(--ink-light);font-size:0.85rem;padding:18px;">All caught up ✨</p>`;
+            return;
+        }
+
+        listContainer.innerHTML = notifications.map((n, idx) => {
+            const safeId = __notifEsc(n.id || idx);
+            const actor = __notifEsc(n.actorUsername || n.actionData?.requesterUsername || n.actionData?.targetUsername || '');
+            const dpHtml = n.dpUrl
+                ? `<img src="${__notifEsc(n.dpUrl)}" onclick="if('${actor}'&&typeof viewUserProfile==='function')viewUserProfile('${actor}')" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;cursor:pointer;border:1.5px solid rgba(99,102,241,0.4);" />`
+                : `<span style="font-size:1.1rem;flex-shrink:0;">${n.icon || '🔔'}</span>`;
+
+            let actionButtonsHtml = '';
+            if (n.type === 'follow_request' && n.actionData) {
+                const curId = __notifEsc(n.actionData.currentUserId || username);
+                const reqId = __notifEsc(n.actionData.requesterId || '');
+                actionButtonsHtml = `
+                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+                        <button type="button" onclick="handleFollowNotifAction('${curId}','${reqId}','accept','${safeId}')" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:4px 12px;font-size:0.75rem;font-weight:700;cursor:pointer;">Accept</button>
+                        <button type="button" onclick="handleFollowNotifAction('${curId}','${reqId}','reject','${safeId}')" style="background:rgba(239,68,68,0.14);color:#ef4444;border:1px solid rgba(239,68,68,0.35);border-radius:8px;padding:4px 12px;font-size:0.75rem;font-weight:700;cursor:pointer;">Decline</button>
+                        ${actor ? `<button type="button" onclick="if(typeof viewUserProfile==='function')viewUserProfile('${actor}')" style="background:rgba(148,163,184,0.14);color:var(--ink);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:0.74rem;font-weight:700;cursor:pointer;">Profile</button>` : ''}
+                    </div>
+                `;
+            } else if (n.type === 'club_request' && n.actionData) {
+                const clubId = __notifEsc(n.actionData.clubId || '');
+                const reqUserId = __notifEsc(n.actionData.userId || '');
+                actionButtonsHtml = `
+                    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+                        <button type="button" onclick="handleClubNotifAction('${clubId}','${reqUserId}','accept','${safeId}')" style="background:#10b981;color:#fff;border:none;border-radius:8px;padding:4px 12px;font-size:0.75rem;font-weight:700;cursor:pointer;">Accept</button>
+                        <button type="button" onclick="handleClubNotifAction('${clubId}','${reqUserId}','reject','${safeId}')" style="background:rgba(239,68,68,0.14);color:#ef4444;border:1px solid rgba(239,68,68,0.35);border-radius:8px;padding:4px 12px;font-size:0.75rem;font-weight:700;cursor:pointer;">Decline</button>
+                    </div>
+                `;
+            } else if ((n.type === 'reply' || n.type === 'dm_reply') && actor) {
+                const postId = __notifEsc(n.actionData?.postId || '');
+                actionButtonsHtml = `
+                    <div style="display:flex;gap:4px;margin-top:7px;align-items:center;">
+                        ${['❤️', '🔥', '😂'].map(em => `<button type="button" onclick="sendQuickNotifReaction('${n.type}','${actor}','${postId}','${em}','${safeId}')" style="background:rgba(148,163,184,0.12);border:1px solid var(--border);border-radius:6px;padding:2px 6px;font-size:0.74rem;cursor:pointer;">${em}</button>`).join('')}
+                        <input type="text" id="notifReplyInput_${idx}" placeholder="Reply to @${actor}..." onkeydown="if(event.key==='Enter')sendInlineNotifReply('${n.type}','${actor}','${postId}',${idx},'${safeId}')" style="flex:1;min-width:90px;background:var(--canvas,#f1f5f9);color:var(--ink,#0f172a);border:1px solid var(--border,#cbd5e1);border-radius:7px;padding:4px 8px;font-size:0.74rem;outline:none;" />
+                        <button type="button" onclick="sendInlineNotifReply('${n.type}','${actor}','${postId}',${idx},'${safeId}')" style="background:#6366f1;color:#fff;border:none;border-radius:7px;padding:4px 9px;font-size:0.72rem;font-weight:700;cursor:pointer;">Send</button>
+                    </div>
+                `;
+            } else if (actor) {
+                actionButtonsHtml = `
+                    <div style="display:flex;gap:6px;margin-top:7px;">
+                        <button type="button" onclick="if(typeof viewUserProfile==='function')viewUserProfile('${actor}')" style="background:rgba(99,102,241,0.12);color:#818cf8;border:1px solid rgba(99,102,241,0.3);border-radius:7px;padding:3px 9px;font-size:0.72rem;font-weight:700;cursor:pointer;">View @${actor}</button>
+                    </div>
+                `;
             }
 
-            if (listContainer) {
-                listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">Loading...</p>`;
-            }
-
-            try {
-                const res = await fetch(`${API_URL}/api/notifications/${encodeURIComponent(username)}`);
-                
-                if (!res.ok) {
-                    if (listContainer) {
-                        listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">No new notifications</p>`;
-                    }
-                    return;
-                }
-
-                const data = await res.json();
-                const badge = document.getElementById('topNotifBadge');
-                const notifications = data.notifications || data || [];
-
-                if (badge) {
-                    const unreadCount = notifications.filter(n => !n.isRead).length;
-                    badge.innerText = unreadCount;
-                    badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
-                }
-
-                if (listContainer) {
-                    if (notifications.length === 0) {
-                        listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">No notifications yet</p>`;
-                    } else {
-                        listContainer.innerHTML = notifications.map(n => `
-                            <div style="padding: 10px 14px; border-bottom: 1px solid var(--border); background: ${n.isRead ? 'var(--paper)' : 'rgba(99, 102, 241, 0.1)'}; font-size: 0.85rem; color: var(--ink);">
-                                <p style="margin: 0; font-weight: 600;">${n.text || n.message || 'Notification'}</p>
-                                <span style="font-size: 0.7rem; color: var(--ink-light);">${n.createdAt ? new Date(n.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</span>
+            return `
+                <div onclick="markSingleNotifRead('${safeId}')" style="padding:10px 12px;border-bottom:1px solid var(--border);background:${n.isRead ? 'var(--paper)' : 'rgba(99,102,241,0.09)'};font-size:0.83rem;color:var(--ink);">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+                        <div style="display:flex;align-items:flex-start;gap:8px;flex:1;">
+                            ${dpHtml}
+                            <div style="flex:1;min-width:0;">
+                                <p style="margin:0;line-height:1.38;cursor:${actor ? 'pointer' : 'default'};" onclick="event.stopPropagation();if('${actor}'&&typeof viewUserProfile==='function')viewUserProfile('${actor}')">${n.text || n.message || 'Notification'}</p>
+                                <span style="font-size:0.68rem;color:var(--ink-light);">${__notifEsc(n.time || (n.createdAt ? new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''))}</span>
                             </div>
-                        `).join('');
-                    }
-                }
-            } catch (e) {
-                console.error('Notification error:', e);
-                if (listContainer) {
-                    listContainer.innerHTML = `<p style="text-align: center; color: var(--ink-light); font-size: 0.85rem; padding: 15px;">No notifications available</p>`;
-                }
-            }
-        };
+                        </div>
+                        <button type="button" onclick="event.stopPropagation();deleteSingleNotification('${safeId}')" title="Delete notification" style="background:none;border:none;color:var(--ink-light);font-size:0.82rem;cursor:pointer;padding:0 2px;">✕</button>
+                    </div>
+                    ${actionButtonsHtml}
+                </div>
+            `;
+        }).join('');
+    } catch (e) {
+        console.error('Notification error:', e);
+        if (listContainer) listContainer.innerHTML = `<p style="text-align:center;color:var(--ink-light);font-size:0.85rem;padding:15px;">No notifications available</p>`;
+    }
+};
 
-        window.toggleNotificationDropdown = function() {
-            const dropdown = document.getElementById('notifDropdown');
-            if (dropdown) {
-                if (dropdown.style.display !== 'flex') {
-                    dropdown.style.display = 'flex';
-                    window.fetchNotifications(true);
+window.handleFollowNotifAction = async function (currentUserId, requesterId, decision, notifId) {
+    const endpoint = decision === 'accept' ? '/api/users/accept-request' : '/api/users/reject-request';
+    const res = await fetch(`${__HOKNEX_NOTIF_API}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentUserId, requesterId })
+    });
+    if (res.ok) {
+        if (notifId) await deleteSingleNotification(notifId, true);
+        __showNotifToast(decision === 'accept' ? 'Follow request accepted ✓' : 'Follow request declined');
+        await window.fetchNotifications(true);
+    }
+};
+
+window.handleClubNotifAction = async function (clubId, userId, action, notifId) {
+    const res = await fetch(`${__HOKNEX_NOTIF_API}/api/clubs/${clubId}/handle-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, action })
+    });
+    if (res.ok) {
+        if (notifId) await deleteSingleNotification(notifId, true);
+        __showNotifToast(action === 'accept' ? 'Club join request approved ✓' : 'Club request declined');
+        await window.fetchNotifications(true);
+    }
+};
+
+window.sendQuickNotifReaction = async function (type, targetUsername, postId, emoji, notifId) {
+    const sender = __currentNotifUser();
+    if (!sender || !targetUsername) return;
+
+    if (type === 'reply' && postId) {
+        await fetch(`${__HOKNEX_NOTIF_API}/api/posts/${postId}/reply`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: emoji, username: sender })
+        }).catch(() => {});
+    } else {
+        await fetch(`${__HOKNEX_NOTIF_API}/api/messages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sender, recipient: targetUsername, text: emoji })
+        }).catch(() => {});
+    }
+
+    if (notifId) await deleteSingleNotification(notifId, true);
+    __showNotifToast(`Reacted ${emoji} to @${targetUsername}`);
+    await window.fetchNotifications(true);
+};
+
+window.sendInlineNotifReply = async function (type, targetUsername, postId, idx, notifId) {
+    const inp = document.getElementById(`notifReplyInput_${idx}`);
+    const text = (inp?.value || '').trim();
+    const sender = __currentNotifUser();
+    if (!text || !sender) return;
+
+    if (type === 'reply' && postId) {
+        await fetch(`${__HOKNEX_NOTIF_API}/api/posts/${postId}/reply`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, username: sender })
+        });
+    } else if (targetUsername) {
+        await fetch(`${__HOKNEX_NOTIF_API}/api/messages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sender, recipient: targetUsername, text })
+        });
+    }
+
+    if (inp) inp.value = '';
+    if (notifId) await deleteSingleNotification(notifId, true);
+    __showNotifToast(`Reply sent to @${targetUsername}`);
+    await window.fetchNotifications(true);
+};
+
+window.markSingleNotifRead = async function (notifId) {
+    const username = __currentNotifUser();
+    if (!username || !notifId) return;
+    await fetch(`${__HOKNEX_NOTIF_API}/api/notifications/${encodeURIComponent(username)}/mark-read`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: [notifId] })
+    }).catch(() => {});
+    __renderNotifBadge((window.__hoknexLatestNotifs || []).map(n => String(n.id) === String(notifId) ? { ...n, isRead: true } : n));
+};
+
+window.deleteSingleNotification = async function (notifId, silent = false) {
+    const username = __currentNotifUser();
+    if (!username || !notifId) return;
+    await fetch(`${__HOKNEX_NOTIF_API}/api/notifications/${encodeURIComponent(username)}/${encodeURIComponent(notifId)}`, {
+        method: 'DELETE'
+    }).catch(() => {});
+    __hoknexKnownNotifIds.delete(String(notifId));
+    if (!silent) await window.fetchNotifications(false);
+};
+
+window.clearAllNotifications = async function () {
+    const username = __currentNotifUser();
+    const ids = (window.__hoknexLatestNotifs || []).map(n => n.id).filter(Boolean);
+    if (!username || !ids.length) return;
+    await fetch(`${__HOKNEX_NOTIF_API}/api/notifications/${encodeURIComponent(username)}/clear-all`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids })
+    }).catch(() => {});
+    __hoknexKnownNotifIds.clear();
+    await window.fetchNotifications(true);
+};
+
+window.markAllNotificationsRead = async function () {
+    const username = __currentNotifUser();
+    const ids = (window.__hoknexLatestNotifs || []).map(n => n.id).filter(Boolean);
+    if (!username || !ids.length) return;
+    await fetch(`${__HOKNEX_NOTIF_API}/api/notifications/${encodeURIComponent(username)}/mark-read`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids })
+    }).catch(() => {});
+    await window.fetchNotifications(true);
+};
+
+window.toggleNotificationDropdown = function () {
+    const dropdown = document.getElementById('notifDropdown');
+    if (dropdown) {
+        if (dropdown.style.display !== 'flex') {
+            dropdown.style.display = 'flex';
+            window.fetchNotifications(true);
+        } else {
+            dropdown.style.display = 'none';
+        }
+    }
+};
+
+// Automatic 20-second background polling
+window.pollNotificationsBackground = async function () {
+    if (document.hidden) return;
+    const username = __currentNotifUser();
+    if (!username) return;
+
+    const activeEl = document.activeElement;
+    const typingReply = Boolean(activeEl && activeEl.id && activeEl.id.startsWith('notifReplyInput_'));
+
+    try {
+        const res = await fetch(`${__HOKNEX_NOTIF_API}/api/notifications/${encodeURIComponent(username)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.notifications || []);
+        window.__hoknexLatestNotifs = list;
+        __renderNotifBadge(list);
+
+        const nextIds = new Set(list.map((n, i) => String(n.id || i)));
+        if (__hoknexNotifBaselineReady) {
+            const incoming = list.filter((n, i) => !__hoknexKnownNotifIds.has(String(n.id || i)));
+            if (incoming.length > 0) {
+                const reqCount = incoming.filter(n => n.type === 'follow_request').length;
+                if (reqCount > 0) {
+                    __showNotifToast(`👤 ${reqCount} new follow request${reqCount > 1 ? 's' : ''}`);
                 } else {
-                    dropdown.style.display = 'none';
+                    const cleanMsg = String(incoming[0].text || incoming[0].message || 'New notification').replace(/<[^>]*>/g, '');
+                    __showNotifToast(incoming.length === 1 ? `🔔 ${cleanMsg}` : `🔔 ${incoming.length} new notifications`);
                 }
             }
-        };
+        }
+        __hoknexKnownNotifIds = nextIds;
+        __hoknexNotifBaselineReady = true;
 
+        const dd = document.getElementById('notifDropdown');
+        if (!typingReply && dd && dd.style.display === 'flex') {
+            window.fetchNotifications(false);
+        }
+    } catch (_) {}
+};
+
+(function () {
+    if (__hoknexNotifPollTimer) clearInterval(__hoknexNotifPollTimer);
+    setTimeout(window.pollNotificationsBackground, 700);
+    __hoknexNotifPollTimer = setInterval(window.pollNotificationsBackground, 20000);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) window.pollNotificationsBackground();
+    });
+})();
         function toggleSidebar() { appSidebar.classList.toggle('collapsed'); }
         function closeCreateModal() { createModal.style.display = 'none'; }
         document.getElementById('openCreateModalBtn').addEventListener('click', () => { createModal.style.display = 'flex'; });
