@@ -1826,15 +1826,52 @@ mainView.innerHTML = `
                     <div id="userTicketsList" class="posts-stream"><div class="post-card"><p style="font-weight:600;">Loading your tickets...</p></div></div>
                 `;
                 loadUserSupportTickets();
-            } else if (view === 'people') {
-                viewTitle.innerText = 'Find People 🔍';
-                mainView.innerHTML = `
-                    <div class="post-box">
-                        <input type="text" id="userSearchInput" placeholder="Search registered campus members by name or username..." style="padding:10px; width:100%; background:var(--canvas); border:1px solid var(--border); color:var(--ink); border-radius:6px; outline:none; font-weight:600;" oninput="searchUsers()">
-                    </div>
-                    <div id="usersList" class="posts-stream"></div>
-                `;
-                searchUsers();
+           } else if (view === 'people') {
+    viewTitle.innerText = 'Find People 🔍';
+    mainView.innerHTML = `
+        <div style="background:linear-gradient(145deg, var(--paper), var(--canvas)); border:1px solid var(--border); border-radius:20px; padding:18px; margin-bottom:16px; box-shadow:var(--shadow-card);">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+                <div>
+                    <h2 style="margin:0; font-size:1.15rem; font-weight:800; color:var(--ink);">Discover Campus Peers ✨</h2>
+                    <p style="margin:2px 0 0; font-size:0.78rem; color:var(--ink-light); font-weight:600;">Connect with builders, creators, and classmates across Hoknex</p>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button type="button" onclick="pickRandomCampusMatch()" style="background:linear-gradient(135deg,#ec4899,#8b5cf6); color:#fff; border:none; border-radius:999px; padding:7px 14px; font-size:0.78rem; font-weight:800; cursor:pointer; box-shadow:0 6px 16px rgba(139,92,246,0.35);">🎲 Random Match</button>
+                    <select id="peopleSortSelect" onchange="renderFilteredPeopleCards()" style="background:var(--paper); color:var(--ink); border:1px solid var(--border); border-radius:10px; padding:7px 10px; font-size:0.78rem; font-weight:700; outline:none; cursor:pointer;">
+                        <option value="suggested">✨ Best Match</option>
+                        <option value="followers">🔥 Most Followers</option>
+                        <option value="newest">🆕 Newest</option>
+                        <option value="az">🔤 Name A–Z</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Instagram-Style Search Bar with Clear Button -->
+            <div style="position:relative; display:flex; align-items:center; margin-bottom:10px;">
+                <span style="position:absolute; left:14px; font-size:0.95rem; opacity:0.65;">🔍</span>
+                <input type="text" id="userSearchInput" placeholder="Search by name, @username, department, or bio..." oninput="handlePeopleSearchInput(this.value)" style="padding:11px 38px 11px 38px; width:100%; background:var(--paper); border:1.5px solid var(--border); color:var(--ink); border-radius:14px; outline:none; font-weight:600; font-size:0.88rem; transition:border-color 0.2s;" onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='var(--border)'">
+                <button type="button" id="clearUserSearchBtn" onclick="clearPeopleSearch()" style="display:none; position:absolute; right:12px; background:rgba(148,163,184,0.2); border:none; color:var(--ink); border-radius:50%; width:22px; height:22px; font-size:0.72rem; font-weight:800; cursor:pointer;">✕</button>
+            </div>
+
+            <!-- Recent Search Chips -->
+            <div id="peopleRecentSearchesRow" style="display:none; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:10px;"></div>
+
+            <!-- Category Filter Pills -->
+            <div id="peopleFilterPills" style="display:flex; gap:7px; overflow-x:auto; padding-bottom:2px;">
+                <button type="button" data-pfilter="all" onclick="setPeopleFilter('all')" class="hkx-pfilter-pill" style="background:linear-gradient(135deg,#6366f1,#ec4899); color:#fff; border:none; border-radius:999px; padding:6px 13px; font-size:0.76rem; font-weight:800; cursor:pointer; white-space:nowrap;">🌐 All People</button>
+                <button type="button" data-pfilter="suggested" onclick="setPeopleFilter('suggested')" class="hkx-pfilter-pill" style="background:var(--paper); color:var(--ink); border:1px solid var(--border); border-radius:999px; padding:6px 13px; font-size:0.76rem; font-weight:700; cursor:pointer; white-space:nowrap;">✨ Suggested</button>
+                <button type="button" data-pfilter="creators" onclick="setPeopleFilter('creators')" class="hkx-pfilter-pill" style="background:var(--paper); color:var(--ink); border:1px solid var(--border); border-radius:999px; padding:6px 13px; font-size:0.76rem; font-weight:700; cursor:pointer; white-space:nowrap;">🔥 Popular</button>
+                <button type="button" data-pfilter="following" onclick="setPeopleFilter('following')" class="hkx-pfilter-pill" style="background:var(--paper); color:var(--ink); border:1px solid var(--border); border-radius:999px; padding:6px 13px; font-size:0.76rem; font-weight:700; cursor:pointer; white-space:nowrap;">🤝 Following</button>
+            </div>
+        </div>
+
+        <!-- Random Match Spotlight Banner -->
+        <div id="randomMatchSpotlight" style="display:none; margin-bottom:16px;"></div>
+
+        <!-- Responsive Creator Cards Grid -->
+        <div id="usersList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(275px, 1fr)); gap:14px;"></div>
+    `;
+    searchUsers();
      } else if (view === 'discover') {
     viewTitle.innerText = 'Discover Pinboard 📌';
     
@@ -5907,57 +5944,382 @@ async function loadPosts() {
 
         function sharePost() { navigator.clipboard.writeText(window.location.href); alert('Link copied!'); }
 
-        async function searchUsers() {
-            const userSearchInput = document.getElementById('userSearchInput');
-            const usersList = document.getElementById('usersList');
-            if (!usersList) return;
+      // ============================================================================
+// HOKNEX PEOPLE DISCOVERY STUDIO ENGINE (DP CARDS, WAVE, DIGITAL ID & MATCH)
+// ============================================================================
+let __hoknexPeopleCache = [];
+let __hoknexMeProfile = null;
+let __activePeopleFilter = 'all';
+let __flippedPeopleIds = new Set();
 
-            const query = userSearchInput ? userSearchInput.value.trim() : '';
-            try {
-              const res = await fetch(`${API_URL}/api/users?search=${encodeURIComponent(query)}`);
-                if (!res.ok) {
-                    usersList.innerHTML = '<div class="post-card"><p style="font-weight:600;">Unable to load users right now.</p></div>';
-                    return;
-                }
+function __pEsc(s = '') {
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
 
-                const users = await res.json();
-                const currentUsername = localStorage.getItem('hoknex_user');
-                const validUsers = Array.isArray(users) ? users.filter(u => u && u.username && u.username !== currentUsername) : [];
+const __PEOPLE_BANNERS = [
+    'linear-gradient(135deg, #4f46e5, #ec4899)',
+    'linear-gradient(135deg, #0ea5e9, #10b981)',
+    'linear-gradient(135deg, #f97316, #db2777)',
+    'linear-gradient(135deg, #7c3aed, #2563eb)',
+    'linear-gradient(135deg, #14b8a6, #6366f1)'
+];
 
-                usersList.innerHTML = validUsers.map(u => {
-                    const safeName = String(u.name || 'Hoknex User')
-                        .replace(/&/g, '&amp;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;')
-                        .replace(/"/g, '&quot;')
-                        .replace(/'/g, '&#39;');
-                    const safeUsername = String(u.username || '')
-                        .replace(/&/g, '&amp;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;')
-                        .replace(/"/g, '&quot;')
-                        .replace(/'/g, '&#39;');
-                    const safeUsernameForJs = String(u.username || '')
-                        .replace(/\\/g, '\\\\')
-                        .replace(/'/g, "\\'");
-                    return `
-                        <div class="post-card">
-                            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
-                                <h4 style="cursor:pointer; font-weight:800; margin:0;" onclick="viewUserProfile('${safeUsernameForJs}')">🔍 ${safeName} (@${safeUsername})</h4>
-                                <button class="action-btn" onclick="viewUserProfile('${safeUsernameForJs}')">View Profile</button>
-                            </div>
-                            <p style="margin-top:6px; font-weight:600; color:var(--ink-light);">Department: ${String(u.department || 'Not specified').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}</p>
-                        </div>
-                    `;
-                }).join('') || '<div class="post-card"><p style="font-weight:600;">No matches found.</p></div>';
-            } catch (err) {
-                console.error('User search error:', err);
-                usersList.innerHTML = '<div class="post-card"><p style="font-weight:600;">Unable to load users right now.</p></div>';
-            }
+function __getRecentPeopleSearches() {
+    try {
+        const arr = JSON.parse(localStorage.getItem('hoknex_recent_people_searches') || '[]');
+        return Array.isArray(arr) ? arr : [];
+    } catch (_) {
+        return [];
+    }
+}
+
+function __saveRecentPeopleSearch(term) {
+    const clean = String(term || '').trim();
+    if (clean.length < 2) return;
+    let list = __getRecentPeopleSearches().filter(x => x.toLowerCase() !== clean.toLowerCase());
+    list.unshift(clean);
+    list = list.slice(0, 5);
+    localStorage.setItem('hoknex_recent_people_searches', JSON.stringify(list));
+    renderPeopleRecentSearches();
+}
+
+function renderPeopleRecentSearches() {
+    const row = document.getElementById('peopleRecentSearchesRow');
+    if (!row) return;
+    const recents = __getRecentPeopleSearches();
+    if (!recents.length) {
+        row.style.display = 'none';
+        return;
+    }
+    row.style.display = 'flex';
+    row.innerHTML = `<span style="font-size:0.7rem; font-weight:800; color:var(--ink-light);">Recent:</span>` +
+        recents.map(term => `
+            <span onclick="applyRecentPeopleSearch('${__pEsc(term)}')" style="display:inline-flex; align-items:center; gap:5px; background:var(--paper); border:1px solid var(--border); color:var(--ink); padding:3px 9px; border-radius:999px; font-size:0.72rem; font-weight:700; cursor:pointer;">
+                🕒 ${__pEsc(term)}
+            </span>
+        `).join('');
+}
+
+window.applyRecentPeopleSearch = function (term) {
+    const inp = document.getElementById('userSearchInput');
+    if (inp) {
+        inp.value = term;
+        handlePeopleSearchInput(term);
+    }
+};
+
+let __peopleSearchDebounce = null;
+window.handlePeopleSearchInput = function (val) {
+    const clearBtn = document.getElementById('clearUserSearchBtn');
+    if (clearBtn) clearBtn.style.display = val && val.trim() ? 'inline-block' : 'none';
+    renderFilteredPeopleCards();
+
+    clearTimeout(__peopleSearchDebounce);
+    if (val && val.trim().length >= 2) {
+        __peopleSearchDebounce = setTimeout(() => __saveRecentPeopleSearch(val.trim()), 900);
+    }
+};
+
+window.clearPeopleSearch = function () {
+    const inp = document.getElementById('userSearchInput');
+    if (inp) inp.value = '';
+    const clearBtn = document.getElementById('clearUserSearchBtn');
+    if (clearBtn) clearBtn.style.display = 'none';
+    renderFilteredPeopleCards();
+};
+
+window.setPeopleFilter = function (filterKey) {
+    __activePeopleFilter = filterKey;
+    document.querySelectorAll('.hkx-pfilter-pill').forEach(btn => {
+        const isActive = btn.getAttribute('data-pfilter') === filterKey;
+        btn.style.background = isActive ? 'linear-gradient(135deg,#6366f1,#ec4899)' : 'var(--paper)';
+        btn.style.color = isActive ? '#fff' : 'var(--ink)';
+        btn.style.border = isActive ? 'none' : '1px solid var(--border)';
+    });
+    renderFilteredPeopleCards();
+};
+
+window.searchUsers = async function () {
+    const container = document.getElementById('usersList');
+    if (!container) return;
+
+    container.innerHTML = Array(4).fill(`
+        <div style="background:var(--paper); border:1px solid var(--border); border-radius:18px; padding:16px; opacity:0.65;">
+            <div style="height:48px; border-radius:12px; background:var(--canvas); margin-bottom:12px;"></div>
+            <div style="height:14px; width:60%; border-radius:6px; background:var(--canvas); margin-bottom:8px;"></div>
+            <div style="height:12px; width:40%; border-radius:6px; background:var(--canvas);"></div>
+        </div>
+    `).join('');
+
+    renderPeopleRecentSearches();
+    const myUsername = (localStorage.getItem('hoknex_user') || '').trim().replace(/^@/, '');
+
+    try {
+        const [usersRes, meRes] = await Promise.all([
+            fetch(`${API_URL}/api/users`),
+            myUsername ? fetch(`${API_URL}/api/users/${encodeURIComponent(myUsername)}`) : Promise.resolve(null)
+        ]);
+
+        const users = usersRes.ok ? await usersRes.json() : [];
+        __hoknexPeopleCache = Array.isArray(users) ? users : [];
+        if (meRes && meRes.ok) {
+            __hoknexMeProfile = await meRes.json();
+        }
+        renderFilteredPeopleCards();
+    } catch (err) {
+        console.error('Search users error:', err);
+        container.innerHTML = `<p style="color:var(--ink-light); font-weight:600; padding:16px;">Could not load campus members right now.</p>`;
+    }
+};
+
+function __getRelationStatus(targetUser) {
+    const meId = __hoknexMeProfile?._id ? String(__hoknexMeProfile._id) : (localStorage.getItem('hoknex_uid') || '');
+    const followers = Array.isArray(targetUser.followers) ? targetUser.followers.map(x => String(x._id || x)) : [];
+    const requests = Array.isArray(targetUser.followRequests) ? targetUser.followRequests.map(x => String(x._id || x)) : [];
+
+    if (meId && followers.includes(meId)) return 'following';
+    if (meId && requests.includes(meId)) return 'requested';
+    return 'none';
+}
+
+window.renderFilteredPeopleCards = function () {
+    const container = document.getElementById('usersList');
+    if (!container) return;
+
+    const myUsername = (localStorage.getItem('hoknex_user') || '').trim().replace(/^@/, '').toLowerCase();
+    const query = (document.getElementById('userSearchInput')?.value || '').trim().replace(/^@/, '').toLowerCase();
+    const sortBy = document.getElementById('peopleSortSelect')?.value || 'suggested';
+    const myDept = (__hoknexMeProfile?.department || '').trim().toLowerCase();
+
+    let list = __hoknexPeopleCache.filter(u => {
+        const uname = String(u.username || '').toLowerCase();
+        if (!uname || uname === myUsername) return false;
+
+        if (query) {
+            const hay = `${u.name || ''} ${uname} ${u.department || ''} ${u.bio || ''}`.toLowerCase();
+            if (!hay.includes(query)) return false;
         }
 
-        function handleLogout() { localStorage.removeItem('hoknex_user'); localStorage.removeItem('hoknex_uid'); window.location.href = 'index.html'; }
-    </script>
+        const rel = __getRelationStatus(u);
+        const followerCount = Array.isArray(u.followers) ? u.followers.length : 0;
+
+        if (__activePeopleFilter === 'following') return rel === 'following';
+        if (__activePeopleFilter === 'suggested') return rel === 'none';
+        if (__activePeopleFilter === 'creators') return followerCount > 0 || Boolean(u.isVip);
+        return true;
+    });
+
+    // Sort results
+    list.sort((a, b) => {
+        const fA = Array.isArray(a.followers) ? a.followers.length : 0;
+        const fB = Array.isArray(b.followers) ? b.followers.length : 0;
+        if (sortBy === 'followers') return fB - fA;
+        if (sortBy === 'az') return String(a.name || a.username).localeCompare(String(b.name || b.username));
+        if (sortBy === 'newest') return String(b._id || '').localeCompare(String(a._id || ''));
+        // 'suggested': boost same department + higher followers
+        const deptBoostA = (myDept && (a.department || '').toLowerCase() === myDept) ? 5 : 0;
+        const deptBoostB = (myDept && (b.department || '').toLowerCase() === myDept) ? 5 : 0;
+        return (fB + deptBoostB) - (fA + deptBoostA);
+    });
+
+    if (!list.length) {
+        container.innerHTML = `
+            <div style="grid-column:1/-1; background:var(--paper); border:1px dashed var(--border); border-radius:18px; padding:28px; text-align:center;">
+                <div style="font-size:1.6rem; margin-bottom:6px;">🔭</div>
+                <div style="font-weight:800; font-size:0.95rem; color:var(--ink);">No campus members matched</div>
+                <div style="font-size:0.8rem; color:var(--ink-light); margin-top:4px;">Try clearing your search or switching filter pills above.</div>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = list.map((u, idx) => __buildPersonCardHtml(u, idx)).join('');
+};
+
+function __buildPersonCardHtml(u, idx = 0) {
+    const uid = __pEsc(String(u._id || ''));
+    const uname = __pEsc(String(u.username || '').replace(/^@/, ''));
+    const name = __pEsc(u.name || u.username || 'Hoknex Student');
+    const dept = __pEsc(u.department && u.department !== 'Not specified' ? u.department : 'Campus Member');
+    const bio = __pEsc(u.bio || 'Building & connecting on Hoknex ⚡');
+    const dpUrl = u.dpUrl || '';
+    const followerCount = Array.isArray(u.followers) ? u.followers.length : 0;
+    const followingCount = Array.isArray(u.following) ? u.following.length : 0;
+    const bannerGrad = __PEOPLE_BANNERS[idx % __PEOPLE_BANNERS.length];
+    const rel = __getRelationStatus(u);
+    const isFlipped = __flippedPeopleIds.has(uid);
+
+    const avatarHtml = dpUrl
+        ? `<img src="${__pEsc(dpUrl)}" alt="${name}" style="width:62px; height:62px; border-radius:50%; object-fit:cover; border:3px solid var(--paper); background:#1e293b; box-shadow:0 4px 12px rgba(0,0,0,0.2);">`
+        : `<div style="width:62px; height:62px; border-radius:50%; background:linear-gradient(135deg,#7c3aed,#ec4899); color:#fff; border:3px solid var(--paper); display:flex; align-items:center; justify-content:center; font-size:1.35rem; font-weight:900; box-shadow:0 4px 12px rgba(0,0,0,0.2);">${name.charAt(0).toUpperCase()}</div>`;
+
+    let followBtnHtml = `<button type="button" onclick="toggleFollowFromPeopleCard('${uid}','${uname}')" style="flex:1; background:linear-gradient(135deg,#6366f1,#ec4899); color:#fff; border:none; border-radius:10px; padding:8px 10px; font-size:0.78rem; font-weight:800; cursor:pointer;">+ Follow</button>`;
+    if (rel === 'following') {
+        followBtnHtml = `<button type="button" onclick="toggleFollowFromPeopleCard('${uid}','${uname}')" style="flex:1; background:rgba(16,185,129,0.14); color:#10b981; border:1px solid rgba(16,185,129,0.4); border-radius:10px; padding:8px 10px; font-size:0.78rem; font-weight:800; cursor:pointer;">✓ Following</button>`;
+    } else if (rel === 'requested') {
+        followBtnHtml = `<button type="button" onclick="toggleFollowFromPeopleCard('${uid}','${uname}')" style="flex:1; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.4); border-radius:10px; padding:8px 10px; font-size:0.78rem; font-weight:800; cursor:pointer;">⏳ Requested</button>`;
+    }
+
+    // Back Side: Shareable Digital Campus ID Card
+    if (isFlipped) {
+        return `
+            <div style="background:linear-gradient(155deg,#0f172a,#1e1b4b); border:1px solid rgba(167,139,250,0.45); border-radius:20px; padding:16px; color:#f8fafc; box-shadow:0 12px 30px rgba(15,23,42,0.35); display:flex; flex-direction:column; justify-content:space-between; min-height:235px;">
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span style="font-size:0.68rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; color:#a78bfa;">🪪 Hoknex Digital Pass</span>
+                        <button type="button" onclick="flipPersonDigitalCard('${uid}')" style="background:rgba(255,255,255,0.1); border:none; color:#fff; border-radius:8px; padding:3px 9px; font-size:0.72rem; font-weight:700; cursor:pointer;">↺ Front</button>
+                    </div>
+                    <div style="font-size:1.05rem; font-weight:900;">${name}</div>
+                    <div style="font-size:0.78rem; color:#c4b5fd; font-weight:700; margin-bottom:8px;">@${uname}</div>
+                    <div style="background:rgba(255,255,255,0.07); border-radius:10px; padding:8px 10px; font-size:0.74rem; color:#e2e8f0; margin-bottom:8px;">
+                        <div>🎓 <b>Dept:</b> ${dept}</div>
+                        <div style="margin-top:3px;">✨ <b>Bio:</b> ${bio}</div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:7px;">
+                    <button type="button" onclick="copyHoknexMemberLink('${uname}')" style="flex:1; background:#7c3aed; color:#fff; border:none; border-radius:9px; padding:7px; font-size:0.75rem; font-weight:800; cursor:pointer;">🔗 Copy Handle</button>
+                    <button type="button" onclick="viewUserProfile('${uname}')" style="flex:1; background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:9px; padding:7px; font-size:0.75rem; font-weight:800; cursor:pointer;">Open Profile</button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Front Side: Creator Card with DP, Stats, Wave & Follow
+    return `
+        <div style="background:var(--paper); border:1px solid var(--border); border-radius:20px; overflow:hidden; box-shadow:var(--shadow-card); display:flex; flex-direction:column; justify-content:space-between; transition:transform 0.18s ease;">
+            <div>
+                <div style="height:56px; background:${bannerGrad}; position:relative;">
+                    <button type="button" onclick="flipPersonDigitalCard('${uid}')" title="Flip to Digital Campus Card" style="position:absolute; top:8px; right:8px; background:rgba(15,23,42,0.55); backdrop-filter:blur(6px); color:#fff; border:1px solid rgba(255,255,255,0.25); border-radius:999px; padding:3px 9px; font-size:0.68rem; font-weight:800; cursor:pointer;">🪪 ID Card</button>
+                </div>
+                <div style="padding:0 15px 14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:-30px; margin-bottom:8px;">
+                        <div onclick="viewUserProfile('${uname}')" style="cursor:pointer;">${avatarHtml}</div>
+                        <span style="background:var(--canvas); border:1px solid var(--border); color:var(--ink-light); font-size:0.68rem; font-weight:800; padding:3px 9px; border-radius:999px;">🎓 ${dept}</span>
+                    </div>
+
+                    <div onclick="viewUserProfile('${uname}')" style="cursor:pointer; margin-bottom:6px;">
+                        <div style="font-weight:900; font-size:0.98rem; color:var(--ink); display:flex; align-items:center; gap:5px;">
+                            <span>${name}</span>
+                            ${u.isVip ? `<span title="Verified Creator" style="color:#38bdf8; font-size:0.85rem;">✔</span>` : ''}
+                        </div>
+                        <div style="font-size:0.76rem; color:var(--ink-light); font-weight:700;">@${uname}</div>
+                    </div>
+
+                    <p style="margin:0 0 10px; font-size:0.78rem; color:var(--ink-light); line-height:1.38; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.15em;">${bio}</p>
+
+                    <div style="display:flex; gap:12px; font-size:0.74rem; font-weight:800; color:var(--ink); background:var(--canvas); border:1px solid var(--border); border-radius:10px; padding:6px 10px; margin-bottom:11px;">
+                        <span>${followerCount} <span style="color:var(--ink-light); font-weight:600;">Followers</span></span>
+                        <span>•</span>
+                        <span>${followingCount} <span style="color:var(--ink-light); font-weight:600;">Following</span></span>
+                    </div>
+
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        ${followBtnHtml}
+                        <button type="button" onclick="sendWaveIcebreaker('${uname}')" title="Send quick Wave DM" style="background:var(--canvas); color:var(--ink); border:1px solid var(--border); border-radius:10px; padding:8px 10px; font-size:0.78rem; font-weight:800; cursor:pointer;">👋 Wave</button>
+                        <button type="button" onclick="viewUserProfile('${uname}')" style="background:var(--canvas); color:var(--ink); border:1px solid var(--border); border-radius:10px; padding:8px 10px; font-size:0.78rem; font-weight:800; cursor:pointer;">Profile</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+window.flipPersonDigitalCard = function (uid) {
+    if (__flippedPeopleIds.has(uid)) __flippedPeopleIds.delete(uid);
+    else __flippedPeopleIds.add(uid);
+    renderFilteredPeopleCards();
+};
+
+window.copyHoknexMemberLink = function (uname) {
+    const share = `${window.location.origin}/feed?user=${encodeURIComponent(uname)} (@${uname})`;
+    if (navigator.clipboard) navigator.clipboard.writeText(share).catch(() => {});
+    if (typeof showHoknexToast === 'function') showHoknexToast(`Copied @${uname} profile link!`);
+    else alert(`Copied @${uname} profile link!`);
+};
+
+window.toggleFollowFromPeopleCard = async function (targetUserId, targetUsername) {
+    const myUsername = (localStorage.getItem('hoknex_user') || '').trim().replace(/^@/, '');
+    if (!myUsername || !targetUserId) return;
+
+    try {
+        const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(targetUserId)}/follow`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUsername: myUsername, username: myUsername })
+        });
+        if (res.ok) {
+            await searchUsers();
+            if (typeof fetchStats === 'function') fetchStats();
+        } else {
+            // Fallback to profile view if custom follow endpoint differs
+            if (typeof viewUserProfile === 'function') viewUserProfile(targetUsername);
+        }
+    } catch (_) {
+        if (typeof viewUserProfile === 'function') viewUserProfile(targetUsername);
+    }
+};
+
+window.sendWaveIcebreaker = async function (targetUsername) {
+    const sender = (localStorage.getItem('hoknex_user') || '').trim().replace(/^@/, '');
+    if (!sender || !targetUsername) return;
+    try {
+        await fetch(`${API_URL}/api/messages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sender,
+                recipient: targetUsername,
+                text: `👋 Hey @${targetUsername}! Found you on Hoknex Find People—let's connect!`
+            })
+        });
+        if (typeof showHoknexToast === 'function') showHoknexToast(`Sent 👋 Wave to @${targetUsername}!`);
+        else alert(`Sent 👋 Wave to @${targetUsername}!`);
+    } catch (_) {}
+};
+
+window.pickRandomCampusMatch = function () {
+    const spot = document.getElementById('randomMatchSpotlight');
+    if (!spot) return;
+    const myUsername = (localStorage.getItem('hoknex_user') || '').trim().replace(/^@/, '').toLowerCase();
+    const candidates = __hoknexPeopleCache.filter(u => {
+        const uname = String(u.username || '').toLowerCase();
+        return uname && uname !== myUsername && __getRelationStatus(u) === 'none';
+    });
+    const pool = candidates.length ? candidates : __hoknexPeopleCache.filter(u => String(u.username || '').toLowerCase() !== myUsername);
+    if (!pool.length) return;
+
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    const uname = __pEsc(pick.username || '');
+    const name = __pEsc(pick.name || uname);
+    const dept = __pEsc(pick.department || 'Campus Peer');
+    const dp = pick.dpUrl
+        ? `<img src="${__pEsc(pick.dpUrl)}" style="width:46px; height:46px; border-radius:50%; object-fit:cover; border:2px solid #ec4899;">`
+        : `<div style="width:46px; height:46px; border-radius:50%; background:#7c3aed; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900;">${name.charAt(0).toUpperCase()}</div>`;
+
+    spot.style.display = 'block';
+    spot.innerHTML = `
+        <div style="background:linear-gradient(135deg,rgba(124,58,237,0.16),rgba(236,72,153,0.16)); border:1.5px solid rgba(168,85,247,0.45); border-radius:18px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                ${dp}
+                <div>
+                    <div style="font-size:0.68rem; font-weight:800; text-transform:uppercase; color:#a855f7;">🎲 Campus Serendipity Match</div>
+                    <div style="font-weight:900; font-size:0.96rem; color:var(--ink);">${name} <span style="font-weight:700; color:var(--ink-light); font-size:0.78rem;">(@${uname})</span></div>
+                    <div style="font-size:0.74rem; color:var(--ink-light); font-weight:600;">🎓 ${dept}</div>
+                </div>
+            </div>
+            <div style="display:flex; gap:7px;">
+                <button type="button" onclick="sendWaveIcebreaker('${uname}')" style="background:linear-gradient(135deg,#ec4899,#7c3aed); color:#fff; border:none; border-radius:10px; padding:7px 13px; font-size:0.78rem; font-weight:800; cursor:pointer;">👋 Wave Hi</button>
+                <button type="button" onclick="viewUserProfile('${uname}')" style="background:var(--paper); color:var(--ink); border:1px solid var(--border); border-radius:10px; padding:7px 12px; font-size:0.78rem; font-weight:800; cursor:pointer;">View Profile</button>
+                <button type="button" onclick="document.getElementById('randomMatchSpotlight').style.display='none'" style="background:none; border:none; color:var(--ink-light); font-weight:800; cursor:pointer;">✕</button>
+            </div>
+        </div>
+    `;
+};
+</script>
 <script>
 // --- 1. INSTANT RENDER WARMUP & PINTEREST TOAST SYSTEM ---
 (function warmUpBackendServer() {
