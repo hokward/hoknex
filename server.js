@@ -2763,7 +2763,7 @@ app.post('/api/clubs/join-by-invite', async (req, res) => {
     if (!club) return res.status(404).json({ error: 'Invalid invite link or code' });
 
     club.members = club.members || [];
-    if (!club.members.map(m => m.toString()).includes(user._id.toString())) {
+    if (!club.members.map(m => (m && m._id ? m._id.toString() : m.toString())).includes(user._id.toString())) {
       club.members.push(user._id);
       club.roles = club.roles || [];
       if (!club.roles.some(r => r.username === user.username)) {
@@ -2786,7 +2786,7 @@ app.post('/api/clubs/:id/join', async (req, res) => {
     if (!club) return res.status(404).json({ error: 'Club not found' });
 
     club.members = club.members || [];
-    if (!club.members.map(m => m.toString()).includes(user._id.toString())) {
+    if (!club.members.map(m => (m && m._id ? m._id.toString() : m.toString())).includes(user._id.toString())) {
       club.members.push(user._id);
       club.roles = club.roles || [];
       if (!club.roles.some(r => r.username === user.username)) {
@@ -2812,11 +2812,11 @@ app.post('/api/clubs/:id/request-join', async (req, res) => {
     if (!club.members) club.members = [];
     if (!club.joinRequests) club.joinRequests = [];
 
-    if (club.members.map(m => m.toString()).includes(user._id.toString())) {
+    if (club.members.map(m => (m && m._id ? m._id.toString() : m.toString())).includes(user._id.toString())) {
       return res.status(400).json({ error: 'Already a member' });
     }
 
-    const existingRequests = club.joinRequests.map(id => (id._id ? id._id.toString() : id.toString()));
+    const existingRequests = club.joinRequests.map(id => (id && id._id ? id._id.toString() : id.toString()));
     if (existingRequests.includes(user._id.toString())) {
       return res.status(400).json({ error: 'Join request already pending approval' });
     }
@@ -2833,21 +2833,24 @@ app.post('/api/clubs/:id/request-join', async (req, res) => {
 app.post('/api/clubs/:id/handle-request', async (req, res) => {
   try {
     const { userId, action } = req.body;
+    const cleanUserId = String(userId || '').trim();
     const club = await Club.findById(req.params.id);
     if (!club) return res.status(404).json({ error: 'Club not found' });
 
     club.joinRequests = (club.joinRequests || []).filter(reqId => {
-      const idStr = reqId._id ? reqId._id.toString() : reqId.toString();
-      return idStr !== userId.toString();
+      const idStr = reqId && reqId._id ? reqId._id.toString() : String(reqId || '');
+      return idStr !== cleanUserId;
     });
 
-    if (action === 'accept') {
+    if (action === 'accept' || action === 'approve') {
       club.members = club.members || [];
-      const memberStrList = club.members.map(m => m.toString());
-      if (!memberStrList.includes(userId.toString())) {
-        club.members.push(userId);
+      const memberStrList = club.members.map(m => (m && m._id ? m._id.toString() : String(m || '')));
+      if (cleanUserId && !memberStrList.includes(cleanUserId)) {
+        club.members.push(cleanUserId);
       }
-      const joinedUser = await User.findById(userId).select('username');
+      const joinedUser = mongoose.Types.ObjectId.isValid(cleanUserId)
+        ? await User.findById(cleanUserId).select('username')
+        : null;
       club.roles = club.roles || [];
       if (joinedUser && !club.roles.some(r => r.username === joinedUser.username)) {
         club.roles.push({ username: joinedUser.username, role: 'Member', powers: ['chat', 'thread', 'sticker'] });
@@ -3200,7 +3203,7 @@ app.post('/api/clubs/:id/leave', async (req, res) => {
     const club = await Club.findById(req.params.id);
     if (!club) return res.status(404).json({ error: 'Club not found' });
 
-    club.members = (club.members || []).filter(m => m.toString() !== user._id.toString());
+    club.members = (club.members || []).filter(m => (m && m._id ? m._id.toString() : m.toString()) !== user._id.toString());
     await club.save();
     res.json({ message: 'Left server successfully' });
   } catch (err) {
