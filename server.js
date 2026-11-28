@@ -3287,6 +3287,37 @@ app.get('/api/support', async (req, res) => {
     }
 });
 
+app.post('/api/support/:id/reply', async (req, res) => {
+    try {
+        const replyText = String((req.body || {}).reply || '').trim();
+        if (!replyText) {
+            return res.status(400).json({ error: 'Reply text is required.' });
+        }
+        const updated = await Support.findByIdAndUpdate(
+            req.params.id,
+            { reply: replyText, status: 'Resolved', repliedAt: new Date() },
+            { new: true }
+        );
+        if (!updated) {
+            return res.status(404).json({ error: 'Support ticket not found.' });
+        }
+        res.json({ success: true, ticket: updated });
+    } catch (error) {
+        console.error('Error replying to support ticket:', error);
+        res.status(500).json({ error: 'Failed to save reply.' });
+    }
+});
+
+app.delete('/api/support/:id', async (req, res) => {
+    try {
+        await Support.findByIdAndDelete(req.params.id);
+        res.json({ success: true, message: 'Ticket deleted.' });
+    } catch (error) {
+        console.error('Error deleting support ticket:', error);
+        res.status(500).json({ error: 'Failed to delete ticket.' });
+    }
+});
+
 app.get('/api/events', async (req, res) => {
   try {
     const events = await Event.find().sort({ date: 1 });
