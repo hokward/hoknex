@@ -237,6 +237,40 @@
             margin-top: 8px;
         }
 
+        .smart-suggest-box {
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(129, 140, 248, 0.28);
+            border-radius: 10px;
+            padding: 9px 11px;
+        }
+
+        .smart-suggest-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 7px;
+        }
+
+        .detected-badge {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #c4b5fd;
+            letter-spacing: 0.03em;
+        }
+
+        .autofill-btn {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 4px 10px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
         .quick-chips {
             display: flex;
             gap: 6px;
@@ -244,18 +278,21 @@
         }
 
         .quick-chip {
-            background: rgba(139, 92, 246, 0.14);
-            color: #ddd6fe;
-            border: 1px solid rgba(139, 92, 246, 0.35);
-            border-radius: 999px;
-            padding: 4px 10px;
-            font-size: 0.72rem;
-            font-weight: 700;
+            background: rgba(15, 23, 42, 0.75);
+            color: #e2e8f0;
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            border-radius: 9px;
+            padding: 6px 10px;
+            font-size: 0.74rem;
+            font-weight: 600;
             cursor: pointer;
+            text-align: left;
+            max-width: 100%;
         }
 
         .quick-chip:hover {
-            background: rgba(139, 92, 246, 0.28);
+            border-color: #a78bfa;
+            background: rgba(139, 92, 246, 0.2);
         }
 
         .reply-box {
@@ -277,7 +314,7 @@
             outline: none;
             resize: vertical;
             font-size: 0.9rem;
-            min-height: 64px;
+            min-height: 68px;
         }
 
         .reply-box textarea:focus {
@@ -396,12 +433,7 @@
     <script>
         const API_URL = 'https://hoknex-backend.onrender.com';
         let __allSupportTickets = [];
-
-        const QUICK_REPLIES = [
-            "Thanks for the suggestion! We're updating permission prompts & gallery handling right now.",
-            "Logged with our dev team—we'll push a fix shortly. Thanks for helping improve Hoknex!",
-            "Reviewed your request. Let us know if you need any further help!"
-        ];
+        const __ticketSuggestionsMap = {};
 
         const isAdminUnlocked = sessionStorage.getItem('hoknex_admin_unlocked');
         if (!isAdminUnlocked) {
@@ -422,6 +454,81 @@
                 .replace(/"/g, '&quot;');
         }
 
+        // Auto-detect query intent & generate tailored reply suggestions
+        function detectSmartSuggestions(ticket) {
+            const rawText = String(ticket?.description || '');
+            const q = rawText.toLowerCase();
+            const handle = ticket?.username ? `@${String(ticket.username).replace(/^@/, '')}` : 'there';
+
+            if (q.includes('[server deletion request]')) {
+                return {
+                    topic: '🗑️ Server Deletion Request',
+                    suggestions: [
+                        `Hi ${handle}, we've received your server deletion request and are reviewing it for safe removal.`,
+                        `Hi ${handle}, your server request has been reviewed. Please confirm if you want us to proceed with permanent deletion.`
+                    ]
+                };
+            }
+
+            if (/\b(slow|lag|laggy|stuck|hang|freeze|loading|buffering|delay)\b/.test(q)) {
+                return {
+                    topic: '⚡ Performance & Speed Issue',
+                    suggestions: [
+                        `Hey ${handle}, sorry it felt slow! We're optimizing feed & media loading on Hoknex—try a hard refresh (Ctrl+Shift+R) and let us know if it speeds up.`,
+                        `Hey ${handle}, thanks for flagging the lag! Our team is checking server/media load times so Hoknex runs much smoother for you.`
+                    ]
+                };
+            }
+
+            if (/\b(error|bug|crash|fail|failed|404|500|broken|issue|not working|glitch)\b/.test(q)) {
+                return {
+                    topic: '🛠️ Error / Bug Report',
+                    suggestions: [
+                        `Hey ${handle}, sorry you ran into an error! We've logged this bug and are working on a fix—share what screen you were on if it happens again.`,
+                        `Hey ${handle}, thanks for reporting that error! We're investigating the root cause right now and will get it patched as soon as possible.`
+                    ]
+                };
+            }
+
+            if (/\b(gallery|photo|image|video|upload|camera|permission|file|dp|avatar|banner)\b/.test(q)) {
+                return {
+                    topic: '🖼️ Media, Gallery & Permissions',
+                    suggestions: [
+                        `Hey ${handle}, thanks for the feedback on media & gallery access! We're refining permission prompts and uploads so sharing feels effortless.`,
+                        `Hey ${handle}, if your upload didn't go through, check browser/app media permissions and file size, then try again—our team is also improving this flow.`
+                    ]
+                };
+            }
+
+            if (/\b(login|log in|password|otp|email|account|sign in|wifi|ban|block)\b/.test(q)) {
+                return {
+                    topic: '🔐 Account & Login Help',
+                    suggestions: [
+                        `Hey ${handle}, if you're having trouble signing in or getting an OTP, double-check your username/email and try a fresh browser session or different network.`,
+                        `Hey ${handle}, our support team is looking into your account access issue—please share your registered email or details if it's still blocked.`
+                    ]
+                };
+            }
+
+            if (/\b(story|stories|reel|reels|chat|message|dm|club|space|follow|notification|notif)\b/.test(q)) {
+                return {
+                    topic: '✨ Social Features (Stories / Chat / Clubs)',
+                    suggestions: [
+                        `Hey ${handle}, thanks for testing that feature on Hoknex! We're actively upgrading Stories, Spaces, and notifications to make them super smooth.`,
+                        `Hey ${handle}, we noted your feedback on that feature and are rolling out improvements—keep sharing suggestions as you explore!`
+                    ]
+                };
+            }
+
+            return {
+                topic: '💬 General Support Query',
+                suggestions: [
+                    `Hey ${handle}, thanks for reaching out to Hoknex Support! We've reviewed "${rawText.slice(0, 60)}${rawText.length > 60 ? '...' : ''}" and we're on it.`,
+                    `Hey ${handle}, thanks for your message! Our team is looking into this and will keep improving Hoknex based on your feedback.`
+                ]
+            };
+        }
+
         function switchTab(tabName) {
             document.getElementById('tab-tickets').classList.remove('active');
             document.getElementById('tab-apps').classList.remove('active');
@@ -432,11 +539,18 @@
             document.getElementById(`btn-${tabName}`).classList.add('active');
         }
 
-        function applyQuickReply(ticketId, chipIdx) {
+        function applySuggestedReply(ticketId, suggestionText) {
             const ta = document.getElementById(`replyText_${ticketId}`);
-            if (ta && QUICK_REPLIES[chipIdx]) {
-                ta.value = QUICK_REPLIES[chipIdx];
+            if (ta) {
+                ta.value = suggestionText;
                 ta.focus();
+            }
+        }
+
+        function autoFillBestReply(ticketId) {
+            const list = __ticketSuggestionsMap[ticketId] || [];
+            if (list.length > 0) {
+                applySuggestedReply(ticketId, list[0]);
             }
         }
 
@@ -475,6 +589,14 @@
             container.innerHTML = filtered.map(t => {
                 const isDeletionRequest = t.description && t.description.includes('[SERVER DELETION REQUEST]');
                 const isResolved = Boolean(t.reply);
+                const smart = detectSmartSuggestions(t);
+                __ticketSuggestionsMap[t._id] = smart.suggestions;
+
+                const chipsHtml = smart.suggestions.map(s => {
+                    const encodedForJs = encodeURIComponent(s);
+                    return `<button type="button" class="quick-chip" onclick="applySuggestedReply('${t._id}', decodeURIComponent('${encodedForJs}'))">${escAdmin(s)}</button>`;
+                }).join('');
+
                 return `
                     <div class="ticket-card">
                         <div class="ticket-header">
@@ -508,12 +630,14 @@
                             <div class="existing-reply"><strong>Team Reply:</strong> ${escAdmin(t.reply)}</div>
                         ` : `
                             <div class="reply-box">
-                                <div class="quick-chips">
-                                    <button type="button" class="quick-chip" onclick="applyQuickReply('${t._id}', 0)">⚡ Gallery/Permissions</button>
-                                    <button type="button" class="quick-chip" onclick="applyQuickReply('${t._id}', 1)">🛠️ Bug Logged</button>
-                                    <button type="button" class="quick-chip" onclick="applyQuickReply('${t._id}', 2)">✅ Reviewed</button>
+                                <div class="smart-suggest-box">
+                                    <div class="smart-suggest-top">
+                                        <span class="detected-badge">Detected: ${escAdmin(smart.topic)}</span>
+                                        <button type="button" class="autofill-btn" onclick="autoFillBestReply('${t._id}')">✨ Auto-Fill Reply</button>
+                                    </div>
+                                    <div class="quick-chips">${chipsHtml}</div>
                                 </div>
-                                <textarea id="replyText_${t._id}" rows="2" placeholder="Write a reply to this student..."></textarea>
+                                <textarea id="replyText_${t._id}" rows="2" placeholder="Tap a detected suggestion above or type a custom reply..."></textarea>
                                 <div class="btn-row">
                                     <button type="button" class="btn-reply" onclick="sendReply('${t._id}')">Send Reply 🚀</button>
                                 </div>
