@@ -3937,7 +3937,7 @@ if (typeof window.renderView === 'function') {
     };
 }
     
-    let activeClubId = localStorage.getItem('hoknex_active_club_id') || null;
+   let activeClubId = localStorage.getItem('hoknex_active_club_id') || null;
 let activeChannelId = localStorage.getItem('hoknex_active_channel_id') || null;
 let activeClubMembers = [];
 let isHubFullScreen = false;
@@ -5171,6 +5171,82 @@ async function decideModApplication(clubId, appId, decision) {
     if (res.ok) {
         document.getElementById('hkxModReviewModal')?.remove();
         openHoknexSpace(clubId);
+    }
+}
+
+async function openRequestsModal(clubId) {
+    let club = allHoknexClubsCache.find(c => c._id.toString() === clubId.toString());
+    try {
+        const res = await fetch(`${API_URL}/api/clubs`);
+        if (res.ok) {
+            const clubs = await res.json();
+            allHoknexClubsCache = Array.isArray(clubs) ? clubs : allHoknexClubsCache;
+            club = allHoknexClubsCache.find(c => c._id.toString() === clubId.toString()) || club;
+        }
+    } catch (_) {}
+
+    const requests = Array.isArray(club?.joinRequests) ? club.joinRequests : [];
+    document.getElementById('hkxJoinRequestsModal')?.remove();
+
+    const listHtml = requests.length
+        ? requests.map(reqUser => {
+            const uid = reqUser && reqUser._id ? String(reqUser._id) : String(reqUser || '');
+            const name = (reqUser && (reqUser.name || reqUser.username)) || 'Student';
+            const uname = (reqUser && reqUser.username) || uid;
+            const dp = reqUser && reqUser.dpUrl
+                ? `<img src="${reqUser.dpUrl}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:1px solid var(--border);">`
+                : `<div style="width:32px; height:32px; border-radius:50%; background:var(--accent-blue); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem;">${String(name).charAt(0).toUpperCase()}</div>`;
+
+            return `
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; background:var(--canvas); border:1px solid var(--border); padding:9px 11px; border-radius:9px;">
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        ${dp}
+                        <div style="min-width:0;">
+                            <div style="font-weight:800; font-size:0.85rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${name}</div>
+                            <div style="font-size:0.72rem; color:var(--ink-light); font-weight:600;">@${uname}</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:6px; flex-shrink:0;">
+                        <button type="button" class="btn-create" style="padding:5px 10px; font-size:0.74rem; background:#10b981;" onclick="decideSpaceJoinRequest('${clubId}', '${uid}', 'accept')">Accept</button>
+                        <button type="button" class="action-btn" style="padding:5px 10px; font-size:0.74rem; color:var(--accent-coral);" onclick="decideSpaceJoinRequest('${clubId}', '${uid}', 'reject')">Decline</button>
+                    </div>
+                </div>
+            `;
+        }).join('')
+        : `<p style="font-size:0.82rem; color:var(--ink-light); font-weight:600; text-align:center; padding:12px 0;">No pending join requests.</p>`;
+
+    const modalHtml = `
+        <div id="hkxJoinRequestsModal" onclick="if(event.target === this) this.remove()" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.62); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1250; padding:1rem;">
+            <div style="background:var(--paper); border:1px solid var(--border); border-radius:14px; padding:1.4rem; width:100%; max-width:420px; max-height:82vh; overflow-y:auto; box-shadow:var(--shadow-card); color:var(--ink);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h3 style="font-weight:800; font-size:1.05rem;">📥 Space Join Requests</h3>
+                    <button type="button" onclick="document.getElementById('hkxJoinRequestsModal').remove()" class="action-btn" style="padding:3px 8px;">✕</button>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px;">${listHtml}</div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+async function decideSpaceJoinRequest(clubId, userId, action) {
+    try {
+        const res = await fetch(`${API_URL}/api/clubs/${clubId}/handle-request`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, action })
+        });
+        if (res.ok) {
+            document.getElementById('hkxJoinRequestsModal')?.remove();
+            await openHoknexSpace(clubId);
+            await loadHoknexSpaces();
+        } else {
+            const err = await res.json().catch(() => ({}));
+            alert(err.error || 'Could not process join request.');
+        }
+    } catch (e) {
+        console.error('Join request decision error:', e);
+        alert('Error processing join request.');
     }
 }
 
