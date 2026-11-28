@@ -8217,7 +8217,8 @@ window.openEditProfile = function() {
 
 <script>
 // ============================================================================
-// HOKNEX STORIES STUDIO v2 — FEED-ONLY BAR, 60s LIMIT, SONG CLIP & USER SEARCH
+// HOKNEX STORIES STUDIO v3 — DRAGGABLE TEXT/STICKERS/IMAGES, SWIPE SEEN SHEET,
+// MULTI-HIGHLIGHTS & CHAT-WIRED REPLIES
 // ============================================================================
 (function () {
     const STORY_API = (typeof API_URL !== 'undefined' && API_URL)
@@ -8235,13 +8236,14 @@ window.openEditProfile = function() {
     let __storyProgress = 0;
     let __storyPaused = false;
     let __storyAudioEl = null;
+    let __seenSheetOpen = false;
 
     let __creatorMode = 'text';
     let __creatorMediaUrl = '';
     let __creatorMediaType = 'text';
     let __creatorGradient = 'linear-gradient(135deg, #6d28d9, #db2777, #ea580c)';
     let __creatorFilter = 'none';
-    let __selectedMusic = null; // { trackName, artistName, artworkUrl, previewUrl, startSec }
+    let __selectedMusic = null;
     let __cameraStream = null;
     let __cameraFacing = 'user';
     let __mediaRecorder = null;
@@ -8250,6 +8252,9 @@ window.openEditProfile = function() {
     let __recSeconds = 0;
     let __recInterval = null;
     let __previewAudio = null;
+
+    let __canvasLayers = [];
+    let __selectedLayerId = null;
 
     let __closeFriendsCache = [];
     let __highlightsCache = [];
@@ -8272,12 +8277,18 @@ window.openEditProfile = function() {
         { name: 'Noir', css: 'grayscale(1) contrast(1.25)' }
     ];
 
+    const STICKERS = ['🔥', '❤️', '✨', '😂', '🚀', '💯', '🎉', '🫶', '⚡', '🎧'];
+
     function esc(s = '') {
         return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     function currentUser() {
         return (localStorage.getItem('hoknex_user') || 'Student').trim().replace(/^@/, '');
+    }
+
+    function avatarFallback(uname = 'U') {
+        return `https://ui-avatars.com/api/?name=${encodeURIComponent(uname)}&background=6d28d9&color=fff&size=96`;
     }
 
     function timeAgo(dateStr) {
@@ -8287,7 +8298,6 @@ window.openEditProfile = function() {
         return `${Math.floor(diff / 3600)}h ago`;
     }
 
-    // Strict check: returns TRUE ONLY when on Live Feed (not Messages, Projects, Reels, Clubs, etc.)
     function isOnLiveFeedPage() {
         const titleText = (document.getElementById('viewTitle')?.innerText || '').trim().toLowerCase();
         const activeNav = document.querySelector('.nav-item.active, .sidebar-item.active, [aria-current="page"]');
@@ -8353,6 +8363,7 @@ window.openEditProfile = function() {
                     </div>
                     <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
                         <button type="button" onclick="openCloseFriendsModal()" style="background:rgba(16,185,129,0.16);color:#34d399;border:1px solid rgba(52,211,153,0.35);border-radius:999px;padding:5px 12px;font-size:0.74rem;font-weight:800;cursor:pointer;">💚 Close Friends</button>
+                        <button type="button" onclick="createNewHighlightAlbumPrompt()" style="background:rgba(251,191,36,0.16);color:#fbbf24;border:1px solid rgba(251,191,36,0.35);border-radius:999px;padding:5px 12px;font-size:0.74rem;font-weight:800;cursor:pointer;">★ + Highlight</button>
                         <button type="button" onclick="openHoknexStoryCreator()" style="background:linear-gradient(135deg,#ec4899,#7c3aed);color:#fff;border:none;border-radius:999px;padding:6px 14px;font-size:0.76rem;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(124,58,237,0.4);">+ Create Story</button>
                     </div>
                 </div>
@@ -8372,8 +8383,8 @@ window.openEditProfile = function() {
             cm.id = 'hoknexStoryCreatorModal';
             cm.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(3,7,18,0.88);backdrop-filter:blur(12px);z-index:3500;align-items:center;justify-content:center;padding:12px;';
             cm.innerHTML = `
-                <div style="background:linear-gradient(180deg,#111827 0%,#090d16 100%);border:1px solid rgba(148,163,184,0.22);border-radius:24px;width:450px;max-width:96vw;max-height:94vh;overflow-y:auto;color:#f8fafc;padding:18px;box-shadow:0 28px 80px rgba(0,0,0,0.8);">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                <div style="background:linear-gradient(180deg,#111827 0%,#090d16 100%);border:1px solid rgba(148,163,184,0.22);border-radius:24px;width:455px;max-width:96vw;max-height:94vh;overflow-y:auto;color:#f8fafc;padding:18px;box-shadow:0 28px 80px rgba(0,0,0,0.8);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                         <div>
                             <div style="font-size:0.68rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#a78bfa;">Hoknex Story Studio</div>
                             <h3 style="margin:2px 0 0;font-size:1.1rem;font-weight:800;">New Story (Max 60s)</h3>
@@ -8381,18 +8392,18 @@ window.openEditProfile = function() {
                         <button type="button" onclick="closeHoknexStoryCreator()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);color:#fff;border-radius:10px;width:32px;height:32px;cursor:pointer;font-weight:800;">✕</button>
                     </div>
 
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:rgba(255,255,255,0.05);padding:4px;border-radius:14px;margin-bottom:14px;border:1px solid rgba(255,255,255,0.08);">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:rgba(255,255,255,0.05);padding:4px;border-radius:14px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.08);">
                         <button type="button" id="storyModeBtnText" onclick="switchStoryCreatorMode('text')" style="padding:8px;border:none;border-radius:10px;font-weight:800;font-size:0.78rem;cursor:pointer;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;">✍️ Text Card</button>
                         <button type="button" id="storyModeBtnGallery" onclick="switchStoryCreatorMode('gallery')" style="padding:8px;border:none;border-radius:10px;font-weight:800;font-size:0.78rem;cursor:pointer;background:transparent;color:#cbd5e1;">🖼️ Gallery</button>
                         <button type="button" id="storyModeBtnCamera" onclick="switchStoryCreatorMode('camera')" style="padding:8px;border:none;border-radius:10px;font-weight:800;font-size:0.78rem;cursor:pointer;background:transparent;color:#cbd5e1;">📷 Camera</button>
                     </div>
 
-                    <div id="storyPreviewStage" style="position:relative;width:100%;height:310px;border-radius:18px;overflow:hidden;background:${GRADIENTS[0]};display:flex;align-items:center;justify-content:center;margin-bottom:12px;border:1px solid rgba(255,255,255,0.14);">
+                    <div id="storyPreviewStage" style="position:relative;width:100%;height:310px;border-radius:18px;overflow:hidden;background:${GRADIENTS[0]};display:flex;align-items:center;justify-content:center;margin-bottom:10px;border:1px solid rgba(255,255,255,0.14);user-select:none;">
                         <img id="storyPreviewImg" style="display:none;width:100%;height:100%;object-fit:cover;" />
                         <video id="storyPreviewVideo" autoplay playsinline muted style="display:none;width:100%;height:100%;object-fit:cover;"></video>
-                        <div id="storyCaptionOverlay" style="position:absolute;inset:auto 18px 62px 18px;text-align:center;font-size:1.25rem;font-weight:800;color:#fff;text-shadow:0 3px 14px rgba(0,0,0,0.8);pointer-events:none;word-break:break-word;"></div>
+                        <div id="storyDraggableLayersBox" style="position:absolute;inset:0;z-index:6;pointer-events:none;"></div>
 
-                        <div id="storyMusicBadgePreview" style="display:none;position:absolute;top:12px;left:12px;right:12px;background:rgba(9,13,22,0.82);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);border-radius:999px;padding:6px 12px;align-items:center;justify-content:space-between;gap:8px;">
+                        <div id="storyMusicBadgePreview" style="display:none;position:absolute;top:12px;left:12px;right:12px;z-index:9;background:rgba(9,13,22,0.82);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);border-radius:999px;padding:6px 12px;align-items:center;justify-content:space-between;gap:8px;">
                             <div style="display:flex;align-items:center;gap:8px;overflow:hidden;">
                                 <img id="storyMusicArtPreview" src="" style="width:24px;height:24px;border-radius:50%;object-fit:cover;" />
                                 <span id="storyMusicTitlePreview" style="font-size:0.74rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
@@ -8400,7 +8411,7 @@ window.openEditProfile = function() {
                             <button type="button" onclick="clearSelectedStoryMusic()" style="background:none;border:none;color:#f87171;font-weight:800;cursor:pointer;font-size:0.8rem;">✕</button>
                         </div>
 
-                        <div id="storyCameraControls" style="display:none;position:absolute;bottom:12px;left:0;right:0;flex-direction:column;align-items:center;gap:8px;">
+                        <div id="storyCameraControls" style="display:none;position:absolute;bottom:12px;left:0;right:0;z-index:10;flex-direction:column;align-items:center;gap:8px;">
                             <div id="storyRecTimerBadge" style="display:none;background:rgba(220,38,38,0.92);color:#fff;padding:2px 10px;border-radius:999px;font-size:0.72rem;font-weight:800;">00:00 / 01:00</div>
                             <div style="display:flex;justify-content:center;align-items:center;gap:14px;">
                                 <button type="button" onclick="flipStoryCamera()" style="background:rgba(9,13,22,0.78);color:#fff;border:1px solid rgba(255,255,255,0.22);border-radius:999px;padding:6px 12px;font-size:0.74rem;font-weight:700;cursor:pointer;">🔄 Flip</button>
@@ -8411,6 +8422,7 @@ window.openEditProfile = function() {
                     </div>
 
                     <input type="file" id="storyGalleryFileInput" accept="image/*,video/*" style="display:none;" onchange="handleStoryGallerySelected(this)" />
+                    <input type="file" id="storyInsertPhotoInput" accept="image/*" style="display:none;" onchange="handleInsertExtraStoryPhoto(this)" />
 
                     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
                         <div style="display:flex;gap:6px;align-items:center;">
@@ -8421,9 +8433,24 @@ window.openEditProfile = function() {
                         </select>
                     </div>
 
-                    <input type="text" id="storyTextOverlayInput" placeholder="Add text or caption to your story..." oninput="document.getElementById('storyCaptionOverlay').innerText = this.value" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);color:#fff;border-radius:12px;padding:10px 12px;font-size:0.84rem;margin-bottom:10px;box-sizing:border-box;outline:none;" />
+                    <!-- Draggable Text + Insert Photo + Location + Stickers -->
+                    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.11);border-radius:14px;padding:10px;margin-bottom:10px;">
+                        <div style="display:flex;gap:6px;margin-bottom:8px;">
+                            <input type="text" id="storyTextOverlayInput" placeholder="Type text & drag on story..." style="flex:1;background:rgba(9,13,22,0.8);border:1px solid rgba(255,255,255,0.14);color:#fff;border-radius:9px;padding:7px 10px;font-size:0.8rem;outline:none;" />
+                            <button type="button" onclick="addOrUpdateStoryTextLayer()" style="background:#7c3aed;color:#fff;border:none;border-radius:9px;padding:7px 12px;font-size:0.76rem;font-weight:800;cursor:pointer;">+ Text</button>
+                            <button type="button" onclick="deleteSelectedStoryLayer()" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(248,113,113,0.35);border-radius:9px;padding:7px 9px;font-size:0.74rem;font-weight:800;cursor:pointer;" title="Delete selected item">🗑️</button>
+                        </div>
 
-                    <!-- Instagram-Style Song Search + Start Second Picker -->
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+                            <button type="button" onclick="document.getElementById('storyInsertPhotoInput').click()" style="background:rgba(56,189,248,0.16);color:#7dd3fc;border:1px solid rgba(56,189,248,0.35);border-radius:9px;padding:5px 10px;font-size:0.74rem;font-weight:800;cursor:pointer;">🖼️ + Insert Photo</button>
+                            <button type="button" onclick="addStoryLocationPin()" style="background:rgba(251,191,36,0.16);color:#fde047;border:1px solid rgba(251,191,36,0.35);border-radius:9px;padding:5px 10px;font-size:0.74rem;font-weight:800;cursor:pointer;">📍 + Location</button>
+                        </div>
+
+                        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+                            ${STICKERS.map(st => `<button type="button" onclick="addStoryStickerLayer('${st}')" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:3px 7px;font-size:0.88rem;cursor:pointer;">${st}</button>`).join('')}
+                        </div>
+                    </div>
+
                     <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:11px;margin-bottom:10px;">
                         <div style="font-size:0.75rem;font-weight:800;color:#38bdf8;margin-bottom:6px;">🎵 Add Song Track (Search & Pick Start Sec)</div>
                         <div style="display:flex;gap:6px;">
@@ -8468,10 +8495,10 @@ window.openEditProfile = function() {
             vm.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(2,6,23,0.95);z-index:3600;align-items:center;justify-content:center;padding:10px;';
             vm.innerHTML = `
                 <div style="position:relative;width:410px;max-width:96vw;height:86vh;max-height:740px;border-radius:24px;overflow:hidden;background:#090d16;border:1px solid rgba(255,255,255,0.15);display:flex;flex-direction:column;justify-content:space-between;color:#fff;box-shadow:0 25px 80px rgba(0,0,0,0.85);">
-                    <div style="position:relative;z-index:10;padding:12px 14px;background:linear-gradient(180deg,rgba(0,0,0,0.78),transparent);">
+                    <div style="position:relative;z-index:12;padding:12px 14px;background:linear-gradient(180deg,rgba(0,0,0,0.78),transparent);">
                         <div id="storyViewerProgressBars" style="display:flex;gap:4px;margin-bottom:10px;"></div>
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <div style="display:flex;align-items:center;gap:9px;">
+                            <div onclick="openStoryAuthorProfile()" style="display:flex;align-items:center;gap:9px;cursor:pointer;">
                                 <img id="storyViewerAuthorDp" src="" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid #ec4899;" />
                                 <div>
                                     <div id="storyViewerAuthorName" style="font-size:0.84rem;font-weight:800;"></div>
@@ -8488,18 +8515,20 @@ window.openEditProfile = function() {
                     </div>
 
                     <div id="storyViewerMediaStage" onmousedown="pauseHoknexStory(true)" onmouseup="pauseHoknexStory(false)" ontouchstart="pauseHoknexStory(true)" ontouchend="pauseHoknexStory(false)" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-                        <div onclick="prevHoknexStory()" style="position:absolute;left:0;top:70px;bottom:90px;width:32%;z-index:5;cursor:pointer;"></div>
-                        <div onclick="nextHoknexStory()" style="position:absolute;right:0;top:70px;bottom:90px;width:32%;z-index:5;cursor:pointer;"></div>
+                        <div onclick="prevHoknexStory()" style="position:absolute;left:0;top:70px;bottom:90px;width:28%;z-index:5;cursor:pointer;"></div>
+                        <div onclick="nextHoknexStory()" style="position:absolute;right:0;top:70px;bottom:90px;width:28%;z-index:5;cursor:pointer;"></div>
                         <div id="storyViewerCanvas" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;"></div>
                     </div>
 
-                    <div id="storyViewerFooter" style="position:relative;z-index:10;padding:12px 14px;background:linear-gradient(0deg,rgba(0,0,0,0.88),transparent);"></div>
+                    <!-- Instagram-Style Swipe-Up / Expandable Viewers Sheet -->
+                    <div id="storySeenSheet" style="display:none;position:absolute;left:0;right:0;bottom:0;max-height:62%;z-index:20;background:#111827;border-top:1px solid rgba(255,255,255,0.2);border-radius:22px 22px 0 0;padding:14px 16px;overflow-y:auto;box-shadow:0 -14px 40px rgba(0,0,0,0.75);"></div>
+
+                    <div id="storyViewerFooter" style="position:relative;z-index:12;padding:12px 14px;background:linear-gradient(0deg,rgba(0,0,0,0.88),transparent);"></div>
                 </div>
             `;
             document.body.appendChild(vm);
         }
 
-        // Close Friends Modal with Live User Search Suggestions
         if (!document.getElementById('closeFriendsModal')) {
             const modal = document.createElement('div');
             modal.id = 'closeFriendsModal';
@@ -8521,6 +8550,139 @@ window.openEditProfile = function() {
             document.body.appendChild(modal);
         }
     }
+
+    // Draggable Layers (Text, Stickers, Extra Photos, Location)
+    function renderDraggableLayers() {
+        const box = document.getElementById('storyDraggableLayersBox');
+        if (!box) return;
+        box.innerHTML = __canvasLayers.map(layer => {
+            const isSel = layer.id === __selectedLayerId;
+            const ring = isSel ? 'outline:2px dashed #fbbf24;' : '';
+            if (layer.kind === 'image') {
+                return `
+                    <div data-layer-id="${layer.id}" onpointerdown="startDragStoryLayer(event,'${layer.id}')" onclick="event.stopPropagation();selectStoryLayer('${layer.id}')" style="pointer-events:auto;position:absolute;left:${layer.xPct}%;top:${layer.yPct}%;transform:translate(-50%,-50%);cursor:grab;${ring}border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.45);">
+                        <img src="${esc(layer.content)}" style="width:116px;height:144px;object-fit:cover;display:block;" />
+                    </div>
+                `;
+            }
+            if (layer.kind === 'sticker') {
+                return `
+                    <div data-layer-id="${layer.id}" onpointerdown="startDragStoryLayer(event,'${layer.id}')" onclick="event.stopPropagation();selectStoryLayer('${layer.id}')" style="pointer-events:auto;position:absolute;left:${layer.xPct}%;top:${layer.yPct}%;transform:translate(-50%,-50%);cursor:grab;${ring}font-size:2rem;line-height:1;padding:4px;">
+                        ${esc(layer.content)}
+                    </div>
+                `;
+            }
+            if (layer.kind === 'location') {
+                return `
+                    <div data-layer-id="${layer.id}" onpointerdown="startDragStoryLayer(event,'${layer.id}')" onclick="event.stopPropagation();selectStoryLayer('${layer.id}')" style="pointer-events:auto;position:absolute;left:${layer.xPct}%;top:${layer.yPct}%;transform:translate(-50%,-50%);cursor:grab;${ring}background:rgba(255,255,255,0.92);color:#090d16;padding:5px 11px;border-radius:10px;font-size:0.78rem;font-weight:800;box-shadow:0 6px 18px rgba(0,0,0,0.35);">
+                        📍 ${esc(layer.content)}
+                    </div>
+                `;
+            }
+            return `
+                <div data-layer-id="${layer.id}" onpointerdown="startDragStoryLayer(event,'${layer.id}')" onclick="event.stopPropagation();selectStoryLayer('${layer.id}')" style="pointer-events:auto;position:absolute;left:${layer.xPct}%;top:${layer.yPct}%;transform:translate(-50%,-50%);cursor:grab;${ring}max-width:82%;text-align:center;font-size:1.15rem;font-weight:800;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,0.8);padding:4px 8px;">
+                    ${esc(layer.content)}
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.selectStoryLayer = function (id) {
+        __selectedLayerId = id;
+        const found = __canvasLayers.find(l => l.id === id);
+        const inp = document.getElementById('storyTextOverlayInput');
+        if (found && (found.kind === 'text' || found.kind === 'location') && inp) {
+            inp.value = found.content;
+        }
+        renderDraggableLayers();
+    };
+
+    window.addOrUpdateStoryTextLayer = function () {
+        const inp = document.getElementById('storyTextOverlayInput');
+        const txt = (inp?.value || '').trim();
+        if (!txt) return;
+        const existing = __canvasLayers.find(l => l.id === __selectedLayerId && l.kind === 'text');
+        if (existing) {
+            existing.content = txt;
+        } else {
+            const newId = 'lyr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+            __canvasLayers.push({
+                id: newId,
+                kind: 'text',
+                content: txt,
+                xPct: 50,
+                yPct: 58 + (__canvasLayers.length * 6) % 22
+            });
+            __selectedLayerId = newId;
+        }
+        renderDraggableLayers();
+    };
+
+    window.addStoryStickerLayer = function (emoji) {
+        const newId = 'lyr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        __canvasLayers.push({ id: newId, kind: 'sticker', content: emoji, xPct: 50, yPct: 45 });
+        __selectedLayerId = newId;
+        renderDraggableLayers();
+    };
+
+    window.addStoryLocationPin = function () {
+        const loc = (prompt('Enter location tag (e.g., KL University, Muzaffarpur, ATL Lab):') || '').trim();
+        if (!loc) return;
+        const newId = 'lyr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        __canvasLayers.push({ id: newId, kind: 'location', content: loc, xPct: 50, yPct: 76 });
+        __selectedLayerId = newId;
+        renderDraggableLayers();
+    };
+
+    window.handleInsertExtraStoryPhoto = async function (input) {
+        const file = input.files && input.files[0];
+        if (!file) return;
+        const btn = document.getElementById('publishStoryBtn');
+        if (btn) { btn.disabled = true; btn.innerText = 'Adding photo...'; }
+        try {
+            const url = await uploadBlobToCloudinary(file, 'image');
+            const newId = 'lyr_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+            __canvasLayers.push({ id: newId, kind: 'image', content: url, xPct: 50, yPct: 50 });
+            __selectedLayerId = newId;
+            renderDraggableLayers();
+        } catch (err) {
+            alert('Photo insert failed: ' + err.message);
+        } finally {
+            input.value = '';
+            if (btn) { btn.disabled = false; btn.innerText = 'Post Story 🚀'; }
+        }
+    };
+
+    window.deleteSelectedStoryLayer = function () {
+        if (!__selectedLayerId) return;
+        __canvasLayers = __canvasLayers.filter(l => l.id !== __selectedLayerId);
+        __selectedLayerId = null;
+        renderDraggableLayers();
+    };
+
+    window.startDragStoryLayer = function (e, layerId) {
+        e.stopPropagation();
+        selectStoryLayer(layerId);
+        const stage = document.getElementById('storyPreviewStage');
+        const layer = __canvasLayers.find(l => l.id === layerId);
+        if (!stage || !layer) return;
+
+        const rect = stage.getBoundingClientRect();
+        const moveHandler = (ev) => {
+            const clientX = ev.clientX ?? (ev.touches && ev.touches[0]?.clientX);
+            const clientY = ev.clientY ?? (ev.touches && ev.touches[0]?.clientY);
+            if (clientX == null || clientY == null) return;
+            layer.xPct = Math.round(Math.max(12, Math.min(88, ((clientX - rect.left) / rect.width) * 100)));
+            layer.yPct = Math.round(Math.max(12, Math.min(88, ((clientY - rect.top) / rect.height) * 100)));
+            renderDraggableLayers();
+        };
+        const upHandler = () => {
+            window.removeEventListener('pointermove', moveHandler);
+            window.removeEventListener('pointerup', upHandler);
+        };
+        window.addEventListener('pointermove', moveHandler);
+        window.addEventListener('pointerup', upHandler);
+    };
 
     window.loadHoknexStories = async function () {
         if (removeStoryBarIfNotOnFeed()) return;
@@ -8648,7 +8810,6 @@ window.openEditProfile = function() {
         strip.innerHTML = `<span style="font-size:0.68rem;font-weight:800;color:#fbbf24;flex:0 0 auto;">HIGHLIGHTS</span>` + newHlBtn + cardsHtml;
     }
 
-    // Close Friends Live Search & Add/Remove
     window.openCloseFriendsModal = async function () {
         ensureStoryModalsMounted();
         renderCloseFriendsChips();
@@ -8697,9 +8858,12 @@ window.openEditProfile = function() {
             const isAdded = __closeFriendsCache.includes(uname.toLowerCase());
             return `
                 <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.06);">
-                    <div>
-                        <div style="font-size:0.78rem;font-weight:800;color:#f8fafc;">@${esc(uname)}</div>
-                        <div style="font-size:0.68rem;color:#94a3b8;">${esc(u.name || 'Hoknex Member')}</div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <img src="${esc(u.dpUrl || avatarFallback(uname))}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;" />
+                        <div>
+                            <div style="font-size:0.78rem;font-weight:800;color:#f8fafc;">@${esc(uname)}</div>
+                            <div style="font-size:0.68rem;color:#94a3b8;">${esc(u.name || 'Hoknex Member')}</div>
+                        </div>
                     </div>
                     <button type="button" onclick="toggleCloseFriendUser('${esc(uname.toLowerCase())}')" style="background:${isAdded ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'};color:${isAdded ? '#f87171' : '#34d399'};border:1px solid ${isAdded ? 'rgba(248,113,113,0.4)' : 'rgba(52,211,153,0.4)'};border-radius:8px;padding:4px 10px;font-size:0.72rem;font-weight:800;cursor:pointer;">
                         ${isAdded ? 'Remove' : '+ Add'}
@@ -8750,18 +8914,19 @@ window.openEditProfile = function() {
         }
     };
 
-    // Story Creator (60s Limit + Song Track & Start Second)
     window.openHoknexStoryCreator = function () {
         ensureStoryModalsMounted();
         __creatorMediaUrl = '';
         __creatorMediaType = 'text';
         __selectedMusic = null;
+        __canvasLayers = [];
+        __selectedLayerId = null;
         __recSeconds = 0;
         document.getElementById('storyTextOverlayInput').value = '';
-        document.getElementById('storyCaptionOverlay').innerText = '';
         document.getElementById('storyMusicBadgePreview').style.display = 'none';
         document.getElementById('storyMusicStartControl').style.display = 'none';
         document.getElementById('storyMusicResultsList').innerHTML = '';
+        renderDraggableLayers();
         document.getElementById('hoknexStoryCreatorModal').style.display = 'flex';
         switchStoryCreatorMode('text');
     };
@@ -8851,7 +9016,6 @@ window.openEditProfile = function() {
         const localUrl = URL.createObjectURL(file);
 
         if (isVideo) {
-            // Check 60-second duration limit
             const tempVid = document.createElement('video');
             tempVid.preload = 'metadata';
             tempVid.src = localUrl;
@@ -8860,7 +9024,6 @@ window.openEditProfile = function() {
                 input.value = '';
                 return alert('Stories can be up to 60 seconds long (like Instagram). Please choose a video of 60s or shorter.');
             }
-
             imgEl.style.display = 'none';
             vidEl.srcObject = null;
             vidEl.src = localUrl;
@@ -8927,9 +9090,7 @@ window.openEditProfile = function() {
         const stopRec = () => {
             clearInterval(__recInterval);
             if (timerBadge) timerBadge.style.display = 'none';
-            if (__mediaRecorder && __mediaRecorder.state !== 'inactive') {
-                __mediaRecorder.stop();
-            }
+            if (__mediaRecorder && __mediaRecorder.state !== 'inactive') __mediaRecorder.stop();
             __isRecording = false;
             if (recBtn) recBtn.innerText = '⏺ 60s Vid';
         };
@@ -8965,16 +9126,14 @@ window.openEditProfile = function() {
             if (recBtn) recBtn.innerText = '⏹ Stop';
             if (timerBadge) {
                 timerBadge.style.display = 'inline-block';
-                timerBadge.innerText = `00:00 / 01:00`;
+                timerBadge.innerText = '00:00 / 01:00';
             }
 
             __recInterval = setInterval(() => {
                 __recSeconds++;
                 const secStr = String(__recSeconds).padStart(2, '0');
                 if (timerBadge) timerBadge.innerText = `00:${secStr} / 01:00`;
-                if (__recSeconds >= MAX_STORY_SECONDS) {
-                    stopRec();
-                }
+                if (__recSeconds >= MAX_STORY_SECONDS) stopRec();
             }, 1000);
         } else {
             stopRec();
@@ -8992,7 +9151,6 @@ window.openEditProfile = function() {
         document.getElementById('storyPreviewVideo').style.filter = css;
     };
 
-    // Song Search + Clip Start Selector
     window.searchHoknexStoryMusic = async function () {
         const q = (document.getElementById('storyMusicSearchInput')?.value || '').trim();
         const box = document.getElementById('storyMusicResultsList');
@@ -9072,14 +9230,27 @@ window.openEditProfile = function() {
 
     window.publishHoknexStory = async function () {
         const username = currentUser();
-        const textOverlay = (document.getElementById('storyTextOverlayInput')?.value || '').trim();
+        const typedText = (document.getElementById('storyTextOverlayInput')?.value || '').trim();
+        if (typedText && !__canvasLayers.some(l => l.kind === 'text')) {
+            __canvasLayers.push({ id: 'lyr_init', kind: 'text', content: typedText, xPct: 50, yPct: 68 });
+        }
+
+        const insertedImgLayer = __canvasLayers.find(l => l.kind === 'image');
+        const finalMediaUrl = __creatorMediaUrl || (insertedImgLayer ? insertedImgLayer.content : '');
+        const finalMediaType = __creatorMediaUrl ? __creatorMediaType : (insertedImgLayer ? 'image' : 'text');
+
+        const layersText = __canvasLayers
+            .filter(l => l.kind === 'text' || l.kind === 'location' || l.kind === 'sticker')
+            .map(l => l.kind === 'location' ? `📍 ${l.content}` : l.content)
+            .join(' • ');
+
         const privacy = document.getElementById('storyPrivacySelect')?.value || 'public';
         const pollQ = (document.getElementById('storyPollQ')?.value || '').trim();
         const pollA = (document.getElementById('storyPollA')?.value || '').trim();
         const pollB = (document.getElementById('storyPollB')?.value || '').trim();
 
-        if (!__creatorMediaUrl && !textOverlay && !pollQ) {
-            return alert('Add a photo, video, text, or poll first!');
+        if (!finalMediaUrl && !layersText && !pollQ) {
+            return alert('Add a photo, video, text, sticker, or poll first!');
         }
 
         const btn = document.getElementById('publishStoryBtn');
@@ -9104,9 +9275,9 @@ window.openEditProfile = function() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     username,
-                    type: __creatorMediaUrl ? __creatorMediaType : 'text',
-                    mediaUrl: __creatorMediaUrl,
-                    textOverlay,
+                    type: finalMediaType,
+                    mediaUrl: finalMediaUrl,
+                    textOverlay: layersText,
                     bgGradient: __creatorGradient,
                     filterCss: __creatorFilter,
                     privacy,
@@ -9125,13 +9296,13 @@ window.openEditProfile = function() {
         }
     };
 
-    // Viewer & Replies
     window.openHoknexStoryViewer = function (username) {
         ensureStoryModalsMounted();
         const idx = __storyGroups.findIndex(g => g.username === username);
         if (idx === -1) return;
         __activeGroupIdx = idx;
         __activeItemIdx = 0;
+        __seenSheetOpen = false;
         document.getElementById('hoknexStoryViewerModal').style.display = 'flex';
         renderActiveStorySlide();
     };
@@ -9139,20 +9310,82 @@ window.openEditProfile = function() {
     window.closeHoknexStoryViewer = function () {
         clearInterval(__storyTimer);
         if (__storyAudioEl) { __storyAudioEl.pause(); __storyAudioEl = null; }
+        __seenSheetOpen = false;
+        const sheet = document.getElementById('storySeenSheet');
+        if (sheet) sheet.style.display = 'none';
         const m = document.getElementById('hoknexStoryViewerModal');
         if (m) m.style.display = 'none';
         loadHoknexStories();
     };
 
     window.pauseHoknexStory = function (paused) {
-        __storyPaused = paused;
+        __storyPaused = paused || __seenSheetOpen;
         if (__storyAudioEl) {
-            if (paused) __storyAudioEl.pause();
+            if (__storyPaused) __storyAudioEl.pause();
             else __storyAudioEl.play().catch(() => {});
         }
     };
 
+    window.openStoryAuthorProfile = function () {
+        const group = __storyGroups[__activeGroupIdx];
+        if (!group) return;
+        const uname = group.username;
+        closeHoknexStoryViewer();
+        if (typeof window.viewUserProfile === 'function') {
+            window.viewUserProfile(uname);
+        }
+    };
+
+    window.openViewerProfileFromSeenList = function (uname) {
+        closeHoknexStoryViewer();
+        if (typeof window.viewUserProfile === 'function') {
+            window.viewUserProfile(uname);
+        }
+    };
+
+    window.toggleStorySeenSheet = function () {
+        const sheet = document.getElementById('storySeenSheet');
+        const group = __storyGroups[__activeGroupIdx];
+        const story = group && group.items[__activeItemIdx];
+        if (!sheet || !story) return;
+
+        __seenSheetOpen = !__seenSheetOpen;
+        if (!__seenSheetOpen) {
+            sheet.style.display = 'none';
+            pauseHoknexStory(false);
+            return;
+        }
+
+        pauseHoknexStory(true);
+        const viewers = story.viewers || [];
+        sheet.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <div style="font-size:0.84rem;font-weight:800;">👁️ Viewed by ${viewers.length}</div>
+                <button type="button" onclick="toggleStorySeenSheet()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:8px;padding:3px 9px;font-size:0.72rem;font-weight:700;cursor:pointer;">Close</button>
+            </div>
+            ${viewers.length ? viewers.map(v => {
+                const u = String(v.username || '').replace(/^@/, '');
+                const fullName = v.name || u;
+                const dp = v.dpUrl || avatarFallback(u);
+                return `
+                    <div onclick="openViewerProfileFromSeenList('${esc(u)}')" style="display:flex;align-items:center;justify-content:space-between;padding:8px 6px;border-bottom:1px solid rgba(255,255,255,0.07);cursor:pointer;border-radius:10px;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <img src="${esc(dp)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1.5px solid #a78bfa;" />
+                            <div>
+                                <div style="font-size:0.82rem;font-weight:800;color:#f8fafc;">${esc(fullName)}</div>
+                                <div style="font-size:0.7rem;color:#94a3b8;">@${esc(u)}</div>
+                            </div>
+                        </div>
+                        <span style="font-size:0.72rem;color:#a78bfa;font-weight:700;">Profile →</span>
+                    </div>
+                `;
+            }).join('') : '<div style="font-size:0.78rem;color:#94a3b8;padding:8px 0;">No views yet.</div>'}
+        `;
+        sheet.style.display = 'block';
+    };
+
     window.nextHoknexStory = function () {
+        if (__seenSheetOpen) return;
         const group = __storyGroups[__activeGroupIdx];
         if (!group) return closeHoknexStoryViewer();
         if (__activeItemIdx + 1 < group.items.length) {
@@ -9168,6 +9401,7 @@ window.openEditProfile = function() {
     };
 
     window.prevHoknexStory = function () {
+        if (__seenSheetOpen) return;
         if (__activeItemIdx > 0) {
             __activeItemIdx--;
             renderActiveStorySlide();
@@ -9181,6 +9415,9 @@ window.openEditProfile = function() {
     function renderActiveStorySlide() {
         clearInterval(__storyTimer);
         if (__storyAudioEl) { __storyAudioEl.pause(); __storyAudioEl = null; }
+        __seenSheetOpen = false;
+        const sheet = document.getElementById('storySeenSheet');
+        if (sheet) sheet.style.display = 'none';
 
         const group = __storyGroups[__activeGroupIdx];
         const story = group && group.items[__activeItemIdx];
@@ -9204,7 +9441,7 @@ window.openEditProfile = function() {
         `).join('');
 
         const dpEl = document.getElementById('storyViewerAuthorDp');
-        dpEl.src = story.authorDp || `https://ui-avatars.com/api/?name=${encodeURIComponent(story.username)}&background=7c3aed&color=fff`;
+        dpEl.src = story.authorDp || avatarFallback(story.username);
         document.getElementById('storyViewerAuthorName').innerText = `@${story.username}`;
         const privacyTag = story.privacy === 'close_friends' ? ' • 💚 Close Friends' : '';
         document.getElementById('storyViewerMeta').innerText = `${timeAgo(story.createdAt)}${privacyTag}`;
@@ -9271,11 +9508,14 @@ window.openEditProfile = function() {
         if (isOwner) {
             const viewers = story.viewers || [];
             footer.innerHTML = `
-                <div style="font-size:0.78rem;font-weight:800;margin-bottom:6px;">👁️ Seen by ${viewers.length}</div>
-                <div style="display:flex;gap:6px;flex-wrap:wrap;max-height:54px;overflow-y:auto;">
-                    ${viewers.length
-                        ? viewers.map(v => `<span style="background:rgba(255,255,255,0.14);padding:3px 9px;border-radius:999px;font-size:0.72rem;font-weight:700;">@${esc(v.username)}</span>`).join('')
-                        : '<span style="font-size:0.72rem;color:#94a3b8;">No views yet</span>'}
+                <div onclick="toggleStorySeenSheet()" style="display:flex;align-items:center;justify-content:space-between;background:rgba(15,23,42,0.86);border:1px solid rgba(255,255,255,0.16);border-radius:14px;padding:9px 12px;cursor:pointer;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:0.8rem;font-weight:800;">👁️ Seen by ${viewers.length}</span>
+                        <div style="display:flex;margin-left:4px;">
+                            ${viewers.slice(0, 4).map(v => `<img src="${esc(v.dpUrl || avatarFallback(v.username))}" title="@${esc(v.username)}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;border:1.5px solid #090d16;margin-left:-6px;" />`).join('')}
+                        </div>
+                    </div>
+                    <span style="font-size:0.72rem;font-weight:800;color:#a78bfa;">Swipe / Tap ↑</span>
                 </div>
             `;
         } else {
@@ -9285,7 +9525,7 @@ window.openEditProfile = function() {
                 </div>
                 <div style="display:flex;gap:6px;">
                     <input type="text" id="storyReplyInput" onfocus="pauseHoknexStory(true)" onblur="pauseHoknexStory(false)" onkeydown="if(event.key==='Enter')sendHoknexStoryReply('${esc(story._id)}')" placeholder="Reply to @${esc(story.username)}..." style="flex:1;background:rgba(15,23,42,0.82);border:1px solid rgba(255,255,255,0.28);color:#fff;border-radius:999px;padding:8px 14px;font-size:0.8rem;outline:none;" />
-                    <button type="button" onclick="sendHoknexStoryReply('${esc(story._id)}')" style="background:#7c3aed;color:#fff;border:none;border-radius:999px;padding:8px 14px;font-weight:800;font-size:0.78rem;cursor:pointer;">Send</button>
+                    <button type="button" onclick="sendHoknexStoryReply('${esc(story._id)}')" style="background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;border:none;border-radius:999px;padding:8px 15px;font-weight:800;font-size:0.78rem;cursor:pointer;">Send</button>
                 </div>
             `;
         }
@@ -9319,12 +9559,26 @@ window.openEditProfile = function() {
 
     window.reactHoknexStory = async function (storyId, emoji) {
         const me = currentUser();
-        await fetch(`${STORY_API}/api/stories/${storyId}/react`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: me, emoji })
-        }).catch(() => {});
-        alert(`Sent ${emoji} to Messages!`);
+        const group = __storyGroups[__activeGroupIdx];
+        const targetUsername = group ? group.username : '';
+
+        await Promise.all([
+            fetch(`${STORY_API}/api/stories/${storyId}/react`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: me, emoji })
+            }).catch(() => {}),
+            targetUsername ? fetch(`${STORY_API}/api/messages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sender: me, recipient: targetUsername, text: `📸 Reacted ${emoji} to your story` })
+            }).catch(() => {}) : Promise.resolve()
+        ]);
+
+        if (targetUsername && typeof window.loadMessages === 'function') {
+            window.loadMessages(targetUsername);
+        }
+        alert(`Sent ${emoji} to @${targetUsername} chat!`);
     };
 
     window.sendHoknexStoryReply = async function (storyId) {
@@ -9335,17 +9589,24 @@ window.openEditProfile = function() {
         const group = __storyGroups[__activeGroupIdx];
         const targetUsername = group ? group.username : '';
 
-        await fetch(`${STORY_API}/api/stories/${storyId}/react`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: me, replyText })
-        }).catch(() => {});
+        await Promise.all([
+            fetch(`${STORY_API}/api/stories/${storyId}/react`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: me, replyText })
+            }).catch(() => {}),
+            targetUsername ? fetch(`${STORY_API}/api/messages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sender: me, recipient: targetUsername, text: `📸 Story reply: "${replyText}"` })
+            }).catch(() => {}) : Promise.resolve()
+        ]);
 
+        input.value = '';
         if (targetUsername && typeof window.loadMessages === 'function') {
             window.loadMessages(targetUsername);
         }
-        input.value = '';
-        alert('Reply sent to Messages!');
+        alert(`Reply sent to @${targetUsername} chat!`);
     };
 
     window.deleteCurrentHoknexStory = async function () {
