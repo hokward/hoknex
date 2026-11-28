@@ -3,110 +3,425 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoknex — Admin Dashboard</title>
+    <title>Hoknex — Admin Control Studio</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Unified Color Palette */
-            --bg-color: #0b0f19;
-            --card-bg: #1e293b;
-            --border-color: #334155;
+            --bg-color: #070b14;
+            --surface-1: #0f172a;
+            --card-bg: #131c31;
+            --border-color: rgba(148, 163, 184, 0.18);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --accent-blue: #3b82f6;
+            --accent-indigo: #6366f1;
             --accent-coral: #ef4444;
             --accent-purple: #8b5cf6;
             --accent-green: #10b981;
-            
-            /* Mapping variables used in JS templates */
-            --canvas: var(--card-bg);
-            --border: var(--border-color);
-            --ink: var(--text-main);
-            --ink-light: var(--text-muted);
-            --background: var(--bg-color);
+            --accent-amber: #f59e0b;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding: 3rem 5%; max-width: 1200px; margin: auto; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
-        .header h1 { font-size: 1.8rem; font-weight: 800; color: #fff; }
-        .back-link { color: var(--accent-blue); text-decoration: none; font-weight: 600; background: rgba(59, 130, 246, 0.1); padding: 8px 16px; border-radius: 8px; transition: 0.2s;}
-        .back-link:hover { background: rgba(59, 130, 246, 0.2); }
 
-        /* Admin Tabs UI */
-        .tabs { display: flex; gap: 15px; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
-        .tab-btn { background: transparent; color: var(--text-muted); border: none; font-size: 1.1rem; font-weight: 700; cursor: pointer; padding: 10px 20px; border-radius: 8px; transition: all 0.2s; }
-        .tab-btn:hover { background: rgba(255,255,255,0.05); }
-        .tab-btn.active { background: var(--accent-blue); color: #fff; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
 
-        .tickets-grid { display: grid; gap: 1.5rem; }
-        .ticket-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-        
-        .ticket-header { display: flex; justify-content: space-between; align-items: center; }
-        .user-tag { background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(59, 130, 246, 0.3); }
-        
-        .screenshot-preview img { max-width: 250px; border-radius: 8px; border: 1px solid var(--border-color); cursor: pointer; transition: transform 0.2s; margin-top:10px; }
-        .screenshot-preview img:hover { transform: scale(1.02); }
+        body {
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.12), transparent 42%), var(--bg-color);
+            color: var(--text-main);
+            padding: 2rem 5% 4rem;
+            max-width: 1200px;
+            margin: auto;
+            min-height: 100vh;
+        }
 
-        .reply-box { background: #0f172a; border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 12px; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 10px; }
-        .reply-box textarea { background: #1e293b; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; color: #fff; outline: none; resize: vertical; font-size: 0.95rem; }
-        .reply-box textarea:focus { border-color: var(--accent-blue); }
-        
-        .btn-reply { background: var(--accent-blue); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; width: fit-content; }
-        .action-btn { background: rgba(239, 68, 68, 0.1); color: var(--accent-coral); border: 1px solid rgba(239, 68, 68, 0.3); padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; text-align: center; }
-        
-        .resolved-badge { background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; border: 1px solid rgba(34, 197, 94, 0.3); width: fit-content; }
-        .existing-reply { color: #86efac; font-size: 0.95rem; background: rgba(34, 197, 94, 0.05); padding: 10px; border-radius: 8px; border: 1px dashed rgba(34, 197, 94, 0.2); }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.1rem;
+        }
+
+        .header h1 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .header-sub {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .back-link {
+            color: #93c5fd;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.86rem;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 8px 16px;
+            border-radius: 10px;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            background: rgba(59, 130, 246, 0.22);
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px 16px;
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .stat-val {
+            font-size: 1.45rem;
+            font-weight: 800;
+            margin-top: 4px;
+            color: #fff;
+        }
+
+        .toolbar-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: var(--surface-1);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 9px 18px;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+            border-color: rgba(148, 163, 184, 0.4);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-blue));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);
+        }
+
+        .filters-wrap {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-inp, .filter-sel {
+            background: var(--surface-1);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .search-inp:focus, .filter-sel:focus {
+            border-color: var(--accent-indigo);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tickets-grid {
+            display: grid;
+            gap: 1.15rem;
+        }
+
+        .ticket-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.35rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .user-tag {
+            background: rgba(59, 130, 246, 0.14);
+            color: #93c5fd;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .status-pill {
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.35);
+        }
+
+        .status-resolved {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+
+        .screenshot-preview img {
+            max-width: 260px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .quick-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .quick-chip {
+            background: rgba(139, 92, 246, 0.14);
+            color: #ddd6fe;
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .quick-chip:hover {
+            background: rgba(139, 92, 246, 0.28);
+        }
+
+        .reply-box {
+            background: var(--surface-1);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .reply-box textarea {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: 9px;
+            color: #fff;
+            outline: none;
+            resize: vertical;
+            font-size: 0.9rem;
+            min-height: 64px;
+        }
+
+        .reply-box textarea:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn-reply {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-blue));
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 9px;
+            font-weight: 700;
+            font-size: 0.84rem;
+            cursor: pointer;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.12);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.32);
+            padding: 7px 12px;
+            border-radius: 9px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .action-btn {
+            background: rgba(239, 68, 68, 0.14);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            padding: 9px 12px;
+            border-radius: 9px;
+            font-weight: 800;
+            font-size: 0.82rem;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+
+        .existing-reply {
+            color: #86efac;
+            font-size: 0.9rem;
+            background: rgba(16, 185, 129, 0.08);
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px dashed rgba(16, 185, 129, 0.35);
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>⚙️ Hoknex Admin Control</h1>
+        <div>
+            <h1>⚙️ Hoknex Admin Control</h1>
+            <div class="header-sub">Support tickets, server requests &amp; event organizer approvals</div>
+        </div>
         <a href="index.html" class="back-link">← Back to Main Page</a>
     </div>
 
-    <!-- UI TABS -->
-    <div class="tabs">
-        <button id="btn-tickets" class="tab-btn active" onclick="switchTab('tickets')">🎫 Support Tickets</button>
-        <button id="btn-apps" class="tab-btn" onclick="switchTab('apps')">🚀 Organizer Applications</button>
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-label">Total Tickets</div>
+            <div class="stat-val" id="statTotalTickets">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Pending Replies</div>
+            <div class="stat-val" id="statPendingTickets" style="color:#fbbf24;">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Resolved</div>
+            <div class="stat-val" id="statResolvedTickets" style="color:#34d399;">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Organizer Apps</div>
+            <div class="stat-val" id="statTotalApps" style="color:#c4b5fd;">0</div>
+        </div>
     </div>
 
-    <!-- TAB 1: SUPPORT TICKETS -->
+    <div class="toolbar-row">
+        <div class="tabs">
+            <button id="btn-tickets" class="tab-btn active" onclick="switchTab('tickets')">🎫 Support Tickets</button>
+            <button id="btn-apps" class="tab-btn" onclick="switchTab('apps')">🚀 Organizer Applications</button>
+        </div>
+        <div class="filters-wrap">
+            <input type="text" id="ticketSearchInput" class="search-inp" placeholder="Search @user or query..." oninput="renderFilteredTickets()">
+            <select id="ticketStatusFilter" class="filter-sel" onchange="renderFilteredTickets()">
+                <option value="all">All Status</option>
+                <option value="pending">Pending Only</option>
+                <option value="resolved">Resolved Only</option>
+            </select>
+            <button type="button" class="tab-btn" style="padding:8px 13px; font-size:0.8rem;" onclick="loadTickets(); loadApplications();">↻ Refresh</button>
+        </div>
+    </div>
+
     <div id="tab-tickets" class="tab-content active">
         <div id="ticketsContainer" class="tickets-grid">
             <p style="color: var(--text-muted);">Loading support tickets...</p>
         </div>
     </div>
 
-    <!-- TAB 2: ORGANIZER APPLICATIONS -->
     <div id="tab-apps" class="tab-content">
         <div id="adminAppList" class="tickets-grid">
             <p style="color: var(--text-muted);">Loading applications...</p>
         </div>
     </div>
 
-    <!-- ALL JAVASCRIPT LOGIC -->
     <script>
         const API_URL = 'https://hoknex-backend.onrender.com';
+        let __allSupportTickets = [];
 
-        // --- 1. STANDALONE ADMIN SECURITY LOCK (Runs Immediately) ---
-        let isAdminUnlocked = sessionStorage.getItem('hoknex_admin_unlocked');
+        const QUICK_REPLIES = [
+            "Thanks for the suggestion! We're updating permission prompts & gallery handling right now.",
+            "Logged with our dev team—we'll push a fix shortly. Thanks for helping improve Hoknex!",
+            "Reviewed your request. Let us know if you need any further help!"
+        ];
 
+        const isAdminUnlocked = sessionStorage.getItem('hoknex_admin_unlocked');
         if (!isAdminUnlocked) {
             const enteredPass = prompt("🔒 SECURE HOKNEX ADMIN PORTAL\n\nEnter the Master Admin Password:");
-
             if (enteredPass === "kluhoknex") {
                 sessionStorage.setItem('hoknex_admin_unlocked', 'true');
             } else {
                 alert("⛔ ACCESS DENIED: Incorrect Master Password.");
-                window.location.href = 'index.html'; 
+                window.location.href = 'index.html';
             }
         }
 
-        // --- 2. UI TAB SWITCHER ---
+        function escAdmin(s = '') {
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
         function switchTab(tabName) {
             document.getElementById('tab-tickets').classList.remove('active');
             document.getElementById('tab-apps').classList.remove('active');
@@ -117,115 +432,190 @@
             document.getElementById(`btn-${tabName}`).classList.add('active');
         }
 
-        // --- 3. SUPPORT TICKETS LOGIC ---
+        function applyQuickReply(ticketId, chipIdx) {
+            const ta = document.getElementById(`replyText_${ticketId}`);
+            if (ta && QUICK_REPLIES[chipIdx]) {
+                ta.value = QUICK_REPLIES[chipIdx];
+                ta.focus();
+            }
+        }
+
+        function updateTicketStats(tickets) {
+            const total = tickets.length;
+            const resolved = tickets.filter(t => Boolean(t.reply)).length;
+            const pending = total - resolved;
+            document.getElementById('statTotalTickets').innerText = total;
+            document.getElementById('statPendingTickets').innerText = pending;
+            document.getElementById('statResolvedTickets').innerText = resolved;
+        }
+
+        function renderFilteredTickets() {
+            const container = document.getElementById('ticketsContainer');
+            if (!container) return;
+
+            const q = (document.getElementById('ticketSearchInput')?.value || '').trim().toLowerCase();
+            const statusFilter = document.getElementById('ticketStatusFilter')?.value || 'all';
+
+            const filtered = __allSupportTickets.filter(t => {
+                const isResolved = Boolean(t.reply);
+                if (statusFilter === 'pending' && isResolved) return false;
+                if (statusFilter === 'resolved' && !isResolved) return false;
+                if (q) {
+                    const hay = `${t.username || ''} ${t.description || ''} ${t.reply || ''}`.toLowerCase();
+                    if (!hay.includes(q)) return false;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="ticket-card"><p style="color: var(--text-muted); text-align:center;">No matching support tickets.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(t => {
+                const isDeletionRequest = t.description && t.description.includes('[SERVER DELETION REQUEST]');
+                const isResolved = Boolean(t.reply);
+                return `
+                    <div class="ticket-card">
+                        <div class="ticket-header">
+                            <div class="btn-row">
+                                <span class="user-tag">👤 @${escAdmin(t.username || 'Student')}</span>
+                                <span class="status-pill ${isResolved ? 'status-resolved' : 'status-pending'}">${isResolved ? 'Resolved' : 'Pending'}</span>
+                            </div>
+                            <div class="btn-row">
+                                <span style="color:var(--text-muted); font-size:0.8rem;">${t.createdAt ? new Date(t.createdAt).toLocaleString() : ''}</span>
+                                <button type="button" class="btn-delete" onclick="deleteTicket('${t._id}')">🗑️ Delete</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p style="font-size:1rem; color:#fff; line-height:1.5;"><strong>Query:</strong> ${escAdmin(t.description || '')}</p>
+                            ${t.screenshotUrl ? `
+                                <div class="screenshot-preview">
+                                    <p style="font-size:0.8rem; color:var(--text-muted);">Attached Screenshot:</p>
+                                    <a href="${escAdmin(t.screenshotUrl)}" target="_blank"><img src="${escAdmin(t.screenshotUrl)}" alt="Support Attachment"></a>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        ${isDeletionRequest ? `
+                            <button type="button" class="action-btn" onclick="executeSupportServerDeletion('${t._id}')">
+                                🗑️ Approve &amp; Delete Server Permanently
+                            </button>
+                        ` : ''}
+
+                        ${isResolved ? `
+                            <div class="existing-reply"><strong>Team Reply:</strong> ${escAdmin(t.reply)}</div>
+                        ` : `
+                            <div class="reply-box">
+                                <div class="quick-chips">
+                                    <button type="button" class="quick-chip" onclick="applyQuickReply('${t._id}', 0)">⚡ Gallery/Permissions</button>
+                                    <button type="button" class="quick-chip" onclick="applyQuickReply('${t._id}', 1)">🛠️ Bug Logged</button>
+                                    <button type="button" class="quick-chip" onclick="applyQuickReply('${t._id}', 2)">✅ Reviewed</button>
+                                </div>
+                                <textarea id="replyText_${t._id}" rows="2" placeholder="Write a reply to this student..."></textarea>
+                                <div class="btn-row">
+                                    <button type="button" class="btn-reply" onclick="sendReply('${t._id}')">Send Reply 🚀</button>
+                                </div>
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
         async function loadTickets() {
             try {
                 const res = await fetch(`${API_URL}/api/support`);
                 const tickets = await res.json();
-                const container = document.getElementById('ticketsContainer');
-
-                if(tickets.length === 0) {
-                    container.innerHTML = `<div class="ticket-card"><p style="color: var(--text-muted); text-align:center;">No support queries submitted yet.</p></div>`;
-                    return;
-                }
-
-                container.innerHTML = tickets.map(t => {
-                    const isDeletionRequest = t.description && t.description.includes('[SERVER DELETION REQUEST]');
-                    return `
-                        <div class="ticket-card">
-                            <div class="ticket-header">
-                                <span class="user-tag">👤 @${t.username || 'Student'}</span>
-                                <span style="color:var(--text-muted); font-size:0.85rem;">${new Date(t.createdAt).toLocaleString()}</span>
-                            </div>
-                            <div>
-                                <p style="font-size:1.05rem; color:#fff;"><strong>Query:</strong> ${t.description}</p>
-                                ${t.screenshotUrl ? `
-                                    <div class="screenshot-preview">
-                                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:5px;">Attached Screenshot:</p>
-                                        <a href="${t.screenshotUrl}" target="_blank"><img src="${t.screenshotUrl}" alt="Support Attachment"></a>
-                                    </div>
-                                ` : ''}
-                            </div>
-                            ${isDeletionRequest ? `
-                                <button class="action-btn" onclick="executeSupportServerDeletion('${t._id}')">
-                                    🗑️ Approve & Delete Server Permanently
-                                </button>
-                            ` : ''}
-                            ${t.reply ? `
-                                <div class="existing-reply"><strong>Team Reply:</strong> ${t.reply}</div>
-                                <span class="resolved-badge">Status: Resolved</span>
-                            ` : `
-                                <div class="reply-box">
-                                    <textarea id="replyText_${t._id}" rows="2" placeholder="Write a reply to this student..."></textarea>
-                                    <button class="btn-reply" onclick="sendReply('${t._id}')">Send Reply 🚀</button>
-                                </div>
-                            `}
-                        </div>
-                    `;
-                }).join('');
-            } catch(err) {
+                __allSupportTickets = Array.isArray(tickets) ? tickets : [];
+                updateTicketStats(__allSupportTickets);
+                renderFilteredTickets();
+            } catch (err) {
                 document.getElementById('ticketsContainer').innerHTML = `<p style="color: #f87171;">Failed to load tickets.</p>`;
             }
         }
 
+        async function deleteTicket(ticketId) {
+            if (!confirm('Delete this support ticket?')) return;
+            try {
+                const res = await fetch(`${API_URL}/api/support/${ticketId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    loadTickets();
+                } else {
+                    alert('Failed to delete ticket.');
+                }
+            } catch (_) {
+                alert('Network error while deleting ticket.');
+            }
+        }
+
         async function executeSupportServerDeletion(ticketId) {
-            if (!confirm('Are you sure you want to approve this request and permanently delete this server?')) return;
+            if (!confirm('Approve this request and permanently delete this server?')) return;
             try {
                 const res = await fetch(`${API_URL}/api/support/delete-server-by-ticket/${ticketId}`, { method: 'DELETE' });
                 if (res.ok) {
                     alert('Server successfully deleted by support team!');
-                    loadTickets(); 
+                    loadTickets();
                 } else {
                     alert('Failed to delete server.');
                 }
-            } catch (e) { alert('Network error during deletion.'); }
+            } catch (e) {
+                alert('Network error during deletion.');
+            }
         }
 
         async function sendReply(id) {
             const reply = document.getElementById(`replyText_${id}`).value.trim();
-            if(!reply) return alert('Please type a reply first!');
+            if (!reply) return alert('Please type a reply first!');
             try {
                 const res = await fetch(`${API_URL}/api/support/${id}/reply`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ reply })
                 });
-                if(res.ok) {
+                if (res.ok) {
                     alert('Reply sent successfully!');
                     loadTickets();
-                } else { alert('Failed to send reply.'); }
-            } catch(err) { alert('Network error.'); }
+                } else {
+                    const errData = await res.json().catch(() => ({}));
+                    alert(errData.error || 'Failed to send reply.');
+                }
+            } catch (err) {
+                alert('Network error.');
+            }
         }
 
-        // --- 4. ORGANIZER APPLICATIONS LOGIC ---
         async function loadApplications() {
             const container = document.getElementById('adminAppList');
             try {
                 const res = await fetch(`${API_URL}/api/applications`);
                 const apps = await res.json();
-                
-                if (apps.length === 0) {
+                const list = Array.isArray(apps) ? apps : [];
+                document.getElementById('statTotalApps').innerText = list.length;
+
+                if (list.length === 0) {
                     container.innerHTML = `<div class="ticket-card"><p style="text-align:center; color:var(--text-muted);">No pending applications.</p></div>`;
                     return;
                 }
 
-                container.innerHTML = apps.map(app => `
-                    <div class="ticket-card" style="background:${app.status === 'approved' ? 'rgba(52,211,153,0.05)' : 'var(--card-bg)'};">
+                container.innerHTML = list.map(app => `
+                    <div class="ticket-card" style="background:${app.status === 'approved' ? 'rgba(16,185,129,0.06)' : 'var(--card-bg)'};">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
                             <div>
-                                <h4 style="margin:0 0 5px 0; color:#fff; font-size:1.2rem;">👤 ${app.username}</h4>
-                                <p style="margin:0 0 10px 0; font-size:0.95rem; font-weight:700; color:var(--accent-purple);">🏫 ${app.organization}</p>
-                                <p style="margin:0 0 15px 0; font-size:0.95rem; color:var(--text-muted); line-height:1.5;">${app.description}</p>
-                                <span style="font-size:0.8rem; font-weight:800; padding:4px 10px; border-radius:6px; background:${app.status === 'approved' ? 'var(--accent-green)' : '#f59e0b'}; color:#fff;">
-                                    STATUS: ${app.status.toUpperCase()}
+                                <h4 style="margin:0 0 5px 0; color:#fff; font-size:1.1rem;">👤 ${escAdmin(app.username || '')}</h4>
+                                <p style="margin:0 0 8px 0; font-size:0.9rem; font-weight:700; color:#c4b5fd;">🏫 ${escAdmin(app.organization || '')}</p>
+                                <p style="margin:0 0 12px 0; font-size:0.88rem; color:var(--text-muted); line-height:1.5;">${escAdmin(app.description || '')}</p>
+                                <span style="font-size:0.74rem; font-weight:800; padding:4px 10px; border-radius:6px; background:${app.status === 'approved' ? 'var(--accent-green)' : '#f59e0b'}; color:#fff;">
+                                    STATUS: ${escAdmin((app.status || 'pending').toUpperCase())}
                                 </span>
                             </div>
-                            ${app.status === 'pending' ? `<button class="btn-reply" style="background:var(--accent-purple);" onclick="approveApp('${app._id}')">Approve ✅</button>` : ''}
+                            ${app.status === 'pending' ? `<button type="button" class="btn-reply" style="background:var(--accent-purple);" onclick="approveApp('${app._id}')">Approve ✅</button>` : ''}
                         </div>
                     </div>
                 `).join('');
             } catch (err) {
-                container.innerHTML = `<p style="color:red;">Failed to load applications.</p>`;
+                container.innerHTML = `<p style="color:#f87171;">Failed to load applications.</p>`;
             }
         }
 
@@ -235,12 +625,15 @@
                 const res = await fetch(`${API_URL}/api/applications/${appId}/approve`, { method: 'PUT' });
                 if (res.ok) {
                     alert("✅ Organizer Approved! They can now host events.");
-                    loadApplications(); 
-                } else { alert("Failed to approve application."); }
-            } catch (err) { alert("Network error."); }
+                    loadApplications();
+                } else {
+                    alert("Failed to approve application.");
+                }
+            } catch (err) {
+                alert("Network error.");
+            }
         }
 
-        // --- 5. INITIALIZE DASHBOARD ---
         window.addEventListener('DOMContentLoaded', () => {
             if (sessionStorage.getItem('hoknex_admin_unlocked')) {
                 loadTickets();
